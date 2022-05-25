@@ -266,7 +266,7 @@ if __name__ == '__main__':
                         try:
                             res_ping = requests.get(BASE_URL_PING, timeout=3)
                         except Exception:
-                            sg.popup("Сервер не отвечает")
+                            sg.popup("Сервер не отвечает", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                             break
                         drop_db()
                         users_max = get_users()
@@ -300,7 +300,7 @@ if __name__ == '__main__':
                                 try:
                                     res_ping = requests.get(BASE_URL_PING, timeout=3)
                                 except Exception:
-                                    sg.popup("Сервер не отвечает")
+                                    sg.popup("Сервер не отвечает", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                                     break
                                 update_text = 'Пользователей онлайн: ' + res_ping.text
                                 window['online1'].update(update_text)
@@ -309,7 +309,7 @@ if __name__ == '__main__':
                                 try:
                                     res_ping = requests.get(BASE_URL_PING, timeout=3)
                                 except Exception:
-                                    sg.popup("Сервер не отвечает")
+                                    sg.popup("Сервер не отвечает", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                                     break
                                 update_text = 'Пользователей онлайн: ' + res_ping.text
                                 window['online1'].update(update_text)
@@ -377,6 +377,7 @@ if __name__ == '__main__':
                                 print("clicked Apply")
                                 if values['-users-'] == []:
                                     print(f"Не выбран пользователь")
+                                    sg.popup('Не выбран пользователь', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                                 else:
                                     add_group = False
                                     del_group = False
@@ -397,33 +398,36 @@ if __name__ == '__main__':
                                         else:
                                             print(f"Пользователя нужно добавить в группу {get_group_name_by_id(gr_id)}")
                                             add_dict['GroupIds'] += [gr_id]
-                                    res = requests.post(BASE_URL + 'addToGroup', json=add_dict)
-                                    print(res.status_code)
-                                    if res.status_code == 200:
-                                        window['-groups-'].update(get_groups_for_user(chosen_login[0]))
-                                        add_group = True
-                                    else:
-                                        sg.popup("Добавление не выполнено")
+                                            add_group = True
+                                    if add_group:
+                                        res = requests.post(BASE_URL + 'addToGroup', json=add_dict)
+                                        print(res.status_code)
+                                        if res.status_code == 200:
+                                            window['-groups-'].update(get_groups_for_user(chosen_login[0]))
+                                        else:
+                                            sg.popup("Добавление не выполнено", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                                     for gr_id in current_groups_ids:
                                         if gr_id in tree.metadata:
                                             print(f'Пользователь уже в группе {get_group_name_by_id(gr_id)}')
                                         else:
                                             print(f"У пользователя нужно удалить группу {get_group_name_by_id(gr_id)}")
                                             del_dict['GroupIds'] += [gr_id]
-                                    res = requests.post(BASE_URL + 'removeFromGroup', json=del_dict)
-                                    print(res.status_code)
-                                    if res.status_code == 200:
-                                        window['-groups-'].update(get_groups_for_user(chosen_login[0]))
-                                        del_group = True
-                                    else:
-                                        sg.popup("Удаление не выполнено")
+                                            del_group = True
+                                    if del_group:
+                                        res = requests.post(BASE_URL + 'removeFromGroup', json=del_dict)
+                                        print(res.status_code)
+                                        if res.status_code == 200:
+                                            window['-groups-'].update(get_groups_for_user(chosen_login[0]))
+                                        else:
+                                            sg.popup("Удаление не выполнено", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                                     if add_group or del_group:
                                         add_del_text = 'Изменение групп для ' + chosen_login[1] + ' выполнено'
-                                        sg.popup(add_del_text)
+                                        sg.popup(add_del_text, title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                             if event == "Apply2":
                                 print("clicked Apply2")
                                 if values['-groups2-'] == []:
                                     print(f"Не выбрана группа")
+                                    sg.popup('Не выбрана группа', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                                 else:
                                     add_user = False
                                     del_user = False
@@ -444,38 +448,40 @@ if __name__ == '__main__':
                                         else:
                                             print(f"Пользователя {us_id} нужно добавить в группу {chosen_group[0]}")
                                             add_dict['UserIds'] += [us_id]
-                                    res = requests.post(BASE_URL + 'addToGroup', json=add_dict)
-                                    print(res.status_code)
-                                    if res.status_code == 200:
-                                        window['-users2-'].update(get_users_for_group(chosen_group[0]))
-                                        add_user = True
-                                    else:
-                                        sg.popup("Добавление не выполнено")
+                                            add_user = True
+                                    if add_user:
+                                        res = requests.post(BASE_URL + 'addToGroup', json=add_dict)
+                                        print(res.status_code)
+                                        if res.status_code == 200:
+                                            window['-users2-'].update(get_users_for_group(chosen_group[0]))
+                                        else:
+                                            sg.popup("Добавление не выполнено", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                                     for us_id in current_users_ids:
                                         if us_id in tree2.metadata:
                                             print(f'Пользователь {us_id} уже в группе {chosen_group[0]}')
                                         else:
                                             print(f"В группе {chosen_group[0]} нужно удалить пользователя {us_id}")
                                             del_dict['UserIds'] += [us_id]
-                                    res = requests.post(BASE_URL + 'removeFromGroup', json=del_dict)
-                                    print(res.status_code)
-                                    if res.status_code == 200:
-                                        window['-users2-'].update(get_users_for_group(chosen_group[0]))
-                                        del_user = True
-                                    else:
-                                        sg.popup("Удаление не выполнено")
+                                            del_user = True
+                                    if del_user:
+                                        res = requests.post(BASE_URL + 'removeFromGroup', json=del_dict)
+                                        print(res.status_code)
+                                        if res.status_code == 200:
+                                            window['-users2-'].update(get_users_for_group(chosen_group[0]))
+                                        else:
+                                            sg.popup("Удаление не выполнено", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                                     if add_user or del_user:
                                         add_del_text = 'Изменение пользователей для ' + chosen_group[1] + ' выполнено'
-                                        sg.popup(add_del_text)
+                                        sg.popup(add_del_text, title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                         else:
-                            sg.popup('Введите правильный ip!')
+                            sg.popup('Введите правильный ip!', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                 else:
-                    sg.popup('Введите правильный ip!')
+                    sg.popup('Введите правильный ip!', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                 if window_main_active:
                     window.close()
                     break
             else:
-                sg.popup("Неправильный пароль!!!")
+                sg.popup("Неправильный пароль!!!", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
     if not window_main_active:
         window_login.close()
 
