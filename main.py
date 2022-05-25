@@ -271,24 +271,33 @@ if __name__ == '__main__':
             else:
                 tree.metadata.append(group_id)
                 tree.update(key=group_id, icon=check[1])
+        if event == '-TREE2-':
+            user_id = values['-TREE2-'][0]
+            print(user_id)
+            if user_id in tree2.metadata:
+                tree2.metadata.remove(user_id)
+                tree2.update(key=user_id, icon=check[0])
+            else:
+                tree2.metadata.append(user_id)
+                tree2.update(key=user_id, icon=check[1])
         if event == '-groups2-':
             print(values['-groups2-'])
             group_id = groups_from_db[values['-groups2-'][0]][0]
-            print(group_id)
+            # print(group_id)
             users_for_group = get_users_for_group(group_id)
             users_for_group_ids = []
             for user_for_group in users_for_group:
                 users_for_group_ids.append(user_for_group[0])
-            print(users_for_group_ids)
+            # print(users_for_group_ids)
             all_user_ids = []
             for user_from_all in users_from_db:
                 all_user_ids.append(user_from_all[0])
-            print(all_user_ids)
+            # print(all_user_ids)
             window['-users2-'].update(users_for_group)
             tree2.metadata = []
             for user_id_for_tree in all_user_ids:
                 if user_id_for_tree in users_for_group_ids:
-                    print(user_id_for_tree)
+                    # print(user_id_for_tree)
                     tree2.metadata.append(user_id_for_tree)
                     tree2.update(key=user_id_for_tree, icon=check[1])
                 else:
@@ -332,6 +341,44 @@ if __name__ == '__main__':
                         res = requests.post(BASE_URL + 'removeFromGroup', json=del_dict)
                         print(res)
                         window['-groups-'].update(get_groups_for_user(chosen_login[0]))
+        if event == "Apply2":
+            print("clicked Apply2")
+            if values['-groups2-'] == []:
+                print(f"Не выбрана группа")
+            else:
+                print(values['-groups2-'])
+                chosen_group = groups_from_db[values['-groups2-'][0]]
+                print(f"Выбрана группа {chosen_group[1]}")
+                print(tree.metadata)
+                current_users = get_users_for_group(chosen_group[0])
+                print(current_users)
+                current_users_ids = []
+                for cur_us in current_users:
+                    current_users_ids.append(cur_us[0])
+                add_dict = {'UserIds': [], 'GroupIds': [chosen_group[0]]}
+                del_dict = {'UserIds': [], 'GroupIds': [chosen_group[0]]}
+                for us_id in tree2.metadata:
+                    if us_id in current_users_ids:
+                        print(f"В группе {chosen_group[0]} уже есть {us_id}")
+                    else:
+                        print(f"Пользователя {us_id} нужно добавить в группу {chosen_group[0]}")
+                        add_dict['UserIds'] += [us_id]
+                        # add_json = json.dumps(add_dict, indent=4)
+                        # print(add_json)
+                        res = requests.post(BASE_URL + 'addToGroup', json=add_dict)
+                        print(res)
+                        window['-users2-'].update(get_users_for_group(chosen_group[0]))
+                for us_id in current_users_ids:
+                    if us_id in tree2.metadata:
+                        print(f'Пользователь {us_id} уже в группе {chosen_group[0]}')
+                    else:
+                        print(f"В группе {chosen_group[0]} нужно удалить пользователя {us_id}")
+                        del_dict['UserIds'] += [us_id]
+                        # del_json = json.dumps(del_dict, indent=4)
+                        # print(del_json)
+                        res = requests.post(BASE_URL + 'removeFromGroup', json=del_dict)
+                        print(res)
+                        window['-users2-'].update(get_users_for_group(chosen_group[0]))
     window.close()
 
 
