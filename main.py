@@ -245,7 +245,7 @@ def make_main_window(users_online):
 if __name__ == '__main__':
     layout_login = [[sg.Push(), sg.Text("Адрес сервера"), sg.Input(default_text="10.1.4.147", key="ip")],
                     [sg.Push(), sg.Text("Пароль"), sg.Input(focus=True, key="password")],
-                    [sg.Ok(key="OK button")]]
+                    [sg.Push(), sg.Ok(key="OK button"), sg.Push()]]
     window_login = sg.Window('Вход на сервер', layout_login, icon=ICON_BASE_64, finalize=True)
     window_main_active = False
     while True:
