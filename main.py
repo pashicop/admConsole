@@ -54,7 +54,7 @@ def add_users(users_list):
         db_insert_user = "insert or replace into Users(id, login, Display_name) Values ('" + user['id'] + "', '" + user['login'] + "', '" + user['displayName'] + "')"
         # print(db_insert_user)
         cur.execute(db_insert_user)
-        print(f'{user["login"]} добавлен')
+        # print(f'{user["login"]} добавлен')
     con.commit()
     con.close()
 
@@ -68,7 +68,7 @@ def add_groups(groups_list):
         db_insert_group = "insert or replace into Groups(id, Name) Values ('" + group['id'] + "', '" + group['name'] + "')"
         # print(db_insert_group)
         cur.execute(db_insert_group)
-        print(f'{group["name"]} добавлена')
+        # print(f'{group["name"]} добавлена')
     con.commit()
     con.close()
 
@@ -81,7 +81,7 @@ def get_users_from_db():
     print('Пользователи:')
     users_for_table = list()
     for user in users:
-        print(user)
+        # print(user)
         user_for_table = list()
         user_for_table.append(user[0])
         user_for_table.append(user[1])
@@ -101,7 +101,7 @@ def get_groups_from_db():
     print('Группы:')
     groups_for_table = list()
     for group in groups:
-        print(group)
+        # print(group)
         group_for_table = list()
         group_for_table.append(group[0])
         group_for_table.append(group[1])
@@ -199,14 +199,14 @@ if __name__ == '__main__':
     get_groups()
     users_from_db.sort(key=lambda i: i[1])
     groups_from_db.sort(key=lambda i: i[1])
-    print(users_from_db)
-    print(groups_from_db)
+    # print(users_from_db)
+    # print(groups_from_db)
     treedata = sg.TreeData()
     treedata2 = sg.TreeData()
     for group_id, group_name in groups_from_db:
-        treedata.insert('',group_id, group_id, values=[group_name], icon=check[0])
+        treedata.insert('', group_id, group_id, values=[group_name], icon=check[0])
     for user_id, user_login, user_name in users_from_db:
-        treedata2.insert('',user_id, user_id, values=[user_login, user_name], icon=check[0])
+        treedata2.insert('', user_id, user_id, values=[user_login, user_name], icon=check[0])
     tab1_layout = [[sg.Text("Пользователи", size=(50, 1), justification='center'), sg.Text("Группы", size=(50, 1), justification='center')],
               [sg.Table(users_from_db, headings=('id', 'Логин', 'Имя'), justification="left", num_rows="40", enable_events=True, key='-users-'),
                sg.Table(groups_from_db, headings=('id', 'Имя'), justification="left", num_rows="40", enable_events=True, key='-groups-'),
@@ -215,7 +215,8 @@ if __name__ == '__main__':
                        show_expanded=False, enable_events=True, justification='left', expand_y="True",
                        select_mode=sg.TABLE_SELECT_MODE_BROWSE),
                ],
-              [sg.Button('Применить', visible='False', key='Apply')]]
+              [sg.Push(), sg.Button('Применить', visible='False', key='Apply')],
+                   ]
     tab2_layout = [[sg.Text("Группы", size=(35, 1), justification='center'),
                     sg.Text("Пользователи", size=(50, 1), justification='center')
                     ],
@@ -228,9 +229,13 @@ if __name__ == '__main__':
                             show_expanded=False, enable_events=True, justification='left', expand_y="True",
                             select_mode=sg.TABLE_SELECT_MODE_BROWSE),
                     ],
-                   [sg.Button('Применить', visible='False', key='Apply2')]]
-    layout = [[sg.TabGroup([[sg.Tab('Пользователи', tab1_layout), sg.Tab('Группы', tab2_layout)]])]]
+                   [sg.Push(), sg.Button('Применить', visible='False', key='Apply2')]]
+    layout = [[sg.TabGroup([[sg.Tab('Пользователи', tab1_layout, key="Tab1"), sg.Tab('Группы', tab2_layout, key="Tab2")]], key="Tabs")]]
     window = sg.Window('Панель администратора', layout, finalize=True)
+    layout_login = [[sg.Push(), sg.Text("Адрес сервера"), sg.Input(key="ip")],
+                    [sg.Push(), sg.Text("Пароль"), sg.Input(key="password")],
+                    [sg.Ok(key="OK button")]]
+    window_login = sg.Window('Вход на сервер', layout_login, finalize=True)
     tree = window['-TREE-']
     tree.Widget.heading("#0", text='id')
     tree2 = window['-TREE2-']
