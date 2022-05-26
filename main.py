@@ -1,4 +1,5 @@
 import json
+import threading
 from time import sleep
 
 import requests
@@ -252,11 +253,24 @@ def make_main_window(users_online):
 
 def make_login_window():
     layout_login = [[sg.Push(), sg.Text("Адрес сервера"), sg.Input(default_text="10.1.4.147", key="ip")],
-                    [sg.Push(), sg.Text("Пароль"), sg.Input(focus=True, key="password")],
+                    [sg.Push(), sg.Text("Пароль"), sg.Input(focus=True, key="password", password_char='*')],
                     [sg.Push(), sg.Ok(key="OK button"), sg.Push()]]
     return sg.Window('Вход на сервер', layout_login, icon=ICON_BASE_64, finalize=True)
 
-def ping_server(ip):
+# def ping_server(ip):
+#     num = 0
+#     while True:
+#         res_ping = ''
+#         try:
+#             res_ping = requests.get(ip, timeout=3)
+#         except Exception:
+#             sg.popup("Сервер не отвечает", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
+#         num += 1
+#         print(f'[{num}] Пингуем.. {res_ping.text}')
+#         # print(out)
+#         sleep(3)
+
+def the_thread(ip, window):
     num = 0
     while True:
         res_ping = ''
@@ -264,11 +278,13 @@ def ping_server(ip):
             res_ping = requests.get(ip, timeout=3)
         except Exception:
             sg.popup("Сервер не отвечает", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
-        num += 1
-        print(f'[{num}] Пингуем.. {res_ping.text}')
+        if res_ping.status_code == 200:
+            num += 1
+            print(f'[{num}] Пингуем.. {res_ping.text}')
+            window.write_event_value('-THREAD-', (threading.currentThread().name, res_ping.text))
+            # sg.cprint('This is cheating from the thread', c='white on green')
         # print(out)
         sleep(3)
-
 
 if __name__ == '__main__':
     window_login = make_login_window()
@@ -319,16 +335,17 @@ if __name__ == '__main__':
                         tree.Widget.heading("#0", text='id')
                         tree2 = window['-TREE2-']
                         tree2.Widget.heading("#0", text='id')
-                        # q = Queue()
-                        ping_process = Process(target=ping_server, args=(BASE_URL_PING,))
-                        ping_process.daemon = True
-                        ping_process.start()
-                        # ping_process.join()
+                        # ping_process = Process(target=ping_server, args=(BASE_URL_PING,))
+                        # ping_process.daemon = True
+                        # ping_process.start()
+                        threading.Thread(target=the_thread, args=(BASE_URL_PING, window,), daemon=True).start()
                         while True:
-                            # print(q.get())
                             event, values = window.read()
                             print(event, values)
-                            # print(q.get())
+                            if event == '-THREAD-':
+                                update_text = 'Пользователей онлайн: ' + values['-THREAD-'][1]
+                                window['online1'].update(update_text)
+                                window['online2'].update(update_text)
                             if event == sg.WIN_CLOSED or event == 'Exit':
                                 break_flag = True
                                 # ping_process.close()
@@ -529,6 +546,7 @@ if __name__ == '__main__':
                     break
             else:
                 sg.popup("Неправильный пароль!!!", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
+                window_login['password'].update('')
     if not window_main_active:
         window_login.close()
 
