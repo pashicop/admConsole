@@ -81,15 +81,25 @@ def add_groups(groups_list):
     con.commit()
     con.close()
 
-def drop_db():
+def drop_db(table):
     con = sqlite3.connect('pashi_db.db')
     cur = con.cursor()
-    db_delete_groups = "delete from Groups"
-    db_delete_users = "delete from Users"
-    db_delete_users_in_groups = "delete from Users_in_groups"
-    cur.execute(db_delete_users)
-    cur.execute(db_delete_groups)
-    cur.execute(db_delete_users_in_groups)
+    if table == 'all':
+        db_delete_groups = "delete from Groups"
+        db_delete_users = "delete from Users"
+        db_delete_users_in_groups = "delete from Users_in_groups"
+        cur.execute(db_delete_users)
+        cur.execute(db_delete_groups)
+        cur.execute(db_delete_users_in_groups)
+    elif table == 'users':
+        db_delete_users = "delete from Users"
+        cur.execute(db_delete_users)
+    elif table == 'groups':
+        db_delete_groups = "delete from Groups"
+        cur.execute(db_delete_groups)
+    elif table == 'user_in_groups':
+        db_delete_users_in_groups = "delete from Users_in_groups"
+        cur.execute(db_delete_users_in_groups)
     con.commit()
     con.close()
 
@@ -217,7 +227,8 @@ def make_main_window():
     users_online_text = 'Данные загружаются...'
     tab1_layout = [
                     [sg.Button('Добавить', key='-AddUser-', pad=(((30, 10), (20, 5)))),
-                     sg.Button('Удалить', key='-DelUser-', pad=(10, (20, 5)))],
+                     sg.Button('Удалить', key='-DelUser-', pad=(10, (20, 5))),
+                     sg.Button('Клонировать', key='-CloneUser-', pad=(10, (20, 5)))],
                     [
                      sg.Frame('Пользователи',
                         [
@@ -266,7 +277,7 @@ def make_main_window():
           sg.Tab('Группы', tab2_layout, key="Tab2")
           ]], key="Tabs", size=(1000, 750))],
               [sg.StatusBar(users_online_text, key='-StatusBar-', size=(100, 1))]]
-    return sg.Window('Панель администратора', layout, icon=ICON_BASE_64,  use_ttk_buttons=True, finalize=True)
+    return sg.Window('Панель администратора ОМЕГА К100', layout, icon=ICON_BASE_64,  use_ttk_buttons=True, finalize=True)
 
 def make_login_window():
     layout_login = [[sg.Push(), sg.Text("Адрес сервера"), sg.Input(default_text="10.1.4.147", key="ip")],
@@ -274,6 +285,54 @@ def make_login_window():
                     [sg.Push(), sg.Ok(key="OK button"), sg.Push()]]
     return sg.Window('Вход на сервер', layout_login, icon=ICON_BASE_64, finalize=True)
 
+def make_add_user_window():
+    layout_add_user = [
+                        [sg.Push(), sg.Text('Логин'), sg.Input(key='UserLogin')],
+                        [sg.Push(), sg.Text('Имя'), sg.Input()],
+                        [sg.Push(), sg.Text('Пароль'), sg.Input(key='userPassword', password_char='*')],
+                        [sg.Push(), sg.Button('Показать', key='showPassword')],
+                        [sg.Push(), sg.Ok(button_text='Создать', key='addUserButton')]
+                       ]
+    return  sg.Window('Добавить пользователя', layout_add_user, icon=ICON_BASE_64, use_ttk_buttons=True,
+                      finalize=True, modal=True)
+
+def make_del_user_window(user):
+    delete_text = 'Вы уверены, что хотите удалить пользователя ' + user + '?'
+    layout_del_user = [
+        [sg.Text(delete_text)],
+        [sg.Button('Да', key="okDel"), sg.Button('Нет', key='noDel') ]
+    ]
+    return sg.Window('Удалить пользователя', layout_del_user, icon=ICON_BASE_64, use_ttk_buttons=True,
+                     finalize=True, modal=True)
+def make_clone_user_window(user):
+    clone_text = 'Клонируем пользователя ' + user
+    layout_clone_user = [
+        [sg.Push(), sg.Text(clone_text), sg.Push()],
+        [sg.Push(), sg.Text('Логин'), sg.Input(key='CloneUserLogin')],
+        [sg.Push(), sg.Text('Имя'), sg.Input()],
+        [sg.Push(), sg.Text('Пароль'), sg.Input(key='CloneUserPassword', password_char='*')],
+        [sg.Push(), sg.Button('Показать', key='showPasswordCloneUser')],
+        [sg.Push(), sg.Ok(button_text='Клонировать', key='cloneUserButton')]
+    ]
+    return sg.Window('Клонировать пользователя', layout_clone_user, icon=ICON_BASE_64, use_ttk_buttons=True,
+                     finalize=True, modal=True)
+
+def make_add_group_window():
+    layout_add_group = [
+        [sg.Push(), sg.Text('Имя Группы'), sg.Input(key='GroupName')],
+        [sg.Push(), sg.Ok(button_text='Создать', key='addGroupButton')]
+    ]
+    return sg.Window('Добавить группу', layout_add_group, icon=ICON_BASE_64, use_ttk_buttons=True,
+                     finalize=True, modal=True)
+
+def make_del_group_window(group):
+    delete_text = 'Вы уверены, что хотите удалить группу ' + group + '?'
+    layout_del_group = [
+        [sg.Text(delete_text)],
+        [sg.Button('Да', key="okDelGroup"), sg.Button('Нет', key='noDelGroup')]
+    ]
+    return sg.Window('Удалить пользователя', layout_del_group, icon=ICON_BASE_64, use_ttk_buttons=True,
+                     finalize=True, modal=True)
 # def ping_server(ip):
 #     num = 0
 #     while True:
@@ -301,7 +360,7 @@ def the_thread(ip, window):
             window.write_event_value('-THREAD-', (threading.currentThread().name, res_ping.text))
             # sg.cprint('This is cheating from the thread', c='white on green')
         # print(out)
-        sleep(5)
+        sleep(60)
 
 if __name__ == '__main__':
     window_login = make_login_window()
@@ -310,7 +369,7 @@ if __name__ == '__main__':
         break_flag = False
         ev_login, val_login = window_login.Read()
         print(ev_login, val_login)
-        if ev_login == sg.WIN_CLOSED:
+        if ev_login == sg.WIN_CLOSED or ev_login == 'Exit':
             break
         if ev_login == "OK button" and not window_main_active:
             if val_login['password'] == 'qwerty':
@@ -326,7 +385,7 @@ if __name__ == '__main__':
                         except Exception:
                             sg.popup("Сервер не отвечает", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                             break
-                        drop_db()
+                        drop_db('all')
                         users_max = get_users()
                         add_users(users_max)
                         groups_max = get_groups()
@@ -371,25 +430,7 @@ if __name__ == '__main__':
                                 break_flag = True
                                 # ping_process.close()
                                 break
-                            # if event == 'update1':
-                            #     try:
-                            #         res_ping = requests.get(BASE_URL_PING, timeout=3)
-                            #     except Exception:
-                            #         sg.popup("Сервер не отвечает", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
-                            #         break
-                            #     update_text = 'Пользователей онлайн: ' + res_ping.text
-                            #     window['online1'].update(update_text)
-                            #     window['online2'].update(update_text)
-                            # if event == 'update2':
-                            #     try:
-                            #         res_ping = requests.get(BASE_URL_PING, timeout=3)
-                            #     except Exception:
-                            #         sg.popup("Сервер не отвечает", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
-                            #         break
-                            #     update_text = 'Пользователей онлайн: ' + res_ping.text
-                            #     window['online1'].update(update_text)
-                            #     window['online2'].update(update_text)
-                            if event == '-users-':
+                            if event == '-users-' and values['-users-'] != []:
                                 window['Apply'].update(disabled=True)
                                 print(values['-users-'])
                                 user_id = users_from_db[values['-users-'][0]][2]
@@ -432,7 +473,7 @@ if __name__ == '__main__':
                                     tree2.metadata.append(user_id)
                                     tree2.update(key=user_id, icon=check[1])
                                 window['Apply2'].update(disabled=False)
-                            if event == '-groups2-':
+                            if event == '-groups2-' and values['-groups2-'] != []:
                                 window['Apply2'].update(disabled=True)
                                 print(values['-groups2-'])
                                 group_id = groups_from_db[values['-groups2-'][0]][2]
@@ -479,6 +520,7 @@ if __name__ == '__main__':
                                             add_dict['GroupIds'] += [gr_id]
                                             add_group = True
                                     if add_group:
+                                        print(add_dict)
                                         res = requests.post(BASE_URL + 'addToGroup', json=add_dict)
                                         print(res.status_code)
                                         if res.status_code == 200:
@@ -565,7 +607,250 @@ if __name__ == '__main__':
                                         sg.popup('Нет изменений', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
                                                  background_color='gray')
                             if event == 'О программе':
-                                sg.popup('---------------------Powered by PaShi---------------------', title='О программе', icon=ICON_BASE_64)
+                                sg.popup('---------------------Powered by PaShi---------------------',
+                                         title='О программе', icon=ICON_BASE_64)
+                            if event == '-AddUser-':
+                                window_add_user = make_add_user_window()
+                                window_add_user.Element('UserLogin').SetFocus()
+                                password_clear = False
+                                while True:
+                                    ev_add_user, val_add_user = window_add_user.Read()
+                                    print(ev_add_user, val_add_user)
+                                    if ev_add_user == sg.WIN_CLOSED or ev_add_user == 'Exit':
+                                        print('Закрыл окно добавления пользователя')
+                                        break
+                                    if ev_add_user == 'showPassword':
+                                        if password_clear:
+                                            window_add_user['userPassword'].update(password_char='*')
+                                            window_add_user['showPassword'].update('Показать')
+                                            password_clear = False
+                                        else:
+                                            window_add_user['userPassword'].update(password_char='')
+                                            window_add_user['showPassword'].update('Скрыть')
+                                            password_clear = True
+                                    if ev_add_user == 'addUserButton':
+                                        new_user_login, new_user_name, new_user_password = val_add_user.values()
+                                        add_user_dict = {}
+                                        add_user_dict['login'] = new_user_login
+                                        add_user_dict['displayName'] = new_user_name
+                                        add_user_dict['password'] = new_user_password
+                                        print(add_user_dict)
+                                        res_add_user = requests.post(BASE_URL + 'addUser', json=add_user_dict)
+                                        print(res_add_user.status_code)
+                                        if res_add_user.status_code == 200:
+                                            # window['-groups-'].update(get_groups_for_user(chosen_login[0]))
+                                            users_max = get_users()
+                                            add_users(users_max)
+                                            users_from_db = get_users_from_db()
+                                            users_from_db.sort(key=lambda i: i[0])
+                                            window['-users-'].update(users_from_db)
+                                            treedata_update_user = sg.TreeData()
+                                            for user_login, user_name, user_id in users_from_db:
+                                                treedata_update_user.insert('', user_id, '', values=[user_login, user_name],
+                                                                 icon=check[0])
+                                            window['-TREE2-'].update(treedata_update_user)
+                                            window_add_user.close()
+                                            sg.popup("Пользователь добавлен!", title='Инфо', icon=ICON_BASE_64,
+                                                     no_titlebar=True, background_color='gray')
+                                            break
+                                        else:
+                                            sg.popup("Пользователь не добавлен!", title='Инфо', icon=ICON_BASE_64,
+                                                     no_titlebar=True, background_color='gray')
+                            if event == '-DelUser-':
+                                if values['-users-'] == []:
+                                    print(f"Не выбран пользователь")
+                                    sg.popup('Не выбран пользователь', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
+                                else:
+                                    del_user_name = users_from_db[values['-users-'][0]][1]
+                                    window_del_user = make_del_user_window(del_user_name)
+                                    while True:
+                                        ev_del_user, val_del_user = window_del_user.Read()
+                                        print(ev_del_user, val_del_user)
+                                        if ev_del_user == sg.WIN_CLOSED or ev_del_user == 'Exit':
+                                            print('Закрыл окно удаления пользователя')
+                                            break
+                                        if ev_del_user == 'noDel':
+                                            print('Закрыл окно удаления пользователя')
+                                            window_del_user.close()
+                                            break
+                                        if ev_del_user == 'okDel':
+                                            del_user_id = users_from_db[values['-users-'][0]][2]
+                                            del_user_dict = {}
+                                            del_user_dict['id'] = del_user_id
+                                            print(del_user_dict)
+                                            res_del_user = requests.post(BASE_URL + 'deleteUser', json=del_user_dict)
+                                            print(res_del_user.status_code)
+                                            if res_del_user.status_code == 200:
+                                                drop_db('users')
+                                                users_max = get_users()
+                                                add_users(users_max)
+                                                users_from_db = get_users_from_db()
+                                                users_from_db.sort(key=lambda i: i[0])
+                                                window['-users-'].update(users_from_db)
+                                                treedata_update_user = sg.TreeData()
+                                                for user_login, user_name, user_id in users_from_db:
+                                                    treedata_update_user.insert('', user_id, '',
+                                                                                values=[user_login, user_name],
+                                                                                icon=check[0])
+                                                window['-TREE2-'].update(treedata_update_user)
+                                                window_del_user.close()
+                                                sg.popup("Пользователь удалён!", title='Инфо', icon=ICON_BASE_64,
+                                                         no_titlebar=True, background_color='gray')
+                                                break
+                                            else:
+                                                sg.popup("Пользователь не удалён!", title='Инфо', icon=ICON_BASE_64,
+                                                         no_titlebar=True, background_color='gray')
+                            if event == '-CloneUser-':
+                                if values['-users-'] == []:
+                                    print(f"Не выбран пользователь")
+                                    sg.popup('Не выбран пользователь', title='Инфо', icon=ICON_BASE_64,
+                                             no_titlebar=True, background_color='gray')
+                                else:
+                                    user_info = users_from_db[values['-users-'][0]]
+                                    window_clone_user = make_clone_user_window(user_info[1])
+                                    window_clone_user.Element('CloneUserLogin').SetFocus()
+                                    password_clear = False
+                                    while True:
+                                        ev_clone_user, val_clone_user = window_clone_user.Read()
+                                        print(ev_clone_user, val_clone_user)
+                                        if ev_clone_user == sg.WIN_CLOSED or ev_clone_user == 'Exit':
+                                            print('Закрыл окно клонирования пользователя')
+                                            break
+                                        if ev_clone_user == 'showPasswordCloneUser':
+                                            if password_clear:
+                                                window_clone_user['CloneUserPassword'].update(password_char='*')
+                                                window_clone_user['showPasswordCloneUser'].update('Показать')
+                                                password_clear = False
+                                            else:
+                                                window_clone_user['CloneUserPassword'].update(password_char='')
+                                                window_clone_user['showPasswordCloneUser'].update('Скрыть')
+                                                password_clear = True
+                                        if ev_clone_user == 'cloneUserButton':
+                                            clone_user_login, clone_user_name, clone_user_password = val_clone_user.values()
+                                            clone_user_dict = {}
+                                            clone_user_dict['login'] = clone_user_login
+                                            clone_user_dict['displayName'] = clone_user_name
+                                            clone_user_dict['password'] = clone_user_password
+                                            print(clone_user_dict)
+                                            res_clone_user = requests.post(BASE_URL + 'addUser', json=clone_user_dict)
+                                            print(res_clone_user.status_code)
+                                            print(res_clone_user.content)
+                                            if res_clone_user.status_code == 200:
+                                                # window['-groups-'].update(get_groups_for_user(chosen_login[0]))
+                                                users_max = get_users()
+                                                add_users(users_max)
+                                                users_from_db = get_users_from_db()
+                                                users_from_db.sort(key=lambda i: i[0])
+                                                window['-users-'].update(users_from_db)
+                                                window_clone_user.close()
+                                                original_groups = get_groups_for_user(user_info[2])
+                                                original_groups_ids = []
+                                                for or_gr in original_groups:
+                                                    original_groups_ids.append(or_gr[1])
+                                                user_from_server = res_clone_user.content.decode('utf-8')
+                                                user_from_server = user_from_server[1:-1]
+                                                clone_dict = {'UserIds': [user_from_server], 'GroupIds': original_groups_ids}
+                                                print(clone_dict)
+                                                res_clone_add_group = requests.post(BASE_URL + 'addToGroup', json=clone_dict)
+                                                print(res_clone_add_group.status_code)
+                                                if res_clone_add_group.status_code == 200:
+                                                    # window['-groups-'].update(get_groups_for_user(chosen_login[0]))
+                                                    treedata_update_user = sg.TreeData()
+                                                    for user_login, user_name, user_id in users_from_db:
+                                                        treedata_update_user.insert('', user_id, '',
+                                                                                    values=[user_login, user_name],
+                                                                                    icon=check[0])
+                                                    window['-TREE2-'].update(treedata_update_user)
+                                                    window_clone_user.close()
+                                                    sg.popup("Пользователь клонирован!", title='Инфо',
+                                                             icon=ICON_BASE_64,
+                                                             no_titlebar=True, background_color='gray')
+                                                    break
+                                                else:
+                                                    sg.popup("Добавление не выполнено", title='Инфо', icon=ICON_BASE_64,
+                                                             no_titlebar=True, background_color='gray')
+                                            else:
+                                                sg.popup("Пользователь не добавлен!", title='Инфо', icon=ICON_BASE_64,
+                                                         no_titlebar=True, background_color='gray')
+                            if event == '-AddGroup-':
+                                window_add_group = make_add_group_window()
+                                window_add_group.Element('GroupName').SetFocus()
+                                while True:
+                                    ev_add_group, val_add_group = window_add_group.Read()
+                                    print(ev_add_group, val_add_group)
+                                    if ev_add_group == sg.WIN_CLOSED or ev_add_group == 'Exit':
+                                        print('Закрыл окно добавления группы')
+                                        break
+                                    if ev_add_group == 'addGroupButton':
+                                        new_group_name = val_add_group['GroupName']
+                                        add_group_dict = {}
+                                        add_group_dict['name'] = new_group_name
+                                        print(add_group_dict)
+                                        res_del_user = requests.post(BASE_URL + 'addGroup', json=add_group_dict)
+                                        print(res_del_user.status_code)
+                                        if res_del_user.status_code == 200:
+                                            groups_max = get_groups()
+                                            add_groups(groups_max)
+                                            groups_from_db = get_groups_from_db()
+                                            groups_from_db.sort(key=lambda i: i[0])
+                                            window['-groups2-'].update(groups_from_db)
+                                            treedata_update_group = sg.TreeData()
+                                            for group_name, group_description, group_id in groups_from_db:
+                                                treedata_update_group.insert('', group_id, '',
+                                                                values=[group_name, group_description], icon=check[0])
+                                                window['-TREE-'].update(treedata_update_group)
+                                            window_add_group.close()
+                                            sg.popup("Группа добавлена!", title='Инфо', icon=ICON_BASE_64,
+                                                     no_titlebar=True, background_color='gray')
+                                            break
+                                        else:
+                                            sg.popup("Группа не добавлена!", title='Инфо', icon=ICON_BASE_64,
+                                                     no_titlebar=True, background_color='gray')
+                                            window_add_group.Element('GroupName').SetFocus()
+                            if event == '-DelGroup-':
+                                if values['-groups2-'] == []:
+                                    print(f"Не выбрана группа")
+                                    sg.popup('Не выбрана группа', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
+                                else:
+                                    del_group_name = groups_from_db[values['-groups2-'][0]][0]
+                                    window_del_group = make_del_group_window(del_group_name)
+                                    while True:
+                                        ev_del_group, val_del_group = window_del_group.Read()
+                                        print(ev_del_group, val_del_group)
+                                        if ev_del_group == sg.WIN_CLOSED or ev_del_group == 'Exit':
+                                            print('Закрыл окно удаления пользователя')
+                                            break
+                                        if ev_del_group == 'noDelGroup':
+                                            print('Закрыл окно удаления пользователя')
+                                            window_del_group.close()
+                                            break
+                                        if ev_del_group == 'okDelGroup':
+                                            del_group_id = groups_from_db[values['-groups2-'][0]][2]
+                                            del_group_dict = {}
+                                            del_group_dict['id'] = del_group_id
+                                            print(del_group_dict)
+                                            res_del_group = requests.post(BASE_URL + 'deleteGroup', json=del_group_dict)
+                                            print(res_del_group.status_code)
+                                            if res_del_group.status_code == 200:
+                                                drop_db('groups')
+                                                groups_max = get_groups()
+                                                add_groups(groups_max)
+                                                groups_from_db = get_groups_from_db()
+                                                groups_from_db.sort(key=lambda i: i[0])
+                                                window['-groups2-'].update(groups_from_db)
+                                                treedata_update_group = sg.TreeData()
+                                                for group_name, group_description, group_id in groups_from_db:
+                                                    treedata_update_group.insert('', group_id, '',
+                                                                                 values=[group_name, group_description],
+                                                                                 icon=check[0])
+                                                    window['-TREE-'].update(treedata_update_group)
+                                                window_del_group.close()
+                                                sg.popup("Группа удалена!", title='Инфо', icon=ICON_BASE_64,
+                                                         no_titlebar=True, background_color='gray')
+                                                break
+                                            else:
+                                                sg.popup("Группа не удалена!", title='Инфо', icon=ICON_BASE_64,
+                                                         no_titlebar=True, background_color='gray')
                         else:
                             sg.popup('Введите правильный ip!', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                 else:
