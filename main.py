@@ -23,11 +23,11 @@ def icon(check):
     line = ((4, 8), (7, 11), (11, 4))
     im = Image.new('RGBA', box, background)
     draw = ImageDraw.Draw(im, 'RGBA')
-    draw.rectangle(rectangle, outline='black', width=3)
+    draw.rectangle(rectangle, outline='black', width=2)
     if check == 1:
-        draw.line(line, fill='black', width=3, joint='curve')
+        draw.line(line, fill='black', width=2, joint='curve')
     elif check == 2:
-        draw.line(line, fill='grey', width=3, joint='curve')
+        draw.line(line, fill='grey', width=2, joint='curve')
     with BytesIO() as output:
         im.save(output, format="PNG")
         png = output.getvalue()
@@ -215,54 +215,58 @@ def get_group_name_by_id(id):
 
 def make_main_window():
     users_online_text = 'Данные загружаются...'
-    tab1_layout = [[sg.Text("Пользователи", size=(50, 1), justification='center'),
-                    sg.Text("Группы", size=30, justification='center', expand_x=True)],
-                   [sg.Button('Добавить', key='-AddUser-'),
-                    sg.Button('Удалить', key='-DelUser-')],
-                   [sg.Table(users_from_db, headings=('Логин', 'Имя'), justification="left", num_rows="40",
-                             enable_events=True, key='-users-', expand_x=True),
-                    # sg.Table(groups_from_db, headings=('id', 'Имя'), justification="left", num_rows="40",
-                    #          enable_events=True, key='-groups-'),
-                    sg.Tree(data=treedata, headings=('Имя',''), col0_width=5,
-                            num_rows=10, key='-TREE-', row_height=20, metadata=[],
+    tab1_layout = [
+                    [sg.Button('Добавить', key='-AddUser-', pad=(((30, 10), (20, 5)))),
+                     sg.Button('Удалить', key='-DelUser-', pad=(10, (20, 5)))],
+                    [
+                     sg.Frame('Пользователи',
+                        [
+                            [sg.Table(users_from_db, headings=('Логин', 'Имя'), justification="left",
+                            num_rows="40", enable_events=True, key='-users-', expand_y=True, expand_x=True,
+                            auto_size_columns=False, col_widths=(10, 30))],],
+                              expand_x=True, size=(480, 650)),
+                    sg.Frame('Группы',[[sg.Tree(data=treedata, headings=('Имя',''), col0_width=4, col_widths=(20, 30),
+                            num_rows=10, key='-TREE-', row_height=20, metadata=[], auto_size_columns=False,
                             show_expanded=False, enable_events=True, justification='left', expand_y=True,
                             select_mode=sg.TABLE_SELECT_MODE_BROWSE,
-                            ),
-                    ],
+                            ),]], expand_y=True, expand_x=True),
+
+                     ],
                    [sg.Push(),
                     # sg.Button('Обновить', key='update1'),
-                    sg.Button('Применить', key='Apply', disabled=True, disabled_button_color='gray')],
+                    sg.Button('Применить', key='Apply', disabled=True, disabled_button_color='gray', pad=((0, 10), (5, 10)))],
                    # [sg.Text(users_online_text, key='online1')],
-                   [sg.StatusBar(users_online_text, key='-StatusBar-', size=(100, 1))],
                    ]
-    tab2_layout = [[sg.Text("Группы", size=(35, 1), justification='center'),
-                    sg.Text("Пользователи", size=(80, 1), justification='center')
-                    ],
-                   [sg.Button('Добавить', key='-AddGroup-'),
-                    sg.Button('Удалить', key='-DelGroup-')],
-                   [sg.Table(groups_from_db, headings=('Имя', ''), justification="left", num_rows="40",
-                             enable_events=True, key='-groups2-', expand_x=True),
-                    # sg.Table(users_from_db, headings=('id', 'Логин', 'Имя'), justification="left", num_rows="40",
-                    #          enable_events=True, key='-users2-'),
-                    sg.Tree(data=treedata2, headings=('Логин', 'Имя'),
-                            num_rows=10, col0_width=5, key='-TREE2-', row_height=20, metadata=[],
+    tab2_layout = [
+                    [sg.Button('Добавить', key='-AddGroup-', pad=((30, 10), (20, 5))),
+                    sg.Button('Удалить', key='-DelGroup-', pad=((10, (20, 5))))],
+                    [sg.Frame('Группы',
+                        [
+                            [sg.Table(groups_from_db, headings=('Имя', ''), justification="left",
+                            num_rows="40", enable_events=True, key='-groups2-', expand_y=True, expand_x=True,
+                            auto_size_columns=False, col_widths=(10, 30))],],
+                             expand_x=True, size=(480, 650)),
+                    sg.Frame('Пользователи',[[sg.Tree(data=treedata2, headings=('Логин', 'Имя'), col0_width=4, col_widths=(20, 30),
+                            num_rows=10, key='-TREE2-', row_height=20, metadata=[], auto_size_columns=False,
                             show_expanded=False, enable_events=True, justification='left', expand_y="True",
                             select_mode=sg.TABLE_SELECT_MODE_BROWSE,
-                            ),
+                            ),]], expand_y=True, expand_x=True),
                     ],
                    [sg.Push(),
                     # sg.Button('Обновить', key='update2'),
-                    sg.Button('Применить', key='Apply2', disabled=True, disabled_button_color='gray')],
+                    sg.Button('Применить', key='Apply2', disabled=True, disabled_button_color='gray', pad=((0, 10), (5, 10)))],
                    # [sg.Text(users_online_text, key='online2')],
-                   [sg.StatusBar(users_online_text, key='-StatusBar2-', size=(100, 1))],
                    ]
-    layout = [[sg.Button('Старт', key='-Start-', disabled=True, disabled_button_color='gray'),
-               sg.Button('Стоп', key='-Stop-', disabled=True, disabled_button_color='gray')],
+    layout = [[sg.Menu([
+            ['Помощь', 'О программе'], ], key='-Menu-')],
+              [sg.Frame('Сервер',[[sg.Push(), sg.Button('Старт', key='-Start-', disabled=True, disabled_button_color='gray', pad=((0,20),0)),
+               sg.Button('Стоп', key='-Stop-', disabled=True, disabled_button_color='gray'), sg.Push()]], size=(186,60),)],
               [sg.TabGroup(
         [[sg.Tab('Пользователи', tab1_layout, key="Tab1"),
           sg.Tab('Группы', tab2_layout, key="Tab2")
-          ]], key="Tabs")]]
-    return sg.Window('Панель администратора', layout, icon=ICON_BASE_64, use_ttk_buttons=True, finalize=True)
+          ]], key="Tabs", size=(1000, 750))],
+              [sg.StatusBar(users_online_text, key='-StatusBar-', size=(100, 1))]]
+    return sg.Window('Панель администратора', layout, icon=ICON_BASE_64,  use_ttk_buttons=True, finalize=True)
 
 def make_login_window():
     layout_login = [[sg.Push(), sg.Text("Адрес сервера"), sg.Input(default_text="10.1.4.147", key="ip")],
@@ -362,7 +366,7 @@ if __name__ == '__main__':
                                 # window['online1'].update(update_text)
                                 # window['online2'].update(update_text)
                                 window['-StatusBar-'].update(update_text)
-                                window['-StatusBar2-'].update(update_text)
+                                # window['-StatusBar2-'].update(update_text)
                             if event == sg.WIN_CLOSED or event == 'Exit':
                                 break_flag = True
                                 # ping_process.close()
@@ -560,6 +564,8 @@ if __name__ == '__main__':
                                     else:
                                         sg.popup('Нет изменений', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
                                                  background_color='gray')
+                            if event == 'О программе':
+                                sg.popup('---------------------Powered by PaShi---------------------', title='О программе', icon=ICON_BASE_64)
                         else:
                             sg.popup('Введите правильный ip!', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                 else:
