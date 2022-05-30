@@ -1,4 +1,5 @@
 import json
+import subprocess
 import threading
 from time import sleep
 
@@ -270,8 +271,12 @@ def make_main_window():
                    ]
     layout = [[sg.Menu([
             ['Помощь', 'О программе'], ], key='-Menu-')],
-              [sg.Frame('Сервер',[[sg.Push(), sg.Button('Старт', key='-Start-', disabled=True, disabled_button_color='gray', pad=((0,20),0)),
-               sg.Button('Стоп', key='-Stop-', disabled=True, disabled_button_color='gray'), sg.Push()]], size=(186,60),)],
+              [sg.Frame('Сервер',[[sg.Push(), sg.Button('Старт', key='-Start-',
+                        # disabled=True,
+                        disabled_button_color='gray', pad=((0,20),0)),
+               sg.Button('Стоп', key='-Stop-',
+                         # disabled=True,
+                         disabled_button_color='gray'), sg.Push()]], size=(186,60),)],
               [sg.TabGroup(
         [[sg.Tab('Пользователи', tab1_layout, key="Tab1"),
           sg.Tab('Группы', tab2_layout, key="Tab2")
@@ -280,7 +285,7 @@ def make_main_window():
     return sg.Window('Панель администратора ОМЕГА К100', layout, icon=ICON_BASE_64,  use_ttk_buttons=True, finalize=True)
 
 def make_login_window():
-    layout_login = [[sg.Push(), sg.Text("Адрес сервера"), sg.Input(default_text="10.1.4.147", key="ip")],
+    layout_login = [[sg.Push(), sg.Text("Адрес сервера"), sg.Input(default_text="10.1.4.128", key="ip")],
                     [sg.Push(), sg.Text("Пароль"), sg.Input(focus=True, key="password", password_char='*')],
                     [sg.Push(), sg.Ok(key="OK button"), sg.Push()]]
     return sg.Window('Вход на сервер', layout_login, icon=ICON_BASE_64, finalize=True)
@@ -363,6 +368,9 @@ def the_thread(ip, window):
         sleep(60)
 
 if __name__ == '__main__':
+    # print(sg.theme_global())
+    # print(sg.theme_list())
+    sg.theme_global('SystemDefaultForReal')
     window_login = make_login_window()
     window_main_active = False
     while True:
@@ -403,7 +411,6 @@ if __name__ == '__main__':
                         window_main_active = True
                         window_login.Hide()
                         window = make_main_window()
-
                         tree = window['-TREE-']
                         tree.Widget.heading("#0", text='id')
                         tree2 = window['-TREE2-']
@@ -851,6 +858,42 @@ if __name__ == '__main__':
                                             else:
                                                 sg.popup("Группа не удалена!", title='Инфо', icon=ICON_BASE_64,
                                                          no_titlebar=True, background_color='gray')
+                            if event == '-Start-':
+                                print('Стартуем сервер')
+                                # subprocess.Popen("ssh pashi@10.1.4.128 'bash ./run > /dev/null'", executable='C:\Program Files\PowerShell\7\pwsh.exe')
+                                process = subprocess.Popen("ssh pashi@10.1.4.128 'bash ./run > /dev/null'", shell=True,
+                                                           stdout=subprocess.PIPE,
+                                                           stderr=subprocess.PIPE,
+                                                           executable=r'C:\Program Files\PowerShell\7\pwsh.exe')
+                                for i in range(3):
+                                    sleep(1)
+                                    res_ping = ''
+                                    try:
+                                        res_ping = requests.get(BASE_URL_PING, timeout=1)
+                                    except Exception:
+                                        print("Сервер не отвечает")
+                                    if res_ping == '':
+                                        print('Нет ответа сервера')
+                                        if i == 2:
+                                            sg.popup("Сервер не отвечает", title='Инфо', icon=ICON_BASE_64,
+                                                     no_titlebar=True,
+                                                     background_color='gray')
+                                    else:
+                                        if res_ping.status_code == 200:
+                                            print(f'Пингуем.. {res_ping.text}')
+                                            window['-StatusBar-'].update(background_color='lightgreen')
+                                # while True:
+                                #     output = process.stdout.readline()
+                                #     if output == b'' and process.poll() is not None:
+                                #         break
+                                #     if output:
+                                #         print(output.strip())
+                            if event == '-Stop-':
+                                print('Останавливаем сервер')
+                                res = requests.get(BASE_URL + 'stopServer')
+                                if res.status_code == 200:
+                                    sg.popup('Сервер остановлен', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
+                                    window['-StatusBar-'].update(background_color='red')
                         else:
                             sg.popup('Введите правильный ip!', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                 else:
