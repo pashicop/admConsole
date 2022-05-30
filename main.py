@@ -353,19 +353,45 @@ def make_del_group_window(group):
 
 def the_thread(ip, window):
     num = 0
+    print('Запускаем поток')
     while True:
         res_ping = ''
         try:
             res_ping = requests.get(ip, timeout=3)
-        except Exception:
-            sg.popup("Сервер не отвечает", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
-        if res_ping.status_code == 200:
-            num += 1
-            print(f'[{num}] Пингуем.. {res_ping.text}')
-            window.write_event_value('-THREAD-', (threading.currentThread().name, res_ping.text))
+        except Exception as e:
+            print(f'Сервер недоступен {e}')
+        if res_ping == '':
+            print('Сервер недоступен')
+            default_json = json.dumps({"onlineUsersCount":False,"databaseVersion":0})
+            window.write_event_value('-THREAD-', (threading.currentThread().name, default_json))
+        else:
+            if res_ping.status_code == 200:
+                num += 1
+                print(f'[{num}] Пингуем.. {res_ping.text}')
+                window.write_event_value('-THREAD-', (threading.currentThread().name, res_ping.text))
             # sg.cprint('This is cheating from the thread', c='white on green')
         # print(out)
-        sleep(60)
+        sleep(10)
+
+def check_server(ip):
+    server_available = [False, '']
+    res_ping = ''
+    try:
+        res_ping = requests.get(ip, timeout=3)
+    except Exception as e:
+        print(f"Сервер не отвечает. {e}")
+    if res_ping == '':
+        print('Сервер не отвечает')
+    else:
+        if res_ping.status_code == 200:
+            print(f'{ip} пингуется')
+            server_available[0] = True
+            dict_online = json.loads(res_ping.text)
+            print(dict_online)
+            update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
+                          + ', Версия БД: ' + str(dict_online["databaseVersion"])
+            server_available[1] = update_text
+    return server_available
 
 if __name__ == '__main__':
     # print(sg.theme_global())
@@ -388,26 +414,26 @@ if __name__ == '__main__':
                     if re_ip.match(val_login['ip']):
                         BASE_URL = 'http://' + val_login['ip'] + ':5000/api/admin/'
                         BASE_URL_PING = 'http://' + val_login['ip'] + ':5000/api/ping'
-                        try:
-                            res_ping = requests.get(BASE_URL_PING, timeout=3)
-                        except Exception:
-                            sg.popup("Сервер не отвечает", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
-                            break
-                        drop_db('all')
-                        users_max = get_users()
-                        add_users(users_max)
-                        groups_max = get_groups()
-                        add_groups(groups_max)
-                        users_from_db = get_users_from_db()
-                        groups_from_db = get_groups_from_db()
-                        users_from_db.sort(key=lambda i: i[0])
-                        groups_from_db.sort(key=lambda i: i[0])
+                        server_started = check_server(BASE_URL_PING)
                         treedata = sg.TreeData()
                         treedata2 = sg.TreeData()
-                        for group_name, group_description, group_id in groups_from_db:
-                            treedata.insert('', group_id, '', values=[group_name, group_description], icon=check[0])
-                        for user_login, user_name, user_id in users_from_db:
-                            treedata2.insert('', user_id, '', values=[user_login, user_name], icon=check[0])
+                        if server_started[0]:
+                            drop_db('all')
+                            users_max = get_users()
+                            add_users(users_max)
+                            groups_max = get_groups()
+                            add_groups(groups_max)
+                            users_from_db = get_users_from_db()
+                            groups_from_db = get_groups_from_db()
+                            users_from_db.sort(key=lambda i: i[0])
+                            groups_from_db.sort(key=lambda i: i[0])
+                            for group_name, group_description, group_id in groups_from_db:
+                                treedata.insert('', group_id, '', values=[group_name, group_description], icon=check[0])
+                            for user_login, user_name, user_id in users_from_db:
+                                treedata2.insert('', user_id, '', values=[user_login, user_name], icon=check[0])
+                        else:
+                            users_from_db = [[]]
+                            groups_from_db = [[]]
                         window_main_active = True
                         window_login.Hide()
                         window = make_main_window()
@@ -415,24 +441,96 @@ if __name__ == '__main__':
                         tree.Widget.heading("#0", text='id')
                         tree2 = window['-TREE2-']
                         tree2.Widget.heading("#0", text='id')
+                        window['-StatusBar-'].update(server_started[1])
                         # ping_process = Process(target=ping_server, args=(BASE_URL_PING,))
                         # ping_process.daemon = True
                         # ping_process.start()
-                        threading.Thread(target=the_thread, args=(BASE_URL_PING, window,), daemon=True).start()
+                        thread_started = False
                         while True:
+                            if server_started[0] == False:
+                                window['-Stop-'].update(disabled=True)
+                            else:
+                                window['-Start-'].update(disabled=True)
+                                if not thread_started:
+                                    threading.Thread(target=the_thread, args=(BASE_URL_PING, window,), daemon=True).start()
+                                    thread_started = True
                             event, values = window.read()
                             print(event, values)
                             if event == '-THREAD-':
-                                # tem = values['-THREAD-'][1]
-                                # temp = tem.strip("'")
                                 dict_online = json.loads(values['-THREAD-'][1])
                                 print(dict_online)
                                 update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"])\
                                               + ', Версия БД: ' + str(dict_online["databaseVersion"])
-                                # window['online1'].update(update_text)
-                                # window['online2'].update(update_text)
-                                window['-StatusBar-'].update(update_text)
-                                # window['-StatusBar2-'].update(update_text)
+                                if dict_online["onlineUsersCount"]:
+                                    window['-StatusBar-'].update(update_text, background_color='lightgreen')
+                                    res_ping = ''
+                                    try:
+                                        res_ping = requests.get(BASE_URL_PING, timeout=1)
+                                    except Exception:
+                                        print("Сервер не отвечает")
+                                    if res_ping == '':
+                                        print('Нет ответа сервера')
+                                    else:
+                                        if res_ping.status_code == 200:
+                                            print(f'Пингуем.. {res_ping.text}')
+                                            dict_online_after_start = json.loads(res_ping.text)
+                                            print(dict_online_after_start)
+                                            update_text = 'Пользователей онлайн: ' + str(
+                                                dict_online_after_start["onlineUsersCount"]) \
+                                                          + ', Версия БД: ' + str(
+                                                dict_online_after_start["databaseVersion"])
+                                            window['-StatusBar-'].update(update_text, background_color='lightgreen')
+                                            window['-Start-'].update(disabled=True)
+                                            window['-Stop-'].update(disabled=False)
+                                            server_started[0] = True
+                                            drop_db('all')
+                                            users_max = get_users()
+                                            add_users(users_max)
+                                            groups_max = get_groups()
+                                            add_groups(groups_max)
+                                            users_from_db = get_users_from_db()
+                                            groups_from_db = get_groups_from_db()
+                                            users_from_db.sort(key=lambda i: i[0])
+                                            groups_from_db.sort(key=lambda i: i[0])
+                                            treedata = sg.TreeData()
+                                            treedata2 = sg.TreeData()
+                                            window['-users-'].update(users_from_db)
+                                            treedata_update_user = sg.TreeData()
+                                            for user_login, user_name, user_id in users_from_db:
+                                                treedata_update_user.insert('', user_id, '',
+                                                                            values=[user_login, user_name],
+                                                                            icon=check[0])
+                                            window['-TREE2-'].update(treedata_update_user)
+                                            window['-groups2-'].update(groups_from_db)
+                                            window['-AddUser-'].update(disabled=False)
+                                            window['-DelUser-'].update(disabled=False)
+                                            window['-CloneUser-'].update(disabled=False)
+                                            window['-AddGroup-'].update(disabled=False)
+                                            window['-DelGroup-'].update(disabled=False)
+                                            treedata_update_group = sg.TreeData()
+                                            for group_name, group_description, group_id in groups_from_db:
+                                                treedata_update_group.insert('', group_id, '',
+                                                                             values=[group_name, group_description],
+                                                                             icon=check[0])
+                                                window['-TREE-'].update(treedata_update_group)
+
+                                    server_started[0] = True
+                                else:
+                                    window['-StatusBar-'].update('Сервер не доступен', background_color='red')
+                                    window['-StatusBar-'].update('Сервер не подключен', background_color='red')
+                                    window['-Start-'].update(disabled=False)
+                                    window['-Stop-'].update(disabled=True)
+                                    window['-users-'].update([[]])
+                                    window['-groups2-'].update([[]])
+                                    clear_treedata = sg.TreeData()
+                                    window['-TREE-'].update(clear_treedata)
+                                    window['-TREE2-'].update(clear_treedata)
+                                    window['-AddUser-'].update(disabled=True)
+                                    window['-DelUser-'].update(disabled=True)
+                                    window['-CloneUser-'].update(disabled=True)
+                                    window['-AddGroup-'].update(disabled=True)
+                                    window['-DelGroup-'].update(disabled=True)
+                                    server_started[0] = False
                             if event == sg.WIN_CLOSED or event == 'Exit':
                                 break_flag = True
                                 # ping_process.close()
@@ -460,7 +558,7 @@ if __name__ == '__main__':
                                         tree.update(key=group_id_for_tree, icon=check[1])
                                     else:
                                         tree.update(key=group_id_for_tree, icon=check[0])
-                            if event == '-TREE-':
+                            if event == '-TREE-' and values['-TREE-'] != []:
                                 group_id = values['-TREE-'][0]
                                 print(group_id)
                                 if group_id in tree.metadata:
@@ -470,7 +568,7 @@ if __name__ == '__main__':
                                     tree.metadata.append(group_id)
                                     tree.update(key=group_id, icon=check[1])
                                 window['Apply'].update(disabled=False)
-                            if event == '-TREE2-':
+                            if event == '-TREE2-' and values['-TREE2-'] != []:
                                 user_id = values['-TREE2-'][0]
                                 print(user_id)
                                 if user_id in tree2.metadata:
@@ -860,11 +958,11 @@ if __name__ == '__main__':
                                                          no_titlebar=True, background_color='gray')
                             if event == '-Start-':
                                 print('Стартуем сервер')
-                                # subprocess.Popen("ssh pashi@10.1.4.128 'bash ./run > /dev/null'", executable='C:\Program Files\PowerShell\7\pwsh.exe')
-                                process = subprocess.Popen("ssh pashi@10.1.4.128 'bash ./run > /dev/null'", shell=True,
-                                                           stdout=subprocess.PIPE,
-                                                           stderr=subprocess.PIPE,
-                                                           executable=r'C:\Program Files\PowerShell\7\pwsh.exe')
+                                if not server_started[0]:
+                                    process = subprocess.Popen("ssh pashi@10.1.4.128 'bash ./run > /dev/null'", shell=True,
+                                                               stdout=subprocess.PIPE,
+                                                               stderr=subprocess.PIPE,
+                                                               executable=r'C:\Program Files\PowerShell\7\pwsh.exe')
                                 for i in range(3):
                                     sleep(1)
                                     res_ping = ''
@@ -881,7 +979,46 @@ if __name__ == '__main__':
                                     else:
                                         if res_ping.status_code == 200:
                                             print(f'Пингуем.. {res_ping.text}')
-                                            window['-StatusBar-'].update(background_color='lightgreen')
+                                            dict_online_after_start = json.loads(res_ping.text)
+                                            print(dict_online_after_start)
+                                            update_text = 'Пользователей онлайн: ' + str(
+                                                dict_online_after_start["onlineUsersCount"]) \
+                                                          + ', Версия БД: ' + str(dict_online_after_start["databaseVersion"])
+                                            window['-StatusBar-'].update(update_text, background_color='lightgreen')
+                                            window['-Start-'].update(disabled=True)
+                                            window['-Stop-'].update(disabled=False)
+                                            server_started[0] = True
+                                            drop_db('all')
+                                            users_max = get_users()
+                                            add_users(users_max)
+                                            groups_max = get_groups()
+                                            add_groups(groups_max)
+                                            users_from_db = get_users_from_db()
+                                            groups_from_db = get_groups_from_db()
+                                            users_from_db.sort(key=lambda i: i[0])
+                                            groups_from_db.sort(key=lambda i: i[0])
+                                            treedata = sg.TreeData()
+                                            treedata2 = sg.TreeData()
+                                            window['-users-'].update(users_from_db)
+                                            treedata_update_user = sg.TreeData()
+                                            for user_login, user_name, user_id in users_from_db:
+                                                treedata_update_user.insert('', user_id, '',
+                                                                            values=[user_login, user_name],
+                                                                            icon=check[0])
+                                            window['-TREE2-'].update(treedata_update_user)
+                                            window['-groups2-'].update(groups_from_db)
+                                            window['-AddUser-'].update(disabled=False)
+                                            window['-DelUser-'].update(disabled=False)
+                                            window['-CloneUser-'].update(disabled=False)
+                                            window['-AddGroup-'].update(disabled=False)
+                                            window['-DelGroup-'].update(disabled=False)
+                                            treedata_update_group = sg.TreeData()
+                                            for group_name, group_description, group_id in groups_from_db:
+                                                treedata_update_group.insert('', group_id, '',
+                                                                             values=[group_name, group_description],
+                                                                             icon=check[0])
+                                                window['-TREE-'].update(treedata_update_group)
+                                            break
                                 # while True:
                                 #     output = process.stdout.readline()
                                 #     if output == b'' and process.poll() is not None:
@@ -893,7 +1030,21 @@ if __name__ == '__main__':
                                 res = requests.get(BASE_URL + 'stopServer')
                                 if res.status_code == 200:
                                     sg.popup('Сервер остановлен', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
-                                    window['-StatusBar-'].update(background_color='red')
+                                    window['-StatusBar-'].update('Сервер не подключен', background_color='red')
+                                    window['-Start-'].update(disabled=False)
+                                    window['-Stop-'].update(disabled=True)
+                                    window['-users-'].update([[]])
+                                    window['-groups2-'].update([[]])
+                                    clear_treedata = sg.TreeData()
+                                    window['-TREE-'].update(clear_treedata)
+                                    window['-TREE2-'].update(clear_treedata)
+                                    window['-AddUser-'].update(disabled=True)
+                                    window['-DelUser-'].update(disabled=True)
+                                    window['-CloneUser-'].update(disabled=True)
+                                    window['-AddGroup-'].update(disabled=True)
+                                    window['-DelGroup-'].update(disabled=True)
+                                    # window.Refresh()
+                                    server_started[0] = False
                         else:
                             sg.popup('Введите правильный ip!', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='gray')
                 else:
