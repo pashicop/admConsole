@@ -240,6 +240,7 @@ def make_main_window():
                     [sg.Button('Добавить', key='-AddUser-', pad=(((30, 10), (20, 5)))),
                      sg.Button('Удалить', key='-DelUser-', pad=(10, (20, 5))),
                      sg.Button('Клонировать', key='-CloneUser-', pad=(10, (20, 5)))],
+                    [sg.Text('Фильтр: '), sg.Input(size=(20,1), enable_events=True, key='-filterUser-')],
                     [
                      sg.Frame('Пользователи',
                         [
@@ -248,6 +249,7 @@ def make_main_window():
                             enable_click_events=True,
                             enable_events=True,
                             # bind_return_key=True,
+                            # background_color='green',
                             right_click_selects=True,
                             visible_column_map=[0, 1, 1],
                             right_click_menu=[1, 'Изменить пользователя'],
@@ -1193,6 +1195,17 @@ if __name__ == '__main__':
                                             else:
                                                 sg.popup("Пользователь не добавлен!", title='Инфо', icon=ICON_BASE_64,
                                                          no_titlebar=True, background_color='lightgray')
+                            if event == '-filterUser-':
+                                search_str = values['-filterUser-']
+                                print(search_str)
+                                filtered_users = filter(lambda x: search_str in x['login'], users_from_db)
+                                filtered_users_list_of_dict = list(filtered_users)
+                                print(filtered_users_list_of_dict)
+                                print(len(filtered_users_list_of_dict))
+                                filtered_users_list = list()
+                                for filtered_user_list_of_dict in filtered_users_list_of_dict:
+                                    filtered_users_list.append([filtered_user_list_of_dict['id'], filtered_user_list_of_dict['login'], filtered_user_list_of_dict['name']])
+                                window['-users-'].update(filtered_users_list)
                             if event == '-AddGroup-':
                                 window_add_group = make_add_group_window()
                                 window_add_group.Element('GroupName').SetFocus()
@@ -1303,9 +1316,6 @@ if __name__ == '__main__':
                                             print(f'{res_ping.text}')
                                             dict_online_after_start = json.loads(res_ping.text)
                                             print(dict_online_after_start)
-                                            # update_text = 'Пользователей онлайн: ' + str(
-                                            #     dict_online_after_start["onlineUsersCount"]) \
-                                            #               + ', Версия БД: ' + str(dict_online_after_start["databaseVersion"])
                                             update_text = 'Пользователей онлайн: обновление...' + ', Версия БД: ' \
                                                           + str(dict_online_after_start["databaseVersion"])
                                             server_status['online'] = dict_online_after_start["onlineUsersCount"]
@@ -1349,12 +1359,6 @@ if __name__ == '__main__':
                                             window['-DelGroup-'].update(disabled=False)
                                             server_status['run'] = True
                                             break
-                                # while True:
-                                #     output = process.stdout.readline()
-                                #     if output == b'' and process.poll() is not None:
-                                #         break
-                                #     if output:
-                                #         print(output.strip())
                             if event == '-Stop-':
                                 print('Останавливаем сервер')
                                 res = requests.get(BASE_URL + 'stopServer', headers=HEADER_dict)
@@ -1394,17 +1398,17 @@ if __name__ == '__main__':
                                     while True:
                                         ev_exit, val_exit = window_exit.Read()
                                         print(ev_exit, val_exit)
+                                        if ev_exit == 'okExit':
+                                            window_exit.close()
+                                            tray.close()
+                                            break_flag2 = True
+                                            break
                                         if ev_exit == sg.WIN_CLOSED or ev_exit == 'Exit':
                                             print('Закрыл окно выхода')
                                             break
                                         if ev_exit == 'noExit':
                                             print('Закрыл окно выхода')
                                             window_exit.close()
-                                            break
-                                        if ev_exit == 'okExit':
-                                            window_exit.close()
-                                            tray.close()
-                                            break_flag2 = True
                                             break
                         else:
                             sg.popup('Введите правильный ip!', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
