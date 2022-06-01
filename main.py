@@ -409,7 +409,7 @@ def the_thread(ip, window):
                 num += 1
                 print(f'[{num}] Пингуем.. {res_ping.text}')
                 window.write_event_value('-THREAD-', (threading.currentThread().name, res_ping.text))
-        sleep(6)
+        sleep(60)
 
 def check_server(url):
     status = {'run': False, 'online': '', 'db': ''}
@@ -529,34 +529,24 @@ if __name__ == '__main__':
                                             window['-StatusBar-'].update(update_text, background_color='lightgreen')
                                             window['-Start-'].update(disabled=True)
                                             window['-Stop-'].update(disabled=False)
-                                            if window['-users-'] == [] or window['-groups2-'] == []:
+                                            if not server_status['run']:
                                                 drop_db('all')
                                                 add_users(get_users())
+                                                add_groups(get_groups())
                                                 users_from_db = get_users_from_db()
+                                                groups_from_db = get_groups_from_db()
                                                 users_from_db.sort(key=lambda i: i['name'])
-                                                user_list = list()
-                                                treedata_update_user = sg.TreeData()
-                                                for user_from_db in users_from_db:
-                                                    user_list.append([user_from_db['id'], user_from_db['login'],
-                                                                      user_from_db['name']])
-                                                    treedata_update_user.insert('', user_from_db['id'], '',
-                                                                                values=[user_from_db['login'],
-                                                                                        user_from_db['name']],
-                                                                                icon=check[0])
+                                                groups_from_db.sort(key=lambda i: i['name'])
+                                                treedata = sg.TreeData()
+                                                treedata2 = sg.TreeData()
+                                                for group in groups_from_db:
+                                                    treedata.insert('', group['id'], '',
+                                                                    values=[group['name'], group['desc']], icon=check[0])
+                                                for user in users_from_db:
+                                                    treedata2.insert('', user['id'], '',
+                                                                     values=[user['login'], user['name']], icon=check[0])
                                                 window['-users-'].update(user_list)
                                                 window['-TREE2-'].update(treedata_update_user)
-                                                add_groups(get_groups())
-                                                groups_from_db = get_groups_from_db()
-                                                groups_from_db.sort(key=lambda i: i['name'])
-                                                treedata_update_group = sg.TreeData()
-                                                group_list = list()
-                                                for group_from_db in groups_from_db:
-                                                    group_list.append([group_from_db['id'], group_from_db['name'],
-                                                                       group_from_db['desc']])
-                                                    treedata_update_group.insert('', group_from_db['id'], '',
-                                                                                 values=[group_from_db['name'],
-                                                                                         group_from_db['desc']],
-                                                                                 icon=check[0])
                                                 window['-groups2-'].update(group_list)
                                                 window['-TREE-'].update(treedata_update_group)
                                                 window['-AddUser-'].update(disabled=False)
@@ -565,7 +555,7 @@ if __name__ == '__main__':
                                                 window['-AddGroup-'].update(disabled=False)
                                                 window['-DelGroup-'].update(disabled=False)
                                             server_status['run'] = True
-                                    server_status['run'] = False
+                                    # server_status['run'] = False
                                 else:
                                     window['-StatusBar-'].update('Сервер не доступен', background_color='red')
                                     window['-Start-'].update(disabled=False)
