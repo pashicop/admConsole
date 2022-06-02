@@ -343,7 +343,7 @@ def make_main_window():
                             select_mode='browse',
                             auto_size_columns=False, col_widths=(0, 10, 30))],],
                             expand_x=True, size=(480, 650)),
-                    sg.Frame('Группы',[[sg.Tree(data=treedata, headings=('Имя',''), col0_width=4, col_widths=(20, 30),
+                    sg.Frame('Группы',[[sg.Tree(data=treedata, headings=('Имя','Описание'), col0_width=4, col_widths=(20, 30),
                             num_rows=10, key='-TREE-', row_height=20, metadata=[], auto_size_columns=False,
                             show_expanded=False, enable_events=True, justification='left', expand_y=True,
                             select_mode=sg.TABLE_SELECT_MODE_BROWSE,
@@ -356,6 +356,7 @@ def make_main_window():
     tab2_layout = [
                     [sg.Button('Добавить', key='-AddGroup-', pad=((30, 10), (20, 5))),
                     sg.Button('Удалить', key='-DelGroup-', pad=((10, (20, 5))))],
+                    [sg.Text('Фильтр: '), sg.Input(size=(20, 1), enable_events=True, key='-filterGroup-')],
                     [sg.Frame('Группы',
                         [
                             [sg.Table(group_list, headings=('id', 'Имя', 'Описание'), justification="left",
@@ -454,7 +455,8 @@ def make_clone_user_window(user):
 
 def make_add_group_window():
     layout_add_group = [
-        [sg.Push(), sg.Text('Имя Группы'), sg.Input(key='GroupName')],
+        [sg.Push(), sg.Text('Имя Группы'), sg.Input(size=(40, 1), key='GroupName')],
+        [sg.Push(), sg.Text('Описание Группы'), sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), key='GroupName')],
         [sg.Push(), sg.Ok(button_text='Создать', key='addGroupButton')]
     ]
     return sg.Window('Добавить группу', layout_add_group, icon=ICON_BASE_64, use_ttk_buttons=True,
@@ -479,7 +481,7 @@ def make_exit_window():
                      finalize=True, modal=True)
 
 def the_thread(ip, window):
-    sleep(10)
+    sleep(30)
     num = 0
     print('Запускаем поток')
     while True:
@@ -1277,7 +1279,6 @@ if __name__ == '__main__':
                                     window['-users-'].update(filtered_users_list)
                                 else:
                                     filter_status = False
-
                             if event == '-AddGroup-':
                                 window_add_group = make_add_group_window()
                                 window_add_group.Element('GroupName').SetFocus()
