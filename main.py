@@ -73,12 +73,12 @@ def add_groups(groups_list):
     con = sqlite3.connect('pashi_db.db')
     cur = con.cursor()
     for group in groups_list:
-        if group['description']:
+        if group['description'] is None:
             db_insert_group = "insert or replace into Groups(id, Name, description) Values ('" + group['id'] + \
-                          "', '" + group['name'] + "', '" + group['description'] + "')"
+                          "', '" + group['name'] + "', '')"
         else:
             db_insert_group = "insert or replace into Groups(id, Name, description) Values ('" + group['id'] + \
-                              "', '" + group['name'] + "', ' ')"
+                              "', '" + group['name'] + "', '" + group['description'] + "')"
         cur.execute(db_insert_group)
     con.commit()
     con.close()
@@ -171,7 +171,7 @@ def drop_db(table):
     elif table == 'user_in_groups':
         db_delete_users_in_groups = "delete from Users_in_groups"
         cur.execute(db_delete_users_in_groups)
-        db_delete_users_in_groups_seq = "delete from sqlite_sequence where name=Users_in_groups"
+        db_delete_users_in_groups_seq = "delete from sqlite_sequence where name='Users_in_Groups'"
         cur.execute(db_delete_users_in_groups_seq)
     con.commit()
     con.close()
@@ -214,27 +214,27 @@ def get_groups_from_db():
     con.close()
     return groups_for_table
 
-def get_users_for_group_from_server(id):
-    print(f'Запрашиваю пользователей для группы', id)
-    res = requests.get(BASE_URL + 'groups', headers=HEADER_dict)
-    # print(res)
-    # print(res.text)
-    groups = json.loads(res.text)
-    res_users = list()
-    for group in groups:
-        if group['id'] == id:
-            users_ids = group['userIds']
-            print(group['userIds'])
-            for user_id in users_ids:
-                user_name = get_user_name_by_id(user_id)
-                user_login = get_user_login_by_id(user_id)
-                # print(user_name)
-                # print(user_login)
-                res_user = [user_login, user_name, user_id]
-                if user_name:
-                    res_users.append(res_user)
-    res_users.sort(key=lambda i: i[0])
-    return res_users
+# def get_users_for_group_from_server(id):
+#     print(f'Запрашиваю пользователей для группы', id)
+#     res = requests.get(BASE_URL + 'groups', headers=HEADER_dict)
+#     # print(res)
+#     # print(res.text)
+#     groups = json.loads(res.text)
+#     res_users = list()
+#     for group in groups:
+#         if group['id'] == id:
+#             users_ids = group['userIds']
+#             print(group['userIds'])
+#             for user_id in users_ids:
+#                 user_name = get_user_name_by_id(user_id)
+#                 user_login = get_user_login_by_id(user_id)
+#                 # print(user_name)
+#                 # print(user_login)
+#                 res_user = [user_login, user_name, user_id]
+#                 if user_name:
+#                     res_users.append(res_user)
+#     res_users.sort(key=lambda i: i[0])
+#     return res_users
 
 def get_users_for_group_from_db(id):
     print(f'Запрашиваю пользователей для группы', id)
@@ -471,10 +471,9 @@ def make_modify_user_window(user: dict):
 
 def make_modify_group_window(group: dict):
     layout_modify_group = [
-        [sg.Push(), sg.Text('Имя'), sg.Input(default_text=group['name'], key='GroupModifyName')],
-        [sg.Push(), sg.Text('Описание'), sg.Input(default_text=group['desc'], key='GroupModifyDesc',
-        disabled=True,
-        ),],
+        [sg.Push(), sg.Text('Имя Группы'), sg.Input(size=(40, 1), default_text=group['name'], key='GroupModifyName')],
+        [sg.Push(), sg.Text('Описание Группы'),
+         sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), default_text=group['desc'], key='GroupModifyDesc')],
         [sg.Push(), sg.Ok(button_text='Изменить', key='modifyGroupButton')]
     ]
     return sg.Window('Изменить группу', layout_modify_group, icon=ICON_BASE_64, use_ttk_buttons=True,
@@ -529,7 +528,7 @@ def make_exit_window():
                      finalize=True, modal=True)
 
 def the_thread(ip, window):
-    sleep(30)
+    sleep(10)
     num = 0
     print('Запускаем поток')
     while True:
@@ -547,7 +546,7 @@ def the_thread(ip, window):
                 num += 1
                 print(f'[{num}] Пингуем.. {res_ping.text}')
                 window.write_event_value('-THREAD-', (threading.currentThread().name, res_ping.text))
-        sleep(30)
+        sleep(10)
 
 def check_server(url_ping):
     status = {'run': False, 'online': '', 'db': ''}
@@ -664,6 +663,8 @@ if __name__ == '__main__':
                         else:
                             window['-StatusBar-'].update('Сервер не доступен', background_color='red')
                         thread_started = False
+                        filter_status = False
+                        filter_status_group = False
                         while True:
                             if break_flag2:
                                 break
@@ -677,6 +678,7 @@ if __name__ == '__main__':
                             event, values = window.read()
                             print(event, type(event), values)
                             if event == '-THREAD-':
+                                current_db = server_status['db']
                                 dict_online = json.loads(values['-THREAD-'][1])
                                 print(dict_online)
                                 if dict_online["onlineUsersCount"] != -5:
@@ -706,21 +708,59 @@ if __name__ == '__main__':
                                             window['-Start-'].update(disabled=True)
                                             window['-Stop-'].update(disabled=False)
                                             if not server_status['run']:
-                                                drop_db('all')
-                                                add_users(get_users_from_server())
-                                                add_groups(get_groups_from_server())
+                                                # drop_db('all')
+                                                # add_users(get_users_from_server())
+                                                # add_groups(get_groups_from_server())
+                                                # users_from_db = get_users_from_db()
+                                                # groups_from_db = get_groups_from_db()
+                                                # users_from_db.sort(key=lambda i: i['name'])
+                                                # groups_from_db.sort(key=lambda i: i['name'])
+                                                # treedata = sg.TreeData()
+                                                # treedata2 = sg.TreeData()
+                                                # for group in groups_from_db:
+                                                #     treedata.insert('', group['id'], '',
+                                                #                     values=[group['name'], group['desc']], icon=check[0])
+                                                # for user in users_from_db:
+                                                #     treedata2.insert('', user['id'], '',
+                                                #                      values=[user['login'], user['name']], icon=check[0])
+                                                # window['-users-'].update(user_list)
+                                                # window['-TREE2-'].update(treedata_update_user)
+                                                # window['-groups2-'].update(group_list)
+                                                # window['-TREE-'].update(treedata_update_group)
+                                                # window['-AddUser-'].update(disabled=False)
+                                                # window['-DelUser-'].update(disabled=False)
+                                                # window['-CloneUser-'].update(disabled=False)
+                                                # window['-AddGroup-'].update(disabled=False)
+                                                # window['-DelGroup-'].update(disabled=False)
+                                                TOKEN = get_token(BASE_URL_AUTH)
+                                                HEADER_dict = {}
+                                                HEADER_dict["Authorization"] = "Bearer " + TOKEN
+                                                print(TOKEN)
+                                                print(HEADER_dict)
+                                                init_db()
                                                 users_from_db = get_users_from_db()
                                                 groups_from_db = get_groups_from_db()
                                                 users_from_db.sort(key=lambda i: i['name'])
                                                 groups_from_db.sort(key=lambda i: i['name'])
-                                                treedata = sg.TreeData()
-                                                treedata2 = sg.TreeData()
+                                                treedata_update_user = sg.TreeData()
+                                                treedata_update_group = sg.TreeData()
+                                                user_list = list()
+                                                group_list = list()
+                                                if users_from_db != [[]] and groups_from_db != [[]]:
+                                                    for user_from_db in users_from_db:
+                                                        user_list.append([user_from_db['id'], user_from_db['login'],
+                                                                          user_from_db['name']])
+                                                    for group_from_db in groups_from_db:
+                                                        group_list.append([group_from_db['id'], group_from_db['name'],
+                                                                           group_from_db['desc']])
                                                 for group in groups_from_db:
-                                                    treedata.insert('', group['id'], '',
-                                                                    values=[group['name'], group['desc']], icon=check[0])
+                                                    treedata_update_group.insert('', group['id'], '',
+                                                                                 values=[group['name'], group['desc']],
+                                                                                 icon=check[0])
                                                 for user in users_from_db:
-                                                    treedata2.insert('', user['id'], '',
-                                                                     values=[user['login'], user['name']], icon=check[0])
+                                                    treedata_update_user.insert('', user['id'], '',
+                                                                                values=[user['login'], user['name']],
+                                                                                icon=check[0])
                                                 window['-users-'].update(user_list)
                                                 window['-TREE2-'].update(treedata_update_user)
                                                 window['-groups2-'].update(group_list)
@@ -730,6 +770,8 @@ if __name__ == '__main__':
                                                 window['-CloneUser-'].update(disabled=False)
                                                 window['-AddGroup-'].update(disabled=False)
                                                 window['-DelGroup-'].update(disabled=False)
+                                                window['-filterUser-'].update(disabled=False)
+                                                server_status['run'] = True
                                             server_status['run'] = True
                                     # server_status['run'] = False
                                 else:
@@ -746,6 +788,7 @@ if __name__ == '__main__':
                                     window['-CloneUser-'].update(disabled=True)
                                     window['-AddGroup-'].update(disabled=True)
                                     window['-DelGroup-'].update(disabled=True)
+                                    window['-filterUser-'].update(disabled=True)
                                     server_status['run'] = False
                             if event == sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
                                 window.hide()
@@ -781,44 +824,61 @@ if __name__ == '__main__':
                             if type(event) is tuple:
                                 print(f'TUPLE! {event}')
                                 if event[0] == '-users-' and event[1] == '+CLICKED+':
-                                    user_id = users_from_db[event[2][0]]['id']
-                                    print(user_id)
-                                    window['Apply'].update(disabled=True)
-                                    groups_for_user = get_groups_for_user_from_db(user_id)
-                                    group_for_user_ids = []
-                                    for group_for_user in groups_for_user:
-                                        group_for_user_ids.append(group_for_user['id'])
-                                    all_group_ids = []
-                                    for group_from_all in groups_from_db:
-                                        all_group_ids.append(group_from_all['id'])
-                                    tree.metadata = []
-                                    for group_id_for_tree in all_group_ids:
-                                        if group_id_for_tree in group_for_user_ids:
-                                            tree.metadata.append(group_id_for_tree)
-                                            tree.update(key=group_id_for_tree, icon=check[1])
+                                    if event[2][0] is None:
+                                        pass
+                                    else:
+                                        if filter_status:
+                                            user_id = filtered_users_list_of_dict[event[2][0]]['id']
                                         else:
-                                            tree.update(key=group_id_for_tree, icon=check[0])
+                                            user_id = users_from_db[event[2][0]]['id']
+                                        print(user_id)
+                                        window['Apply'].update(disabled=True)
+                                        groups_for_user = get_groups_for_user_from_db(user_id)
+                                        group_for_user_ids = []
+                                        for group_for_user in groups_for_user:
+                                            group_for_user_ids.append(group_for_user['id'])
+                                        all_group_ids = []
+                                        for group_from_all in groups_from_db:
+                                            all_group_ids.append(group_from_all['id'])
+                                        tree.metadata = []
+                                        for group_id_for_tree in all_group_ids:
+                                            if group_id_for_tree in group_for_user_ids:
+                                                tree.metadata.append(group_id_for_tree)
+                                                tree.update(key=group_id_for_tree, icon=check[1])
+                                            else:
+                                                tree.update(key=group_id_for_tree, icon=check[0])
                                 elif event[0] == '-groups2-' and event[1] == '+CLICKED+':
                                     window['Apply2'].update(disabled=True)
                                     print(values['-groups2-'])
-                                    group_id = groups_from_db[event[2][0]]['id']
-                                    users_for_group = get_users_for_group_from_db(group_id)
-                                    users_for_group_ids = []
-                                    for user_for_group in users_for_group:
-                                        users_for_group_ids.append(user_for_group['id'])
-                                    all_user_ids = []
-                                    for user_from_all in users_from_db:
-                                        all_user_ids.append(user_from_all['id'])
-                                    tree2.metadata = []
-                                    for user_id_for_tree in all_user_ids:
-                                        if user_id_for_tree in users_for_group_ids:
-                                            tree2.metadata.append(user_id_for_tree)
-                                            tree2.update(key=user_id_for_tree, icon=check[1])
+                                    if event[2][0] is None:
+                                        pass
+                                    else:
+                                        if filter_status_group:
+                                            group_id = filtered_groups_list_of_dict[event[2][0]]['id']
                                         else:
-                                            tree2.update(key=user_id_for_tree, icon=check[0])
+                                            group_id = groups_from_db[event[2][0]]['id']
+                                        # group_id = groups_from_db[event[2][0]]['id']
+                                        users_for_group = get_users_for_group_from_db(group_id)
+                                        users_for_group_ids = []
+                                        for user_for_group in users_for_group:
+                                            users_for_group_ids.append(user_for_group['id'])
+                                        all_user_ids = []
+                                        for user_from_all in users_from_db:
+                                            all_user_ids.append(user_from_all['id'])
+                                        tree2.metadata = []
+                                        for user_id_for_tree in all_user_ids:
+                                            if user_id_for_tree in users_for_group_ids:
+                                                tree2.metadata.append(user_id_for_tree)
+                                                tree2.update(key=user_id_for_tree, icon=check[1])
+                                            else:
+                                                tree2.update(key=user_id_for_tree, icon=check[0])
                             if event == 'Изменить пользователя':
                                 print('Изменяем пользователя')
-                                user_to_change = users_from_db[values['-users-'][0]]
+                                if filter_status:
+                                    user_to_change = filtered_users_list_of_dict[values['-users-'][0]]
+                                else:
+                                    user_to_change = users_from_db[values['-users-'][0]]
+                                # user_to_change = users_from_db[values['-users-'][0]]
                                 print(user_to_change)
                                 window_modify_user = make_modify_user_window(user_to_change)
                                 window_modify_user.Element('UserModifyLogin').SetFocus()
@@ -855,10 +915,13 @@ if __name__ == '__main__':
                                             res_modify_user = requests.post(BASE_URL + 'updateUser', json=modify_user_dict, headers=HEADER_dict)
                                             print(res_modify_user.status_code)
                                             if res_modify_user.status_code == 200:
-                                                add_users(get_users_from_server())
+                                                users_from_server = get_users_from_server()
+                                                add_users(users_from_server)
                                                 users_from_db = get_users_from_db()
                                                 users_from_db.sort(key=lambda i: i['name'])
                                                 user_list = list()
+                                                drop_db('user_in_groups')
+                                                add_user_in_groups(users_from_server)
                                                 treedata_update_user = sg.TreeData()
                                                 for user_from_db in users_from_db:
                                                     user_list.append([user_from_db['id'], user_from_db['login'],
@@ -894,12 +957,17 @@ if __name__ == '__main__':
                                         modify_group_name = val_modify_group['GroupModifyName']
                                         modify_group_desc = val_modify_group['GroupModifyDesc']
                                         modify_group_dict = {}
-                                        if modify_group_name != group_to_change['name'] or modify_group_desc != group_to_change['desc']:
-                                            modify_group_dict['id'] = group_to_change['id']
+                                        modify_group = False
+                                        modify_group_dict['id'] = group_to_change['id']
+                                        if modify_group_name != group_to_change['name']:
                                             modify_group_dict['name'] = modify_group_name
-                                            # modify_group_dict['description'] = modify_group_desc
+                                            modify_group = True
+                                        if modify_group_desc != group_to_change['desc']:
+                                            modify_group_dict['description'] = modify_group_desc
+                                            modify_group = True
+                                        if modify_group:
                                             print(modify_group_dict)
-                                            res_modify_group = requests.post(BASE_URL + 'renameGroup', json=modify_group_dict, headers=HEADER_dict)
+                                            res_modify_group = requests.post(BASE_URL + 'updateGroup', json=modify_group_dict, headers=HEADER_dict)
                                             print(res_modify_group.status_code)
                                             if res_modify_group.status_code == 200:
                                                 add_groups(get_groups_from_server())
@@ -1027,7 +1095,11 @@ if __name__ == '__main__':
                                     add_group = False
                                     del_group = False
                                     print(values['-users-'])
-                                    chosen_login = users_from_db[values['-users-'][0]]
+                                    if filter_status:
+                                        chosen_login = filtered_users_list_of_dict[values['-users-'][0]]
+                                    else:
+                                        chosen_login = users_from_db[values['-users-'][0]]
+                                    # chosen_login = users_from_db[values['-users-'][0]]
                                     print(f"Выбран пользователь {chosen_login['name']}")
                                     # print(tree.metadata)
                                     current_groups = get_groups_for_user_from_db(chosen_login['id'])
@@ -1082,7 +1154,11 @@ if __name__ == '__main__':
                                     add_user = False
                                     del_user = False
                                     print(values['-groups2-'])
-                                    chosen_group = groups_from_db[values['-groups2-'][0]]
+                                    if filter_status_group:
+                                        chosen_group = filtered_groups_list_of_dict[values['-groups2-'][0]]
+                                    else:
+                                        chosen_group = groups_from_db[values['-groups2-'][0]]
+                                    # chosen_group = groups_from_db[values['-groups2-'][0]]
                                     print(f"Выбрана группа {chosen_group['name']}")
                                     # print(tree.metadata)
                                     current_users = get_users_for_group_from_db(chosen_group['id'])
@@ -1172,7 +1248,23 @@ if __name__ == '__main__':
                                                                             values=[user_from_db['login'],
                                                                                     user_from_db['name']],
                                                                             icon=check[0])
-                                            window['-users-'].update(user_list)
+                                            if filter_status:
+                                                search_str = values['-filterUser-']
+                                                print(search_str)
+                                                filtered_users = filter(lambda x: search_str in x['login'],
+                                                                        users_from_db)
+                                                filtered_users_list_of_dict = list(filtered_users)
+                                                print(filtered_users_list_of_dict)
+                                                print(len(filtered_users_list_of_dict))
+                                                filtered_users_list = list()
+                                                # users_from_db = filtered_users_list_of_dict
+                                                for filtered_user_list_of_dict in filtered_users_list_of_dict:
+                                                    filtered_users_list.append([filtered_user_list_of_dict['id'],
+                                                                                filtered_user_list_of_dict['login'],
+                                                                                filtered_user_list_of_dict['name']])
+                                                window['-users-'].update(filtered_users_list)
+                                            else:
+                                                window['-users-'].update(user_list)
                                             window['-TREE2-'].update(treedata_update_user)
                                             window_add_user.close()
                                             sg.popup("Пользователь добавлен!", title='Инфо', icon=ICON_BASE_64,
@@ -1186,12 +1278,15 @@ if __name__ == '__main__':
                                     print(f"Не выбран пользователь")
                                     sg.popup('Не выбран пользователь', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                 else:
-                                    del_user_name = users_from_db[values['-users-'][0]]['name']
-                                    if del_user_name == 'admin':
+                                    if filter_status:
+                                        del_user = filtered_users_list_of_dict[values['-users-'][0]]
+                                    else:
+                                        del_user = users_from_db[values['-users-'][0]]
+                                    if del_user == 'admin':
                                         sg.popup("Нельзя удалить admin", title='Инфо', icon=ICON_BASE_64,
                                                              no_titlebar=True, background_color='lightgray')
                                     else:
-                                        window_del_user = make_del_user_window(del_user_name)
+                                        window_del_user = make_del_user_window(del_user['name'])
                                         while True:
                                             ev_del_user, val_del_user = window_del_user.Read()
                                             print(ev_del_user, val_del_user)
@@ -1203,11 +1298,11 @@ if __name__ == '__main__':
                                                 window_del_user.close()
                                                 break
                                             if ev_del_user == 'okDel':
-                                                del_user_id = users_from_db[values['-users-'][0]]['id']
-                                                del_user_dict = {}
-                                                del_user_dict['id'] = del_user_id
-                                                print(del_user_dict)
-                                                res_del_user = requests.post(BASE_URL + 'deleteUser', json=del_user_dict, headers=HEADER_dict)
+                                                # del_user_id = users_from_db[values['-users-'][0]]['id']
+                                                # del_user_dict = {}
+                                                # del_user_dict['id'] = del_user['id']
+                                                print(del_user['id'])
+                                                res_del_user = requests.post(BASE_URL + 'deleteUser', json=del_user, headers=HEADER_dict)
                                                 print(res_del_user.status_code)
                                                 if res_del_user.status_code == 200:
                                                     drop_db('users')
@@ -1223,8 +1318,25 @@ if __name__ == '__main__':
                                                                                     values=[user_from_db['login'],
                                                                                             user_from_db['name']],
                                                                                     icon=check[0])
-                                                    del_users_in_groups_after_delete_user(del_user_id)
-                                                    window['-users-'].update(user_list)
+                                                    del_users_in_groups_after_delete_user(del_user['id'])
+                                                    if filter_status:
+                                                        search_str = values['-filterUser-']
+                                                        print(search_str)
+                                                        filtered_users = filter(lambda x: search_str in x['login'],
+                                                                                users_from_db)
+                                                        filtered_users_list_of_dict = list(filtered_users)
+                                                        print(filtered_users_list_of_dict)
+                                                        print(len(filtered_users_list_of_dict))
+                                                        filtered_users_list = list()
+                                                        # users_from_db = filtered_users_list_of_dict
+                                                        for filtered_user_list_of_dict in filtered_users_list_of_dict:
+                                                            filtered_users_list.append(
+                                                                [filtered_user_list_of_dict['id'],
+                                                                 filtered_user_list_of_dict['login'],
+                                                                 filtered_user_list_of_dict['name']])
+                                                        window['-users-'].update(filtered_users_list)
+                                                    else:
+                                                        window['-users-'].update(user_list)
                                                     window['-TREE2-'].update(treedata_update_user)
                                                     window_del_user.close()
                                                     sg.popup("Пользователь удалён!", title='Инфо', icon=ICON_BASE_64,
@@ -1239,7 +1351,11 @@ if __name__ == '__main__':
                                     sg.popup('Не выбран пользователь', title='Инфо', icon=ICON_BASE_64,
                                              no_titlebar=True, background_color='lightgray')
                                 else:
-                                    user_clone = users_from_db[values['-users-'][0]]
+                                    if filter_status:
+                                        user_clone = filtered_users_list_of_dict[values['-users-'][0]]
+                                    else:
+                                        user_clone = users_from_db[values['-users-'][0]]
+                                    # user_clone = users_from_db[values['-users-'][0]]
                                     window_clone_user = make_clone_user_window(user_clone['name'])
                                     window_clone_user.Element('CloneUserLogin').SetFocus()
                                     password_clear = False
@@ -1269,21 +1385,6 @@ if __name__ == '__main__':
                                             print(res_clone_user.status_code)
                                             print(res_clone_user.text)
                                             if res_clone_user.status_code == 200:
-                                                add_users(get_users_from_server())
-                                                users_from_db = get_users_from_db()
-                                                users_from_db.sort(key=lambda i: i['name'])
-                                                user_list = list()
-                                                treedata_update_user = sg.TreeData()
-                                                for user_from_db in users_from_db:
-                                                    user_list.append([user_from_db['id'], user_from_db['login'],
-                                                                      user_from_db['name']])
-                                                    treedata_update_user.insert('', user_from_db['id'], '',
-                                                                                values=[user_from_db['login'],
-                                                                                        user_from_db['name']],
-                                                                                icon=check[0])
-                                                window['-users-'].update(user_list)
-                                                window['-TREE2-'].update(treedata_update_user)
-                                                # window_clone_user.close()
                                                 original_groups = get_groups_for_user_from_db(user_clone['id'])
                                                 original_groups_ids = []
                                                 for or_gr in original_groups:
@@ -1294,7 +1395,39 @@ if __name__ == '__main__':
                                                 res_clone_add_group = requests.post(BASE_URL + 'addToGroup', json=clone_dict, headers=HEADER_dict)
                                                 print(res_clone_add_group.status_code)
                                                 if res_clone_add_group.status_code == 200:
+                                                    add_users(get_users_from_server())
                                                     add_groups_to_user_after_apply(clone_dict)
+                                                    users_from_db = get_users_from_db()
+                                                    users_from_db.sort(key=lambda i: i['name'])
+                                                    user_list = list()
+                                                    treedata_update_user = sg.TreeData()
+                                                    for user_from_db in users_from_db:
+                                                        user_list.append([user_from_db['id'], user_from_db['login'],
+                                                                          user_from_db['name']])
+                                                        treedata_update_user.insert('', user_from_db['id'], '',
+                                                                                    values=[user_from_db['login'],
+                                                                                            user_from_db['name']],
+                                                                                    icon=check[0])
+                                                    if filter_status:
+                                                        search_str = values['-filterUser-']
+                                                        print(search_str)
+                                                        filtered_users = filter(lambda x: search_str in x['login'],
+                                                                                users_from_db)
+                                                        filtered_users_list_of_dict = list(filtered_users)
+                                                        print(filtered_users_list_of_dict)
+                                                        print(len(filtered_users_list_of_dict))
+                                                        filtered_users_list = list()
+                                                        # users_from_db = filtered_users_list_of_dict
+                                                        for filtered_user_list_of_dict in filtered_users_list_of_dict:
+                                                            filtered_users_list.append(
+                                                                [filtered_user_list_of_dict['id'],
+                                                                 filtered_user_list_of_dict['login'],
+                                                                 filtered_user_list_of_dict['name']])
+                                                        window['-users-'].update(filtered_users_list)
+                                                    else:
+                                                        window['-users-'].update(user_list)
+                                                    window['-TREE2-'].update(treedata_update_user)
+                                                    # window_clone_user.close()
                                                     treedata_update_user = sg.TreeData()
                                                     for user_id, user_login, user_name  in user_list:
                                                         treedata_update_user.insert('', user_id, '',
@@ -1322,12 +1455,38 @@ if __name__ == '__main__':
                                     print(filtered_users_list_of_dict)
                                     print(len(filtered_users_list_of_dict))
                                     filtered_users_list = list()
-                                    users_from_db = filtered_users_list_of_dict
+                                    # users_from_db = filtered_users_list_of_dict
                                     for filtered_user_list_of_dict in filtered_users_list_of_dict:
                                         filtered_users_list.append([filtered_user_list_of_dict['id'], filtered_user_list_of_dict['login'], filtered_user_list_of_dict['name']])
                                     window['-users-'].update(filtered_users_list)
                                 else:
+                                    user_list_after_filter_null = list()
+                                    for user_from_db in users_from_db:
+                                        user_list_after_filter_null.append(
+                                            [user_from_db['id'], user_from_db['login'], user_from_db['name']])
+                                    window['-users-'].update(user_list_after_filter_null)
                                     filter_status = False
+                            if event == '-filterGroup-':
+                                filter_status_group = True
+                                if values['-filterGroup-']:
+                                    search_str = values['-filterGroup-']
+                                    print(search_str)
+                                    filtered_groups = filter(lambda x: search_str in x['name'], groups_from_db)
+                                    filtered_groups_list_of_dict = list(filtered_groups)
+                                    print(filtered_groups_list_of_dict)
+                                    print(len(filtered_groups_list_of_dict))
+                                    filtered_groups_list = list()
+                                    # users_from_db = filtered_users_list_of_dict
+                                    for filtered_group_list_of_dict in filtered_groups_list_of_dict:
+                                        filtered_groups_list.append([filtered_group_list_of_dict['id'], filtered_group_list_of_dict['name'], filtered_group_list_of_dict['desc']])
+                                    window['-groups2-'].update(filtered_groups_list)
+                                else:
+                                    group_list_after_filter_null = list()
+                                    for group_from_db in groups_from_db:
+                                        group_list_after_filter_null.append(
+                                            [group_from_db['id'], group_from_db['name'], group_from_db['desc']])
+                                    window['-groups2-'].update(group_list_after_filter_null)
+                                    filter_status_group = False
                             if event == '-AddGroup-':
                                 window_add_group = make_add_group_window()
                                 window_add_group.Element('GroupName').SetFocus()
@@ -1359,7 +1518,23 @@ if __name__ == '__main__':
                                                                              values=[group_from_db['name'],
                                                                                      group_from_db['desc']],
                                                                              icon=check[0])
-                                            window['-groups2-'].update(group_list)
+                                            if filter_status_group:
+                                                search_str = values['-filterGroup-']
+                                                print(search_str)
+                                                filtered_groups = filter(lambda x: search_str in x['name'],
+                                                                         groups_from_db)
+                                                filtered_groups_list_of_dict = list(filtered_groups)
+                                                print(filtered_groups_list_of_dict)
+                                                print(len(filtered_groups_list_of_dict))
+                                                filtered_groups_list = list()
+                                                # users_from_db = filtered_users_list_of_dict
+                                                for filtered_group_list_of_dict in filtered_groups_list_of_dict:
+                                                    filtered_groups_list.append([filtered_group_list_of_dict['id'],
+                                                                                 filtered_group_list_of_dict['name'],
+                                                                                 filtered_group_list_of_dict['desc']])
+                                                window['-groups2-'].update(filtered_groups_list)
+                                            else:
+                                                window['-groups2-'].update(group_list)
                                             window['-TREE-'].update(treedata_update_group)
                                             window_add_group.close()
                                             sg.popup("Группа добавлена!", title='Инфо', icon=ICON_BASE_64,
@@ -1374,8 +1549,12 @@ if __name__ == '__main__':
                                     print(f"Не выбрана группа")
                                     sg.popup('Не выбрана группа', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                 else:
-                                    del_group_name = groups_from_db[values['-groups2-'][0]]['name']
-                                    window_del_group = make_del_group_window(del_group_name)
+                                    if filter_status_group:
+                                        del_group = filtered_groups_list_of_dict[values['-groups2-'][0]]
+                                    else:
+                                        del_group = groups_from_db[values['-groups2-'][0]]
+                                    # del_group_name = groups_from_db[values['-groups2-'][0]]['name']
+                                    window_del_group = make_del_group_window(del_group['name'])
                                     while True:
                                         ev_del_group, val_del_group = window_del_group.Read()
                                         print(ev_del_group, val_del_group)
@@ -1387,11 +1566,11 @@ if __name__ == '__main__':
                                             window_del_group.close()
                                             break
                                         if ev_del_group == 'okDelGroup':
-                                            del_group_id = groups_from_db[values['-groups2-'][0]]['id']
-                                            del_group_dict = {}
-                                            del_group_dict['id'] = del_group_id
-                                            print(del_group_dict)
-                                            res_del_group = requests.post(BASE_URL + 'deleteGroup', json=del_group_dict, headers=HEADER_dict)
+                                            # del_group_id = groups_from_db[values['-groups2-'][0]]['id']
+                                            # del_group_dict = {}
+                                            # del_group_dict['id'] = del_group_id
+                                            print(del_group['id'])
+                                            res_del_group = requests.post(BASE_URL + 'deleteGroup', json=del_group, headers=HEADER_dict)
                                             print(res_del_group.status_code)
                                             if res_del_group.status_code == 200:
                                                 drop_db('groups')
@@ -1407,8 +1586,28 @@ if __name__ == '__main__':
                                                                                  values=[group_from_db['name'],
                                                                                          group_from_db['desc']],
                                                                                  icon=check[0])
-                                                del_users_in_groups_after_delete_group(del_group_id)
-                                                window['-groups2-'].update(group_list)
+                                                del_users_in_groups_after_delete_group(del_group['id'])
+                                                if filter_status_group:
+                                                    search_str = values['-filterGroup-']
+                                                    print(search_str)
+                                                    filtered_groups = filter(lambda x: search_str in x['name'],
+                                                                             groups_from_db)
+                                                    filtered_groups_list_of_dict = list(filtered_groups)
+                                                    print(filtered_groups_list_of_dict)
+                                                    print(len(filtered_groups_list_of_dict))
+                                                    filtered_groups_list = list()
+                                                    # users_from_db = filtered_users_list_of_dict
+                                                    for filtered_group_list_of_dict in filtered_groups_list_of_dict:
+                                                        filtered_groups_list.append([filtered_group_list_of_dict['id'],
+                                                                                     filtered_group_list_of_dict[
+                                                                                         'name'],
+                                                                                     filtered_group_list_of_dict[
+                                                                                         'desc']])
+                                                    window['-groups2-'].update(filtered_groups_list)
+                                                else:
+                                                    window['-groups2-'].update(group_list)
+                                                # del_users_in_groups_after_delete_group(del_group_id)
+                                                # window['-groups2-'].update(group_list)
                                                 window['-TREE-'].update(treedata_update_group)
                                                 window_del_group.close()
                                                 sg.popup("Группа удалена!", title='Инфо', icon=ICON_BASE_64,
@@ -1448,33 +1647,49 @@ if __name__ == '__main__':
                                             window['-StatusBar-'].update(update_text, background_color='lightgreen')
                                             window['-Start-'].update(disabled=True)
                                             window['-Stop-'].update(disabled=False)
-                                            drop_db('all')
-                                            add_users(get_users_from_server())
+                                            #
+                                            # drop_db('all')
+                                            # add_users(get_users_from_server())
+                                            # users_from_db = get_users_from_db()
+                                            # users_from_db.sort(key=lambda i: i['name'])
+                                            # user_list = list()
+                                            # treedata_update_user = sg.TreeData()
+                                            # for user_from_db in users_from_db:
+                                            #     user_list.append([user_from_db['id'], user_from_db['login'],
+                                            #                       user_from_db['name']])
+                                            #     treedata_update_user.insert('', user_from_db['id'], '',
+                                            #                                 values=[user_from_db['login'],
+                                            #                                         user_from_db['name']],
+                                            #                                 icon=check[0])
+                                            TOKEN = get_token(BASE_URL_AUTH)
+                                            HEADER_dict = {}
+                                            HEADER_dict["Authorization"] = "Bearer " + TOKEN
+                                            print(TOKEN)
+                                            print(HEADER_dict)
+                                            init_db()
                                             users_from_db = get_users_from_db()
+                                            groups_from_db = get_groups_from_db()
                                             users_from_db.sort(key=lambda i: i['name'])
-                                            user_list = list()
+                                            groups_from_db.sort(key=lambda i: i['name'])
                                             treedata_update_user = sg.TreeData()
-                                            for user_from_db in users_from_db:
-                                                user_list.append([user_from_db['id'], user_from_db['login'],
-                                                                  user_from_db['name']])
-                                                treedata_update_user.insert('', user_from_db['id'], '',
-                                                                            values=[user_from_db['login'],
-                                                                                    user_from_db['name']],
-                                                                            icon=check[0])
+                                            treedata_update_group = sg.TreeData()
+                                            user_list = list()
+                                            group_list = list()
+                                            if users_from_db != [[]] and groups_from_db != [[]]:
+                                                for user_from_db in users_from_db:
+                                                    user_list.append([user_from_db['id'], user_from_db['login'],
+                                                                      user_from_db['name']])
+                                                for group_from_db in groups_from_db:
+                                                    group_list.append([group_from_db['id'], group_from_db['name'],
+                                                                       group_from_db['desc']])
+                                            for group in groups_from_db:
+                                                treedata_update_group.insert('', group['id'], '',
+                                                                values=[group['name'], group['desc']], icon=check[0])
+                                            for user in users_from_db:
+                                                treedata_update_user.insert('', user['id'], '',
+                                                                 values=[user['login'], user['name']], icon=check[0])
                                             window['-users-'].update(user_list)
                                             window['-TREE2-'].update(treedata_update_user)
-                                            add_groups(get_groups_from_server())
-                                            groups_from_db = get_groups_from_db()
-                                            groups_from_db.sort(key=lambda i: i['name'])
-                                            treedata_update_group = sg.TreeData()
-                                            group_list = list()
-                                            for group_from_db in groups_from_db:
-                                                group_list.append([group_from_db['id'], group_from_db['name'],
-                                                                   group_from_db['desc']])
-                                                treedata_update_group.insert('', group_from_db['id'], '',
-                                                                             values=[group_from_db['name'],
-                                                                                     group_from_db['desc']],
-                                                                             icon=check[0])
                                             window['-groups2-'].update(group_list)
                                             window['-TREE-'].update(treedata_update_group)
                                             window['-AddUser-'].update(disabled=False)
@@ -1482,6 +1697,7 @@ if __name__ == '__main__':
                                             window['-CloneUser-'].update(disabled=False)
                                             window['-AddGroup-'].update(disabled=False)
                                             window['-DelGroup-'].update(disabled=False)
+                                            window['-filterUser-'].update(disabled=False)
                                             server_status['run'] = True
                                             break
                             if event == '-Stop-':
@@ -1502,7 +1718,7 @@ if __name__ == '__main__':
                                     window['-CloneUser-'].update(disabled=True)
                                     window['-AddGroup-'].update(disabled=True)
                                     window['-DelGroup-'].update(disabled=True)
-                                    # window.Refresh()
+                                    window['-filterUser-'].update(disabled=True)
                                     server_status['run'] = False
                             if event == tray.key:
                                 event = values[event]
