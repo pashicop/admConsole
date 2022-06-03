@@ -437,7 +437,7 @@ def make_main_window():
           sg.Tab('Группы', tab2_layout, key="Tab2")
           ]], key="Tabs", size=(1000, 776))],
               [sg.StatusBar(users_online_text, key='-StatusBar-', size=(100, 1))]]
-    return sg.Window('Панель администратора ОМЕГА К100', layout, icon=ICON_BASE_64,  use_ttk_buttons=True,
+    return sg.Window('Панель администратора ОМЕГА К100 v0.9', layout, icon=ICON_BASE_64,  use_ttk_buttons=True,
                      enable_close_attempted_event=True, finalize=True)
 
 def make_login_window():
