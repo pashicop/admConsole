@@ -94,23 +94,59 @@ def add_user_in_groups(users_list):
     con.commit()
     con.close()
 
-def add_groups_to_user_after_apply(users_dict):
+def add_groups_to_user_after_apply(groups_for_user_dict):
     con = sqlite3.connect('pashi_db.db')
     cur = con.cursor()
-    for user_id in users_dict['UserIds']:
-        for group_id in users_dict['GroupIds']:
+    for user_id in groups_for_user_dict['UserIds']:
+        for group_id in groups_for_user_dict['GroupIds']:
             db_insert_group_for_user = "insert or replace into Users_in_Groups(user_id, group_id) Values ('" + user_id + "', '" + group_id + "')"
             cur.execute(db_insert_group_for_user)
     con.commit()
     con.close()
 
-def del_groups_to_user_after_apply(users_dict):
+def add_users_to_group_after_apply(users_for_group_dict):
     con = sqlite3.connect('pashi_db.db')
     cur = con.cursor()
-    for user_id in users_dict['UserIds']:
-        for group_id in users_dict['GroupIds']:
+    for group_id in users_for_group_dict['GroupIds']:
+        for user_id in users_for_group_dict['UserIds']:
+            db_insert_user_for_group = "insert or replace into Users_in_Groups(user_id, group_id) Values ('" + user_id + "', '" + group_id + "')"
+            cur.execute(db_insert_user_for_group)
+    con.commit()
+    con.close()
+
+def del_groups_to_user_after_apply(groups_for_user_dict):
+    con = sqlite3.connect('pashi_db.db')
+    cur = con.cursor()
+    for user_id in groups_for_user_dict['UserIds']:
+        for group_id in groups_for_user_dict['GroupIds']:
             db_delete_group_for_user = "delete from Users_in_Groups where user_id = '" + user_id + "' and  group_id = '" +  group_id + "'"
             cur.execute(db_delete_group_for_user)
+    con.commit()
+    con.close()
+
+def del_users_in_groups_after_delete_group(del_group_id):
+    con = sqlite3.connect('pashi_db.db')
+    cur = con.cursor()
+    db_delete_group_for_user = "delete from Users_in_Groups where group_id = '" + del_group_id + "'"
+    cur.execute(db_delete_group_for_user)
+    con.commit()
+    con.close()
+
+def del_users_in_groups_after_delete_user(del_user_id):
+    con = sqlite3.connect('pashi_db.db')
+    cur = con.cursor()
+    db_delete_group_for_user = "delete from Users_in_Groups where user_id = '" + del_user_id + "'"
+    cur.execute(db_delete_group_for_user)
+    con.commit()
+    con.close()
+
+def del_users_to_groups_after_apply(users_for_group_dict):
+    con = sqlite3.connect('pashi_db.db')
+    cur = con.cursor()
+    for group_id in users_for_group_dict['GroupIds']:
+        for user_id in users_for_group_dict['UserIds']:
+            db_delete_user_for_group = "delete from Users_in_Groups where user_id = '" + user_id + "' and  group_id = '" + group_id + "'"
+            cur.execute(db_delete_user_for_group)
     con.commit()
     con.close()
 
@@ -304,12 +340,24 @@ def get_group_name_by_id_from_db(id):
     con = sqlite3.connect('pashi_db.db')
     cur = con.cursor()
     db_query_group_name_by_id = "Select name from Groups where id = '" + id + "'"
-    print(db_query_group_name_by_id)
+    # print(db_query_group_name_by_id)
     cur.execute(db_query_group_name_by_id)
     group_name = cur.fetchone()[0]
-    print(group_name)
+    # print(group_name)
     con.close()
     return group_name
+
+
+def get_user_name_by_id_from_db(id):
+    con = sqlite3.connect('pashi_db.db')
+    cur = con.cursor()
+    db_query_user_name_by_id = "Select Display_name from Users where id = '" + id + "'"
+    # print(db_query_user_name_by_id)
+    cur.execute(db_query_user_name_by_id)
+    user_name = cur.fetchone()[0]
+    # print(user_name)
+    con.close()
+    return user_name
 
 def make_main_window():
     if server_status['run']:
@@ -456,7 +504,7 @@ def make_clone_user_window(user):
 def make_add_group_window():
     layout_add_group = [
         [sg.Push(), sg.Text('Имя Группы'), sg.Input(size=(40, 1), key='GroupName')],
-        [sg.Push(), sg.Text('Описание Группы'), sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), key='GroupName')],
+        [sg.Push(), sg.Text('Описание Группы'), sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), key='description')],
         [sg.Push(), sg.Ok(button_text='Создать', key='addGroupButton')]
     ]
     return sg.Window('Добавить группу', layout_add_group, icon=ICON_BASE_64, use_ttk_buttons=True,
@@ -1037,18 +1085,18 @@ if __name__ == '__main__':
                                     chosen_group = groups_from_db[values['-groups2-'][0]]
                                     print(f"Выбрана группа {chosen_group['name']}")
                                     # print(tree.metadata)
-                                    current_users = get_users_for_group_from_server(chosen_group['id'])
+                                    current_users = get_users_for_group_from_db(chosen_group['id'])
                                     # print(current_users)
                                     current_users_ids = []
                                     for cur_us in current_users:
-                                        current_users_ids.append(cur_us[2])
+                                        current_users_ids.append(cur_us['id'])
                                     add_dict = {'UserIds': [], 'GroupIds': [chosen_group['id']]}
                                     del_dict = {'UserIds': [], 'GroupIds': [chosen_group['id']]}
                                     for us_id in tree2.metadata:
                                         if us_id in current_users_ids:
-                                            print(f"В группе {chosen_group['name']} уже есть {us_id}")
+                                            print(f"В группе {chosen_group['name']} уже есть {get_user_name_by_id_from_db(us_id)}")
                                         else:
-                                            print(f"Пользователя {us_id} нужно добавить в группу {chosen_group['name']}")
+                                            print(f"Пользователя {get_user_name_by_id_from_db(us_id)} нужно добавить в группу {chosen_group['name']}")
                                             add_dict['UserIds'] += [us_id]
                                             add_user = True
                                     if add_user:
@@ -1056,21 +1104,21 @@ if __name__ == '__main__':
                                         print(res.status_code)
                                         if res.status_code == 200:
                                             # window['-users2-'].update(get_users_for_group(chosen_group[1]))
-                                            pass
+                                            add_users_to_group_after_apply(add_dict)
                                         else:
                                             sg.popup("Добавление не выполнено", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                     for us_id in current_users_ids:
                                         if us_id in tree2.metadata:
-                                            print(f'Пользователь {us_id} уже в группе {chosen_group["name"]}')
+                                            print(f'Пользователь {get_user_name_by_id_from_db(us_id)} уже в группе {chosen_group["name"]}')
                                         else:
-                                            print(f"В группе {chosen_group['name']} нужно удалить пользователя {us_id}")
+                                            print(f"В группе {chosen_group['name']} нужно удалить пользователя {get_user_name_by_id_from_db(us_id)}")
                                             del_dict['UserIds'] += [us_id]
                                             del_user = True
                                     if del_user:
                                         res = requests.post(BASE_URL + 'removeFromGroup', json=del_dict, headers=HEADER_dict)
                                         print(res.status_code)
                                         if res.status_code == 200:
-                                            pass
+                                            del_users_to_groups_after_apply(del_dict)
                                         else:
                                             sg.popup("Удаление не выполнено", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                     if add_user or del_user:
@@ -1175,6 +1223,7 @@ if __name__ == '__main__':
                                                                                     values=[user_from_db['login'],
                                                                                             user_from_db['name']],
                                                                                     icon=check[0])
+                                                    del_users_in_groups_after_delete_user(del_user_id)
                                                     window['-users-'].update(user_list)
                                                     window['-TREE2-'].update(treedata_update_user)
                                                     window_del_user.close()
@@ -1290,12 +1339,14 @@ if __name__ == '__main__':
                                         break
                                     if ev_add_group == 'addGroupButton':
                                         new_group_name = val_add_group['GroupName']
+                                        new_group_desc = val_add_group['description']
                                         add_group_dict = {}
                                         add_group_dict['name'] = new_group_name
+                                        add_group_dict['description'] = new_group_name
                                         print(add_group_dict)
-                                        res_del_user = requests.post(BASE_URL + 'addGroup', json=add_group_dict, headers=HEADER_dict)
-                                        print(res_del_user.status_code)
-                                        if res_del_user.status_code == 200:
+                                        res_add_user = requests.post(BASE_URL + 'addGroup', json=add_group_dict, headers=HEADER_dict)
+                                        print(res_add_user.status_code)
+                                        if res_add_user.status_code == 200:
                                             add_groups(get_groups_from_server())
                                             groups_from_db = get_groups_from_db()
                                             groups_from_db.sort(key=lambda i: i['name'])
@@ -1324,9 +1375,9 @@ if __name__ == '__main__':
                                     sg.popup('Не выбрана группа', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                 else:
                                     del_group_name = groups_from_db[values['-groups2-'][0]]['name']
-                                    window_exit = make_del_group_window(del_group_name)
+                                    window_del_group = make_del_group_window(del_group_name)
                                     while True:
-                                        ev_exit, val_exit = window_del_group.Read()
+                                        ev_del_group, val_del_group = window_del_group.Read()
                                         print(ev_del_group, val_del_group)
                                         if ev_del_group == sg.WIN_CLOSED or ev_del_group == 'Exit':
                                             print('Закрыл окно удаления пользователя')
@@ -1356,6 +1407,7 @@ if __name__ == '__main__':
                                                                                  values=[group_from_db['name'],
                                                                                          group_from_db['desc']],
                                                                                  icon=check[0])
+                                                del_users_in_groups_after_delete_group(del_group_id)
                                                 window['-groups2-'].update(group_list)
                                                 window['-TREE-'].update(treedata_update_group)
                                                 window_del_group.close()
