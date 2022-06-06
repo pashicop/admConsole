@@ -4,6 +4,7 @@ import threading
 from time import sleep
 from psgtray import SystemTray
 import requests
+# import os
 import sqlite3
 import re
 import PySimpleGUI as sg
@@ -38,11 +39,25 @@ check = [icon(0), icon(1), icon(2)]
 
 
 def init_db():
+    create_db()
     drop_db('all')
     users_from_server = get_users_from_server()
     add_users(users_from_server)
     add_groups(get_groups_from_server())
     add_user_in_groups(users_from_server)
+
+def create_db():
+    with open ('adm.db', 'w') as bd_file:
+        print('Файл БД создан')
+    con = sqlite3.connect('adm.db')
+    cur = con.cursor()
+    with open('pashi_db.db.sql', 'r') as c_sql:
+        sql_to_create = c_sql.read()
+        print(sql_to_create)
+    cur.executescript(sql_to_create)
+    con.commit()
+    con.close()
+
 
 def get_users_from_server():
     print(f'Запрашиваю пользователей..')
@@ -61,7 +76,7 @@ def get_groups_from_server():
 
 
 def add_users(users_list):
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     for user in users_list:
         db_insert_user = "insert or replace into Users(id, login, Display_name) Values ('" + user['id'] + "', '" + user['login'] + "', '" + user['displayName'] + "')"
@@ -70,7 +85,7 @@ def add_users(users_list):
     con.close()
 
 def add_groups(groups_list):
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     for group in groups_list:
         if group['description'] is None:
@@ -85,7 +100,7 @@ def add_groups(groups_list):
 
 
 def add_user_in_groups(users_list):
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     for user in users_list:
         for group_id in user['userGroupIds']:
@@ -95,7 +110,7 @@ def add_user_in_groups(users_list):
     con.close()
 
 def add_groups_to_user_after_apply(groups_for_user_dict):
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     for user_id in groups_for_user_dict['UserIds']:
         for group_id in groups_for_user_dict['GroupIds']:
@@ -105,7 +120,7 @@ def add_groups_to_user_after_apply(groups_for_user_dict):
     con.close()
 
 def add_users_to_group_after_apply(users_for_group_dict):
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     for group_id in users_for_group_dict['GroupIds']:
         for user_id in users_for_group_dict['UserIds']:
@@ -115,7 +130,7 @@ def add_users_to_group_after_apply(users_for_group_dict):
     con.close()
 
 def del_groups_to_user_after_apply(groups_for_user_dict):
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     for user_id in groups_for_user_dict['UserIds']:
         for group_id in groups_for_user_dict['GroupIds']:
@@ -125,7 +140,7 @@ def del_groups_to_user_after_apply(groups_for_user_dict):
     con.close()
 
 def del_users_in_groups_after_delete_group(del_group_id):
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     db_delete_group_for_user = "delete from Users_in_Groups where group_id = '" + del_group_id + "'"
     cur.execute(db_delete_group_for_user)
@@ -133,7 +148,7 @@ def del_users_in_groups_after_delete_group(del_group_id):
     con.close()
 
 def del_users_in_groups_after_delete_user(del_user_id):
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     db_delete_group_for_user = "delete from Users_in_Groups where user_id = '" + del_user_id + "'"
     cur.execute(db_delete_group_for_user)
@@ -141,7 +156,7 @@ def del_users_in_groups_after_delete_user(del_user_id):
     con.close()
 
 def del_users_to_groups_after_apply(users_for_group_dict):
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     for group_id in users_for_group_dict['GroupIds']:
         for user_id in users_for_group_dict['UserIds']:
@@ -151,7 +166,7 @@ def del_users_to_groups_after_apply(users_for_group_dict):
     con.close()
 
 def drop_db(table):
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     if table == 'all':
         db_delete_groups = "delete from Groups"
@@ -177,7 +192,7 @@ def drop_db(table):
     con.close()
 
 def get_users_from_db():
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     cur.execute('select * from users')
     users = cur.fetchall()
@@ -196,7 +211,7 @@ def get_users_from_db():
     return users_for_table
 
 def get_groups_from_db():
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     cur.execute('select * from groups')
     groups = cur.fetchall()
@@ -238,7 +253,7 @@ def get_groups_from_db():
 
 def get_users_for_group_from_db(id):
     print(f'Запрашиваю пользователей для группы', id)
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     db_query_users_for_group = "Select ug.user_id, u.login, u.display_name FROM Users_in_Groups ug " \
                                "LEFT JOIN Users u on ug.user_id = u.id " \
@@ -302,7 +317,7 @@ def get_users_for_group_from_db(id):
 #     return res_groups
 
 def get_groups_for_user_from_db(id):
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     db_query_groups_for_user = "Select ug.group_id, g.name, g.description FROM Users_in_Groups ug " \
                                "LEFT JOIN Users u on ug.user_id = u.id " \
@@ -337,7 +352,7 @@ def get_groups_for_user_from_db(id):
 #     return name
 
 def get_group_name_by_id_from_db(id):
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     db_query_group_name_by_id = "Select name from Groups where id = '" + id + "'"
     # print(db_query_group_name_by_id)
@@ -349,7 +364,7 @@ def get_group_name_by_id_from_db(id):
 
 
 def get_user_name_by_id_from_db(id):
-    con = sqlite3.connect('pashi_db.db')
+    con = sqlite3.connect('adm.db')
     cur = con.cursor()
     db_query_user_name_by_id = "Select Display_name from Users where id = '" + id + "'"
     # print(db_query_user_name_by_id)
