@@ -1,16 +1,18 @@
 import json
 import subprocess
 import threading
+from datetime import datetime
 from time import sleep
 from psgtray import SystemTray
 import requests
 # import os
 import sqlite3
-import re
+# import re
 import PySimpleGUI as sg
 from io import BytesIO
 from PIL import Image, ImageDraw
 import ipaddress
+import logging
 # import subprocess
 # from multiprocessing import Pool
 # from multiprocessing import Process, Queue
@@ -434,7 +436,7 @@ def make_main_window(ip):
                             key='-groups2-', expand_y=True, expand_x=True,
                             auto_size_columns=False, col_widths=(0, 10, 30))],],
                              expand_x=True, size=(480, 650)),
-                    sg.Frame('Пользователи',[[sg.Tree(data=treedata2, headings=('Логин', 'Имя'), col0_width=4, col_widths=(20, 30),
+                    sg.Frame('Пользователи', [[sg.Tree(data=treedata2, headings=('Логин', 'Имя'), col0_width=4, col_widths=(20, 30),
                             num_rows=10, key='-TREE2-', row_height=20, metadata=[], auto_size_columns=False,
                             show_expanded=False, enable_events=True, justification='left', expand_y="True",
                             select_mode=sg.TABLE_SELECT_MODE_BROWSE,
@@ -443,6 +445,22 @@ def make_main_window(ip):
                    [sg.Push(),
                     sg.Button('Применить', key='Apply2', disabled=True, disabled_button_color='gray', pad=((0, 10), (5, 10)))],
                    ]
+    tab3_layout = [
+        [sg.Text('Фильтр: '), sg.Input(size=(20, 1),
+                                       # enable_events=True,
+                                       key='-filterJournal-')],
+        [sg.Frame('Логи',
+                 [[sg.Multiline(reroute_cprint=True, key='journal', expand_x=True, expand_y=True, autoscroll=True)]], expand_x=True, expand_y=True
+                 ),
+         sg.Frame('Фильтр',
+                  [
+                      [sg.Checkbox('Info', enable_events=True, key='info')],
+                      [sg.Checkbox('Warning', enable_events=True, key='warning')],
+                      [sg.Checkbox('Error', enable_events=True, key='error')],
+                      [sg.Checkbox('Critical', enable_events=True, key='critical')],
+         ], vertical_alignment='top')
+         ]
+    ]
     layout = [[sg.Menu([
             ['Помощь', 'О программе'], ], key='-Menu-')],
               [sg.Frame('Сервер',[[sg.Push(), sg.Button('Старт', key='-Start-',
@@ -451,8 +469,9 @@ def make_main_window(ip):
                          disabled_button_color='gray'), sg.Push()]], size=(186,60),)],
               [sg.TabGroup(
         [[sg.Tab('Пользователи', tab1_layout, key="Tab1"),
-          sg.Tab('Группы', tab2_layout, key="Tab2")
-          ]], key="Tabs", size=(1000, 776))],
+          sg.Tab('Группы', tab2_layout, key="Tab2"),
+          sg.Tab('Журнал', tab3_layout, key="Tab3"),
+          ]], key="Tabs", size=(1000, 776), enable_events=True)],
               [sg.StatusBar(users_online_text, key='-StatusBar-', size=(100, 1))]]
     return sg.Window(label_text, layout, icon=ICON_BASE_64,  use_ttk_buttons=True,
                      enable_close_attempted_event=True, finalize=True)
@@ -618,13 +637,18 @@ if __name__ == '__main__':
     # print(sg.theme_global())
     # print(sg.theme_list())
     sg.theme_global('SystemDefaultForReal')
+    logging.basicConfig(filename='admin.log', filemode='a', format='%(asctime)s %(levelname)s %(message)s', encoding='cp1251', datefmt='%m/%d/%Y %H:%M:%S', level=logging.INFO)
+    logging.info('Старт лога')
+    logging.warning('ворнинг')
+    logging.error('еррор')
+    logging.critical('критическая')
     window_login = make_login_window()
     window_main_active = False
     while True:
         break_flag = False
         break_flag2 = False
         ev_login, val_login = window_login.Read()
-        print(ev_login, val_login)
+        # print(ev_login, val_login)
         if ev_login == sg.WIN_CLOSED or ev_login == 'Exit':
             break
         if ev_login == "OK button" and not window_main_active:
@@ -649,8 +673,8 @@ if __name__ == '__main__':
                             TOKEN = get_token(BASE_URL_AUTH)
                             HEADER_dict = {}
                             HEADER_dict["Authorization"] = "Bearer " + TOKEN
-                            print(TOKEN)
-                            print(HEADER_dict)
+                            # print(TOKEN)
+                            # print(HEADER_dict)
                             init_db()
                             users_from_db = get_users_from_db()
                             groups_from_db = get_groups_from_db()
@@ -674,7 +698,7 @@ if __name__ == '__main__':
                         tray = SystemTray(menu, single_click_events=False, window=window,
                                           icon=ICON_BASE_64)
                         tray.show_message('ОМЕГА К100', 'Приложение запущено!')
-                        sg.cprint(sg.get_versions())
+                        # sg.cprint(sg.get_versions())
                         tree = window['-TREE-']
                         tree.Widget.heading("#0", text='id')
                         tree2 = window['-TREE2-']
@@ -687,6 +711,10 @@ if __name__ == '__main__':
                         thread_started = False
                         filter_status = False
                         filter_status_group = False
+                        filter_journal_info = False
+                        filter_journal_warning = False
+                        filter_journal_error = False
+                        filter_journal_crirtical = False
                         while True:
                             if break_flag2:
                                 break
@@ -702,7 +730,7 @@ if __name__ == '__main__':
                             if event == '-THREAD-':
                                 current_db = server_status['db']
                                 dict_online = json.loads(values['-THREAD-'][1])
-                                print(dict_online)
+                                # print(dict_online)
                                 if dict_online["onlineUsersCount"] != -5:
                                     if current_db != dict_online['databaseVersion']:
                                         print(f"Версии БД не совпадают! {current_db} и {dict_online['databaseVersion']}")
@@ -719,22 +747,22 @@ if __name__ == '__main__':
                                     try:
                                         res_ping = requests.get(BASE_URL_PING, timeout=1)
                                     except Exception:
-                                        print("Сервер не отвечает")
+                                        sg.cprint("Сервер не отвечает")
                                     if res_ping == '':
-                                        print('Нет ответа сервера')
+                                        sg.cprint('Нет ответа сервера')
                                     else:
                                         if res_ping.status_code == 200:
-                                            print(f'{res_ping.text}')
+                                            # print(f'{res_ping.text}')
                                             dict_online_after_start = json.loads(res_ping.text)
-                                            print(dict_online_after_start)
+                                            # print(dict_online_after_start)
                                             window['-Start-'].update(disabled=True)
                                             window['-Stop-'].update(disabled=False)
                                             if not server_status['run']:
                                                 TOKEN = get_token(BASE_URL_AUTH)
                                                 HEADER_dict = {}
                                                 HEADER_dict["Authorization"] = "Bearer " + TOKEN
-                                                print(TOKEN)
-                                                print(HEADER_dict)
+                                                # print(TOKEN)
+                                                # print(HEADER_dict)
                                                 init_db()
                                                 users_from_db = get_users_from_db()
                                                 groups_from_db = get_groups_from_db()
@@ -796,7 +824,7 @@ if __name__ == '__main__':
                                 break_flag = True
                                 break
                             if type(event) is tuple:
-                                print(f'TUPLE! {event}')
+                                # print(f'TUPLE! {event}')
                                 if event[0] == '-users-' and event[1] == '+CLICKED+':
                                     if event[2][0] is None:
                                         pass
@@ -805,7 +833,7 @@ if __name__ == '__main__':
                                             user_id = filtered_users_list_of_dict[event[2][0]]['id']
                                         else:
                                             user_id = users_from_db[event[2][0]]['id']
-                                        print(user_id)
+                                        # print(user_id)
                                         window['Apply'].update(disabled=True)
                                         groups_for_user = get_groups_for_user_from_db(user_id)
                                         group_for_user_ids = []
@@ -823,7 +851,7 @@ if __name__ == '__main__':
                                                 tree.update(key=group_id_for_tree, icon=check[0])
                                 elif event[0] == '-groups2-' and event[1] == '+CLICKED+':
                                     window['Apply2'].update(disabled=True)
-                                    print(values['-groups2-'])
+                                    # print(values['-groups2-'])
                                     if event[2][0] is None:
                                         pass
                                     else:
@@ -847,21 +875,21 @@ if __name__ == '__main__':
                                             else:
                                                 tree2.update(key=user_id_for_tree, icon=check[0])
                             if event == 'Изменить пользователя':
-                                print('Изменяем пользователя')
+                                # print('Изменяем пользователя')
                                 if filter_status:
                                     user_to_change = filtered_users_list_of_dict[values['-users-'][0]]
                                 else:
                                     user_to_change = users_from_db[values['-users-'][0]]
                                 # user_to_change = users_from_db[values['-users-'][0]]
-                                print(user_to_change)
+                                # print(user_to_change)
                                 window_modify_user = make_modify_user_window(user_to_change)
                                 window_modify_user.Element('UserModifyLogin').SetFocus()
                                 password_clear = False
                                 while True:
                                     ev_modify_user, val_modify_user = window_modify_user.Read()
-                                    print(ev_modify_user, val_modify_user)
+                                    # print(ev_modify_user, val_modify_user)
                                     if ev_modify_user == sg.WIN_CLOSED or ev_modify_user == 'Exit':
-                                        print('Закрыл окно добавления пользователя')
+                                        # print('Закрыл окно добавления пользователя')
                                         break
                                     if ev_modify_user == 'showModifyPassword':
                                         if password_clear:
@@ -875,20 +903,31 @@ if __name__ == '__main__':
                                     if ev_modify_user == 'modifyUserButton':
                                         modify_user_login, modify_user_name, modify_user_password = val_modify_user.values()
                                         modify_user_dict = {}
-                                        modify = False
+                                        modify_name = False
+                                        modify_password = False
                                         modify_user_dict['id'] = user_to_change['id']
                                         modify_user_dict['login'] = modify_user_login
                                         if modify_user_name != user_to_change['name']:
                                             modify_user_dict['displayName'] = modify_user_name
-                                            modify = True
+                                            modify_name = True
                                         if modify_user_password:
                                             modify_user_dict['password'] = modify_user_password
-                                            modify = True
-                                        print(modify_user_dict)
-                                        if modify:
+                                            modify_password = True
+                                        # print(modify_user_dict)
+                                        if modify_name or modify_password:
                                             res_modify_user = requests.post(BASE_URL + 'updateUser', json=modify_user_dict, headers=HEADER_dict)
-                                            print(res_modify_user.status_code)
+                                            # sg.cprint(f'Изменяем пользователя - {res_modify_user.status_code}')
                                             if res_modify_user.status_code == 200:
+                                                # sg.cprint(
+                                                #     f'ERROR: {datetime.now().isoformat(sep=" ", timespec="seconds")}. '
+                                                #     f'Ошибка при изменении пользователя {modify_user_login} - {res_modify_user.status_code}',
+                                                #     colors=('red', 'white'))
+                                                if modify_name:
+                                                    # sg.cprint(f'INFO: {datetime.now().isoformat(sep=" ", timespec="seconds")}. Пользователю {modify_user_login} изменили имя')
+                                                    logging.info(f'Пользователю {modify_user_login} изменили имя')
+                                                if modify_password:
+                                                    # sg.cprint(f'INFO: {datetime.now().isoformat(sep=" ", timespec="seconds")}. Пользователю {modify_user_login} изменили пароль')
+                                                    logging.info(f'Пользователю {modify_user_login} изменили пароль')
                                                 users_from_server = get_users_from_server()
                                                 add_users(users_from_server)
                                                 users_from_db = get_users_from_db()
@@ -910,6 +949,11 @@ if __name__ == '__main__':
                                                          no_titlebar=True, background_color='lightgray')
                                                 break
                                             else:
+                                                # sg.cprint(
+                                                #     f'ERROR: {datetime.now().isoformat(sep=" ", timespec="seconds")}. '
+                                                #     f'Ошибка при изменении пользователя {modify_user_login} - {res_modify_user.status_code}',
+                                                #     colors=('red', 'white'))
+                                                logging.error('Ошибка изменения пользователя')
                                                 sg.popup("Пользователь не изменён!", title='Инфо', icon=ICON_BASE_64,
                                                          no_titlebar=True, background_color='lightgray')
                                         else:
@@ -1388,6 +1432,19 @@ if __name__ == '__main__':
                                             [group_from_db['id'], group_from_db['name'], group_from_db['desc']])
                                     window['-groups2-'].update(group_list_after_filter_null)
                                     filter_status_group = False
+                            # if event == '-filterJournal-':
+                            #     filter_status_journal = True
+                            #     if values['-filterJournal-']:
+                            #         search_str = values['-filterJournal-']
+                            #         print(search_str)
+                            #         journal_list = values['journal'].split('\n')
+                            #         filtered_journal = []
+                            #         # for journal_element in journal_list:
+                            #         filtered_journal = list(filter(lambda x: search_str in x, journal_list))
+                            #         print(filtered_journal)
+                            #         output_text = "\n".join(filtered_journal)
+                            #         print(output_text)
+                            #         window['journal'].update(output_text)
                             if event == '-AddGroup-':
                                 window_add_group = make_add_group_window()
                                 window_add_group.Element('GroupName').SetFocus()
@@ -1641,6 +1698,7 @@ if __name__ == '__main__':
                                         ev_exit, val_exit = window_exit.Read()
                                         print(ev_exit, val_exit)
                                         if ev_exit == 'okExit':
+                                            logging.info('Стоп лога')
                                             window_exit.close()
                                             tray.close()
                                             break_flag2 = True
@@ -1652,6 +1710,29 @@ if __name__ == '__main__':
                                             print('Закрыл окно выхода')
                                             window_exit.close()
                                             break
+                            if event == 'Tabs':
+                                if values['Tabs'] == 'Tab3':
+                                    with open('admin.log', mode='r') as log_f:
+                                        s = log_f.read()
+                                        window['journal'].update(s)
+                            if event == 'info':
+                                if filter_journal_info:
+                                    filter_journal_info = False
+                                    with open('admin.log', mode='r') as log_f:
+                                        s = log_f.read()
+                                        window['journal'].update(s)
+                                else:
+                                    filter_journal_info = True
+                                    with open('admin.log', mode='r') as log_f:
+                                        s = log_f.read()
+                                        journal_list = s.split('\n')
+                                        filtered_journal = []
+                                        filtered_journal = list(filter(lambda x: 'INFO' in x, journal_list))
+                                        print(filtered_journal)
+                                        output_text = "\n".join(filtered_journal)
+                                        print(output_text)
+                                        window['journal'].update(output_text)
+
                         # else:
                         #     sg.popup('Введите правильный ip!', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                     else:
