@@ -447,19 +447,21 @@ def make_main_window(ip):
                    ]
     tab3_layout = [
         [sg.Text('Фильтр: '), sg.Input(size=(20, 1),
-                                       # enable_events=True,
+                                       enable_events=True,
                                        key='-filterJournal-')],
         [sg.Frame('Логи',
-                 [[sg.Multiline(reroute_cprint=True, key='journal', expand_x=True, expand_y=True, autoscroll=True)]], expand_x=True, expand_y=True
+                 [[sg.Multiline(key='journal', write_only=True, disabled=True, expand_x=True, expand_y=True, autoscroll=True)]], expand_x=True, expand_y=True
                  ),
-         sg.Frame('Фильтр',
+         sg.Frame('Типы',
                   [
                       [sg.Checkbox('Info', enable_events=True, key='info')],
                       [sg.Checkbox('Warning', enable_events=True, key='warning')],
                       [sg.Checkbox('Error', enable_events=True, key='error')],
                       [sg.Checkbox('Critical', enable_events=True, key='critical')],
          ], vertical_alignment='top')
-         ]
+         ],
+        [sg.T('Количество записей:'), sg.Multiline(key='countLogs', no_scrollbar=True,
+                      write_only=True, disabled=True, auto_refresh=True, background_color='lightgray', size=10)],
     ]
     layout = [[sg.Menu([
             ['Помощь', 'О программе'], ], key='-Menu-')],
@@ -633,6 +635,47 @@ def get_token(url_auth):
             print(f'Некорректный ответ {res_auth.status_code} от сервера {url_auth}')
     return token
 
+def filter_journal(journal: list):
+    if filter_journal_info:
+        if filter_journal_warning:
+            if filter_journal_error:
+                if filter_journal_crirtical:
+                    return list(
+                        filter(lambda x: 'INFO' in x or 'CRITICAL' in x or 'ERROR' in x or 'WARNING' in x, journal))
+                else:
+                    return list(filter(lambda x: 'INFO' in x or 'ERROR' in x or 'WARNING' in x, journal))
+            elif filter_journal_crirtical:
+                return list(filter(lambda x: 'INFO' in x or 'CRITICAL' in x or 'WARNING' in x, journal))
+            return list(filter(lambda x: 'INFO' in x or 'WARNING' in x, journal))
+        elif filter_journal_error:
+            if filter_journal_crirtical:
+                return list(filter(lambda x: 'INFO' in x or 'CRITICAL' in x or 'ERROR' in x, journal))
+            else:
+                return list(filter(lambda x: 'INFO' in x or 'ERROR' in x, journal))
+        elif filter_journal_crirtical:
+            return list(filter(lambda x: 'INFO' in x or 'CRITICAL' in x, journal))
+        else:
+            return list(filter(lambda x: 'INFO' in x, journal))
+    elif filter_journal_warning:
+        if filter_journal_error:
+            if filter_journal_crirtical:
+                return list(filter(lambda x: 'CRITICAL' in x or 'ERROR' in x or 'WARNING' in x, journal))
+            else:
+                return list(filter(lambda x: 'ERROR' in x or 'WARNING' in x, journal))
+        elif filter_journal_crirtical:
+            return list(filter(lambda x: 'CRITICAL' in x or 'WARNING' in x, journal))
+        else:
+            return list(filter(lambda x: 'WARNING' in x, journal))
+    elif filter_journal_error:
+        if filter_journal_crirtical:
+            return list(filter(lambda x: 'CRITICAL' in x or 'ERROR' in x, journal))
+        else:
+            return list(filter(lambda x: 'ERROR' in x, journal))
+    elif filter_journal_crirtical:
+        return list(filter(lambda x: 'CRITICAL' in x, journal))
+    else:
+        return journal
+
 if __name__ == '__main__':
     # print(sg.theme_global())
     # print(sg.theme_list())
@@ -711,6 +754,7 @@ if __name__ == '__main__':
                         thread_started = False
                         filter_status = False
                         filter_status_group = False
+                        filter_status_journal = False
                         filter_journal_info = False
                         filter_journal_warning = False
                         filter_journal_error = False
@@ -1432,19 +1476,23 @@ if __name__ == '__main__':
                                             [group_from_db['id'], group_from_db['name'], group_from_db['desc']])
                                     window['-groups2-'].update(group_list_after_filter_null)
                                     filter_status_group = False
-                            # if event == '-filterJournal-':
-                            #     filter_status_journal = True
-                            #     if values['-filterJournal-']:
-                            #         search_str = values['-filterJournal-']
-                            #         print(search_str)
-                            #         journal_list = values['journal'].split('\n')
-                            #         filtered_journal = []
-                            #         # for journal_element in journal_list:
-                            #         filtered_journal = list(filter(lambda x: search_str in x, journal_list))
-                            #         print(filtered_journal)
-                            #         output_text = "\n".join(filtered_journal)
-                            #         print(output_text)
-                            #         window['journal'].update(output_text)
+                            if event == '-filterJournal-':
+                                filter_status_journal = True
+                                with open('admin.log', mode='r') as log_f:
+                                    journal_list = log_f.read().rstrip('\n').split('\n')
+                                filtered_journal = []
+                                filtered_journal = filter_journal(journal_list)
+                                if values['-filterJournal-']:
+                                    search_str = values['-filterJournal-']
+                                    print(search_str)
+                                    filtered_journal = list(filter(lambda x: search_str in x, filtered_journal))
+                                    output_text = "\n".join(filtered_journal)
+                                    window['journal'].update(output_text)
+                                    window['countLogs'].update(len(filtered_journal))
+                                else:
+                                    filter_status_journal = False
+                                    window['journal'].update('\n'.join(filtered_journal))
+                                    window['countLogs'].update(len(filtered_journal))
                             if event == '-AddGroup-':
                                 window_add_group = make_add_group_window()
                                 window_add_group.Element('GroupName').SetFocus()
@@ -1713,26 +1761,75 @@ if __name__ == '__main__':
                             if event == 'Tabs':
                                 if values['Tabs'] == 'Tab3':
                                     with open('admin.log', mode='r') as log_f:
-                                        s = log_f.read()
-                                        window['journal'].update(s)
+                                        s = log_f.read().rstrip('\n')
+                                        journal_list = s.split('\n')
+                                        filtered_journal = []
+                                        filtered_journal = filter_journal(journal_list)
+                                        if filter_status_journal:
+                                            filtered_journal = list(filter(lambda x: search_str in x, filtered_journal))
+                                        output_text = "\n".join(filtered_journal)
+                                        window['journal'].update(output_text)
+                                        window['countLogs'].update(len(filtered_journal))
                             if event == 'info':
                                 if filter_journal_info:
                                     filter_journal_info = False
-                                    with open('admin.log', mode='r') as log_f:
-                                        s = log_f.read()
-                                        window['journal'].update(s)
                                 else:
                                     filter_journal_info = True
-                                    with open('admin.log', mode='r') as log_f:
-                                        s = log_f.read()
-                                        journal_list = s.split('\n')
-                                        filtered_journal = []
-                                        filtered_journal = list(filter(lambda x: 'INFO' in x, journal_list))
-                                        print(filtered_journal)
-                                        output_text = "\n".join(filtered_journal)
-                                        print(output_text)
-                                        window['journal'].update(output_text)
-
+                                with open('admin.log', mode='r') as log_f:
+                                    s = log_f.read().rstrip('\n')
+                                    journal_list = s.split('\n')
+                                    filtered_journal = []
+                                    filtered_journal = filter_journal(journal_list)
+                                    if filter_status_journal:
+                                        filtered_journal = list(filter(lambda x: search_str in x, filtered_journal))
+                                    output_text = "\n".join(filtered_journal)
+                                    window['journal'].update(output_text)
+                                    window['countLogs'].update(len(filtered_journal))
+                            if event == 'warning':
+                                if filter_journal_warning:
+                                    filter_journal_warning = False
+                                else:
+                                    filter_journal_warning = True
+                                with open('admin.log', mode='r') as log_f:
+                                    s = log_f.read().rstrip('\n')
+                                    journal_list = s.split('\n')
+                                    filtered_journal = []
+                                    filtered_journal = filter_journal(journal_list)
+                                    if filter_status_journal:
+                                        filtered_journal = list(filter(lambda x: search_str in x, filtered_journal))
+                                    output_text = "\n".join(filtered_journal)
+                                    window['journal'].update(output_text)
+                                    window['countLogs'].update(len(filtered_journal))
+                            if event == 'error':
+                                if filter_journal_error:
+                                    filter_journal_error = False
+                                else:
+                                    filter_journal_error = True
+                                with open('admin.log', mode='r') as log_f:
+                                    s = log_f.read().rstrip('\n')
+                                    journal_list = s.split('\n')
+                                    filtered_journal = []
+                                    filtered_journal = filter_journal(journal_list)
+                                    if filter_status_journal:
+                                        filtered_journal = list(filter(lambda x: search_str in x, filtered_journal))
+                                    output_text = "\n".join(filtered_journal)
+                                    window['journal'].update(output_text)
+                                    window['countLogs'].update(len(filtered_journal))
+                            if event == 'critical':
+                                if filter_journal_crirtical:
+                                    filter_journal_crirtical = False
+                                else:
+                                    filter_journal_crirtical = True
+                                with open('admin.log', mode='r') as log_f:
+                                    s = log_f.read().rstrip('\n')
+                                    journal_list = s.split('\n')
+                                    filtered_journal = []
+                                    filtered_journal = filter_journal(journal_list)
+                                    if filter_status_journal:
+                                        filtered_journal = list(filter(lambda x: search_str in x, filtered_journal))
+                                    output_text = "\n".join(filtered_journal)
+                                    window['journal'].update(output_text)
+                                    window['countLogs'].update(len(filtered_journal))
                         # else:
                         #     sg.popup('Введите правильный ip!', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                     else:
