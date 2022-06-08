@@ -54,7 +54,7 @@ def create_db():
         print('Файл БД создан')
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
-    with open('pashi_db.db.sql', 'r') as c_sql:
+    with open('config\pashi_db.db.sql', 'r') as c_sql:
         sql_to_create = c_sql.read()
         print(sql_to_create)
     cur.executescript(sql_to_create)
