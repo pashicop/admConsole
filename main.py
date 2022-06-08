@@ -19,7 +19,7 @@ import logging
 
 BASE_URL = 'http://10.1.4.147:5000/api/admin/'
 ICON_BASE_64 = b'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'
-version = 'v0.9'
+version = 'v0.91'
 
 def icon(check):
     box = (16, 16)
@@ -450,7 +450,7 @@ def make_main_window(ip):
                                        enable_events=True,
                                        key='-filterJournal-')],
         [sg.Frame('Логи',
-                 [[sg.Multiline(key='journal', write_only=True, disabled=True, expand_x=True, expand_y=True, autoscroll=True)]], expand_x=True, expand_y=True
+                 [[sg.Multiline(key='journal', write_only=True, disabled=True, expand_x=True, expand_y=True, autoscroll=True, auto_refresh=True)]], expand_x=True, expand_y=True
                  ),
          sg.Frame('Типы',
                   [
@@ -575,14 +575,26 @@ def the_thread(ip, window):
         except Exception as e:
             print(f'Сервер не доступен {e}')
         if res_ping == '':
+            logging.error(f'[{num}] Сервер не доступен')
             print('Сервер не доступен')
             default_json = json.dumps({"onlineUsersCount": -5,"databaseVersion":0})
             window.write_event_value('-THREAD-', (threading.currentThread().name, default_json))
         else:
             if res_ping.status_code == 200:
-                num += 1
+                logging.info(f'[{num}] Сервер доступен ')
                 print(f'[{num}] Пингуем.. {res_ping.text}')
                 window.write_event_value('-THREAD-', (threading.currentThread().name, res_ping.text))
+        num += 1
+        with open('admin.log', mode='r') as log_f:
+            s = log_f.read().rstrip('\n')
+            journal_list = s.split('\n')
+            filtered_journal = []
+            filtered_journal = filter_journal(journal_list)
+            if filter_status_journal:
+                filtered_journal = list(filter(lambda x: search_str in x, filtered_journal))
+            output_text = "\n".join(filtered_journal)
+            window['journal'].update(output_text)
+            window['countLogs'].update(len(filtered_journal))
         sleep(10)
 
 def check_server(url_ping):
@@ -962,15 +974,9 @@ if __name__ == '__main__':
                                             res_modify_user = requests.post(BASE_URL + 'updateUser', json=modify_user_dict, headers=HEADER_dict)
                                             # sg.cprint(f'Изменяем пользователя - {res_modify_user.status_code}')
                                             if res_modify_user.status_code == 200:
-                                                # sg.cprint(
-                                                #     f'ERROR: {datetime.now().isoformat(sep=" ", timespec="seconds")}. '
-                                                #     f'Ошибка при изменении пользователя {modify_user_login} - {res_modify_user.status_code}',
-                                                #     colors=('red', 'white'))
                                                 if modify_name:
-                                                    # sg.cprint(f'INFO: {datetime.now().isoformat(sep=" ", timespec="seconds")}. Пользователю {modify_user_login} изменили имя')
                                                     logging.info(f'Пользователю {modify_user_login} изменили имя')
                                                 if modify_password:
-                                                    # sg.cprint(f'INFO: {datetime.now().isoformat(sep=" ", timespec="seconds")}. Пользователю {modify_user_login} изменили пароль')
                                                     logging.info(f'Пользователю {modify_user_login} изменили пароль')
                                                 users_from_server = get_users_from_server()
                                                 add_users(users_from_server)
@@ -993,11 +999,7 @@ if __name__ == '__main__':
                                                          no_titlebar=True, background_color='lightgray')
                                                 break
                                             else:
-                                                # sg.cprint(
-                                                #     f'ERROR: {datetime.now().isoformat(sep=" ", timespec="seconds")}. '
-                                                #     f'Ошибка при изменении пользователя {modify_user_login} - {res_modify_user.status_code}',
-                                                #     colors=('red', 'white'))
-                                                logging.error('Ошибка изменения пользователя')
+                                                logging.error(f'Ошибка изменения пользователя - {res_modify_user.status_code}')
                                                 sg.popup("Пользователь не изменён!", title='Инфо', icon=ICON_BASE_64,
                                                          no_titlebar=True, background_color='lightgray')
                                         else:
@@ -1032,6 +1034,7 @@ if __name__ == '__main__':
                                             res_modify_group = requests.post(BASE_URL + 'updateGroup', json=modify_group_dict, headers=HEADER_dict)
                                             print(res_modify_group.status_code)
                                             if res_modify_group.status_code == 200:
+                                                logging.info(f'Группу {modify_group_name} изменили')
                                                 add_groups(get_groups_from_server())
                                                 groups_from_db = get_groups_from_db()
                                                 groups_from_db.sort(key=lambda i: i['name'])
@@ -1050,6 +1053,7 @@ if __name__ == '__main__':
                                                          no_titlebar=True, background_color='lightgray')
                                                 break
                                             else:
+                                                logging.error(f'ошибка изменения группы - {res_modify_group.status_code}')
                                                 sg.popup("Группа не изменена!", title='Инфо', icon=ICON_BASE_64,
                                                          no_titlebar=True, background_color='lightgray')
                                         else:
@@ -1107,11 +1111,13 @@ if __name__ == '__main__':
                                             add_group = True
                                     if add_group:
                                         print(add_dict)
-                                        res = requests.post(BASE_URL + 'addToGroup', json=add_dict, headers=HEADER_dict)
-                                        print(res.status_code)
-                                        if res.status_code == 200:
+                                        res_add = requests.post(BASE_URL + 'addToGroup', json=add_dict, headers=HEADER_dict)
+                                        print(res_add.status_code)
+                                        if res_add.status_code == 200:
+                                            logging.info(f'Добавление групп выполнено для {chosen_login["name"]}')
                                             add_groups_to_user_after_apply(add_dict)
                                         else:
+                                            logging.error(f'Добавление групп НЕ выполнено для {chosen_login["name"]}')
                                             sg.popup("Добавление не выполнено", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                     for gr_id in current_groups_ids:
                                         if gr_id in tree.metadata:
@@ -1121,17 +1127,21 @@ if __name__ == '__main__':
                                             del_dict['GroupIds'] += [gr_id]
                                             del_group = True
                                     if del_group:
-                                        res = requests.post(BASE_URL + 'removeFromGroup', json=del_dict, headers=HEADER_dict)
-                                        print(res.status_code)
-                                        if res.status_code == 200:
+                                        res_del = requests.post(BASE_URL + 'removeFromGroup', json=del_dict, headers=HEADER_dict)
+                                        print(res_del.status_code)
+                                        if res_del.status_code == 200:
+                                            logging.info(f'Удаление групп выполнено для {chosen_login["name"]}')
                                             del_groups_to_user_after_apply(del_dict)
                                         else:
+                                            logging.error(f'Удаление групп НЕ выполнено для {chosen_login["name"]}')
                                             sg.popup("Удаление не выполнено", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
-                                    if add_group or del_group:
+                                    if (add_group or del_group):
                                         add_del_text = 'Изменение групп для ' + chosen_login['name'] + ' выполнено'
+                                        # logging.info(f'Добавление групп НЕ выполнено для {chosen_login["name"]}')
                                         sg.popup(add_del_text, title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                         window['Apply'].update(disabled=True)
                                     else:
+                                        # logging.error(f'')
                                         sg.popup('Нет изменений', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
                                                  background_color='lightgray')
                             if event == "Apply2":
@@ -1165,12 +1175,15 @@ if __name__ == '__main__':
                                             add_dict['UserIds'] += [us_id]
                                             add_user = True
                                     if add_user:
-                                        res = requests.post(BASE_URL + 'addToGroup', json=add_dict, headers=HEADER_dict)
-                                        print(res.status_code)
-                                        if res.status_code == 200:
+                                        res_add = requests.post(BASE_URL + 'addToGroup', json=add_dict, headers=HEADER_dict)
+                                        print(res_add.status_code)
+                                        if res_add.status_code == 200:
+                                            logging.info(f'Добавление пользователей выполнено для {chosen_group["name"]}')
                                             # window['-users2-'].update(get_users_for_group(chosen_group[1]))
                                             add_users_to_group_after_apply(add_dict)
                                         else:
+                                            logging.error(
+                                                f'Добавление пользователей НЕ выполнено для {chosen_group["name"]} - {res_add.status_code}')
                                             sg.popup("Добавление не выполнено", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                     for us_id in current_users_ids:
                                         if us_id in tree2.metadata:
@@ -1180,11 +1193,15 @@ if __name__ == '__main__':
                                             del_dict['UserIds'] += [us_id]
                                             del_user = True
                                     if del_user:
-                                        res = requests.post(BASE_URL + 'removeFromGroup', json=del_dict, headers=HEADER_dict)
-                                        print(res.status_code)
-                                        if res.status_code == 200:
+                                        res_del = requests.post(BASE_URL + 'removeFromGroup', json=del_dict, headers=HEADER_dict)
+                                        print(res_del.status_code)
+                                        if res_del.status_code == 200:
+                                            logging.info(
+                                                f'Удаление пользователей выполнено для {chosen_group["name"]}')
                                             del_users_to_groups_after_apply(del_dict)
                                         else:
+                                            logging.error(
+                                                f'Удаление пользователей НЕ выполнено для {chosen_group["name"]} - {res_del.status_code}')
                                             sg.popup("Удаление не выполнено", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                     if add_user or del_user:
                                         add_del_text = 'Изменение пользователей для ' + chosen_group['name'] + ' выполнено'
@@ -1225,6 +1242,7 @@ if __name__ == '__main__':
                                         res_add_user = requests.post(BASE_URL + 'addUser', json=add_user_dict, headers=HEADER_dict)
                                         print(res_add_user.status_code)
                                         if res_add_user.status_code == 200:
+                                            logging.info(f'Пользователь {new_user_login} добавлен')
                                             add_users(get_users_from_server())
                                             users_from_db = get_users_from_db()
                                             users_from_db.sort(key=lambda i: i['login'])
@@ -1260,6 +1278,7 @@ if __name__ == '__main__':
                                                      no_titlebar=True, background_color='lightgray')
                                             break
                                         else:
+                                            logging.error(f'Пользователь {new_user_login} НЕ добавлен - {res_add_user.status_code}')
                                             sg.popup("Пользователь не добавлен!", title='Инфо', icon=ICON_BASE_64,
                                                      no_titlebar=True, background_color='lightgray')
                             if event == '-DelUser-':
@@ -1294,6 +1313,7 @@ if __name__ == '__main__':
                                                 res_del_user = requests.post(BASE_URL + 'deleteUser', json=del_user, headers=HEADER_dict)
                                                 print(res_del_user.status_code)
                                                 if res_del_user.status_code == 200:
+                                                    logging.info(f'Пользователь {del_user["name"]} удалён')
                                                     drop_db('users')
                                                     add_users(get_users_from_server())
                                                     users_from_db = get_users_from_db()
@@ -1332,6 +1352,7 @@ if __name__ == '__main__':
                                                              no_titlebar=True, background_color='lightgray')
                                                     break
                                                 else:
+                                                    logging.error(f'Пользователь {del_user["name"]} НЕ удалён')
                                                     sg.popup("Пользователь не удалён!", title='Инфо', icon=ICON_BASE_64,
                                                              no_titlebar=True, background_color='lightgray')
                             if event == '-CloneUser-':
@@ -1374,6 +1395,7 @@ if __name__ == '__main__':
                                             print(res_clone_user.status_code)
                                             print(res_clone_user.text)
                                             if res_clone_user.status_code == 200:
+                                                logging.info(f'Новый пользователь {clone_user_login} создан')
                                                 original_groups = get_groups_for_user_from_db(user_clone['id'])
                                                 original_groups_ids = []
                                                 for or_gr in original_groups:
@@ -1384,6 +1406,7 @@ if __name__ == '__main__':
                                                 res_clone_add_group = requests.post(BASE_URL + 'addToGroup', json=clone_dict, headers=HEADER_dict)
                                                 print(res_clone_add_group.status_code)
                                                 if res_clone_add_group.status_code == 200:
+                                                    logging.info(f'Группы для {clone_user_login} добавлены')
                                                     add_users(get_users_from_server())
                                                     add_groups_to_user_after_apply(clone_dict)
                                                     users_from_db = get_users_from_db()
@@ -1429,9 +1452,11 @@ if __name__ == '__main__':
                                                              no_titlebar=True, background_color='lightgray')
                                                     break
                                                 else:
-                                                    sg.popup("Добавление не выполнено", title='Инфо', icon=ICON_BASE_64,
+                                                    logging.error(f'Добавление групп для {clone_user_login} НЕ выполнено - {res_clone_add_group.status_code}')
+                                                    sg.popup("Добавление групп не выполнено", title='Инфо', icon=ICON_BASE_64,
                                                              no_titlebar=True, background_color='lightgray')
                                             else:
+                                                logging.error(f'Новый пользователь {clone_user_login} НЕ добавлен')
                                                 sg.popup("Пользователь не добавлен!", title='Инфо', icon=ICON_BASE_64,
                                                          no_titlebar=True, background_color='lightgray')
                             if event == '-filterUser-':
@@ -1512,6 +1537,7 @@ if __name__ == '__main__':
                                         res_add_user = requests.post(BASE_URL + 'addGroup', json=add_group_dict, headers=HEADER_dict)
                                         print(res_add_user.status_code)
                                         if res_add_user.status_code == 200:
+                                            logging.info(f'Группа {new_group_name} добавлена')
                                             add_groups(get_groups_from_server())
                                             groups_from_db = get_groups_from_db()
                                             groups_from_db.sort(key=lambda i: i['name'])
@@ -1547,6 +1573,7 @@ if __name__ == '__main__':
                                                      no_titlebar=True, background_color='lightgray')
                                             break
                                         else:
+                                            logging.error(f'Группа {new_group_name} НЕ добавлена')
                                             sg.popup("Группа не добавлена!", title='Инфо', icon=ICON_BASE_64,
                                                      no_titlebar=True, background_color='lightgray')
                                             window_add_group.Element('GroupName').SetFocus()
@@ -1579,6 +1606,7 @@ if __name__ == '__main__':
                                             res_del_group = requests.post(BASE_URL + 'deleteGroup', json=del_group, headers=HEADER_dict)
                                             print(res_del_group.status_code)
                                             if res_del_group.status_code == 200:
+                                                logging.info(f'Группа {del_group["name"]} удалена')
                                                 drop_db('groups')
                                                 add_groups(get_groups_from_server())
                                                 groups_from_db = get_groups_from_db()
@@ -1620,6 +1648,7 @@ if __name__ == '__main__':
                                                          no_titlebar=True, background_color='lightgray')
                                                 break
                                             else:
+                                                logging.error(f'Группа {del_group["name"]} НЕ удалена - {res_del_group.status_code}')
                                                 sg.popup("Группа не удалена!", title='Инфо', icon=ICON_BASE_64,
                                                          no_titlebar=True, background_color='lightgray')
                             if event == '-Start-':
@@ -1638,11 +1667,13 @@ if __name__ == '__main__':
                                     if res_ping == '':
                                         print('Нет ответа сервера')
                                         if i == 2:
+                                            logging.critical(f'Сервер не отвечает - {res_ping.status_code}')
                                             sg.popup("Сервер не отвечает", title='Инфо', icon=ICON_BASE_64,
                                                      no_titlebar=True,
                                                      background_color='lightgray')
                                     else:
                                         if res_ping.status_code == 200:
+                                            logging.info(f'Сервер запущен')
                                             print(f'{res_ping.text}')
                                             dict_online_after_start = json.loads(res_ping.text)
                                             print(dict_online_after_start)
@@ -1710,6 +1741,7 @@ if __name__ == '__main__':
                                 print('Останавливаем сервер')
                                 res = requests.get(BASE_URL + 'stopServer', headers=HEADER_dict)
                                 if res.status_code == 200:
+                                    logging.warning(f'Сервер остановлен администратором')
                                     sg.popup('Сервер остановлен', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                     window['-StatusBar-'].update('Сервер не запущен', background_color='red')
                                     window['-Start-'].update(disabled=False)
@@ -1726,6 +1758,11 @@ if __name__ == '__main__':
                                     window['-DelGroup-'].update(disabled=True)
                                     window['-filterUser-'].update(disabled=True)
                                     server_status['run'] = False
+                                else:
+                                    logging.warning(f'Сервер не остановлен')
+                                    sg.popup("Сервер не остановлен", title='Инфо', icon=ICON_BASE_64,
+                                             no_titlebar=True,
+                                             background_color='lightgray')
                             if event == tray.key:
                                 event = values[event]
                                 if event in ('Отобразить окно', sg.EVENT_SYSTEM_TRAY_ICON_DOUBLE_CLICKED):
@@ -1746,6 +1783,7 @@ if __name__ == '__main__':
                                         ev_exit, val_exit = window_exit.Read()
                                         print(ev_exit, val_exit)
                                         if ev_exit == 'okExit':
+                                            logging.info('Панель администратора остановлена')
                                             logging.info('Стоп лога')
                                             window_exit.close()
                                             tray.close()
