@@ -6,6 +6,7 @@ from time import sleep
 from psgtray import SystemTray
 import requests
 # import os
+from pathlib import Path
 import sqlite3
 # import re
 import PySimpleGUI as sg
@@ -54,9 +55,9 @@ def create_db():
         print('Файл БД создан')
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
-    with open('config\pashi_db.db.sql', 'r') as c_sql:
+    with open(Path(Path.cwd(), 'config', 'pashi_db.db.sql'), 'r') as c_sql:
         sql_to_create = c_sql.read()
-        print(sql_to_create)
+        # print(sql_to_create)
     cur.executescript(sql_to_create)
     con.commit()
     con.close()
