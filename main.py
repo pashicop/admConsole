@@ -3,7 +3,7 @@ import subprocess
 import threading
 from datetime import datetime
 from time import sleep
-from psgtray import SystemTray
+# from psgtray import SystemTray
 import requests
 # import os
 from pathlib import Path
@@ -14,6 +14,8 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 import ipaddress
 import logging
+from pystray import MenuItem as item, Menu as menu
+import pystray
 # import subprocess
 # from multiprocessing import Pool
 # from multiprocessing import Process, Queue
@@ -480,7 +482,7 @@ def make_main_window(ip):
                      enable_close_attempted_event=True, finalize=True)
 
 def make_login_window():
-    layout_login = [[sg.Push(), sg.Text("Адрес сервера"), sg.Input(default_text="10.1.4.128", key="ip")],
+    layout_login = [[sg.Push(), sg.Text("Адрес сервера"), sg.Input(default_text="10.1.4.156", key="ip")],
                     [sg.Push(), sg.Text("Пароль"), sg.Input(focus=True, key="password", password_char='*')],
                     [sg.Push(), sg.Ok(key="OK button"), sg.Push()]]
     return sg.Window('Вход на сервер', layout_login, icon=ICON_BASE_64, finalize=True)
@@ -566,7 +568,7 @@ def make_exit_window():
                      finalize=True, modal=True)
 
 def the_thread(ip, window):
-    sleep(10)
+    sleep(3)
     num = 0
     print('Запускаем поток')
     while True:
@@ -596,7 +598,7 @@ def the_thread(ip, window):
             output_text = "\n".join(filtered_journal)
             window['journal'].update(output_text)
             window['countLogs'].update(len(filtered_journal))
-        sleep(10)
+        sleep(3)
 
 def check_server(url_ping):
     status = {'run': False, 'online': '', 'db': ''}
@@ -689,9 +691,57 @@ def filter_journal(journal: list):
     else:
         return journal
 
+def get_icon():
+    try:
+        icon_logo = Image.open('logo.ico')
+    except FileNotFoundError:
+        print('Файл не найден')
+        logging.error('Файл логотипа не найден!')
+    # print(icon_logo.format, icon_logo.size, icon_logo.mode)
+    return icon_logo
+
+# def create_menu():
+#     menu_tray = (item('Выйти', exit_app), item('Отобразить окно', show_app), item('Скрыть окно', hide_app))
+#     return menu_tray
+
+def exit_app(icon, item):
+    print('exit')
+    global break_flag
+    break_flag = True
+    window_exit = make_exit_window()
+    while True:
+        ev_exit, val_exit = window_exit.Read()
+        print(ev_exit, val_exit)
+        if ev_exit == 'okExit':
+            logging.info('Панель администратора остановлена')
+            logging.info('Стоп лога')
+            window_exit.close()
+            icon.stop()
+            global break_flag2
+            break_flag2 = True
+            break
+        if ev_exit == sg.WIN_CLOSED or ev_exit == 'Exit':
+            print('Закрыл окно выхода')
+            break
+        if ev_exit == 'noExit':
+            print('Закрыл окно выхода')
+            window_exit.close()
+            break
+
+
+def show_app(icon):
+    print('show')
+    window.un_hide()
+    icon.stop()
+    print('show2')
+
+# def hide_app():
+#     print('hide')
+
 if __name__ == '__main__':
     # print(sg.theme_global())
     # print(sg.theme_list())
+    # get_icon()
     sg.theme_global('SystemDefaultForReal')
     logging.basicConfig(filename='admin.log', filemode='a', format='%(asctime)s %(levelname)s %(message)s', encoding='cp1251', datefmt='%m/%d/%Y %H:%M:%S', level=logging.INFO)
     logging.info('Старт лога')
@@ -750,10 +800,10 @@ if __name__ == '__main__':
                         window_main_active = True
                         window_login.Hide()
                         window = make_main_window(ip)
-                        menu = ['', ['Отобразить окно', 'Скрыть окно', 'Выйти']]
-                        tray = SystemTray(menu, single_click_events=False, window=window,
-                                          icon=ICON_BASE_64)
-                        tray.show_message('ОМЕГА К100', 'Приложение запущено!')
+                        # menu = ['', ['Отобразить окно', 'Скрыть окно', 'Выйти']]
+                        # tray = SystemTray(menu, single_click_events=False, window=window,
+                        #                   icon=ICON_BASE_64)
+                        # tray.show_message('ОМЕГА К100', 'Приложение запущено!')
                         # sg.cprint(sg.get_versions())
                         tree = window['-TREE-']
                         tree.Widget.heading("#0", text='id')
@@ -874,9 +924,25 @@ if __name__ == '__main__':
                                     window['-filterUser-'].update(disabled=True)
                                     server_status['run'] = False
                             if event == sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
+                                # break_flag = True
+                                # break
                                 window.hide()
-                                tray.show_icon()
-                                tray.show_message('ОМЕГА К100', 'Приложение свёрнуто!')
+                                icon = pystray.Icon('Панель администратора', icon=get_icon(),
+                                                    menu=menu(
+                                                        item('Выйти', exit_app),
+                                                        item('Отобразить окно', show_app),
+                                                        # item('Скрыть окно', hide_app)
+                                                    ))
+                                # icon.run_detached()
+                                # print(icon.HAS_NOTIFICATION)
+                                # icon.notify('Приложение свёрнуто!', '1111')
+                                sg.popup("Приложение свёрнуто!", title='Инфо', icon=ICON_BASE_64,
+                                         no_titlebar=True, background_color='lightgray', auto_close=True,
+                                         auto_close_duration=10)
+                                icon.run()
+                                # window.hide()
+                                # tray.show_icon()
+                                # tray.show_message('ОМЕГА К100', 'Приложение свёрнуто!')
                             if event == sg.WIN_CLOSED or event == 'Exit':
                                 break_flag = True
                                 break
@@ -1654,7 +1720,7 @@ if __name__ == '__main__':
                                                          no_titlebar=True, background_color='lightgray')
                             if event == '-Start-':
                                 print('Стартуем сервер')
-                                process = subprocess.Popen("ssh pashi@10.1.4.128 'bash ./run > /dev/null'", shell=True,
+                                process = subprocess.Popen("ssh pashi@10.1.4.156 'bash ./run > /dev/null'", shell=True,
                                                                stdout=subprocess.PIPE,
                                                                stderr=subprocess.PIPE,
                                                                executable=r'C:\Program Files\PowerShell\7\pwsh.exe')
@@ -1764,39 +1830,39 @@ if __name__ == '__main__':
                                     sg.popup("Сервер не остановлен", title='Инфо', icon=ICON_BASE_64,
                                              no_titlebar=True,
                                              background_color='lightgray')
-                            if event == tray.key:
-                                event = values[event]
-                                if event in ('Отобразить окно', sg.EVENT_SYSTEM_TRAY_ICON_DOUBLE_CLICKED):
-                                    window.un_hide()
-                                    window.bring_to_front()
-                                elif event in ('Скрыть окно'):
-                                    window.hide()
-                                    tray.show_icon()
-                                    tray.show_message('ОМЕГА К100', 'Приложение свёрнуто!')
-                                elif event == 'Hide Icon':
-                                    tray.hide_icon()
-                                elif event == 'Show Icon':
-                                    tray.show_icon()
-                                elif event == 'Выйти':
-                                    break_flag = True
-                                    window_exit = make_exit_window()
-                                    while True:
-                                        ev_exit, val_exit = window_exit.Read()
-                                        print(ev_exit, val_exit)
-                                        if ev_exit == 'okExit':
-                                            logging.info('Панель администратора остановлена')
-                                            logging.info('Стоп лога')
-                                            window_exit.close()
-                                            tray.close()
-                                            break_flag2 = True
-                                            break
-                                        if ev_exit == sg.WIN_CLOSED or ev_exit == 'Exit':
-                                            print('Закрыл окно выхода')
-                                            break
-                                        if ev_exit == 'noExit':
-                                            print('Закрыл окно выхода')
-                                            window_exit.close()
-                                            break
+                            # if event == tray.key:
+                            #     event = values[event]
+                            #     if event in ('Отобразить окно', sg.EVENT_SYSTEM_TRAY_ICON_DOUBLE_CLICKED):
+                            #         window.un_hide()
+                            #         window.bring_to_front()
+                            #     elif event in ('Скрыть окно'):
+                            #         window.hide()
+                            #         tray.show_icon()
+                            #         tray.show_message('ОМЕГА К100', 'Приложение свёрнуто!')
+                            #     elif event == 'Hide Icon':
+                            #         tray.hide_icon()
+                            #     elif event == 'Show Icon':
+                            #         tray.show_icon()
+                            #     elif event == 'Выйти':
+                            #         break_flag = True
+                            #         window_exit = make_exit_window()
+                            #         while True:
+                            #             ev_exit, val_exit = window_exit.Read()
+                            #             print(ev_exit, val_exit)
+                            #             if ev_exit == 'okExit':
+                            #                 logging.info('Панель администратора остановлена')
+                            #                 logging.info('Стоп лога')
+                            #                 window_exit.close()
+                            #                 tray.close()
+                            #                 break_flag2 = True
+                            #                 break
+                            #             if ev_exit == sg.WIN_CLOSED or ev_exit == 'Exit':
+                            #                 print('Закрыл окно выхода')
+                            #                 break
+                            #             if ev_exit == 'noExit':
+                            #                 print('Закрыл окно выхода')
+                            #                 window_exit.close()
+                            #                 break
                             if event == 'Tabs':
                                 if values['Tabs'] == 'Tab3':
                                     with open('admin.log', mode='r') as log_f:
