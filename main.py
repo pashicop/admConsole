@@ -476,7 +476,7 @@ def make_main_window(ip):
         [[sg.Tab('Пользователи', tab1_layout, key="Tab1"),
           sg.Tab('Группы', tab2_layout, key="Tab2"),
           sg.Tab('Журнал', tab3_layout, key="Tab3"),
-          ]], key="Tabs", size=(1000, 776), enable_events=True)],
+          ]], key="Tabs", size=(1000, 790), enable_events=True)],
               [sg.StatusBar(users_online_text, key='-StatusBar-', size=(100, 1))]]
     return sg.Window(label_text, layout, icon=ICON_BASE_64,  use_ttk_buttons=True,
                      enable_close_attempted_event=True, finalize=True)
@@ -588,8 +588,9 @@ def the_thread(ip, window):
                 print(f'[{num}] Пингуем.. {res_ping.text}')
                 window.write_event_value('-THREAD-', (threading.currentThread().name, res_ping.text))
         num += 1
-        with open('admin.log', mode='r') as log_f:
-            s = log_f.read().rstrip('\n')
+        with open('admin.log', mode='r', encoding='cp1251') as log_f:
+            s = log_f.read()
+            s = s.rstrip('\n')
             journal_list = s.split('\n')
             filtered_journal = []
             filtered_journal = filter_journal(journal_list)
@@ -926,20 +927,42 @@ if __name__ == '__main__':
                             if event == sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
                                 # break_flag = True
                                 # break
-                                window.hide()
-                                icon = pystray.Icon('Панель администратора', icon=get_icon(),
-                                                    menu=menu(
-                                                        item('Выйти', exit_app),
-                                                        item('Отобразить окно', show_app),
+                                # window.hide()
+                                print('exit')
+                                # global break_flag
+                                break_flag = True
+                                window_exit = make_exit_window()
+                                while True:
+                                    ev_exit, val_exit = window_exit.Read()
+                                    print(ev_exit, val_exit)
+                                    if ev_exit == 'okExit':
+                                        logging.info('Панель администратора остановлена')
+                                        logging.info('Стоп лога')
+                                        window_exit.close()
+                                        # icon.stop()
+                                        # global break_flag2
+                                        break_flag2 = True
+                                        break
+                                    if ev_exit == sg.WIN_CLOSED or ev_exit == 'Exit':
+                                        print('Закрыл окно выхода')
+                                        break
+                                    if ev_exit == 'noExit':
+                                        print('Закрыл окно выхода')
+                                        window_exit.close()
+                                        break
+                                # icon = pystray.Icon('adm Panel', icon=get_icon(),
+                                #                     menu=menu(
+                                #                         item('Exit', exit_app),
+                                #                         item('Show', show_app, default=True)))
                                                         # item('Скрыть окно', hide_app)
-                                                    ))
+                                                    # ))
+                                # sg.popup("Приложение свёрнуто!\nОкно закроется через 10 секунд", title='Инфо', icon=ICON_BASE_64,
+                                #          no_titlebar=True, background_color='lightgray', auto_close=True,
+                                #          auto_close_duration=10)
+                                # icon.run()
+                                # icon.notify('Приложение свёрнуто!', '1111')
                                 # icon.run_detached()
                                 # print(icon.HAS_NOTIFICATION)
-                                # icon.notify('Приложение свёрнуто!', '1111')
-                                sg.popup("Приложение свёрнуто!", title='Инфо', icon=ICON_BASE_64,
-                                         no_titlebar=True, background_color='lightgray', auto_close=True,
-                                         auto_close_duration=10)
-                                icon.run()
                                 # window.hide()
                                 # tray.show_icon()
                                 # tray.show_message('ОМЕГА К100', 'Приложение свёрнуто!')
@@ -1570,7 +1593,7 @@ if __name__ == '__main__':
                                     filter_status_group = False
                             if event == '-filterJournal-':
                                 filter_status_journal = True
-                                with open('admin.log', mode='r') as log_f:
+                                with open('admin.log', mode='r', encoding='cp1251') as log_f:
                                     journal_list = log_f.read().rstrip('\n').split('\n')
                                 filtered_journal = []
                                 filtered_journal = filter_journal(journal_list)
@@ -1720,10 +1743,16 @@ if __name__ == '__main__':
                                                          no_titlebar=True, background_color='lightgray')
                             if event == '-Start-':
                                 print('Стартуем сервер')
-                                process = subprocess.Popen("ssh pashi@10.1.4.156 'bash ./run > /dev/null'", shell=True,
+                                path_home_server = Path(Path.home(), 'Omega')
+                                print(path_home_server)
+                                start_comand = 'cd ' + str(path_home_server) + ' && ./run'
+                                process = subprocess.Popen(start_comand, shell=True,
                                                                stdout=subprocess.PIPE,
-                                                               stderr=subprocess.PIPE,
-                                                               executable=r'C:\Program Files\PowerShell\7\pwsh.exe')
+                                                               stderr=subprocess.PIPE)
+                                # process = subprocess.Popen("ssh pashi@10.1.4.156 'bash ./run > /dev/null'", shell=True,
+                                #                                stdout=subprocess.PIPE,
+                                #                                stderr=subprocess.PIPE,
+                                #                                executable=r'C:\Program Files\PowerShell\7\pwsh.exe')
                                 for i in range(3):
                                     sleep(1)
                                     res_ping = ''
@@ -1865,7 +1894,7 @@ if __name__ == '__main__':
                             #                 break
                             if event == 'Tabs':
                                 if values['Tabs'] == 'Tab3':
-                                    with open('admin.log', mode='r') as log_f:
+                                    with open('admin.log', mode='r', encoding='cp1251') as log_f:
                                         s = log_f.read().rstrip('\n')
                                         journal_list = s.split('\n')
                                         filtered_journal = []
@@ -1880,7 +1909,7 @@ if __name__ == '__main__':
                                     filter_journal_info = False
                                 else:
                                     filter_journal_info = True
-                                with open('admin.log', mode='r') as log_f:
+                                with open('admin.log', mode='r', encoding='cp1251') as log_f:
                                     s = log_f.read().rstrip('\n')
                                     journal_list = s.split('\n')
                                     filtered_journal = []
@@ -1895,7 +1924,7 @@ if __name__ == '__main__':
                                     filter_journal_warning = False
                                 else:
                                     filter_journal_warning = True
-                                with open('admin.log', mode='r') as log_f:
+                                with open('admin.log', mode='r', encoding='cp1251') as log_f:
                                     s = log_f.read().rstrip('\n')
                                     journal_list = s.split('\n')
                                     filtered_journal = []
@@ -1910,7 +1939,7 @@ if __name__ == '__main__':
                                     filter_journal_error = False
                                 else:
                                     filter_journal_error = True
-                                with open('admin.log', mode='r') as log_f:
+                                with open('admin.log', mode='r', encoding='cp1251') as log_f:
                                     s = log_f.read().rstrip('\n')
                                     journal_list = s.split('\n')
                                     filtered_journal = []
@@ -1925,7 +1954,7 @@ if __name__ == '__main__':
                                     filter_journal_crirtical = False
                                 else:
                                     filter_journal_crirtical = True
-                                with open('admin.log', mode='r') as log_f:
+                                with open('admin.log', mode='r', encoding='cp1251') as log_f:
                                     s = log_f.read().rstrip('\n')
                                     journal_list = s.split('\n')
                                     filtered_journal = []
