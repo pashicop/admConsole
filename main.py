@@ -1594,7 +1594,7 @@ if __name__ == '__main__':
                                         new_group_desc = val_add_group['description']
                                         add_group_dict = {}
                                         add_group_dict['name'] = new_group_name
-                                        add_group_dict['description'] = new_group_name
+                                        add_group_dict['description'] = new_group_desc
                                         # print(add_group_dict)
                                         res_add_user = requests.post(BASE_URL + 'addGroup', json=add_group_dict, headers=HEADER_dict)
                                         # print(res_add_user.status_code)
