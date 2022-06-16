@@ -1716,9 +1716,9 @@ if __name__ == '__main__':
                             if event == '-Start-':
                                 print('Стартуем сервер')
                                 sg.popup('Запускаем сервер', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
-                                         background_color='lightgray')
+                                         background_color='lightgray', non_blocking=True)
                                 path_home_server = Path(Path.home(), 'Omega')
-                                # print(path_home_server)
+                                print(path_home_server)
                                 start_command = 'cd ' + str(path_home_server) + ' && ./run'
                                 process = subprocess.Popen(start_command, shell=True,
                                                                stdout=subprocess.PIPE,
