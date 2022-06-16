@@ -68,17 +68,17 @@ def create_db():
 
 
 def get_users_from_server():
-    print(f'Запрашиваю пользователей..')
+    # print(f'Запрашиваю пользователей..')
     res = requests.get(BASE_URL + 'users', headers=HEADER_dict)
-    print(res)
+    # print(res)
     users = json.loads(res.text)
     return users
 
 
 def get_groups_from_server():
-    print(f'Запрашиваю группы..')
+    # print(f'Запрашиваю группы..')
     res = requests.get(BASE_URL + 'groups', headers=HEADER_dict)
-    print(res)
+    # print(res)
     groups = json.loads(res.text)
     return groups
 
@@ -204,7 +204,7 @@ def get_users_from_db():
     cur = con.cursor()
     cur.execute('select * from users')
     users = cur.fetchall()
-    print('Пользователи:')
+    # print('Пользователи:')
     users_for_table = list()
     for user in users:
         # print(user)
@@ -214,7 +214,7 @@ def get_users_from_db():
         user_for_table['id'] = user[0]
         # print(user_for_table)
         users_for_table.append(user_for_table)
-    print('---')
+    # print('---')
     con.close()
     return users_for_table
 
@@ -223,7 +223,7 @@ def get_groups_from_db():
     cur = con.cursor()
     cur.execute('select * from groups')
     groups = cur.fetchall()
-    print('Группы:')
+    # print('Группы:')
     groups_for_table = list()
     for group in groups:
         # print(group)
@@ -233,7 +233,7 @@ def get_groups_from_db():
         group_for_table['desc'] = group[2]
         # print(group_for_table)
         groups_for_table.append(group_for_table)
-    print('---')
+    # print('---')
     con.close()
     return groups_for_table
 
@@ -433,7 +433,7 @@ def make_login_window():
     ips = os.popen("hostname -I").read()
     if ips:
         ips = ips.split(" ")
-        print(ips)
+        # print(ips)
         try:
             ip = ipaddress.ip_address(ips[0]).exploded
         except ValueError:
@@ -441,10 +441,10 @@ def make_login_window():
             ip = ''
     else:
         ip = ''
-    layout_login = [[sg.Push(), sg.Text("Адрес сервера"), sg.Input(default_text=ip, key="ip")],
-                    [sg.Push(), sg.Text("Пароль"), sg.Input(focus=True, key="password", password_char='*')],
-                    [sg.Push(), sg.Ok(key="OK button"), sg.Push()]]
-    return sg.Window('Вход на сервер', layout_login, icon=ICON_BASE_64, finalize=True)
+    layout_login = [[sg.Push(background_color='white'), sg.Text("Адрес сервера", background_color='white'), sg.Input(default_text=ip, key="ip")],
+                    [sg.Push(background_color='white'), sg.Text("Пароль", background_color='white'), sg.Input(focus=True, key="password", password_char='*')],
+                    [sg.Push(background_color='white'), sg.Ok(key="OK button"), sg.Push(background_color='white')]]
+    return sg.Window('Вход на сервер', layout_login, icon=ICON_BASE_64, background_color='white', finalize=True)
 
 def make_add_user_window():
     layout_add_user = [
@@ -529,7 +529,7 @@ def make_exit_window():
 def the_thread(ip, window):
     sleep(3)
     num = 0
-    print('Запускаем поток')
+    # print('Запускаем поток')
     while True:
         res_ping = ''
         try:
@@ -538,13 +538,13 @@ def the_thread(ip, window):
             print(f'Сервер не доступен {e}')
         if res_ping == '':
             logging.error(f'[{num}] Сервер не доступен')
-            print('Сервер не доступен')
-            default_json = json.dumps({"onlineUsersCount": -5,"databaseVersion":0})
+            # print('Сервер не доступен')
+            default_json = json.dumps({"onlineUsersCount": -5, "databaseVersion": 0})
             window.write_event_value('-THREAD-', (threading.currentThread().name, default_json))
         else:
             if res_ping.status_code == 200:
                 logging.info(f'[{num}] Сервер доступен ')
-                print(f'[{num}] Пингуем.. {res_ping.text}')
+                # print(f'[{num}] Пингуем.. {res_ping.text}')
                 window.write_event_value('-THREAD-', (threading.currentThread().name, res_ping.text))
         num += 1
         with open('admin.log', mode='r', encoding='cp1251') as log_f:
@@ -571,15 +571,15 @@ def check_server(url_ping):
         print('Сервер не отвечает')
     else:
         if res_ping.status_code == 200:
-            print(f'Запрос на {url_ping} прошёл успешно')
+            # print(f'Запрос на {url_ping} прошёл успешно')
             status['run'] = True
             res_dict = json.loads(res_ping.text)
-            print(res_dict)
+            # print(res_dict)
             # update_text = 'Пользователей онлайн: ' + str(res_dict['onlineUsersCount']) \
             #               + ', Версия БД: ' + str(res_dict['databaseVersion'])
             status['online'] = res_dict['onlineUsersCount']
             status['db'] = res_dict['databaseVersion']
-            print(status)
+            # print(status)
         else:
             print(f'Некорректный ответ {res_ping.status_code} от сервера {url_ping}')
     return status
@@ -596,16 +596,16 @@ def get_token(url_auth):
         print('Сервер не отвечает')
     else:
         if res_auth.status_code == 200:
-            print(f'Запрос токена {url_auth} прошёл успешно')
+            # print(f'Запрос токена {url_auth} прошёл успешно')
             res_dict = json.loads(res_auth.text)
             # print(res_dict)
             error = res_dict['error']
             if error:
                 print(f'Ошибка сервера: {error}')
             else:
-                print(f'Запрос токена без ошибок')
+                # print(f'Запрос токена без ошибок')
                 token = res_dict['token']
-                print(token)
+                # print(token)
         else:
             print(f'Некорректный ответ {res_auth.status_code} от сервера {url_auth}')
     return token
@@ -665,13 +665,13 @@ def get_icon():
 #     return menu_tray
 
 def exit_app(icon, item):
-    print('exit')
+    # print('exit')
     global break_flag
     break_flag = True
     window_exit = make_exit_window()
     while True:
         ev_exit, val_exit = window_exit.Read()
-        print(ev_exit, val_exit)
+        # print(ev_exit, val_exit)
         if ev_exit == 'okExit':
             logging.info('Панель администратора остановлена')
             logging.info('Стоп лога')
@@ -681,19 +681,19 @@ def exit_app(icon, item):
             break_flag2 = True
             break
         if ev_exit == sg.WIN_CLOSED or ev_exit == 'Exit':
-            print('Закрыл окно выхода')
+            # print('Закрыл окно выхода')
             break
         if ev_exit == 'noExit':
-            print('Закрыл окно выхода')
+            # print('Закрыл окно выхода')
             window_exit.close()
             break
 
 
 def show_app(icon):
-    print('show')
+    # print('show')
     window.un_hide()
     icon.stop()
-    print('show2')
+    # print('show2')
 
 # def hide_app():
 #     print('hide')
@@ -793,16 +793,16 @@ if __name__ == '__main__':
                                 threading.Thread(target=the_thread, args=(BASE_URL_PING, window,), daemon=True).start()
                                 thread_started = True
                             event, values = window.read()
-                            print(event, type(event), values)
+                            # print(event, type(event), values)
                             if event == '-THREAD-':
                                 current_db = server_status['db']
                                 dict_online = json.loads(values['-THREAD-'][1])
                                 # print(dict_online)
                                 if dict_online["onlineUsersCount"] != -5:
-                                    if current_db != dict_online['databaseVersion']:
-                                        print(f"Версии БД не совпадают! {current_db} и {dict_online['databaseVersion']}")
-                                    else:
-                                        print(f"Версии БД совпадают! {current_db} и {dict_online['databaseVersion']}")
+                                    # if current_db != dict_online['databaseVersion']:
+                                    #     print(f"Версии БД не совпадают! {current_db} и {dict_online['databaseVersion']}")
+                                    # else:
+                                    #     print(f"Версии БД совпадают! {current_db} и {dict_online['databaseVersion']}")
                                     if not server_status['run']:
                                         update_text = 'Пользователей онлайн: обновление..' + ', Версия БД: ' + str(dict_online["databaseVersion"])
                                         window['-StatusBar-'].update(update_text, background_color='lightgreen')
@@ -887,13 +887,13 @@ if __name__ == '__main__':
                                 # break_flag = True
                                 # break
                                 # window.hide()
-                                print('exit')
+                                # print('exit')
                                 # global break_flag
                                 break_flag = True
                                 window_exit = make_exit_window()
                                 while True:
                                     ev_exit, val_exit = window_exit.Read()
-                                    print(ev_exit, val_exit)
+                                    # print(ev_exit, val_exit)
                                     if ev_exit == 'okExit':
                                         logging.info('Панель администратора остановлена')
                                         logging.info('Стоп лога')
@@ -1055,16 +1055,16 @@ if __name__ == '__main__':
                                             sg.popup("Нет никаких изменений!", title='Инфо', icon=ICON_BASE_64,
                                                      no_titlebar=True, background_color='lightgray')
                             if event == 'Изменить группу':
-                                print('Изменяем группу')
+                                # print('Изменяем группу')
                                 group_to_change = groups_from_db[values['-groups2-'][0]]
-                                print(group_to_change)
+                                # print(group_to_change)
                                 window_modify_group = make_modify_group_window(group_to_change)
                                 window_modify_group.Element('GroupModifyName').SetFocus()
                                 while True:
                                     ev_modify_group, val_modify_group = window_modify_group.Read()
-                                    print(ev_modify_group, val_modify_group)
+                                    # print(ev_modify_group, val_modify_group)
                                     if ev_modify_group == sg.WIN_CLOSED or ev_modify_group == 'Exit':
-                                        print('Закрыл окно изменения группы')
+                                        # print('Закрыл окно изменения группы')
                                         break
                                     if ev_modify_group == 'modifyGroupButton':
                                         modify_group_name = val_modify_group['GroupModifyName']
@@ -1079,9 +1079,9 @@ if __name__ == '__main__':
                                             modify_group_dict['description'] = modify_group_desc
                                             modify_group = True
                                         if modify_group:
-                                            print(modify_group_dict)
+                                            # print(modify_group_dict)
                                             res_modify_group = requests.post(BASE_URL + 'updateGroup', json=modify_group_dict, headers=HEADER_dict)
-                                            print(res_modify_group.status_code)
+                                            # print(res_modify_group.status_code)
                                             if res_modify_group.status_code == 200:
                                                 logging.info(f'Группу {modify_group_name} изменили')
                                                 add_groups(get_groups_from_server())
@@ -1110,7 +1110,7 @@ if __name__ == '__main__':
                                                      no_titlebar=True, background_color='lightgray')
                             if event == '-TREE-' and values['-TREE-'] != []:
                                 group_id = values['-TREE-'][0]
-                                print(group_id)
+                                # print(group_id)
                                 if group_id in tree.metadata:
                                     tree.metadata.remove(group_id)
                                     tree.update(key=group_id, icon=check[0])
@@ -1120,7 +1120,7 @@ if __name__ == '__main__':
                                 window['Apply'].update(disabled=False)
                             if event == '-TREE2-' and values['-TREE2-'] != []:
                                 user_id = values['-TREE2-'][0]
-                                print(user_id)
+                                # print(user_id)
                                 if user_id in tree2.metadata:
                                     tree2.metadata.remove(user_id)
                                     tree2.update(key=user_id, icon=check[0])
@@ -1129,20 +1129,20 @@ if __name__ == '__main__':
                                     tree2.update(key=user_id, icon=check[1])
                                 window['Apply2'].update(disabled=False)
                             if event == "Apply":
-                                print("clicked Apply")
+                                # print("clicked Apply")
                                 if values['-users-'] == []:
                                     print(f"Не выбран пользователь")
                                     sg.popup('Не выбран пользователь', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                 else:
                                     add_group = False
                                     del_group = False
-                                    print(values['-users-'])
+                                    # print(values['-users-'])
                                     if filter_status:
                                         chosen_login = filtered_users_list_of_dict[values['-users-'][0]]
                                     else:
                                         chosen_login = users_from_db[values['-users-'][0]]
                                     # chosen_login = users_from_db[values['-users-'][0]]
-                                    print(f"Выбран пользователь {chosen_login['name']}")
+                                    # print(f"Выбран пользователь {chosen_login['name']}")
                                     # print(tree.metadata)
                                     current_groups = get_groups_for_user_from_db(chosen_login['id'])
                                     # print(current_groups)
@@ -1159,9 +1159,9 @@ if __name__ == '__main__':
                                             add_dict['GroupIds'] += [gr_id]
                                             add_group = True
                                     if add_group:
-                                        print(add_dict)
+                                        # print(add_dict)
                                         res_add = requests.post(BASE_URL + 'addToGroup', json=add_dict, headers=HEADER_dict)
-                                        print(res_add.status_code)
+                                        # print(res_add.status_code)
                                         if res_add.status_code == 200:
                                             logging.info(f'Добавление групп выполнено для {chosen_login["name"]}')
                                             add_groups_to_user_after_apply(add_dict)
@@ -1177,7 +1177,7 @@ if __name__ == '__main__':
                                             del_group = True
                                     if del_group:
                                         res_del = requests.post(BASE_URL + 'removeFromGroup', json=del_dict, headers=HEADER_dict)
-                                        print(res_del.status_code)
+                                        # print(res_del.status_code)
                                         if res_del.status_code == 200:
                                             logging.info(f'Удаление групп выполнено для {chosen_login["name"]}')
                                             del_groups_to_user_after_apply(del_dict)
@@ -1194,20 +1194,20 @@ if __name__ == '__main__':
                                         sg.popup('Нет изменений', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
                                                  background_color='lightgray')
                             if event == "Apply2":
-                                print("clicked Apply2")
+                                # print("clicked Apply2")
                                 if values['-groups2-'] == []:
-                                    print(f"Не выбрана группа")
+                                    # print(f"Не выбрана группа")
                                     sg.popup('Не выбрана группа', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                 else:
                                     add_user = False
                                     del_user = False
-                                    print(values['-groups2-'])
+                                    # print(values['-groups2-'])
                                     if filter_status_group:
                                         chosen_group = filtered_groups_list_of_dict[values['-groups2-'][0]]
                                     else:
                                         chosen_group = groups_from_db[values['-groups2-'][0]]
                                     # chosen_group = groups_from_db[values['-groups2-'][0]]
-                                    print(f"Выбрана группа {chosen_group['name']}")
+                                    # print(f"Выбрана группа {chosen_group['name']}")
                                     # print(tree.metadata)
                                     current_users = get_users_for_group_from_db(chosen_group['id'])
                                     # print(current_users)
@@ -1225,7 +1225,7 @@ if __name__ == '__main__':
                                             add_user = True
                                     if add_user:
                                         res_add = requests.post(BASE_URL + 'addToGroup', json=add_dict, headers=HEADER_dict)
-                                        print(res_add.status_code)
+                                        # print(res_add.status_code)
                                         if res_add.status_code == 200:
                                             logging.info(f'Добавление пользователей выполнено для {chosen_group["name"]}')
                                             # window['-users2-'].update(get_users_for_group(chosen_group[1]))
@@ -1243,7 +1243,7 @@ if __name__ == '__main__':
                                             del_user = True
                                     if del_user:
                                         res_del = requests.post(BASE_URL + 'removeFromGroup', json=del_dict, headers=HEADER_dict)
-                                        print(res_del.status_code)
+                                        # print(res_del.status_code)
                                         if res_del.status_code == 200:
                                             logging.info(
                                                 f'Удаление пользователей выполнено для {chosen_group["name"]}')
@@ -1268,9 +1268,9 @@ if __name__ == '__main__':
                                 password_clear = False
                                 while True:
                                     ev_add_user, val_add_user = window_add_user.Read()
-                                    print(ev_add_user, val_add_user)
+                                    # print(ev_add_user, val_add_user)
                                     if ev_add_user == sg.WIN_CLOSED or ev_add_user == 'Exit':
-                                        print('Закрыл окно добавления пользователя')
+                                        # print('Закрыл окно добавления пользователя')
                                         break
                                     if ev_add_user == 'showPassword':
                                         if password_clear:
@@ -1287,9 +1287,9 @@ if __name__ == '__main__':
                                         add_user_dict['login'] = new_user_login
                                         add_user_dict['displayName'] = new_user_name
                                         add_user_dict['password'] = new_user_password
-                                        print(add_user_dict)
+                                        # print(add_user_dict)
                                         res_add_user = requests.post(BASE_URL + 'addUser', json=add_user_dict, headers=HEADER_dict)
-                                        print(res_add_user.status_code)
+                                        # print(res_add_user.status_code)
                                         if res_add_user.status_code == 200:
                                             logging.info(f'Пользователь {new_user_login} добавлен')
                                             add_users(get_users_from_server())
@@ -1306,12 +1306,12 @@ if __name__ == '__main__':
                                                                             icon=check[0])
                                             if filter_status:
                                                 search_str = values['-filterUser-']
-                                                print(search_str)
+                                                # print(search_str)
                                                 filtered_users = filter(lambda x: search_str in x['login'],
                                                                         users_from_db)
                                                 filtered_users_list_of_dict = list(filtered_users)
-                                                print(filtered_users_list_of_dict)
-                                                print(len(filtered_users_list_of_dict))
+                                                # print(filtered_users_list_of_dict)
+                                                # print(len(filtered_users_list_of_dict))
                                                 filtered_users_list = list()
                                                 # users_from_db = filtered_users_list_of_dict
                                                 for filtered_user_list_of_dict in filtered_users_list_of_dict:
@@ -1332,7 +1332,7 @@ if __name__ == '__main__':
                                                      no_titlebar=True, background_color='lightgray')
                             if event == '-DelUser-':
                                 if values['-users-'] == []:
-                                    print(f"Не выбран пользователь")
+                                    # print(f"Не выбран пользователь")
                                     sg.popup('Не выбран пользователь', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                 else:
                                     if filter_status:
@@ -1346,21 +1346,21 @@ if __name__ == '__main__':
                                         window_del_user = make_del_user_window(del_user['name'])
                                         while True:
                                             ev_del_user, val_del_user = window_del_user.Read()
-                                            print(ev_del_user, val_del_user)
+                                            # print(ev_del_user, val_del_user)
                                             if ev_del_user == sg.WIN_CLOSED or ev_del_user == 'Exit':
-                                                print('Закрыл окно удаления пользователя')
+                                                # print('Закрыл окно удаления пользователя')
                                                 break
                                             if ev_del_user == 'noDel':
-                                                print('Закрыл окно удаления пользователя')
+                                                # print('Закрыл окно удаления пользователя')
                                                 window_del_user.close()
                                                 break
                                             if ev_del_user == 'okDel':
                                                 # del_user_id = users_from_db[values['-users-'][0]]['id']
                                                 # del_user_dict = {}
                                                 # del_user_dict['id'] = del_user['id']
-                                                print(del_user['id'])
+                                                # print(del_user['id'])
                                                 res_del_user = requests.post(BASE_URL + 'deleteUser', json=del_user, headers=HEADER_dict)
-                                                print(res_del_user.status_code)
+                                                # print(res_del_user.status_code)
                                                 if res_del_user.status_code == 200:
                                                     logging.info(f'Пользователь {del_user["name"]} удалён')
                                                     drop_db('users')
@@ -1379,12 +1379,12 @@ if __name__ == '__main__':
                                                     del_users_in_groups_after_delete_user(del_user['id'])
                                                     if filter_status:
                                                         search_str = values['-filterUser-']
-                                                        print(search_str)
+                                                        # print(search_str)
                                                         filtered_users = filter(lambda x: search_str in x['login'],
                                                                                 users_from_db)
                                                         filtered_users_list_of_dict = list(filtered_users)
-                                                        print(filtered_users_list_of_dict)
-                                                        print(len(filtered_users_list_of_dict))
+                                                        # print(filtered_users_list_of_dict)
+                                                        # print(len(filtered_users_list_of_dict))
                                                         filtered_users_list = list()
                                                         # users_from_db = filtered_users_list_of_dict
                                                         for filtered_user_list_of_dict in filtered_users_list_of_dict:
@@ -1406,7 +1406,7 @@ if __name__ == '__main__':
                                                              no_titlebar=True, background_color='lightgray')
                             if event == '-CloneUser-':
                                 if values['-users-'] == []:
-                                    print(f"Не выбран пользователь")
+                                    # print(f"Не выбран пользователь")
                                     sg.popup('Не выбран пользователь', title='Инфо', icon=ICON_BASE_64,
                                              no_titlebar=True, background_color='lightgray')
                                 else:
@@ -1420,9 +1420,9 @@ if __name__ == '__main__':
                                     password_clear = False
                                     while True:
                                         ev_clone_user, val_clone_user = window_clone_user.Read()
-                                        print(ev_clone_user, val_clone_user)
+                                        # print(ev_clone_user, val_clone_user)
                                         if ev_clone_user == sg.WIN_CLOSED or ev_clone_user == 'Exit':
-                                            print('Закрыл окно клонирования пользователя')
+                                            # print('Закрыл окно клонирования пользователя')
                                             break
                                         if ev_clone_user == 'showPasswordCloneUser':
                                             if password_clear:
@@ -1439,10 +1439,10 @@ if __name__ == '__main__':
                                             clone_user_dict['login'] = clone_user_login
                                             clone_user_dict['displayName'] = clone_user_name
                                             clone_user_dict['password'] = clone_user_password
-                                            print(clone_user_dict)
+                                            # print(clone_user_dict)
                                             res_clone_user = requests.post(BASE_URL + 'addUser', json=clone_user_dict, headers=HEADER_dict)
-                                            print(res_clone_user.status_code)
-                                            print(res_clone_user.text)
+                                            # print(res_clone_user.status_code)
+                                            # print(res_clone_user.text)
                                             if res_clone_user.status_code == 200:
                                                 logging.info(f'Новый пользователь {clone_user_login} создан')
                                                 original_groups = get_groups_for_user_from_db(user_clone['id'])
@@ -1451,9 +1451,9 @@ if __name__ == '__main__':
                                                     original_groups_ids.append(or_gr['id'])
                                                 user_from_server = res_clone_user.text[1:-1]
                                                 clone_dict = {'UserIds': [user_from_server], 'GroupIds': original_groups_ids}
-                                                print(clone_dict)
+                                                # print(clone_dict)
                                                 res_clone_add_group = requests.post(BASE_URL + 'addToGroup', json=clone_dict, headers=HEADER_dict)
-                                                print(res_clone_add_group.status_code)
+                                                # print(res_clone_add_group.status_code)
                                                 if res_clone_add_group.status_code == 200:
                                                     logging.info(f'Группы для {clone_user_login} добавлены')
                                                     add_users(get_users_from_server())
@@ -1471,12 +1471,12 @@ if __name__ == '__main__':
                                                                                     icon=check[0])
                                                     if filter_status:
                                                         search_str = values['-filterUser-']
-                                                        print(search_str)
+                                                        # print(search_str)
                                                         filtered_users = filter(lambda x: search_str in x['login'],
                                                                                 users_from_db)
                                                         filtered_users_list_of_dict = list(filtered_users)
-                                                        print(filtered_users_list_of_dict)
-                                                        print(len(filtered_users_list_of_dict))
+                                                        # print(filtered_users_list_of_dict)
+                                                        # print(len(filtered_users_list_of_dict))
                                                         filtered_users_list = list()
                                                         # users_from_db = filtered_users_list_of_dict
                                                         for filtered_user_list_of_dict in filtered_users_list_of_dict:
@@ -1512,11 +1512,11 @@ if __name__ == '__main__':
                                 filter_status = True
                                 if values['-filterUser-']:
                                     search_str = values['-filterUser-']
-                                    print(search_str)
+                                    # print(search_str)
                                     filtered_users = filter(lambda x: search_str in x['login'], users_from_db)
                                     filtered_users_list_of_dict = list(filtered_users)
-                                    print(filtered_users_list_of_dict)
-                                    print(len(filtered_users_list_of_dict))
+                                    # print(filtered_users_list_of_dict)
+                                    # print(len(filtered_users_list_of_dict))
                                     filtered_users_list = list()
                                     # users_from_db = filtered_users_list_of_dict
                                     for filtered_user_list_of_dict in filtered_users_list_of_dict:
@@ -1533,11 +1533,11 @@ if __name__ == '__main__':
                                 filter_status_group = True
                                 if values['-filterGroup-']:
                                     search_str = values['-filterGroup-']
-                                    print(search_str)
+                                    # print(search_str)
                                     filtered_groups = filter(lambda x: search_str in x['name'], groups_from_db)
                                     filtered_groups_list_of_dict = list(filtered_groups)
-                                    print(filtered_groups_list_of_dict)
-                                    print(len(filtered_groups_list_of_dict))
+                                    # print(filtered_groups_list_of_dict)
+                                    # print(len(filtered_groups_list_of_dict))
                                     filtered_groups_list = list()
                                     # users_from_db = filtered_users_list_of_dict
                                     for filtered_group_list_of_dict in filtered_groups_list_of_dict:
@@ -1558,7 +1558,7 @@ if __name__ == '__main__':
                                 filtered_journal = filter_journal(journal_list)
                                 if values['-filterJournal-']:
                                     search_str = values['-filterJournal-']
-                                    print(search_str)
+                                    # print(search_str)
                                     filtered_journal = list(filter(lambda x: search_str in x, filtered_journal))
                                     output_text = "\n".join(filtered_journal)
                                     window['journal'].update(output_text)
@@ -1572,9 +1572,9 @@ if __name__ == '__main__':
                                 window_add_group.Element('GroupName').SetFocus()
                                 while True:
                                     ev_add_group, val_add_group = window_add_group.Read()
-                                    print(ev_add_group, val_add_group)
+                                    # print(ev_add_group, val_add_group)
                                     if ev_add_group == sg.WIN_CLOSED or ev_add_group == 'Exit':
-                                        print('Закрыл окно добавления группы')
+                                        # print('Закрыл окно добавления группы')
                                         break
                                     if ev_add_group == 'addGroupButton':
                                         new_group_name = val_add_group['GroupName']
@@ -1582,9 +1582,9 @@ if __name__ == '__main__':
                                         add_group_dict = {}
                                         add_group_dict['name'] = new_group_name
                                         add_group_dict['description'] = new_group_name
-                                        print(add_group_dict)
+                                        # print(add_group_dict)
                                         res_add_user = requests.post(BASE_URL + 'addGroup', json=add_group_dict, headers=HEADER_dict)
-                                        print(res_add_user.status_code)
+                                        # print(res_add_user.status_code)
                                         if res_add_user.status_code == 200:
                                             logging.info(f'Группа {new_group_name} добавлена')
                                             add_groups(get_groups_from_server())
@@ -1601,12 +1601,12 @@ if __name__ == '__main__':
                                                                              icon=check[0])
                                             if filter_status_group:
                                                 search_str = values['-filterGroup-']
-                                                print(search_str)
+                                                # print(search_str)
                                                 filtered_groups = filter(lambda x: search_str in x['name'],
                                                                          groups_from_db)
                                                 filtered_groups_list_of_dict = list(filtered_groups)
-                                                print(filtered_groups_list_of_dict)
-                                                print(len(filtered_groups_list_of_dict))
+                                                # print(filtered_groups_list_of_dict)
+                                                # print(len(filtered_groups_list_of_dict))
                                                 filtered_groups_list = list()
                                                 # users_from_db = filtered_users_list_of_dict
                                                 for filtered_group_list_of_dict in filtered_groups_list_of_dict:
@@ -1628,7 +1628,7 @@ if __name__ == '__main__':
                                             window_add_group.Element('GroupName').SetFocus()
                             if event == '-DelGroup-':
                                 if values['-groups2-'] == []:
-                                    print(f"Не выбрана группа")
+                                    # print(f"Не выбрана группа")
                                     sg.popup('Не выбрана группа', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                 else:
                                     if filter_status_group:
@@ -1639,21 +1639,21 @@ if __name__ == '__main__':
                                     window_del_group = make_del_group_window(del_group['name'])
                                     while True:
                                         ev_del_group, val_del_group = window_del_group.Read()
-                                        print(ev_del_group, val_del_group)
+                                        # print(ev_del_group, val_del_group)
                                         if ev_del_group == sg.WIN_CLOSED or ev_del_group == 'Exit':
-                                            print('Закрыл окно удаления пользователя')
+                                            # print('Закрыл окно удаления пользователя')
                                             break
                                         if ev_del_group == 'noDelGroup':
-                                            print('Закрыл окно удаления пользователя')
+                                            # print('Закрыл окно удаления пользователя')
                                             window_del_group.close()
                                             break
                                         if ev_del_group == 'okDelGroup':
                                             # del_group_id = groups_from_db[values['-groups2-'][0]]['id']
                                             # del_group_dict = {}
                                             # del_group_dict['id'] = del_group_id
-                                            print(del_group['id'])
+                                            # print(del_group['id'])
                                             res_del_group = requests.post(BASE_URL + 'deleteGroup', json=del_group, headers=HEADER_dict)
-                                            print(res_del_group.status_code)
+                                            # print(res_del_group.status_code)
                                             if res_del_group.status_code == 200:
                                                 logging.info(f'Группа {del_group["name"]} удалена')
                                                 drop_db('groups')
@@ -1672,12 +1672,12 @@ if __name__ == '__main__':
                                                 del_users_in_groups_after_delete_group(del_group['id'])
                                                 if filter_status_group:
                                                     search_str = values['-filterGroup-']
-                                                    print(search_str)
+                                                    # print(search_str)
                                                     filtered_groups = filter(lambda x: search_str in x['name'],
                                                                              groups_from_db)
                                                     filtered_groups_list_of_dict = list(filtered_groups)
-                                                    print(filtered_groups_list_of_dict)
-                                                    print(len(filtered_groups_list_of_dict))
+                                                    # print(filtered_groups_list_of_dict)
+                                                    # print(len(filtered_groups_list_of_dict))
                                                     filtered_groups_list = list()
                                                     # users_from_db = filtered_users_list_of_dict
                                                     for filtered_group_list_of_dict in filtered_groups_list_of_dict:
@@ -1701,9 +1701,9 @@ if __name__ == '__main__':
                                                 sg.popup("Группа не удалена!", title='Инфо', icon=ICON_BASE_64,
                                                          no_titlebar=True, background_color='lightgray')
                             if event == '-Start-':
-                                print('Стартуем сервер')
+                                # print('Стартуем сервер')
                                 path_home_server = Path(Path.home(), 'Omega')
-                                print(path_home_server)
+                                # print(path_home_server)
                                 start_command = 'cd ' + str(path_home_server) + ' && ./run'
                                 process = subprocess.Popen(start_command, shell=True,
                                                                stdout=subprocess.PIPE,
@@ -1756,8 +1756,8 @@ if __name__ == '__main__':
                                             TOKEN = get_token(BASE_URL_AUTH)
                                             HEADER_dict = {}
                                             HEADER_dict["Authorization"] = "Bearer " + TOKEN
-                                            print(TOKEN)
-                                            print(HEADER_dict)
+                                            # print(TOKEN)
+                                            # print(HEADER_dict)
                                             init_db()
                                             users_from_db = get_users_from_db()
                                             groups_from_db = get_groups_from_db()
@@ -1793,7 +1793,7 @@ if __name__ == '__main__':
                                             server_status['run'] = True
                                             break
                             if event == '-Stop-':
-                                print('Останавливаем сервер')
+                                # print('Останавливаем сервер')
                                 res = requests.get(BASE_URL + 'stopServer', headers=HEADER_dict)
                                 if res.status_code == 200:
                                     logging.warning(f'Сервер остановлен администратором')
