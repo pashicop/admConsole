@@ -479,7 +479,9 @@ def make_main_window(ip):
           ]], key="Tabs", size=(1000, 790), enable_events=True)],
               [sg.StatusBar(users_online_text, key='-StatusBar-', size=(100, 1))]]
     return sg.Window(label_text, layout, icon=ICON_BASE_64,  use_ttk_buttons=True,
-                     enable_close_attempted_event=True, finalize=True)
+                     enable_close_attempted_event=True,
+                     relative_location=(0, -50),
+                     finalize=True)
 
 def make_login_window():
     layout_login = [[sg.Push(), sg.Text("Адрес сервера"), sg.Input(default_text="10.1.4.156", key="ip")],
