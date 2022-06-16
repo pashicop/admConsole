@@ -47,7 +47,7 @@ check = [icon(0), icon(1), icon(2)]
 
 
 def init_db():
-    create_db()
+    # create_db()
     drop_db('all')
     users_from_server = get_users_from_server()
     add_users(users_from_server)
@@ -69,9 +69,14 @@ def create_db():
 
 def get_users_from_server():
     # print(f'Запрашиваю пользователей..')
-    res = requests.get(BASE_URL + 'users', headers=HEADER_dict)
+    try:
+        res = requests.get(BASE_URL + 'users', headers=HEADER_dict)
+    except Exception as e:
+        print(e)
+        res = []
     # print(res)
-    users = json.loads(res.text)
+    if res != []:
+        users = json.loads(res.text)
     return users
 
 
@@ -260,16 +265,16 @@ def get_groups_from_db():
 #     return res_users
 
 def get_users_for_group_from_db(id):
-    print(f'Запрашиваю пользователей для группы', id)
+    # print(f'Запрашиваю пользователей для группы', id)
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
     db_query_users_for_group = "Select ug.user_id, u.login, u.display_name FROM Users_in_Groups ug " \
                                "LEFT JOIN Users u on ug.user_id = u.id " \
                                "LEFT JOIN Groups g on ug.group_id = g.id WHERE g.id = '" + id + "'"
-    print(db_query_users_for_group)
+    # print(db_query_users_for_group)
     cur.execute(db_query_users_for_group)
     users = cur.fetchall()
-    print('Пользователи:')
+    # print('Пользователи:')
     users_for_table = list()
     for user in users:
         user_for_table = {}
@@ -278,7 +283,7 @@ def get_users_for_group_from_db(id):
         user_for_table['name'] = user[1]
         # print(user_for_table)
         users_for_table.append(user_for_table)
-    print('---')
+    # print('---')
     con.close()
     return users_for_table
 
@@ -288,19 +293,19 @@ def get_groups_for_user_from_db(id):
     db_query_groups_for_user = "Select ug.group_id, g.name, g.description FROM Users_in_Groups ug " \
                                "LEFT JOIN Users u on ug.user_id = u.id " \
                                "LEFT JOIN Groups g on ug.group_id = g.id WHERE u.id = '" + id + "'"
-    print(db_query_groups_for_user)
+    # print(db_query_groups_for_user)
     cur.execute(db_query_groups_for_user)
     groups = cur.fetchall()
-    print('Группы:')
+    # print('Группы:')
     groups_for_table = list()
     for group in groups:
         group_for_table = {}
         group_for_table['id'] = group[0]
         group_for_table['name'] = group[1]
         group_for_table['desc'] = group[2]
-        print(group_for_table)
+        # print(group_for_table)
         groups_for_table.append(group_for_table)
-    print('---')
+    # print('---')
     con.close()
     return groups_for_table
 
@@ -527,7 +532,7 @@ def make_exit_window():
                      finalize=True, modal=True)
 
 def the_thread(ip, window):
-    sleep(3)
+    sleep(5)
     num = 0
     # print('Запускаем поток')
     while True:
@@ -537,15 +542,20 @@ def the_thread(ip, window):
         except Exception as e:
             print(f'Сервер не доступен {e}')
         if res_ping == '':
-            logging.error(f'[{num}] Сервер не доступен')
+            if server_status['run']:
+                logging.info(f'[{num}] Сервер НЕ доступен ')
+            # server_status['run'] = False
+            # logging.error(f'[{num}] Сервер не доступен')
             # print('Сервер не доступен')
             default_json = json.dumps({"onlineUsersCount": -5, "databaseVersion": 0})
             window.write_event_value('-THREAD-', (threading.currentThread().name, default_json))
         else:
             if res_ping.status_code == 200:
-                logging.info(f'[{num}] Сервер доступен ')
                 # print(f'[{num}] Пингуем.. {res_ping.text}')
+                if not server_status['run']:
+                    logging.info(f'[{num}] Сервер доступен ')
                 window.write_event_value('-THREAD-', (threading.currentThread().name, res_ping.text))
+                # server_status['run'] = True
         num += 1
         with open('admin.log', mode='r', encoding='cp1251') as log_f:
             s = log_f.read()
@@ -569,10 +579,12 @@ def check_server(url_ping):
         print(f"Ошибка подключения. {e}")
     if res_ping == '':
         print('Сервер не отвечает')
+        logging.info(f'Сервер НЕ доступен при запуске приложения')
     else:
         if res_ping.status_code == 200:
             # print(f'Запрос на {url_ping} прошёл успешно')
             status['run'] = True
+            logging.info(f'Сервер доступен при запуске приложения')
             res_dict = json.loads(res_ping.text)
             # print(res_dict)
             # update_text = 'Пользователей онлайн: ' + str(res_dict['onlineUsersCount']) \
@@ -705,9 +717,9 @@ if __name__ == '__main__':
     sg.theme_global('SystemDefaultForReal')
     logging.basicConfig(filename='admin.log', filemode='a', format='%(asctime)s %(levelname)s %(message)s', encoding='cp1251', datefmt='%m/%d/%Y %H:%M:%S', level=logging.INFO)
     logging.info('Старт лога')
-    logging.warning('ворнинг')
-    logging.error('еррор')
-    logging.critical('критическая')
+    # logging.warning('ворнинг')
+    # logging.error('еррор')
+    # logging.critical('критическая')
     window_login = make_login_window()
     window_main_active = False
     while True:
@@ -741,6 +753,7 @@ if __name__ == '__main__':
                             HEADER_dict["Authorization"] = "Bearer " + TOKEN
                             # print(TOKEN)
                             # print(HEADER_dict)
+                            create_db()
                             init_db()
                             users_from_db = get_users_from_db()
                             groups_from_db = get_groups_from_db()
@@ -814,9 +827,9 @@ if __name__ == '__main__':
                                     try:
                                         res_ping = requests.get(BASE_URL_PING, timeout=1)
                                     except Exception:
-                                        sg.cprint("Сервер не отвечает")
+                                        print("Сервер не отвечает")
                                     if res_ping == '':
-                                        sg.cprint('Нет ответа сервера')
+                                        print('Нет ответа сервера')
                                     else:
                                         if res_ping.status_code == 200:
                                             # print(f'{res_ping.text}')
@@ -1701,7 +1714,7 @@ if __name__ == '__main__':
                                                 sg.popup("Группа не удалена!", title='Инфо', icon=ICON_BASE_64,
                                                          no_titlebar=True, background_color='lightgray')
                             if event == '-Start-':
-                                # print('Стартуем сервер')
+                                print('Стартуем сервер')
                                 path_home_server = Path(Path.home(), 'Omega')
                                 # print(path_home_server)
                                 start_command = 'cd ' + str(path_home_server) + ' && ./run'
@@ -1729,9 +1742,9 @@ if __name__ == '__main__':
                                     else:
                                         if res_ping.status_code == 200:
                                             logging.info(f'Сервер запущен')
-                                            print(f'{res_ping.text}')
+                                            # print(f'{res_ping.text}')
                                             dict_online_after_start = json.loads(res_ping.text)
-                                            print(dict_online_after_start)
+                                            # print(dict_online_after_start)
                                             update_text = 'Пользователей онлайн: обновление...' + ', Версия БД: ' \
                                                           + str(dict_online_after_start["databaseVersion"])
                                             server_status['online'] = dict_online_after_start["onlineUsersCount"]
@@ -1739,28 +1752,19 @@ if __name__ == '__main__':
                                             window['-StatusBar-'].update(update_text, background_color='lightgreen')
                                             window['-Start-'].update(disabled=True)
                                             window['-Stop-'].update(disabled=False)
-                                            #
-                                            # drop_db('all')
-                                            # add_users(get_users_from_server())
-                                            # users_from_db = get_users_from_db()
-                                            # users_from_db.sort(key=lambda i: i['name'])
-                                            # user_list = list()
-                                            # treedata_update_user = sg.TreeData()
-                                            # for user_from_db in users_from_db:
-                                            #     user_list.append([user_from_db['id'], user_from_db['login'],
-                                            #                       user_from_db['name']])
-                                            #     treedata_update_user.insert('', user_from_db['id'], '',
-                                            #                                 values=[user_from_db['login'],
-                                            #                                         user_from_db['name']],
-                                            #                                 icon=check[0])
                                             TOKEN = get_token(BASE_URL_AUTH)
                                             HEADER_dict = {}
                                             HEADER_dict["Authorization"] = "Bearer " + TOKEN
                                             # print(TOKEN)
                                             # print(HEADER_dict)
+                                            server_status['run'] = True
+                                            # print('before init')
                                             init_db()
+                                            # print('after init')
                                             users_from_db = get_users_from_db()
+                                            # print(users_from_db)
                                             groups_from_db = get_groups_from_db()
+                                            # print(groups_from_db)
                                             users_from_db.sort(key=lambda i: i['login'])
                                             groups_from_db.sort(key=lambda i: i['name'])
                                             treedata_update_user = sg.TreeData()
@@ -1776,10 +1780,11 @@ if __name__ == '__main__':
                                                                        group_from_db['desc']])
                                             for group in groups_from_db:
                                                 treedata_update_group.insert('', group['id'], '',
-                                                                values=[group['name'], group['desc']], icon=check[0])
+                                                                             values=[group['name'], group['desc']], icon=check[0])
                                             for user in users_from_db:
                                                 treedata_update_user.insert('', user['id'], '',
-                                                                 values=[user['login'], user['name']], icon=check[0])
+                                                                            values=[user['login'], user['name']], icon=check[0])
+                                            # print('before update gui')
                                             window['-users-'].update(user_list)
                                             window['-TREE2-'].update(treedata_update_user)
                                             window['-groups2-'].update(group_list)
@@ -1790,7 +1795,7 @@ if __name__ == '__main__':
                                             window['-AddGroup-'].update(disabled=False)
                                             window['-DelGroup-'].update(disabled=False)
                                             window['-filterUser-'].update(disabled=False)
-                                            server_status['run'] = True
+                                            # print('after update GUI')
                                             break
                             if event == '-Stop-':
                                 # print('Останавливаем сервер')
