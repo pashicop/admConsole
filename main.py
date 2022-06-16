@@ -5,7 +5,8 @@ from datetime import datetime
 from time import sleep
 # from psgtray import SystemTray
 import requests
-# import os
+# import socket
+import os
 from pathlib import Path
 import sqlite3
 # import re
@@ -14,8 +15,9 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 import ipaddress
 import logging
-from pystray import MenuItem as item, Menu as menu
-import pystray
+# import netifaces
+# from pystray import MenuItem as item, Menu as menu
+# import pystray
 # import subprocess
 # from multiprocessing import Pool
 # from multiprocessing import Process, Queue
@@ -280,48 +282,6 @@ def get_users_for_group_from_db(id):
     con.close()
     return users_for_table
 
-
-
-# def get_user_name_by_id(id):
-#     # print(f'Запрашиваю имя пользователя..')
-#     res = requests.get(BASE_URL + 'users', headers=HEADER_dict)
-#     # print(res)
-#     # print(res.text)
-#     name = ''
-#     users = json.loads(res.text)
-#     for user in users:
-#         if user['id'] == id:
-#             name = user['displayName']
-#             break
-#     return name
-#
-# def get_user_login_by_id(id):
-#     # print(f'Запрашиваю логин пользователя..')
-#     res = requests.get(BASE_URL + 'users', headers=HEADER_dict)
-#     # print(res)
-#     # print(res.text)
-#     login = ''
-#     users = json.loads(res.text)
-#     for user in users:
-#         if user['id'] == id:
-#             login = user['login']
-#             break
-#     return login
-
-# def get_groups_for_user_from_server(id):
-#     res = requests.get(BASE_URL + 'users', headers=HEADER_dict)
-#     users = json.loads(res.text)
-#     res_groups = list()
-#     for user in users:
-#         if user['id'] == id:
-#             groups_ids = user['userGroupIds']
-#             for group_id in groups_ids:
-#                 group_name = get_group_name_by_id(group_id)
-#                 res_group = [group_name, group_id]
-#                 res_groups.append(res_group)
-#     res_groups.sort(key=lambda i: i[1])
-#     return res_groups
-
 def get_groups_for_user_from_db(id):
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
@@ -344,19 +304,6 @@ def get_groups_for_user_from_db(id):
     con.close()
     return groups_for_table
 
-# def get_group_name_by_id(id):
-#     # print(f'Запрашиваю имя группы..')
-#     res = requests.get(BASE_URL + 'groups', headers=HEADER_dict)
-#     # print(res)
-#     # print(res.text)
-#     name = ''
-#     groups = json.loads(res.text)
-#     for group in groups:
-#         if group['id'] == id:
-#             name = group['name']
-#             break
-#     return name
-
 def get_group_name_by_id_from_db(id):
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
@@ -367,7 +314,6 @@ def get_group_name_by_id_from_db(id):
     # print(group_name)
     con.close()
     return group_name
-
 
 def get_user_name_by_id_from_db(id):
     con = sqlite3.connect('adm.db')
@@ -484,7 +430,18 @@ def make_main_window(ip):
                      finalize=True)
 
 def make_login_window():
-    layout_login = [[sg.Push(), sg.Text("Адрес сервера"), sg.Input(default_text="127.0.0.1", key="ip")],
+    ips = os.popen("hostname -I").read()
+    if ips:
+        ips = ips.split(" ")
+        print(ips)
+        try:
+            ip = ipaddress.ip_address(ips[0]).exploded
+        except ValueError:
+            print('Неверный ip')
+            ip = ''
+    else:
+        ip = ''
+    layout_login = [[sg.Push(), sg.Text("Адрес сервера"), sg.Input(default_text=ip, key="ip")],
                     [sg.Push(), sg.Text("Пароль"), sg.Input(focus=True, key="password", password_char='*')],
                     [sg.Push(), sg.Ok(key="OK button"), sg.Push()]]
     return sg.Window('Вход на сервер', layout_login, icon=ICON_BASE_64, finalize=True)
@@ -1747,8 +1704,8 @@ if __name__ == '__main__':
                                 print('Стартуем сервер')
                                 path_home_server = Path(Path.home(), 'Omega')
                                 print(path_home_server)
-                                start_comand = 'cd ' + str(path_home_server) + ' && ./run'
-                                process = subprocess.Popen(start_comand, shell=True,
+                                start_command = 'cd ' + str(path_home_server) + ' && ./run'
+                                process = subprocess.Popen(start_command, shell=True,
                                                                stdout=subprocess.PIPE,
                                                                stderr=subprocess.PIPE)
                                 # process = subprocess.Popen("ssh pashi@10.1.4.156 'bash ./run > /dev/null'", shell=True,
