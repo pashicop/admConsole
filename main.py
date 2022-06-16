@@ -484,7 +484,7 @@ def make_main_window(ip):
                      finalize=True)
 
 def make_login_window():
-    layout_login = [[sg.Push(), sg.Text("Адрес сервера"), sg.Input(default_text="10.1.4.156", key="ip")],
+    layout_login = [[sg.Push(), sg.Text("Адрес сервера"), sg.Input(default_text="127.0.0.1", key="ip")],
                     [sg.Push(), sg.Text("Пароль"), sg.Input(focus=True, key="password", password_char='*')],
                     [sg.Push(), sg.Ok(key="OK button"), sg.Push()]]
     return sg.Window('Вход на сервер', layout_login, icon=ICON_BASE_64, finalize=True)
