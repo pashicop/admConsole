@@ -1715,6 +1715,8 @@ if __name__ == '__main__':
                                                          no_titlebar=True, background_color='lightgray')
                             if event == '-Start-':
                                 print('Стартуем сервер')
+                                sg.popup('Запускаем сервер', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
+                                         background_color='lightgray')
                                 path_home_server = Path(Path.home(), 'Omega')
                                 # print(path_home_server)
                                 start_command = 'cd ' + str(path_home_server) + ' && ./run'
