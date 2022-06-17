@@ -69,22 +69,31 @@ def create_db():
 
 def get_users_from_server():
     # print(f'Запрашиваю пользователей..')
+    res = []
     try:
         res = requests.get(BASE_URL + 'users', headers=HEADER_dict)
     except Exception as e:
         print(e)
-        res = []
     # print(res)
     if res != []:
         users = json.loads(res.text)
+    else:
+        users = []
     return users
 
 
 def get_groups_from_server():
     # print(f'Запрашиваю группы..')
-    res = requests.get(BASE_URL + 'groups', headers=HEADER_dict)
+    res = []
+    try:
+        res = requests.get(BASE_URL + 'groups', headers=HEADER_dict)
+    except Exception as e:
+        print(e)
     # print(res)
-    groups = json.loads(res.text)
+    if res != []:
+        groups = json.loads(res.text)
+    else:
+        groups = []
     return groups
 
 
@@ -408,10 +417,10 @@ def make_main_window(ip):
                  ),
          sg.Frame('Типы',
                   [
-                      [sg.Checkbox('Info', enable_events=True, key='info')],
-                      [sg.Checkbox('Warning', enable_events=True, key='warning')],
-                      [sg.Checkbox('Error', enable_events=True, key='error')],
-                      [sg.Checkbox('Critical', enable_events=True, key='critical')],
+                      [sg.Checkbox('Info', enable_events=True, key='info', default=True)],
+                      [sg.Checkbox('Warning', enable_events=True, key='warning', default=True)],
+                      [sg.Checkbox('Error', enable_events=True, key='error', default=True)],
+                      [sg.Checkbox('Critical', enable_events=True, key='critical', default=True)],
          ], vertical_alignment='top')
          ],
         [sg.T('Количество записей:'), sg.Multiline(key='countLogs', no_scrollbar=True,
@@ -491,6 +500,7 @@ def make_del_user_window(user):
     ]
     return sg.Window('Удалить пользователя', layout_del_user, icon=ICON_BASE_64, use_ttk_buttons=True,
                      finalize=True, modal=True)
+
 def make_clone_user_window(user):
     clone_text = 'Клонируем пользователя ' + user
     layout_clone_user = [
@@ -532,18 +542,22 @@ def make_exit_window():
                      finalize=True, modal=True)
 
 def the_thread(ip, window):
-    sleep(5)
+    sleep(10)
     num = 0
     # print('Запускаем поток')
     while True:
         res_ping = ''
+        change_state = False
+        print(f' Thread {num} - {server_status}')
         try:
             res_ping = requests.get(ip, timeout=3)
         except Exception as e:
             print(f'Сервер не доступен {e}')
         if res_ping == '':
-            if server_status['run']:
+            if server_status['last_state']:
                 logging.info(f'[{num}] Сервер НЕ доступен ')
+                change_state = True
+                # server_status['last_state'] = False
             # server_status['run'] = False
             # logging.error(f'[{num}] Сервер не доступен')
             # print('Сервер не доступен')
@@ -552,26 +566,28 @@ def the_thread(ip, window):
         else:
             if res_ping.status_code == 200:
                 # print(f'[{num}] Пингуем.. {res_ping.text}')
-                if not server_status['run']:
+                if not server_status['last_state']:
                     logging.info(f'[{num}] Сервер доступен ')
+                    change_state = True
                 window.write_event_value('-THREAD-', (threading.currentThread().name, res_ping.text))
                 # server_status['run'] = True
         num += 1
-        with open('admin.log', mode='r', encoding='cp1251') as log_f:
-            s = log_f.read()
-            s = s.rstrip('\n')
-            journal_list = s.split('\n')
-            filtered_journal = []
-            filtered_journal = filter_journal(journal_list)
-            if filter_status_journal:
-                filtered_journal = list(filter(lambda x: search_str in x, filtered_journal))
-            output_text = "\n".join(filtered_journal)
-            window['journal'].update(output_text)
-            window['countLogs'].update(len(filtered_journal))
-        sleep(3)
+        if change_state:
+            with open('admin.log', mode='r', encoding='cp1251') as log_f:
+                s = log_f.read()
+                s = s.rstrip('\n')
+                journal_list = s.split('\n')
+                filtered_journal = []
+                filtered_journal = filter_journal(journal_list)
+                if filter_status_journal:
+                    filtered_journal = list(filter(lambda x: search_str in x, filtered_journal))
+                output_text = "\n".join(filtered_journal)
+                window['journal'].update(output_text)
+                window['countLogs'].update(len(filtered_journal))
+        sleep(5)
 
 def check_server(url_ping):
-    status = {'run': False, 'online': '', 'db': ''}
+    status = {'last_state': False, 'run': False, 'online': '', 'db': ''}
     res_ping = ''
     try:
         res_ping = requests.get(url_ping, timeout=3)
@@ -580,6 +596,7 @@ def check_server(url_ping):
     if res_ping == '':
         print('Сервер не отвечает')
         logging.info(f'Сервер НЕ доступен при запуске приложения')
+        # status['last_state'] = False
     else:
         if res_ping.status_code == 200:
             # print(f'Запрос на {url_ping} прошёл успешно')
@@ -591,6 +608,7 @@ def check_server(url_ping):
             #               + ', Версия БД: ' + str(res_dict['databaseVersion'])
             status['online'] = res_dict['onlineUsersCount']
             status['db'] = res_dict['databaseVersion']
+            status['last_state'] = True
             # print(status)
         else:
             print(f'Некорректный ответ {res_ping.status_code} от сервера {url_ping}')
@@ -626,39 +644,39 @@ def filter_journal(journal: list):
     if filter_journal_info:
         if filter_journal_warning:
             if filter_journal_error:
-                if filter_journal_crirtical:
+                if filter_journal_critical:
                     return list(
                         filter(lambda x: 'INFO' in x or 'CRITICAL' in x or 'ERROR' in x or 'WARNING' in x, journal))
                 else:
                     return list(filter(lambda x: 'INFO' in x or 'ERROR' in x or 'WARNING' in x, journal))
-            elif filter_journal_crirtical:
+            elif filter_journal_critical:
                 return list(filter(lambda x: 'INFO' in x or 'CRITICAL' in x or 'WARNING' in x, journal))
             return list(filter(lambda x: 'INFO' in x or 'WARNING' in x, journal))
         elif filter_journal_error:
-            if filter_journal_crirtical:
+            if filter_journal_critical:
                 return list(filter(lambda x: 'INFO' in x or 'CRITICAL' in x or 'ERROR' in x, journal))
             else:
                 return list(filter(lambda x: 'INFO' in x or 'ERROR' in x, journal))
-        elif filter_journal_crirtical:
+        elif filter_journal_critical:
             return list(filter(lambda x: 'INFO' in x or 'CRITICAL' in x, journal))
         else:
             return list(filter(lambda x: 'INFO' in x, journal))
     elif filter_journal_warning:
         if filter_journal_error:
-            if filter_journal_crirtical:
+            if filter_journal_critical:
                 return list(filter(lambda x: 'CRITICAL' in x or 'ERROR' in x or 'WARNING' in x, journal))
             else:
                 return list(filter(lambda x: 'ERROR' in x or 'WARNING' in x, journal))
-        elif filter_journal_crirtical:
+        elif filter_journal_critical:
             return list(filter(lambda x: 'CRITICAL' in x or 'WARNING' in x, journal))
         else:
             return list(filter(lambda x: 'WARNING' in x, journal))
     elif filter_journal_error:
-        if filter_journal_crirtical:
+        if filter_journal_critical:
             return list(filter(lambda x: 'CRITICAL' in x or 'ERROR' in x, journal))
         else:
             return list(filter(lambda x: 'ERROR' in x, journal))
-    elif filter_journal_crirtical:
+    elif filter_journal_critical:
         return list(filter(lambda x: 'CRITICAL' in x, journal))
     else:
         return journal
@@ -791,10 +809,10 @@ if __name__ == '__main__':
                         filter_status = False
                         filter_status_group = False
                         filter_status_journal = False
-                        filter_journal_info = False
-                        filter_journal_warning = False
-                        filter_journal_error = False
-                        filter_journal_crirtical = False
+                        filter_journal_info = True
+                        filter_journal_warning = True
+                        filter_journal_error = True
+                        filter_journal_critical = True
                         while True:
                             if break_flag2:
                                 break
@@ -823,63 +841,52 @@ if __name__ == '__main__':
                                         update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
                                                       + ', Версия БД: ' + str(dict_online["databaseVersion"])
                                         window['-StatusBar-'].update(update_text, background_color='lightgreen')
-                                    res_ping = ''
-                                    try:
-                                        res_ping = requests.get(BASE_URL_PING, timeout=1)
-                                    except Exception:
-                                        print("Сервер не отвечает")
-                                    if res_ping == '':
-                                        print('Нет ответа сервера')
-                                    else:
-                                        if res_ping.status_code == 200:
-                                            # print(f'{res_ping.text}')
-                                            dict_online_after_start = json.loads(res_ping.text)
-                                            # print(dict_online_after_start)
-                                            window['-Start-'].update(disabled=True)
-                                            window['-Stop-'].update(disabled=False)
-                                            if not server_status['run']:
-                                                TOKEN = get_token(BASE_URL_AUTH)
-                                                HEADER_dict = {}
-                                                HEADER_dict["Authorization"] = "Bearer " + TOKEN
-                                                # print(TOKEN)
-                                                # print(HEADER_dict)
-                                                init_db()
-                                                users_from_db = get_users_from_db()
-                                                groups_from_db = get_groups_from_db()
-                                                users_from_db.sort(key=lambda i: i['login'])
-                                                groups_from_db.sort(key=lambda i: i['name'])
-                                                treedata_update_user = sg.TreeData()
-                                                treedata_update_group = sg.TreeData()
-                                                user_list = list()
-                                                group_list = list()
-                                                if users_from_db != [[]] and groups_from_db != [[]]:
-                                                    for user_from_db in users_from_db:
-                                                        user_list.append([user_from_db['id'], user_from_db['login'],
-                                                                          user_from_db['name']])
-                                                    for group_from_db in groups_from_db:
-                                                        group_list.append([group_from_db['id'], group_from_db['name'],
-                                                                           group_from_db['desc']])
-                                                for group in groups_from_db:
-                                                    treedata_update_group.insert('', group['id'], '',
-                                                                                 values=[group['name'], group['desc']],
-                                                                                 icon=check[0])
-                                                for user in users_from_db:
-                                                    treedata_update_user.insert('', user['id'], '',
-                                                                                values=[user['login'], user['name']],
-                                                                                icon=check[0])
-                                                window['-users-'].update(user_list)
-                                                window['-TREE2-'].update(treedata_update_user)
-                                                window['-groups2-'].update(group_list)
-                                                window['-TREE-'].update(treedata_update_group)
-                                                window['-AddUser-'].update(disabled=False)
-                                                window['-DelUser-'].update(disabled=False)
-                                                window['-CloneUser-'].update(disabled=False)
-                                                window['-AddGroup-'].update(disabled=False)
-                                                window['-DelGroup-'].update(disabled=False)
-                                                window['-filterUser-'].update(disabled=False)
-                                                server_status['run'] = True
-                                            server_status['run'] = True
-                                    # server_status['run'] = False
+                                    window['-Start-'].update(disabled=True)
+                                    window['-Stop-'].update(disabled=False)
+                                    if not server_status['run']:
+                                        TOKEN = get_token(BASE_URL_AUTH)
+                                        HEADER_dict = {}
+                                        HEADER_dict["Authorization"] = "Bearer " + TOKEN
+                                        # print(TOKEN)
+                                        # print(HEADER_dict)
+                                        init_db()
+                                        users_from_db = get_users_from_db()
+                                        groups_from_db = get_groups_from_db()
+                                        users_from_db.sort(key=lambda i: i['login'])
+                                        groups_from_db.sort(key=lambda i: i['name'])
+                                        treedata_update_user = sg.TreeData()
+                                        treedata_update_group = sg.TreeData()
+                                        user_list = list()
+                                        group_list = list()
+                                        if users_from_db != [[]] and groups_from_db != [[]]:
+                                            for user_from_db in users_from_db:
+                                                user_list.append([user_from_db['id'], user_from_db['login'],
+                                                                  user_from_db['name']])
+                                            for group_from_db in groups_from_db:
+                                                group_list.append([group_from_db['id'], group_from_db['name'],
+                                                                   group_from_db['desc']])
+                                        for group in groups_from_db:
+                                            treedata_update_group.insert('', group['id'], '',
+                                                                         values=[group['name'], group['desc']],
+                                                                         icon=check[0])
+                                        for user in users_from_db:
+                                            treedata_update_user.insert('', user['id'], '',
+                                                                        values=[user['login'], user['name']],
+                                                                        icon=check[0])
+                                        window['-users-'].update(user_list)
+                                        window['-TREE2-'].update(treedata_update_user)
+                                        window['-groups2-'].update(group_list)
+                                        window['-TREE-'].update(treedata_update_group)
+                                        window['-AddUser-'].update(disabled=False)
+                                        window['-DelUser-'].update(disabled=False)
+                                        window['-CloneUser-'].update(disabled=False)
+                                        window['-AddGroup-'].update(disabled=False)
+                                        window['-DelGroup-'].update(disabled=False)
+                                        window['-filterUser-'].update(disabled=False)
+                                        server_status['run'] = True
+                                    if server_status['last_state'] == False:
+                                        server_status['last_state'] = True
+                                    # server_status['run'] = True
                                 else:
                                     window['-StatusBar-'].update('Сервер не доступен', background_color='red')
                                     window['-Start-'].update(disabled=False)
@@ -896,6 +903,8 @@ if __name__ == '__main__':
                                     window['-DelGroup-'].update(disabled=True)
                                     window['-filterUser-'].update(disabled=True)
                                     server_status['run'] = False
+                                    if server_status['last_state'] == True:
+                                        server_status['last_state'] = False
                             if event == sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
                                 # break_flag = True
                                 # break
@@ -1715,7 +1724,7 @@ if __name__ == '__main__':
                                                          no_titlebar=True, background_color='lightgray')
                             if event == '-Start-':
                                 print('Стартуем сервер')
-                                sg.popup('Запускаем сервер', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
+                                sg.popup('Запускаем сервер, ждите..', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
                                          background_color='lightgray', non_blocking=True)
                                 path_home_server = Path(Path.home(), 'Omega')
                                 print(path_home_server)
@@ -1743,8 +1752,8 @@ if __name__ == '__main__':
                                                      background_color='lightgray')
                                     else:
                                         if res_ping.status_code == 200:
-                                            logging.info(f'Сервер запущен')
-                                            # print(f'{res_ping.text}')
+                                            logging.info(f'Сервер запущен администратором')
+                                            print(f'{res_ping.text}')
                                             dict_online_after_start = json.loads(res_ping.text)
                                             # print(dict_online_after_start)
                                             update_text = 'Пользователей онлайн: обновление...' + ', Версия БД: ' \
@@ -1760,6 +1769,8 @@ if __name__ == '__main__':
                                             # print(TOKEN)
                                             # print(HEADER_dict)
                                             server_status['run'] = True
+                                            # server_status['last_state'] = False
+                                            print(server_status)
                                             # print('before init')
                                             init_db()
                                             # print('after init')
@@ -1804,7 +1815,8 @@ if __name__ == '__main__':
                                 res = requests.get(BASE_URL + 'stopServer', headers=HEADER_dict)
                                 if res.status_code == 200:
                                     logging.warning(f'Сервер остановлен администратором')
-                                    sg.popup('Сервер остановлен', title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
+                                    sg.popup('Сервер остановлен', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
+                                             non_blocking=True, background_color='lightgray')
                                     window['-StatusBar-'].update('Сервер не запущен', background_color='red')
                                     window['-Start-'].update(disabled=False)
                                     window['-Stop-'].update(disabled=True)
@@ -1820,6 +1832,8 @@ if __name__ == '__main__':
                                     window['-DelGroup-'].update(disabled=True)
                                     window['-filterUser-'].update(disabled=True)
                                     server_status['run'] = False
+                                    # server_status['last_state'] = True
+                                    print(server_status)
                                 else:
                                     logging.warning(f'Сервер не остановлен')
                                     sg.popup("Сервер не остановлен", title='Инфо', icon=ICON_BASE_64,
@@ -1916,10 +1930,10 @@ if __name__ == '__main__':
                                     window['journal'].update(output_text)
                                     window['countLogs'].update(len(filtered_journal))
                             if event == 'critical':
-                                if filter_journal_crirtical:
-                                    filter_journal_crirtical = False
+                                if filter_journal_critical:
+                                    filter_journal_critical = False
                                 else:
-                                    filter_journal_crirtical = True
+                                    filter_journal_critical = True
                                 with open('admin.log', mode='r', encoding='cp1251') as log_f:
                                     s = log_f.read().rstrip('\n')
                                     journal_list = s.split('\n')
