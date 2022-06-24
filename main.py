@@ -144,6 +144,7 @@ def add_groups_to_user_after_apply(groups_for_user_dict):
 def add_del_groups_to_user_after_apply(groups_for_user_dict):
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
+    print(groups_for_user_dict)
     for user_id in groups_for_user_dict['UserIds']:
         for group_id in groups_for_user_dict['addGroupIds']:
             db_insert_group_for_user = "insert or replace into Users_in_Groups(user_id, group_id) Values ('" + user_id + "', '" + group_id + "')"
@@ -162,6 +163,20 @@ def add_users_to_group_after_apply(users_for_group_dict):
         for user_id in users_for_group_dict['UserIds']:
             db_insert_user_for_group = "insert or replace into Users_in_Groups(user_id, group_id) Values ('" + user_id + "', '" + group_id + "')"
             cur.execute(db_insert_user_for_group)
+    con.commit()
+    con.close()
+
+def add_del_users_to_group_after_apply(users_for_group_dict):
+    con = sqlite3.connect('adm.db')
+    cur = con.cursor()
+    for group_id in users_for_group_dict['GroupIds']:
+        for user_id in users_for_group_dict['addUserIds']:
+            db_insert_user_for_group = "insert or replace into Users_in_Groups(user_id, group_id) Values ('" + user_id + "', '" + group_id + "')"
+            cur.execute(db_insert_user_for_group)
+    for group_id in users_for_group_dict['GroupIds']:
+        for user_id in users_for_group_dict['removeUserIds']:
+            db_delete_user_for_group = "delete from Users_in_Groups where user_id = '" + user_id + "' and  group_id = '" + group_id + "'"
+            cur.execute(db_delete_user_for_group)
     con.commit()
     con.close()
 
@@ -1206,7 +1221,7 @@ if __name__ == '__main__':
                                             del_group = True
                                     if add_group and del_group:
                                         print(add_del_dict)
-                                        res_add_del = requests.post(BASE_URL + 'changeGroups', json=add_del_dict,
+                                        res_add_del = requests.post(BASE_URL + 'changeUserGroups', json=add_del_dict,
                                                                 headers=HEADER_dict)
                                         print(res_add_del.status_code)
                                         if res_add_del.status_code == 200:
@@ -1218,7 +1233,7 @@ if __name__ == '__main__':
                                                      no_titlebar=True, background_color='lightgray')
                                     elif add_group:
                                         print(add_del_dict)
-                                        res_add = requests.post(BASE_URL + 'changeGroups', json=add_del_dict, headers=HEADER_dict)
+                                        res_add = requests.post(BASE_URL + 'changeUserGroups', json=add_del_dict, headers=HEADER_dict)
                                         print(res_add.status_code)
                                         if res_add.status_code == 200:
                                             logging.info(f'Добавление групп выполнено для {chosen_login["name"]}')
@@ -1228,7 +1243,7 @@ if __name__ == '__main__':
                                             sg.popup("Добавление не выполнено", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                     elif del_group:
                                         print(add_del_dict)
-                                        res_del = requests.post(BASE_URL + 'changeGroups', json=add_del_dict, headers=HEADER_dict)
+                                        res_del = requests.post(BASE_URL + 'changeUserGroups', json=add_del_dict, headers=HEADER_dict)
                                         print(res_del.status_code)
                                         if res_del.status_code == 200:
                                             logging.info(f'Удаление групп выполнено для {chosen_login["name"]}')
@@ -1268,38 +1283,57 @@ if __name__ == '__main__':
                                         current_users_ids.append(cur_us['id'])
                                     add_dict = {'UserIds': [], 'GroupIds': [chosen_group['id']]}
                                     del_dict = {'UserIds': [], 'GroupIds': [chosen_group['id']]}
+                                    add_del_dict = {'GroupIds': [chosen_group['id']], 'addUserIds': [],
+                                                    'removeUserIds': []}
                                     for us_id in tree2.metadata:
                                         if us_id in current_users_ids:
                                             print(f"В группе {chosen_group['name']} уже есть {get_user_name_by_id_from_db(us_id)}")
                                         else:
                                             print(f"Пользователя {get_user_name_by_id_from_db(us_id)} нужно добавить в группу {chosen_group['name']}")
                                             add_dict['UserIds'] += [us_id]
+                                            add_del_dict['addUserIds'] += [us_id]
                                             add_user = True
-                                    if add_user:
-                                        res_add = requests.post(BASE_URL + 'addToGroup', json=add_dict, headers=HEADER_dict)
-                                        # print(res_add.status_code)
-                                        if res_add.status_code == 200:
-                                            logging.info(f'Добавление пользователей выполнено для {chosen_group["name"]}')
-                                            # window['-users2-'].update(get_users_for_group(chosen_group[1]))
-                                            add_users_to_group_after_apply(add_dict)
-                                        else:
-                                            logging.error(
-                                                f'Добавление пользователей НЕ выполнено для {chosen_group["name"]} - {res_add.status_code}')
-                                            sg.popup("Добавление не выполнено", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
                                     for us_id in current_users_ids:
                                         if us_id in tree2.metadata:
                                             print(f'Пользователь {get_user_name_by_id_from_db(us_id)} уже в группе {chosen_group["name"]}')
                                         else:
                                             print(f"В группе {chosen_group['name']} нужно удалить пользователя {get_user_name_by_id_from_db(us_id)}")
                                             del_dict['UserIds'] += [us_id]
+                                            add_del_dict['removeUserIds'] += [us_id]
                                             del_user = True
-                                    if del_user:
-                                        res_del = requests.post(BASE_URL + 'removeFromGroup', json=del_dict, headers=HEADER_dict)
+                                    print(add_del_dict)
+                                    if add_user and del_user:
+                                        res_add_del = requests.post(BASE_URL + 'changeGroupUsers', json=add_del_dict,
+                                                               headers=HEADER_dict)
+                                        print(res_add_del.status_code)
+                                        if res_add_del.status_code == 200:
+                                            logging.info(
+                                                f'Добавление пользователей выполнено для {chosen_group["name"]}')
+                                            # window['-users2-'].update(get_users_for_group(chosen_group[1]))
+                                            add_del_users_to_group_after_apply(add_del_dict)
+                                        else:
+                                            logging.error(
+                                                f'Добавление пользователей НЕ выполнено для {chosen_group["name"]} - {res_add_del.status_code}')
+                                            sg.popup("Добавление не выполнено", title='Инфо', icon=ICON_BASE_64,
+                                                     no_titlebar=True, background_color='lightgray')
+                                    elif add_user:
+                                        res_add = requests.post(BASE_URL + 'changeGroupUsers', json=add_del_dict, headers=HEADER_dict)
+                                        # print(res_add.status_code)
+                                        if res_add.status_code == 200:
+                                            logging.info(f'Добавление пользователей выполнено для {chosen_group["name"]}')
+                                            # window['-users2-'].update(get_users_for_group(chosen_group[1]))
+                                            add_del_users_to_group_after_apply(add_del_dict)
+                                        else:
+                                            logging.error(
+                                                f'Добавление пользователей НЕ выполнено для {chosen_group["name"]} - {res_add.status_code}')
+                                            sg.popup("Добавление не выполнено", title='Инфо', icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
+                                    elif del_user:
+                                        res_del = requests.post(BASE_URL + 'changeGroupUsers', json=add_del_dict, headers=HEADER_dict)
                                         # print(res_del.status_code)
                                         if res_del.status_code == 200:
                                             logging.info(
                                                 f'Удаление пользователей выполнено для {chosen_group["name"]}')
-                                            del_users_to_groups_after_apply(del_dict)
+                                            add_del_users_to_group_after_apply(add_del_dict)
                                         else:
                                             logging.error(
                                                 f'Удаление пользователей НЕ выполнено для {chosen_group["name"]} - {res_del.status_code}')
@@ -1502,14 +1536,15 @@ if __name__ == '__main__':
                                                 for or_gr in original_groups:
                                                     original_groups_ids.append(or_gr['id'])
                                                 user_from_server = res_clone_user.text[1:-1]
-                                                clone_dict = {'UserIds': [user_from_server], 'GroupIds': original_groups_ids}
-                                                # print(clone_dict)
-                                                res_clone_add_group = requests.post(BASE_URL + 'addToGroup', json=clone_dict, headers=HEADER_dict)
+                                                clone_dict = {'UserIds': [user_from_server], 'addGroupIds': original_groups_ids, 'removeGroupIds': []}
+                                                print(clone_dict)
+                                                res_clone_add_group = requests.post(BASE_URL + 'changeUserGroups', json=clone_dict, headers=HEADER_dict)
                                                 # print(res_clone_add_group.status_code)
                                                 if res_clone_add_group.status_code == 200:
                                                     logging.info(f'Группы для {clone_user_login} добавлены')
                                                     add_users(get_users_from_server())
-                                                    add_groups_to_user_after_apply(clone_dict)
+                                                    print(clone_dict)
+                                                    add_del_groups_to_user_after_apply(clone_dict)
                                                     users_from_db = get_users_from_db()
                                                     users_from_db.sort(key=lambda i: i['login'])
                                                     user_list = list()
