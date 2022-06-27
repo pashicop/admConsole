@@ -1539,7 +1539,7 @@ if __name__ == '__main__':
                                                 clone_dict = {'UserIds': [user_from_server], 'addGroupIds': original_groups_ids, 'removeGroupIds': []}
                                                 print(clone_dict)
                                                 res_clone_add_group = requests.post(BASE_URL + 'changeUserGroups', json=clone_dict, headers=HEADER_dict)
-                                                # print(res_clone_add_group.status_code)
+                                                print(res_clone_add_group.status_code)
                                                 if res_clone_add_group.status_code == 200:
                                                     logging.info(f'Группы для {clone_user_login} добавлены')
                                                     add_users(get_users_from_server())
