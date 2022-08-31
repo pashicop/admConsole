@@ -401,7 +401,7 @@ def make_main_window(ip):
                             right_click_menu=[1, 'Изменить пользователя'],
                             select_mode='browse',
                             auto_size_columns=False, col_widths=(0, 10, 30))],],
-                            expand_x=True, size=(480, 650)),
+                            expand_x=True, size=(480, 664)),
                     sg.Frame('Группы',[[sg.Tree(data=treedata, headings=('Имя','Описание'), col0_width=4, col_widths=(20, 30),
                             num_rows=10, key='-TREE-', row_height=20, metadata=[], auto_size_columns=False,
                             show_expanded=False, enable_events=True, justification='left', expand_y=True,
@@ -427,7 +427,7 @@ def make_main_window(ip):
                             visible_column_map=[0, 1, 1],
                             key='-groups2-', expand_y=True, expand_x=True,
                             auto_size_columns=False, col_widths=(0, 10, 30))],],
-                             expand_x=True, size=(480, 650)),
+                             expand_x=True, size=(480, 664)),
                     sg.Frame('Пользователи', [[sg.Tree(data=treedata2, headings=('Логин', 'Имя'), col0_width=4, col_widths=(20, 30),
                             num_rows=10, key='-TREE2-', row_height=20, metadata=[], auto_size_columns=False,
                             show_expanded=False, enable_events=True, justification='left', expand_y="True",
@@ -1790,10 +1790,11 @@ if __name__ == '__main__':
                             if event == '-Start-':
                                 print('Стартуем сервер')
                                 sg.popup('Запускаем сервер, ждите..', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
-                                         background_color='lightgray', non_blocking=True)
-                                path_home_server = Path(Path.home(), 'Omega')
-                                print(path_home_server)
-                                start_command = 'cd ' + str(path_home_server) + ' && ./run'
+                                         background_color='lightgray', non_blocking=True, auto_close=True, auto_close_duration=5)
+                                # path_home_server = Path(Path.home(), 'Omega')
+                                # print(path_home_server)
+                                # start_command = 'cd ' + str(path_home_server) + ' && ./run'
+                                start_command = 'sudo systemctl restart omega'
                                 process = subprocess.Popen(start_command, shell=True,
                                                                stdout=subprocess.PIPE,
                                                                stderr=subprocess.PIPE)
@@ -1877,8 +1878,23 @@ if __name__ == '__main__':
                                             break
                             if event == '-Stop-':
                                 # print('Останавливаем сервер')
-                                res = requests.get(BASE_URL + 'stopServer', headers=HEADER_dict)
-                                if res.status_code == 200:
+                                # res = requests.get(BASE_URL + 'stopServer', headers=HEADER_dict)
+                                stop_command = 'sudo systemctl stop omega'
+                                process = subprocess.Popen(stop_command, shell=True,
+                                                               stdout=subprocess.PIPE,
+                                                               stderr=subprocess.PIPE)
+                                sleep(1)
+                                res_ping = ''
+                                try:
+                                    res_ping = requests.get(BASE_URL_PING, timeout=1)
+                                except Exception:
+                                    print("Сервер не отвечает")
+                                if res_ping != '':
+                                    print('Сервер НЕ остановлен')
+                                    logging.warning(f'Сервер НЕ остановлен администратором')
+                                    sg.popup('Сервер НЕ остановлен', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
+                                             non_blocking=True, background_color='lightgray')
+                                else:
                                     logging.warning(f'Сервер остановлен администратором')
                                     sg.popup('Сервер остановлен', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
                                              non_blocking=True, background_color='lightgray')
@@ -1899,11 +1915,6 @@ if __name__ == '__main__':
                                     server_status['run'] = False
                                     # server_status['last_state'] = True
                                     print(server_status)
-                                else:
-                                    logging.warning(f'Сервер не остановлен')
-                                    sg.popup("Сервер не остановлен", title='Инфо', icon=ICON_BASE_64,
-                                             no_titlebar=True,
-                                             background_color='lightgray')
                             # if event == tray.key:
                             #     event = values[event]
                             #     if event in ('Отобразить окно', sg.EVENT_SYSTEM_TRAY_ICON_DOUBLE_CLICKED):
