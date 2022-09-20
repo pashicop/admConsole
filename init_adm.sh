@@ -31,7 +31,7 @@ unzip ~/admConsole-tray.zip >> ~/install_log.txt
 cd ~/admConsole-tray/
 pip install -r requirements.txt >> ~/install_log.txt
 cd ~
-cp adm.sh ~/Desktop/
+cp ~/admConsole-tray/adm.sh ~/Desktop/
 chmod +x ~/Desktop/adm.sh
 date
 #lsof -i :5000
