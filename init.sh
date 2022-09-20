@@ -2,7 +2,7 @@
 printf '##### Start installing OMEGA #####\n'
 printf '\n##### UPDATE packets #####'
 printf '\n##### It may take a long time!! #####'
-printf '\n##### Please wait! \n\n#####'
+printf '\n##### Please wait! #####\n\n'
 sudo systemctl start ntp > ~/install_log.txt
 sudo systemctl enable ntp >> ~/install_log.txt
 sudo systemctl status ntp >> ~/install_log.txt
@@ -74,8 +74,12 @@ if [[ $? == 0 ]]
     printf '\n##### Server started successfully on '
     printf "$ip_host"
     printf '! ######\n'
+    printf '\n##### Time '
+    printf "$(date)"
+    printf ' ######\n'
     unset ip_host
   else printf '\n##### Error while service OMEGA starting #####\n'
   exit 17
 fi
+
 exit 0

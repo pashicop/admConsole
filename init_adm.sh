@@ -26,8 +26,8 @@ pyenv install 3.9.10
 printf '\n##### Python have been installed #####\n'
 pyenv global 3.9.10
 python --version
-cd ~
-unzip ~/admConsole-tray.zip >> ~/install_log.txt
+#cd ~
+#unzip ~/admConsole-tray.zip >> ~/install_log.txt
 cd ~/admConsole-tray/
 pip install -r requirements.txt >> ~/install_log.txt
 cd ~
