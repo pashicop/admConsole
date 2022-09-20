@@ -497,7 +497,7 @@ def make_add_user_window():
                         [sg.Push(), sg.Button('Показать', key='showPassword')],
                         [sg.Push(), sg.Ok(button_text='Создать', key='addUserButton')]
                        ]
-    return  sg.Window('Добавить пользователя', layout_add_user, icon=ICON_BASE_64, use_ttk_buttons=True,
+    return sg.Window('Добавить пользователя', layout_add_user, icon=ICON_BASE_64, use_ttk_buttons=True,
                       finalize=True, modal=True)
 
 def make_modify_user_window(user: dict):
