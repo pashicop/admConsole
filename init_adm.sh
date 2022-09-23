@@ -34,5 +34,9 @@ cd ~
 cp ~/admConsole-tray/adm.sh ~/Desktop/
 chmod +x ~/Desktop/adm.sh
 date
+printf '\n##### Add rights to start/stop OMEGA #####\n'
+echo 'astracom ALL=(ALL) NOPASSWD: /bin/systemctl * omega' | sudo EDITOR='tee -a' visudo
+printf '\n##### Rights added #####\n'
+printf '\n##### Admin panel installed successfully #####\n'
 #lsof -i :5000
 exit 0

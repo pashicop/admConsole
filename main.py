@@ -1,4 +1,5 @@
 import json
+import socket
 import subprocess
 import threading
 from datetime import datetime
@@ -15,6 +16,7 @@ from io import BytesIO
 from PIL import Image, ImageDraw
 import ipaddress
 import logging
+import sys
 # import netifaces
 # from pystray import MenuItem as item, Menu as menu
 # import pystray
@@ -400,6 +402,7 @@ def make_main_window(ip):
                             visible_column_map=[0, 1, 1],
                             right_click_menu=[1, 'Изменить пользователя'],
                             select_mode='browse',
+                            selected_row_colors='red on gray',
                             auto_size_columns=False, col_widths=(0, 10, 30))],],
                             expand_x=True, size=(480, 664)),
                     sg.Frame('Группы',[[sg.Tree(data=treedata, headings=('Имя','Описание'), col0_width=4, col_widths=(20, 30),
@@ -473,17 +476,25 @@ def make_main_window(ip):
                      finalize=True)
 
 def make_login_window():
-    ips = os.popen("hostname -I").read()
-    if ips:
-        ips = ips.split(" ")
-        # print(ips)
-        try:
-            ip = ipaddress.ip_address(ips[0]).exploded
-        except ValueError:
-            print('Неверный ip')
-            ip = ''
-    else:
+    # ips = os.popen("hostname -I").read()
+    # if ips:
+    #     ips = ips.split(" ")
+    #     # print(ips)
+    #     try:
+    #         ip = ipaddress.ip_address(ips[0]).exploded
+    #     except ValueError:
+    #         print('Неверный ip')
+    #         ip = ''
+    # else:
+    #     ip = ''
+    try:
+        ip = ipaddress.ip_address((([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")] or [
+        [(s.connect(("8.8.8.8", 53)), s.getsockname()[0], s.close()) for s in
+         [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) + ["no IP found"])[0]).exploded
+    except:
+        print('Неверный ip')
         ip = ''
+    print(ip)
     layout_login = [[sg.Push(background_color='white'), sg.Text("Адрес сервера", background_color='white'), sg.Input(default_text=ip, key="ip")],
                     [sg.Push(background_color='white'), sg.Text("Пароль", background_color='white'), sg.Input(focus=True, key="password", password_char='*')],
                     [sg.Push(background_color='white'), sg.Ok(key="OK button"), sg.Push(background_color='white')]]
@@ -761,8 +772,14 @@ if __name__ == '__main__':
     # print(sg.theme_global())
     # print(sg.theme_list())
     # get_icon()
-    sg.theme_global('SystemDefaultForReal')
-    logging.basicConfig(filename='admin.log', filemode='a', format='%(asctime)s %(levelname)s %(message)s', encoding='cp1251', datefmt='%m/%d/%Y %H:%M:%S', level=logging.INFO)
+    sg.theme_global('GreenTan')
+    # vers = sys.version_info
+    # print(vers)
+    if sys.version_info[1] < 9:
+        logging.basicConfig(filename='admin.log', filemode='a', format='%(asctime)s %(levelname)s %(message)s',
+                            datefmt='%m/%d/%Y %H:%M:%S', level=logging.INFO)
+    else:
+        logging.basicConfig(filename='admin.log', filemode='a', format='%(asctime)s %(levelname)s %(message)s', encoding='cp1251', datefmt='%m/%d/%Y %H:%M:%S', level=logging.INFO)
     logging.info('Старт лога')
     # logging.warning('ворнинг')
     # logging.error('еррор')

@@ -8,13 +8,16 @@ sudo systemctl enable ntp >> ~/install_log.txt
 sudo systemctl status ntp >> ~/install_log.txt
 date
 sudo apt-get update >> ~/install_log.txt &&
-sudo apt-get -y install openssh-server >> ~/install_log.txt &&
+sudo apt-get -y install openssh-server curl >> ~/install_log.txt &&
 sudo apt-get -y install postgresql >> ~/install_log.txt
 if [[ $? == 0 ]]
   then printf '\n##### Update packets done! ######\n'
   else printf '\n##### Error with updating packets #####\n'
   exit 1
 fi
+printf '\n##### Changing parsec ######\n'
+sudo sed -i.bak 's/zero_if_notfound: no/zero_if_notfound: yes/' /etc/parsec/mswitch.conf
+printf '\n##### parsec changed! ######\n'
 printf '\n##### CREATE DB #####'
 printf '\n##### COPY init script #####'
 sudo cp ~/Omega/init_db /etc/postgresql
@@ -40,12 +43,13 @@ printf '\n##### Restarting postgresql #####'
 sudo systemctl restart postgresql
 printf '\n##### OK! #####\n'
 printf '\n##### CREATE DB SCHEME! #####'
-cd ~/Omega &&
+
 export PGPASSWORD=omega1q2w &&
-psql -d omega_db -U omega_user -f create_script >> ~/install_log.txt &&
+psql -d omega_db -U omega_user -f ~/Omega/create_script >> ~/install_log.txt &&
 unset PGPASSWORD
 printf '\n##### OK! #####\n'
 printf '\n##### First run #####'
+cd ~/Omega &&
 chmod +x first_run run Api TimeoutManager
 ./first_run
 printf '\n##### First run OK! #####\n'
