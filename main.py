@@ -26,7 +26,7 @@ import sys
 
 # BASE_URL = 'http://10.1.4.147:5000/api/admin/'
 ICON_BASE_64 = b'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'
-version = 'v0.91'
+version = '1.0'
 
 def icon(check):
     box = (16, 16)
@@ -113,11 +113,10 @@ def add_groups(groups_list):
     cur = con.cursor()
     for group in groups_list:
         if group['description'] is None:
-            db_insert_group = "insert or replace into Groups(id, Name, description) Values ('" + group['id'] + \
-                          "', '" + group['name'] + "', '')"
+            db_insert_group = "insert or replace into Groups(id, Name, description, is_emergency) Values ('" + group['id'] + "', '" + group['name'] + "', '', '" + str(group['groupType']) + "')"
         else:
-            db_insert_group = "insert or replace into Groups(id, Name, description) Values ('" + group['id'] + \
-                              "', '" + group['name'] + "', '" + group['description'] + "')"
+            db_insert_group = "insert or replace into Groups(id, Name, description, is_emergency) Values ('" + group['id'] + \
+                              "', '" + group['name'] + "', '" + group['description'] + "', '" + str(group['groupType']) + "')"
         cur.execute(db_insert_group)
     con.commit()
     con.close()
@@ -276,6 +275,7 @@ def get_groups_from_db():
         group_for_table['name'] = group[1]
         group_for_table['id'] = group[0]
         group_for_table['desc'] = group[2]
+        group_for_table['is_emergency'] = group[5]
         # print(group_for_table)
         groups_for_table.append(group_for_table)
     # print('---')
@@ -378,12 +378,12 @@ def make_main_window(ip):
         users_online_text = 'Сервер не запущен...'
     user_list = list()
     group_list = list()
-    label_text = 'Панель администратора ОМЕГА К100 ' + ip + ' ' + version
+    label_text = 'Панель администратора ОМЕГА К100 ' + ip + ' Версия ' + version
     if users_from_db != [[]] and groups_from_db != [[]]:
         for user_from_db in users_from_db:
             user_list.append([user_from_db['id'], user_from_db['login'], user_from_db['name']])
         for group_from_db in groups_from_db:
-            group_list.append([group_from_db['id'], group_from_db['name'], group_from_db['desc']])
+            group_list.append([group_from_db['id'], group_from_db['name'], group_from_db['desc'], group_from_db['is_emergency']])
     tab1_layout = [
                     [sg.Button('Добавить', key='-AddUser-', pad=(((30, 10), (20, 5)))),
                      sg.Button('Удалить', key='-DelUser-', pad=(10, (20, 5))),
@@ -496,7 +496,9 @@ def make_login_window():
         ip = ''
     print(ip)
     layout_login = [[sg.Push(background_color='white'), sg.Text("Адрес сервера", background_color='white'), sg.Input(default_text=ip, key="ip")],
-                    [sg.Push(background_color='white'), sg.Text("Пароль", background_color='white'), sg.Input(focus=True, key="password", password_char='*')],
+                    [sg.Push(background_color='white'), sg.Text("Пароль", background_color='white'), sg.Input(
+                        focus=True,
+                        key="password", password_char='*')],
                     [sg.Push(background_color='white'), sg.Ok(key="OK button"), sg.Push(background_color='white')]]
     return sg.Window('Вход на сервер', layout_login, icon=ICON_BASE_64, background_color='white', finalize=True)
 
@@ -523,12 +525,24 @@ def make_modify_user_window(user: dict):
                      finalize=True, modal=True)
 
 def make_modify_group_window(group: dict):
-    layout_modify_group = [
+    if group['is_emergency'] == 1:
+        layout_modify_group = [
         [sg.Push(), sg.Text('Имя Группы'), sg.Input(size=(40, 1), default_text=group['name'], key='GroupModifyName')],
         [sg.Push(), sg.Text('Описание Группы'),
          sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), default_text=group['desc'], key='GroupModifyDesc')],
+        [sg.Push(), sg.Checkbox('Экстренная', default=True, key='GroupModifyEmergency')],
         [sg.Push(), sg.Ok(button_text='Изменить', key='modifyGroupButton')]
-    ]
+        ]
+    else:
+        layout_modify_group = [
+            [sg.Push(), sg.Text('Имя Группы'),
+             sg.Input(size=(40, 1), default_text=group['name'], key='GroupModifyName')],
+            [sg.Push(), sg.Text('Описание Группы'),
+             sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), default_text=group['desc'],
+                          key='GroupModifyDesc')],
+            [sg.Push(), sg.Checkbox('Экстренная', default=False, key='GroupModifyEmergency')],
+            [sg.Push(), sg.Ok(button_text='Изменить', key='modifyGroupButton')]
+        ]
     return sg.Window('Изменить группу', layout_modify_group, icon=ICON_BASE_64, use_ttk_buttons=True,
                      finalize=True, modal=True)
 
@@ -557,7 +571,9 @@ def make_clone_user_window(user):
 def make_add_group_window():
     layout_add_group = [
         [sg.Push(), sg.Text('Имя Группы'), sg.Input(size=(40, 1), key='GroupName')],
-        [sg.Push(), sg.Text('Описание Группы'), sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), key='description')],
+        [sg.Push(), sg.Text('Описание Группы'),
+         sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), key='description')],
+        [sg.Push(), sg.Checkbox('Экстренная', key='emergency')],
         [sg.Push(), sg.Ok(button_text='Создать', key='addGroupButton')]
     ]
     return sg.Window('Добавить группу', layout_add_group, icon=ICON_BASE_64, use_ttk_buttons=True,
@@ -1137,6 +1153,7 @@ if __name__ == '__main__':
                                     if ev_modify_group == 'modifyGroupButton':
                                         modify_group_name = val_modify_group['GroupModifyName']
                                         modify_group_desc = val_modify_group['GroupModifyDesc']
+                                        modify_group_emergency = int(val_modify_group['GroupModifyEmergency'])
                                         modify_group_dict = {}
                                         modify_group = False
                                         modify_group_dict['id'] = group_to_change['id']
@@ -1146,6 +1163,11 @@ if __name__ == '__main__':
                                         if modify_group_desc != group_to_change['desc']:
                                             modify_group_dict['description'] = modify_group_desc
                                             modify_group = True
+                                        if modify_group_emergency != group_to_change['is_emergency']:
+                                            modify_group_dict['groupType'] = modify_group_emergency
+                                            modify_group = True
+                                        else:
+                                            modify_group_dict['groupType'] = group_to_change['is_emergency']
                                         if modify_group:
                                             # print(modify_group_dict)
                                             res_modify_group = requests.post(BASE_URL + 'updateGroup', json=modify_group_dict, headers=HEADER_dict)
@@ -1325,12 +1347,12 @@ if __name__ == '__main__':
                                         print(res_add_del.status_code)
                                         if res_add_del.status_code == 200:
                                             logging.info(
-                                                f'Добавление пользователей выполнено для {chosen_group["name"]}')
+                                                f'Изменение пользователей выполнено для {chosen_group["name"]}')
                                             # window['-users2-'].update(get_users_for_group(chosen_group[1]))
                                             add_del_users_to_group_after_apply(add_del_dict)
                                         else:
                                             logging.error(
-                                                f'Добавление пользователей НЕ выполнено для {chosen_group["name"]} - {res_add_del.status_code}')
+                                                f'Изменение пользователей НЕ выполнено для {chosen_group["name"]} - {res_add_del.status_code}')
                                             sg.popup("Добавление не выполнено", title='Инфо', icon=ICON_BASE_64,
                                                      no_titlebar=True, background_color='lightgray')
                                     elif add_user:
@@ -1683,9 +1705,11 @@ if __name__ == '__main__':
                                     if ev_add_group == 'addGroupButton':
                                         new_group_name = val_add_group['GroupName']
                                         new_group_desc = val_add_group['description']
+                                        new_group_is_emergency = int(val_add_group['emergency'])
                                         add_group_dict = {}
                                         add_group_dict['name'] = new_group_name
                                         add_group_dict['description'] = new_group_desc
+                                        add_group_dict['groupType'] = new_group_is_emergency
                                         # print(add_group_dict)
                                         res_add_user = requests.post(BASE_URL + 'addGroup', json=add_group_dict, headers=HEADER_dict)
                                         # print(res_add_user.status_code)
