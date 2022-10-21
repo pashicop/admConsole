@@ -28,6 +28,7 @@ import sys
 ICON_BASE_64 = b'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'
 ICON_SHOW_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAi9JREFUWEft1surT1EUB/DP9X6WJEaYeowkpKirGJGBGWWmyFiZmJmYmJgzEP4BN93BJXdAlIQ8hoqJR1555hGt2kf7Hvv8fufnXn6T3xqds9djf/da37X2HtJnGerz/gYABhn4mwwswX7sxspE4qcYwVk874XYbQFMwykcpitxf+I0DuFHNzBtABzHsUKgL3id1hdjTsHmJI50AtEJwFy8wIIswA3sw+OGoMtxHlsz/WcsxYeSTxOA1XiYOdzFRnztltKkn4Hr2JDZr8ftun8JwObkXNnuxKWa4/REuD0IflxGfEdZctmGK9nCDozlBnUAq/AoGQSZgvFVnSu/ZXjWkIl1uFPTLcTbBDRUEzKRA5iHj9nm8V8/UaiD2XHqkJv4hDhpJaEL8LnMTLEqv0V4FwY5gNhsdvL6bdAhpTEDniR9ZOpl+g7WB/vrMj8j4jfMygFcxK7ksT3VtJTlC9iLN4jWy+VVWgvyri05YxOik0KuRuaqDOQA/iBKFixaLNow0h4nyiXWonWvYUsLAOMY7rUEQaBbKXhMuwPp+wSOpu9iuyXA1Sz4juDFBA60JWHM+hgsJYk7YUVB0YqE4ZcPoKY2DLv7hTo31b51G1bA2wyisI2MBV+CzaN4Xzh5z4OoirEGD7KA99JY/S+juNq3dBnF4Ik2bLqMov7npuIyyrPZt+s4B9Hrg+QMDk7Vg6TOrfxJFimPWfLPn2QNbT/55TZPssnv0iHCAMAgA78ACiR5IZsXaIEAAAAASUVORK5CYII='
 ICON_HIDE_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAzlJREFUWEfFllmojVEYhp9jOGYns2RMpmQqZShliAuJ3IgSDsmUDJFkynBBUrhAISK5UDJcKIkonFA4JENcmDMmMxl69S2ts1p7n/8/e9vem73/tb7hXeubVhH/GUUF8t8buBbzVQgCm4F5wAOgY0jiXxOoCXwzpyKyoNAELgN9gV9AtXyGQDfXCGhuRl8Ab82R89MaeGQfY4EjuRIoBjYCswBdbQzfgd121c+BEuA90DBTsifJgRrAWWBgFSumHfCwqgSmAHsCZWXzKuAE8M72dMIRwBqgkyev0uuTjXi2GzgHDPKU9wLTgJ+V3ITCtMhkalkV1Ac+pMmBJ0ArU1ByKaE+BQaqA/0tHy4CXwGFS3kgbAPm2P/HgMg0S1KGz4CWJngMGBNhfhAYH6yft1IbEJRdN+CWyb4Bmvh6YQiuAmqbwhZgfsT5UWB0JWEYBxzyZNYCy+37DtDV7fkE1gNLbEPxLo04USxVVkKZ5Yhy4jgw0tY/ApILsRWYa4vbgdn67wgoc+/a5g2gZ4YTrgRWRzrbcOCk6ajfq1JiEOl+ttELKHcElEBqNEILQJ0tBp10FKCkauMJ/LD43wR6ZNDVssrVla6StdgRkFK5KV7yWIa2FEfFUxBhGVkHLLO12lYNmTicBobYppK1zM8BlY3arKB4aYSGkFPdlqABo7xZat+7gOlZTu8TPQBMlGxYBcrQzmZEXU0dL8QMYEdkPVtTU2NSgxLUltWe/yCmpFrVpBP2A5MizkRSdd/U9nQanSoGZfxM21A3bOALZWL9GmhsgmpM7b2HhdN/aQQ+A3UjntUV7wNtbU/lq+mo0P1FtmvTIFGpOGwCFpuBwcAZ2+jilbCT9eOttQrNJykByS0E5NjHdSs1vXBuA2q1wlBgg72AfPkVVinR+CR5D6i0rgDdIxbqAF+AepFpd8/aejjEKphJQsApyMlOYIIt7AMm2391vg42qg8DU72WHT25W0xDQDqngGGm7HT1q3H9FFBHTIU0BDRGX5l1DSoNrJyRhoAemZoTirlinxckJaC+fcE8KhndAyNnEkkJ6AGih4gy27XqnJ3LQFICktWbzg2ivDhPSyBvTn1DvwGQ9JMh9I2ufAAAAABJRU5ErkJggg=='
+ICON_CHECK_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAsQAAALEBxi1JjQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAASfSURBVFiFzZdfbBRFHMc/M7t3Vwq09qCAxPKnJbYFKqSatCgEMdGgCKT+xagxkGCID0bA+CT4NyEN/iHBF6I+qPFBTCu+8IKQGMSWllJLQFqsEdoCd71ry9Frr3d7N+PD9Y52uS1XbaLfZLOzs7/5fT87szs7A/+xxCRipwOPAZVAEZALRIA+4BzQCLRPNSDA48IQR4UUMUBPdEhTdgC7gRlZ5K0AKibqgUphigM6rtcACCkoKPfiLZuFp8CDJz8HZSmioSihzgH6zgeJhqIACEMEdULvBr52yL0BqAOGnAC2CSEOaa1Nd56bJU+Xcs/DRbjz3I60OqHpbfXTWXeJgfZ+hCES1furZzbsaog4mHuA/ZkAaoG3ABY/WULpC+WYuaajcSb1tvhACOZUzm1Qluupo8997xu9tR74AcgBDgA77QBvAJ9Kl6Rix0qKHlkwKWMHdZhQfaTmSLXdHGDsoz2K4GOAyl0PMK96/lSYA5ReOdlzHFhqNweQo2e3dMkv0MjSLeVTaU6g1U/bwdbKTOZjAXYoSy2YuTCPJc/eO6XmzfuaUFaCRU8UR2vqaz60x0hACkPuASh/eRlCTGZuys588cYSlm+/zxOTaqc9TgKrdELNnj5/BnPun5sxWd+FIG2ftRK9MZKVeW+Lj+Z9p9Pmy7ZVJM202JIJYDPAvKq7HRNeO3mV7uNXaNhz6o4QvS0+ztQ2oSxF8aZb5gAaSjbU1ywfByBMYx1A4Yo5jknLXlpKfsldhHsGaXj7F0b6M0MEWv2cqW1GWYrFG0tYurVi3P3ojSh/1nVsHweAVsUA0wqnOQK4ZriofvehJMTVMI17b4ewj/nYJ0/p/OdttH/7++tA1S0ARR6Ax5vjCJAJomHPLYhszAF0XKeK89IA6SptD88MUbX3QfIW5TN0LUzj3lN0n+hKv3D2MbcrEUukiioNICQhwHFc7XLnuVn1werRnhik7eBZxzG3a2Qg7XEjDYCgEyASGM4KAMYPBzBht6ektSYSSP8YO1MFU8f1CaAq0OqncKXzl5AJYtX7q7l5JYS3fNYd4wfa+4kPW0iX7FKWup6ql8CPAL7TPsfGTjJzzazMAfxNSU9lqe/G1kugSZrSN+wfwtd4PVPbfy0rbNH1U1fqst4OoFVcvQNw8ZsL6IRiqtVZdwkrHEOY4gTJxWtaxui5Tbrki7FQ1KvjmtkrCqfMvP9iH+cPtaG11iieAcaNdep3HFeW2iqESHTWX+Lqz91TYh4JDNNS24SKK9B8ArTaY4wx5S6gG9jsb/ZhmEbWL1gm3bwc4vR7DYz0jyAMcRzNK2SY7gzb9W9IQLE2eC4gIsFhvGVeDE/2i1Kd0HQdu8zZj5qJ3YwhTKNRJ9QmkpuY2+S0+nheSPGVVtpj5poUb15C0boFTCvMdTSOj8TxN/v443AH4Z7BZKXkSxSvATGndhMtf8qFIfbrhN6QqsgvzqegbBY5BTl4CjzEh+NE+iKEewYJnguirORcL13yL2WpN7F9cv9Ua6SUh4UhhphoayZICFP8CrwKuLJNPpkFoBtYS3JzupDk5jQKBIALwDEgOIl8/w/9DR5k79YG7eHTAAAAAElFTkSuQmCC'
 version = '1.0'
 
 def icon(check):
@@ -105,7 +106,14 @@ def add_users(users_list):
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
     for user in users_list:
-        db_insert_user = "insert or replace into Users(id, login, Display_name) Values ('" + user['id'] + "', '" + user['login'] + "', '" + user['displayName'] + "')"
+        is_dispatcher = False
+        for role in user['userRoles']:
+            if role['name'] == 'Dispatchers':
+                is_dispatcher = True
+        if is_dispatcher:
+            db_insert_user = "insert or replace into Users(id, login, Display_name, is_dispatcher) Values ('" + user['id'] + "', '" + user['login'] + "', '" + user['displayName'] + "', '1')"
+        else:
+            db_insert_user = "insert or replace into Users(id, login, Display_name) Values ('" + user['id'] + "', '" + user['login'] + "', '" + user['displayName'] + "')"
         cur.execute(db_insert_user)
     con.commit()
     con.close()
@@ -258,6 +266,7 @@ def get_users_from_db():
         user_for_table['login'] = user[1]
         user_for_table['name'] = user[3]
         user_for_table['id'] = user[0]
+        user_for_table['is_dispatcher'] = user[4]
         # print(user_for_table)
         users_for_table.append(user_for_table)
     # print('---')
@@ -383,7 +392,11 @@ def make_main_window(ip):
     label_text = 'Панель администратора ОМЕГА К100 ' + ip + ' Версия ' + version
     if users_from_db != [[]] and groups_from_db != [[]]:
         for user_from_db in users_from_db:
-            user_list.append([user_from_db['id'], user_from_db['login'], user_from_db['name']])
+            # user_list.append([user_from_db['id'], user_from_db['login'], user_from_db['name'], user_from_db['is_dispatcher']])
+            if user_from_db['is_dispatcher']:
+                user_list.append([user_from_db['id'], user_from_db['login'], user_from_db['name'], u'\u2713'])
+            else:
+                user_list.append([user_from_db['id'], user_from_db['login'], user_from_db['name'], ''])
         for group_from_db in groups_from_db:
             group_list.append([group_from_db['id'], group_from_db['name'], group_from_db['desc'], group_from_db['is_emergency']])
     tab1_layout = [
@@ -394,18 +407,18 @@ def make_main_window(ip):
                     [
                      sg.Frame('Пользователи',
                         [
-                            [sg.Table(user_list, headings=('id', 'Логин', 'Имя'), justification="left",
+                            [sg.Table(user_list, headings=('id', 'Логин', 'Имя', 'Дисп'), justification="left",
                             num_rows="40", key='-users-', expand_y=True, expand_x=True,
                             enable_click_events=True,
                             enable_events=True,
                             # bind_return_key=True,
                             # background_color='green',
                             right_click_selects=True,
-                            visible_column_map=[0, 1, 1],
+                            visible_column_map=[0, 1, 1, 1],
                             right_click_menu=[1, 'Изменить пользователя'],
                             select_mode='browse',
                             selected_row_colors='red on gray',
-                            auto_size_columns=False, col_widths=(0, 10, 30))],],
+                            auto_size_columns=False, col_widths=(0, 10, 30, 5))],],
                             expand_x=True, size=(480, 664)),
                     sg.Frame('Группы',[[sg.Tree(data=treedata, headings=('Имя','Описание'), col0_width=4, col_widths=(20, 30),
                             num_rows=10, key='-TREE-', row_height=20, metadata=[], auto_size_columns=False,
@@ -500,6 +513,7 @@ def make_login_window():
     layout_login = [[sg.Push(background_color='white'), sg.Text("Адрес сервера", background_color='white'), sg.Input(default_text="10.1.4.49", key="ip")],
                     [sg.Push(background_color='white'), sg.Text("Пароль", background_color='white'), sg.Input(
                         focus=True,
+                        default_text='qwerty',
                         key="password", password_char='*')],
                     [sg.Push(background_color='white'), sg.Ok(key="OK button"), sg.Push(background_color='white')]]
     return sg.Window('Вход на сервер', layout_login, icon=ICON_BASE_64, background_color='white', finalize=True)
@@ -510,30 +524,42 @@ def make_add_user_window():
                         [sg.Push(), sg.Text('Имя'), sg.Input(key='UserName')],
                         [sg.Push(), sg.Text('Пароль'), sg.Input(key='userPassword', password_char='*')],
                         [sg.Push(), sg.Button(key='showPassword', image_data=ICON_SHOW_BASE_64)],
+                        [sg.Checkbox('Диспетчер', default=False, key='addUserDispatcher'), sg.Push()],
                         [sg.Push(), sg.Ok(button_text='Создать', key='addUserButton')]
                        ]
     return sg.Window('Добавить пользователя', layout_add_user, icon=ICON_BASE_64, use_ttk_buttons=True,
                       finalize=True, modal=True)
 
 def make_modify_user_window(user: dict):
-    layout_modify_user = [
-        [sg.Push(), sg.Text('Логин'), sg.Input(disabled=True, default_text=user['login'], key='UserModifyLogin')],
-        [sg.Push(), sg.Text('Имя'), sg.Input(default_text=user['name'], key='UserModifyName')],
-        [sg.Push(), sg.Text('Пароль'), sg.Input(default_text='', key='userModifyPassword', password_char='*')],
-        [sg.Push(), sg.Button(key='showModifyPassword', image_data=ICON_SHOW_BASE_64)],
-        [sg.Push(), sg.Ok(button_text='Изменить', key='modifyUserButton')]
-    ]
+    if user['is_dispatcher']:
+        layout_modify_user = [
+            [sg.Push(), sg.Text('Логин'), sg.Input(disabled=True, default_text=user['login'], key='UserModifyLogin')],
+            [sg.Push(), sg.Text('Имя'), sg.Input(default_text=user['name'], key='UserModifyName')],
+            [sg.Push(), sg.Text('Пароль'), sg.Input(default_text='', key='userModifyPassword', password_char='*')],
+            [sg.Push(), sg.Button(key='showModifyPassword', image_data=ICON_SHOW_BASE_64)],
+            [sg.Checkbox('Диспетчер', default=True, key='modifyUserDispatcher'), sg.Push()],
+            [sg.Push(), sg.Ok(button_text='Изменить', key='modifyUserButton')]
+        ]
+    else:
+        layout_modify_user = [
+            [sg.Push(), sg.Text('Логин'), sg.Input(disabled=True, default_text=user['login'], key='UserModifyLogin')],
+            [sg.Push(), sg.Text('Имя'), sg.Input(default_text=user['name'], key='UserModifyName')],
+            [sg.Push(), sg.Text('Пароль'), sg.Input(default_text='', key='userModifyPassword', password_char='*')],
+            [sg.Push(), sg.Button(key='showModifyPassword', image_data=ICON_SHOW_BASE_64)],
+            [sg.Checkbox('Диспетчер', default=False, key='modifyUserDispatcher'), sg.Push()],
+            [sg.Push(), sg.Ok(button_text='Изменить', key='modifyUserButton')]
+        ]
     return sg.Window('Изменить пользователя', layout_modify_user, icon=ICON_BASE_64, use_ttk_buttons=True,
                      finalize=True, modal=True)
 
 def make_modify_group_window(group: dict):
     if group['is_emergency'] == 1:
         layout_modify_group = [
-        [sg.Push(), sg.Text('Имя Группы'), sg.Input(size=(40, 1), default_text=group['name'], key='GroupModifyName')],
-        [sg.Push(), sg.Text('Описание Группы'),
-         sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), default_text=group['desc'], key='GroupModifyDesc')],
-        [sg.Push(), sg.Checkbox('Экстренная', default=True, key='GroupModifyEmergency')],
-        [sg.Push(), sg.Ok(button_text='Изменить', key='modifyGroupButton')]
+            [sg.Push(), sg.Text('Имя Группы'), sg.Input(size=(40, 1), default_text=group['name'], key='GroupModifyName')],
+            [sg.Push(), sg.Text('Описание Группы'),
+             sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), default_text=group['desc'], key='GroupModifyDesc')],
+            [sg.Push(), sg.Checkbox('Экстренная', default=True, key='GroupModifyEmergency')],
+            [sg.Push(), sg.Ok(button_text='Изменить', key='modifyGroupButton')]
         ]
     else:
         layout_modify_group = [
@@ -786,6 +812,33 @@ def show_app(icon):
 # def hide_app():
 #     print('hide')
 
+def get_user_list(users_from_db):
+    treedata_update_user = sg.TreeData()
+    user_list = []
+    for user_from_db in users_from_db:
+        if user_from_db['is_dispatcher']:
+            user_list.append([user_from_db['id'], user_from_db['login'],
+                              user_from_db['name'], u'\u2713'])
+        else:
+            user_list.append([user_from_db['id'], user_from_db['login'],
+                              user_from_db['name'], ''])
+        treedata_update_user.insert('', user_from_db['id'], '',
+                                    values=[user_from_db['login'],
+                                            user_from_db['name']],
+                                    icon=check[0])
+    return user_list, treedata_update_user
+
+def get_filter_user_list(filter_users_from_db):
+    user_list = []
+    for user_from_db in filter_users_from_db:
+        if user_from_db['is_dispatcher']:
+            user_list.append([user_from_db['id'], user_from_db['login'],
+                              user_from_db['name'], u'\u2713'])
+        else:
+            user_list.append([user_from_db['id'], user_from_db['login'],
+                              user_from_db['name'], ''])
+    return user_list
+
 if __name__ == '__main__':
     # print(sg.theme_global())
     # print(sg.theme_list())
@@ -919,14 +972,12 @@ if __name__ == '__main__':
                                         groups_from_db = get_groups_from_db()
                                         users_from_db.sort(key=lambda i: i['login'])
                                         groups_from_db.sort(key=lambda i: i['name'])
-                                        treedata_update_user = sg.TreeData()
+                                        # treedata_update_user = sg.TreeData()
                                         treedata_update_group = sg.TreeData()
-                                        user_list = list()
+                                        # user_list = list()
                                         group_list = list()
                                         if users_from_db != [[]] and groups_from_db != [[]]:
-                                            for user_from_db in users_from_db:
-                                                user_list.append([user_from_db['id'], user_from_db['login'],
-                                                                  user_from_db['name']])
+                                            user_list, treedata_update_user = get_user_list(users_from_db)
                                             for group_from_db in groups_from_db:
                                                 group_list.append([group_from_db['id'], group_from_db['name'],
                                                                    group_from_db['desc']])
@@ -934,10 +985,6 @@ if __name__ == '__main__':
                                             treedata_update_group.insert('', group['id'], '',
                                                                          values=[group['name'], group['desc']],
                                                                          icon=check[0])
-                                        for user in users_from_db:
-                                            treedata_update_user.insert('', user['id'], '',
-                                                                        values=[user['login'], user['name']],
-                                                                        icon=check[0])
                                         window['-users-'].update(user_list)
                                         window['-TREE2-'].update(treedata_update_user)
                                         window['-groups2-'].update(group_list)
@@ -1093,10 +1140,11 @@ if __name__ == '__main__':
                                             window_modify_user['showModifyPassword'].update(image_data=ICON_HIDE_BASE_64)
                                             password_clear = True
                                     if ev_modify_user == 'modifyUserButton':
-                                        modify_user_login, modify_user_name, modify_user_password = val_modify_user.values()
+                                        modify_user_login, modify_user_name, modify_user_password, modify_user_is_disp = val_modify_user.values()
                                         modify_user_dict = {}
                                         modify_name = False
                                         modify_password = False
+                                        modify_is_disp = False
                                         modify_user_dict['id'] = user_to_change['id']
                                         modify_user_dict['login'] = modify_user_login
                                         if modify_user_name != user_to_change['name']:
@@ -1105,6 +1153,26 @@ if __name__ == '__main__':
                                         if modify_user_password:
                                             modify_user_dict['password'] = modify_user_password
                                             modify_password = True
+                                        if modify_user_is_disp != user_to_change['is_dispatcher']:
+                                            modify_is_disp = True
+                                            user_disp_dict = {}
+                                            user_disp_dict['id'] = user_to_change['id']
+                                            if modify_user_is_disp:
+                                                res_modify_user_is_disp = requests.post(BASE_URL + 'addToDispatchers', json=user_disp_dict, headers=HEADER_dict)
+                                            else:
+                                                res_modify_user_is_disp = requests.post(BASE_URL + 'removeFromDispatchers', json=user_disp_dict, headers=HEADER_dict)
+                                            if res_modify_user_is_disp.status_code == 200:
+                                                if modify_user_is_disp:
+                                                    logging.info(f'Пользователь {modify_user_login} стал диспетчером')
+                                                else:
+                                                    logging.info(f'Пользователь {modify_user_login} перестал быть диспетчером')
+                                            else:
+                                                if modify_user_is_disp:
+                                                    logging.error(
+                                                    f'Ошибка при добавлении пользователя в диспетчеры - {res_modify_user_is_disp.status_code}')
+                                                else:
+                                                    logging.error(
+                                                        f'Ошибка при удалении пользователя из диспетчеров - {res_modify_user_is_disp.status_code}')
                                         # print(modify_user_dict)
                                         if modify_name or modify_password:
                                             res_modify_user = requests.post(BASE_URL + 'updateUser', json=modify_user_dict, headers=HEADER_dict)
@@ -1114,33 +1182,46 @@ if __name__ == '__main__':
                                                     logging.info(f'Пользователю {modify_user_login} изменили имя')
                                                 if modify_password:
                                                     logging.info(f'Пользователю {modify_user_login} изменили пароль')
-                                                users_from_server = get_users_from_server()
-                                                add_users(users_from_server)
-                                                users_from_db = get_users_from_db()
-                                                users_from_db.sort(key=lambda i: i['login'])
-                                                user_list = list()
-                                                drop_db('user_in_groups')
-                                                add_user_in_groups(users_from_server)
-                                                treedata_update_user = sg.TreeData()
-                                                for user_from_db in users_from_db:
-                                                    user_list.append([user_from_db['id'], user_from_db['login'],
-                                                                      user_from_db['name']])
-                                                    treedata_update_user.insert('', user_from_db['id'], '',
-                                                                                values=[user_from_db['login'], user_from_db['name']],
-                                                                                icon=check[0])
-                                                window['-users-'].update(user_list)
-                                                window['-TREE2-'].update(treedata_update_user)
-                                                window_modify_user.close()
-                                                sg.popup("Пользователь изменён!", title='Инфо', icon=ICON_BASE_64,
-                                                         no_titlebar=True, background_color='lightgray')
-                                                break
                                             else:
                                                 logging.error(f'Ошибка изменения пользователя - {res_modify_user.status_code}')
-                                                sg.popup("Пользователь не изменён!", title='Инфо', icon=ICON_BASE_64,
-                                                         no_titlebar=True, background_color='lightgray')
+                                        if modify_is_disp or modify_name or modify_password:
+                                            users_from_server = get_users_from_server()
+                                            add_users(users_from_server)
+                                            users_from_db = get_users_from_db()
+                                            users_from_db.sort(key=lambda i: i['login'])
+                                            # user_list = list()
+                                            drop_db('user_in_groups')
+                                            add_user_in_groups(users_from_server)
+                                            user_list, treedata_update_user = get_user_list(users_from_db)
+                                            if filter_status:
+                                                search_str = values['-filterUser-']
+                                                # print(search_str)
+                                                filtered_users = filter(lambda x: search_str in x['login'],
+                                                                        users_from_db)
+                                                filtered_users_list_of_dict = list(filtered_users)
+                                                # print(filtered_users_list_of_dict)
+                                                # print(len(filtered_users_list_of_dict))
+                                                # filtered_users_list = list()
+                                                filtered_users_list = get_filter_user_list(filtered_users_list_of_dict)
+                                                # users_from_db = filtered_users_list_of_dict
+                                                # for filtered_user_list_of_dict in filtered_users_list_of_dict:
+                                                #     filtered_users_list.append([filtered_user_list_of_dict['id'],
+                                                #                                 filtered_user_list_of_dict['login'],
+                                                #                                 filtered_user_list_of_dict['name']])
+                                                window['-users-'].update(filtered_users_list)
+                                            else:
+                                                window['-users-'].update(user_list)
+                                            window['-TREE2-'].update(treedata_update_user)
+                                            # user_list, treedata_update_user = get_user_list(users_from_db)
+                                            # window['-users-'].update(user_list)
+                                            # window['-TREE2-'].update(treedata_update_user)
+                                            window_modify_user.close()
+                                            sg.popup("Пользователь изменён!", title='Инфо', icon=ICON_BASE_64,
+                                                     no_titlebar=True, background_color='lightgray')
                                         else:
                                             sg.popup("Нет никаких изменений!", title='Инфо', icon=ICON_BASE_64,
                                                      no_titlebar=True, background_color='lightgray')
+                                            # break
                             if event == 'Изменить группу':
                                 # print('Изменяем группу')
                                 group_to_change = groups_from_db[values['-groups2-'][0]]
@@ -1396,7 +1477,7 @@ if __name__ == '__main__':
                                 password_clear = False
                                 while True:
                                     ev_add_user, val_add_user = window_add_user.Read()
-                                    # print(ev_add_user, val_add_user)
+                                    print(ev_add_user, val_add_user)
                                     if ev_add_user == sg.WIN_CLOSED or ev_add_user == 'Exit':
                                         # print('Закрыл окно добавления пользователя')
                                         break
@@ -1410,28 +1491,33 @@ if __name__ == '__main__':
                                             window_add_user['showPassword'].update(image_data=ICON_HIDE_BASE_64)
                                             password_clear = True
                                     if ev_add_user == 'addUserButton':
-                                        new_user_login, new_user_name, new_user_password = val_add_user.values()
+                                        new_user_login, new_user_name, new_user_password, is_dispatcher = val_add_user.values()
                                         add_user_dict = {}
                                         add_user_dict['login'] = new_user_login
                                         add_user_dict['displayName'] = new_user_name
                                         add_user_dict['password'] = new_user_password
-                                        # print(add_user_dict)
+                                        # add_user_dict['is_dispatcher'] = is_dispatcher
+                                        print(add_user_dict)
                                         res_add_user = requests.post(BASE_URL + 'addUser', json=add_user_dict, headers=HEADER_dict)
                                         # print(res_add_user.status_code)
                                         if res_add_user.status_code == 200:
                                             logging.info(f'Пользователь {new_user_login} добавлен')
+                                            if is_dispatcher:
+                                                add_to_disp_dict = {}
+                                                add_to_disp_dict['id'] = res_add_user.text[1:-1]
+                                                res_add_disp = requests.post(BASE_URL + 'addToDispatchers', json=add_to_disp_dict, headers=HEADER_dict)
+                                                if res_add_disp.status_code == 200:
+                                                    logging.info(f'Пользователь {new_user_login} стал диспетчером')
+                                                else:
+                                                    logging.error(
+                                                        f'Пользователь {new_user_login} НЕ стал диспетчером - {res_add_disp.status_code}')
+                                                    sg.popup("Пользователь не стал диспетчером!", title='Инфо',
+                                                             icon=ICON_BASE_64,
+                                                             no_titlebar=True, background_color='lightgray')
                                             add_users(get_users_from_server())
                                             users_from_db = get_users_from_db()
                                             users_from_db.sort(key=lambda i: i['login'])
-                                            user_list = list()
-                                            treedata_update_user = sg.TreeData()
-                                            for user_from_db in users_from_db:
-                                                user_list.append([user_from_db['id'], user_from_db['login'],
-                                                                  user_from_db['name']])
-                                                treedata_update_user.insert('', user_from_db['id'], '',
-                                                                            values=[user_from_db['login'],
-                                                                                    user_from_db['name']],
-                                                                            icon=check[0])
+                                            user_list, treedata_update_user = get_user_list(users_from_db)
                                             if filter_status:
                                                 search_str = values['-filterUser-']
                                                 # print(search_str)
@@ -1440,12 +1526,13 @@ if __name__ == '__main__':
                                                 filtered_users_list_of_dict = list(filtered_users)
                                                 # print(filtered_users_list_of_dict)
                                                 # print(len(filtered_users_list_of_dict))
-                                                filtered_users_list = list()
+                                                # filtered_users_list = list()
+                                                filtered_users_list = get_filter_user_list(filtered_users_list_of_dict)
                                                 # users_from_db = filtered_users_list_of_dict
-                                                for filtered_user_list_of_dict in filtered_users_list_of_dict:
-                                                    filtered_users_list.append([filtered_user_list_of_dict['id'],
-                                                                                filtered_user_list_of_dict['login'],
-                                                                                filtered_user_list_of_dict['name']])
+                                                # for filtered_user_list_of_dict in filtered_users_list_of_dict:
+                                                #     filtered_users_list.append([filtered_user_list_of_dict['id'],
+                                                #                                 filtered_user_list_of_dict['login'],
+                                                #                                 filtered_user_list_of_dict['name']])
                                                 window['-users-'].update(filtered_users_list)
                                             else:
                                                 window['-users-'].update(user_list)
@@ -1495,15 +1582,16 @@ if __name__ == '__main__':
                                                     add_users(get_users_from_server())
                                                     users_from_db = get_users_from_db()
                                                     users_from_db.sort(key=lambda i: i['login'])
-                                                    user_list = list()
-                                                    treedata_update_user = sg.TreeData()
-                                                    for user_from_db in users_from_db:
-                                                        user_list.append([user_from_db['id'], user_from_db['login'],
-                                                                          user_from_db['name']])
-                                                        treedata_update_user.insert('', user_from_db['id'], '',
-                                                                                    values=[user_from_db['login'],
-                                                                                            user_from_db['name']],
-                                                                                    icon=check[0])
+                                                    # user_list = list()
+                                                    # treedata_update_user = sg.TreeData()
+                                                    user_list, treedata_update_user = get_user_list(users_from_db)
+                                                    # for user_from_db in users_from_db:
+                                                    #     user_list.append([user_from_db['id'], user_from_db['login'],
+                                                    #                       user_from_db['name']])
+                                                    #     treedata_update_user.insert('', user_from_db['id'], '',
+                                                    #                                 values=[user_from_db['login'],
+                                                    #                                         user_from_db['name']],
+                                                    #                                 icon=check[0])
                                                     del_users_in_groups_after_delete_user(del_user['id'])
                                                     if filter_status:
                                                         search_str = values['-filterUser-']
@@ -1513,13 +1601,15 @@ if __name__ == '__main__':
                                                         filtered_users_list_of_dict = list(filtered_users)
                                                         # print(filtered_users_list_of_dict)
                                                         # print(len(filtered_users_list_of_dict))
-                                                        filtered_users_list = list()
+                                                        # filtered_users_list = list()
+                                                        filtered_users_list = get_filter_user_list(
+                                                            filtered_users_list_of_dict)
                                                         # users_from_db = filtered_users_list_of_dict
-                                                        for filtered_user_list_of_dict in filtered_users_list_of_dict:
-                                                            filtered_users_list.append(
-                                                                [filtered_user_list_of_dict['id'],
-                                                                 filtered_user_list_of_dict['login'],
-                                                                 filtered_user_list_of_dict['name']])
+                                                        # for filtered_user_list_of_dict in filtered_users_list_of_dict:
+                                                        #     filtered_users_list.append(
+                                                        #         [filtered_user_list_of_dict['id'],
+                                                        #          filtered_user_list_of_dict['login'],
+                                                        #          filtered_user_list_of_dict['name']])
                                                         window['-users-'].update(filtered_users_list)
                                                     else:
                                                         window['-users-'].update(user_list)
@@ -1589,15 +1679,16 @@ if __name__ == '__main__':
                                                     add_del_groups_to_user_after_apply(clone_dict)
                                                     users_from_db = get_users_from_db()
                                                     users_from_db.sort(key=lambda i: i['login'])
-                                                    user_list = list()
-                                                    treedata_update_user = sg.TreeData()
-                                                    for user_from_db in users_from_db:
-                                                        user_list.append([user_from_db['id'], user_from_db['login'],
-                                                                          user_from_db['name']])
-                                                        treedata_update_user.insert('', user_from_db['id'], '',
-                                                                                    values=[user_from_db['login'],
-                                                                                            user_from_db['name']],
-                                                                                    icon=check[0])
+                                                    user_list, treedata_update_user = get_user_list(users_from_db)
+                                                    # user_list = list()
+                                                    # treedata_update_user = sg.TreeData()
+                                                    # for user_from_db in users_from_db:
+                                                    #     user_list.append([user_from_db['id'], user_from_db['login'],
+                                                    #                       user_from_db['name']])
+                                                    #     treedata_update_user.insert('', user_from_db['id'], '',
+                                                    #                                 values=[user_from_db['login'],
+                                                    #                                         user_from_db['name']],
+                                                    #                                 icon=check[0])
                                                     if filter_status:
                                                         search_str = values['-filterUser-']
                                                         # print(search_str)
@@ -1606,13 +1697,15 @@ if __name__ == '__main__':
                                                         filtered_users_list_of_dict = list(filtered_users)
                                                         # print(filtered_users_list_of_dict)
                                                         # print(len(filtered_users_list_of_dict))
-                                                        filtered_users_list = list()
+                                                        # filtered_users_list = list()
+                                                        filtered_users_list = get_filter_user_list(
+                                                            filtered_users_list_of_dict)
                                                         # users_from_db = filtered_users_list_of_dict
-                                                        for filtered_user_list_of_dict in filtered_users_list_of_dict:
-                                                            filtered_users_list.append(
-                                                                [filtered_user_list_of_dict['id'],
-                                                                 filtered_user_list_of_dict['login'],
-                                                                 filtered_user_list_of_dict['name']])
+                                                        # for filtered_user_list_of_dict in filtered_users_list_of_dict:
+                                                        #     filtered_users_list.append(
+                                                        #         [filtered_user_list_of_dict['id'],
+                                                        #          filtered_user_list_of_dict['login'],
+                                                        #          filtered_user_list_of_dict['name']])
                                                         window['-users-'].update(filtered_users_list)
                                                     else:
                                                         window['-users-'].update(user_list)
@@ -1646,16 +1739,14 @@ if __name__ == '__main__':
                                     filtered_users_list_of_dict = list(filtered_users)
                                     # print(filtered_users_list_of_dict)
                                     # print(len(filtered_users_list_of_dict))
-                                    filtered_users_list = list()
+                                    # filtered_users_list = list()
+                                    filtered_users_list = get_filter_user_list(filtered_users_list_of_dict)
                                     # users_from_db = filtered_users_list_of_dict
-                                    for filtered_user_list_of_dict in filtered_users_list_of_dict:
-                                        filtered_users_list.append([filtered_user_list_of_dict['id'], filtered_user_list_of_dict['login'], filtered_user_list_of_dict['name']])
+                                    # for filtered_user_list_of_dict in filtered_users_list_of_dict:
+                                    #     filtered_users_list.append([filtered_user_list_of_dict['id'], filtered_user_list_of_dict['login'], filtered_user_list_of_dict['name']])
                                     window['-users-'].update(filtered_users_list)
                                 else:
-                                    user_list_after_filter_null = list()
-                                    for user_from_db in users_from_db:
-                                        user_list_after_filter_null.append(
-                                            [user_from_db['id'], user_from_db['login'], user_from_db['name']])
+                                    user_list_after_filter_null = get_filter_user_list(users_from_db)
                                     window['-users-'].update(user_list_after_filter_null)
                                     filter_status = False
                             if event == '-filterGroup-':
@@ -1890,24 +1981,18 @@ if __name__ == '__main__':
                                             # print(groups_from_db)
                                             users_from_db.sort(key=lambda i: i['login'])
                                             groups_from_db.sort(key=lambda i: i['name'])
-                                            treedata_update_user = sg.TreeData()
+                                            # treedata_update_user = sg.TreeData()
                                             treedata_update_group = sg.TreeData()
-                                            user_list = list()
+                                            # user_list = list()
                                             group_list = list()
+                                            user_list, treedata_update_user = get_user_list(users_from_db)
                                             if users_from_db != [[]] and groups_from_db != [[]]:
-                                                for user_from_db in users_from_db:
-                                                    user_list.append([user_from_db['id'], user_from_db['login'],
-                                                                      user_from_db['name']])
                                                 for group_from_db in groups_from_db:
                                                     group_list.append([group_from_db['id'], group_from_db['name'],
                                                                        group_from_db['desc']])
                                             for group in groups_from_db:
                                                 treedata_update_group.insert('', group['id'], '',
                                                                              values=[group['name'], group['desc']], icon=check[0])
-                                            for user in users_from_db:
-                                                treedata_update_user.insert('', user['id'], '',
-                                                                            values=[user['login'], user['name']], icon=check[0])
-                                            # print('before update gui')
                                             window['-users-'].update(user_list)
                                             window['-TREE2-'].update(treedata_update_user)
                                             window['-groups2-'].update(group_list)
