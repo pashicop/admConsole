@@ -111,9 +111,11 @@ def add_users(users_list):
             if role['name'] == 'Dispatchers':
                 is_dispatcher = True
         if is_dispatcher:
-            db_insert_user = "insert or replace into Users(id, login, Display_name, is_dispatcher) Values ('" + user['id'] + "', '" + user['login'] + "', '" + user['displayName'] + "', '1')"
+            db_insert_user = "insert or replace into Users(id, login, Display_name, is_dispatcher) Values " \
+                             "('" + user['id'] + "', '" + user['login'] + "', '" + user['displayName'] + "', '1')"
         else:
-            db_insert_user = "insert or replace into Users(id, login, Display_name) Values ('" + user['id'] + "', '" + user['login'] + "', '" + user['displayName'] + "')"
+            db_insert_user = "insert or replace into Users(id, login, Display_name) Values " \
+                             "('" + user['id'] + "', '" + user['login'] + "', '" + user['displayName'] + "')"
         cur.execute(db_insert_user)
     con.commit()
     con.close()
@@ -123,10 +125,13 @@ def add_groups(groups_list):
     cur = con.cursor()
     for group in groups_list:
         if group['description'] is None:
-            db_insert_group = "insert or replace into Groups(id, Name, description, is_emergency) Values ('" + group['id'] + "', '" + group['name'] + "', '', '" + str(group['groupType']) + "')"
+            db_insert_group = "insert or replace into Groups(id, Name, description, is_emergency) Values " \
+                              "('" + group['id'] + "', '" + group['name'] + "', '', '" + str(group['groupType']) + "')"
         else:
-            db_insert_group = "insert or replace into Groups(id, Name, description, is_emergency) Values ('" + group['id'] + \
-                              "', '" + group['name'] + "', '" + group['description'] + "', '" + str(group['groupType']) + "')"
+            db_insert_group = "insert or replace into Groups(id, Name, description, is_emergency) Values " \
+                              "('" + group['id'] + \
+                              "', '" + group['name'] + "', '" + group['description'] + \
+                              "', '" + str(group['groupType']) + "')"
         cur.execute(db_insert_group)
     con.commit()
     con.close()
@@ -398,7 +403,11 @@ def make_main_window(ip):
             else:
                 user_list.append([user_from_db['id'], user_from_db['login'], user_from_db['name'], ''])
         for group_from_db in groups_from_db:
-            group_list.append([group_from_db['id'], group_from_db['name'], group_from_db['desc'], group_from_db['is_emergency']])
+            if group_from_db['is_emergency']:
+                group_list.append([group_from_db['id'], group_from_db['name'], group_from_db['desc'], u'\u2713'])
+            else:
+                group_list.append(
+                    [group_from_db['id'], group_from_db['name'], group_from_db['desc'], ''])
     tab1_layout = [
                     [sg.Button('Добавить', key='-AddUser-', pad=(((30, 10), (20, 5)))),
                      sg.Button('Удалить', key='-DelUser-', pad=(10, (20, 5))),
@@ -424,6 +433,7 @@ def make_main_window(ip):
                             num_rows=10, key='-TREE-', row_height=20, metadata=[], auto_size_columns=False,
                             show_expanded=False, enable_events=True, justification='left', expand_y=True,
                             select_mode=sg.TABLE_SELECT_MODE_BROWSE,
+                            selected_row_colors='red on gray',
                             ),]], expand_y=True, expand_x=True),
 
                      ],
@@ -436,20 +446,22 @@ def make_main_window(ip):
                     [sg.Text('Фильтр: '), sg.Input(size=(20, 1), enable_events=True, key='-filterGroup-')],
                     [sg.Frame('Группы',
                         [
-                            [sg.Table(group_list, headings=('id', 'Имя', 'Описание'), justification="left",
+                            [sg.Table(group_list, headings=('id', 'Имя', 'Описание', 'Э'), justification="left",
                             num_rows="40", enable_events=True,
                             enable_click_events=True,
                             right_click_selects=True,
                             right_click_menu=[1, 'Изменить группу'],
                             select_mode='browse',
-                            visible_column_map=[0, 1, 1],
+                            selected_row_colors='red on gray',
+                            visible_column_map=[0, 1, 1, 1],
                             key='-groups2-', expand_y=True, expand_x=True,
-                            auto_size_columns=False, col_widths=(0, 10, 30))],],
+                            auto_size_columns=False, col_widths=(0, 10, 30, 2))],],
                              expand_x=True, size=(480, 664)),
                     sg.Frame('Пользователи', [[sg.Tree(data=treedata2, headings=('Логин', 'Имя'), col0_width=4, col_widths=(20, 30),
                             num_rows=10, key='-TREE2-', row_height=20, metadata=[], auto_size_columns=False,
                             show_expanded=False, enable_events=True, justification='left', expand_y="True",
                             select_mode=sg.TABLE_SELECT_MODE_BROWSE,
+                            selected_row_colors='red on gray',
                             ),]], expand_y=True, expand_x=True),
                     ],
                    [sg.Push(),
@@ -523,7 +535,7 @@ def make_add_user_window():
                         [sg.Push(), sg.Text('Логин'), sg.Input(key='UserLogin')],
                         [sg.Push(), sg.Text('Имя'), sg.Input(key='UserName')],
                         [sg.Push(), sg.Text('Пароль'), sg.Input(key='userPassword', password_char='*')],
-                        [sg.Push(), sg.Button(key='showPassword', image_data=ICON_SHOW_BASE_64)],
+                        [sg.Push(), sg.Text('Показать пароль', key='showPasswordText'), sg.Button(key='showPassword', image_data=ICON_SHOW_BASE_64)],
                         [sg.Checkbox('Диспетчер', default=False, key='addUserDispatcher'), sg.Push()],
                         [sg.Push(), sg.Ok(button_text='Создать', key='addUserButton')]
                        ]
@@ -844,7 +856,7 @@ if __name__ == '__main__':
     # print(sg.theme_list())
     # get_icon()
     # sg.theme_global('GreenTan')
-    sg.theme_global('SystemDefaultForReal')
+    # sg.theme_global('SystemDefaultForReal')
     # vers = sys.version_info
     # print(vers)
     if sys.version_info[1] < 9:
@@ -1114,114 +1126,121 @@ if __name__ == '__main__':
                                             else:
                                                 tree2.update(key=user_id_for_tree, icon=check[0])
                             if event == 'Изменить пользователя':
-                                # print('Изменяем пользователя')
-                                if filter_status:
-                                    user_to_change = filtered_users_list_of_dict[values['-users-'][0]]
+                                print('Изменяем пользователя')
+                                print(values)
+                                print(values['-users-'])
+                                # print(values['-users-'][0])
+                                if not values['-users-']:
+                                    sg.popup('Не выбран пользователь', title='Инфо', icon=ICON_BASE_64,
+                                             no_titlebar=True, background_color='lightgray')
                                 else:
-                                    user_to_change = users_from_db[values['-users-'][0]]
-                                # user_to_change = users_from_db[values['-users-'][0]]
-                                # print(user_to_change)
-                                window_modify_user = make_modify_user_window(user_to_change)
-                                window_modify_user.Element('UserModifyLogin').SetFocus()
-                                password_clear = False
-                                while True:
-                                    ev_modify_user, val_modify_user = window_modify_user.Read()
-                                    # print(ev_modify_user, val_modify_user)
-                                    if ev_modify_user == sg.WIN_CLOSED or ev_modify_user == 'Exit':
-                                        # print('Закрыл окно добавления пользователя')
-                                        break
-                                    if ev_modify_user == 'showModifyPassword':
-                                        if password_clear:
-                                            window_modify_user['userModifyPassword'].update(password_char='*')
-                                            window_modify_user['showModifyPassword'].update(image_data=ICON_SHOW_BASE_64)
-                                            password_clear = False
-                                        else:
-                                            window_modify_user['userModifyPassword'].update(password_char='')
-                                            window_modify_user['showModifyPassword'].update(image_data=ICON_HIDE_BASE_64)
-                                            password_clear = True
-                                    if ev_modify_user == 'modifyUserButton':
-                                        modify_user_login, modify_user_name, modify_user_password, modify_user_is_disp = val_modify_user.values()
-                                        modify_user_dict = {}
-                                        modify_name = False
-                                        modify_password = False
-                                        modify_is_disp = False
-                                        modify_user_dict['id'] = user_to_change['id']
-                                        modify_user_dict['login'] = modify_user_login
-                                        if modify_user_name != user_to_change['name']:
-                                            modify_user_dict['displayName'] = modify_user_name
-                                            modify_name = True
-                                        if modify_user_password:
-                                            modify_user_dict['password'] = modify_user_password
-                                            modify_password = True
-                                        if modify_user_is_disp != user_to_change['is_dispatcher']:
-                                            modify_is_disp = True
-                                            user_disp_dict = {}
-                                            user_disp_dict['id'] = user_to_change['id']
-                                            if modify_user_is_disp:
-                                                res_modify_user_is_disp = requests.post(BASE_URL + 'addToDispatchers', json=user_disp_dict, headers=HEADER_dict)
+                                    if filter_status:
+                                        user_to_change = filtered_users_list_of_dict[values['-users-'][0]]
+                                    else:
+                                        user_to_change = users_from_db[values['-users-'][0]]
+                                    # user_to_change = users_from_db[values['-users-'][0]]
+                                    # print(user_to_change)
+                                    window_modify_user = make_modify_user_window(user_to_change)
+                                    window_modify_user.Element('UserModifyLogin').SetFocus()
+                                    password_clear = False
+                                    while True:
+                                        ev_modify_user, val_modify_user = window_modify_user.Read()
+                                        # print(ev_modify_user, val_modify_user)
+                                        if ev_modify_user == sg.WIN_CLOSED or ev_modify_user == 'Exit':
+                                            # print('Закрыл окно добавления пользователя')
+                                            break
+                                        if ev_modify_user == 'showModifyPassword':
+                                            if password_clear:
+                                                window_modify_user['userModifyPassword'].update(password_char='*')
+                                                window_modify_user['showModifyPassword'].update(image_data=ICON_SHOW_BASE_64)
+                                                password_clear = False
                                             else:
-                                                res_modify_user_is_disp = requests.post(BASE_URL + 'removeFromDispatchers', json=user_disp_dict, headers=HEADER_dict)
-                                            if res_modify_user_is_disp.status_code == 200:
+                                                window_modify_user['userModifyPassword'].update(password_char='')
+                                                window_modify_user['showModifyPassword'].update(image_data=ICON_HIDE_BASE_64)
+                                                password_clear = True
+                                        if ev_modify_user == 'modifyUserButton':
+                                            modify_user_login, modify_user_name, modify_user_password, modify_user_is_disp = val_modify_user.values()
+                                            modify_user_dict = {}
+                                            modify_name = False
+                                            modify_password = False
+                                            modify_is_disp = False
+                                            modify_user_dict['id'] = user_to_change['id']
+                                            modify_user_dict['login'] = modify_user_login
+                                            if modify_user_name != user_to_change['name']:
+                                                modify_user_dict['displayName'] = modify_user_name
+                                                modify_name = True
+                                            if modify_user_password:
+                                                modify_user_dict['password'] = modify_user_password
+                                                modify_password = True
+                                            if modify_user_is_disp != user_to_change['is_dispatcher']:
+                                                modify_is_disp = True
+                                                user_disp_dict = {}
+                                                user_disp_dict['id'] = user_to_change['id']
                                                 if modify_user_is_disp:
-                                                    logging.info(f'Пользователь {modify_user_login} стал диспетчером')
+                                                    res_modify_user_is_disp = requests.post(BASE_URL + 'addToDispatchers', json=user_disp_dict, headers=HEADER_dict)
                                                 else:
-                                                    logging.info(f'Пользователь {modify_user_login} перестал быть диспетчером')
-                                            else:
-                                                if modify_user_is_disp:
-                                                    logging.error(
-                                                    f'Ошибка при добавлении пользователя в диспетчеры - {res_modify_user_is_disp.status_code}')
+                                                    res_modify_user_is_disp = requests.post(BASE_URL + 'removeFromDispatchers', json=user_disp_dict, headers=HEADER_dict)
+                                                if res_modify_user_is_disp.status_code == 200:
+                                                    if modify_user_is_disp:
+                                                        logging.info(f'Пользователь {modify_user_login} стал диспетчером')
+                                                    else:
+                                                        logging.info(f'Пользователь {modify_user_login} перестал быть диспетчером')
                                                 else:
-                                                    logging.error(
-                                                        f'Ошибка при удалении пользователя из диспетчеров - {res_modify_user_is_disp.status_code}')
-                                        # print(modify_user_dict)
-                                        if modify_name or modify_password:
-                                            res_modify_user = requests.post(BASE_URL + 'updateUser', json=modify_user_dict, headers=HEADER_dict)
-                                            # sg.cprint(f'Изменяем пользователя - {res_modify_user.status_code}')
-                                            if res_modify_user.status_code == 200:
-                                                if modify_name:
-                                                    logging.info(f'Пользователю {modify_user_login} изменили имя')
-                                                if modify_password:
-                                                    logging.info(f'Пользователю {modify_user_login} изменили пароль')
+                                                    if modify_user_is_disp:
+                                                        logging.error(
+                                                            f'Ошибка при добавлении пользователя в диспетчеры - {res_modify_user_is_disp.status_code}')
+                                                    else:
+                                                        logging.error(
+                                                            f'Ошибка при удалении пользователя из диспетчеров - {res_modify_user_is_disp.status_code}')
+                                            # print(modify_user_dict)
+                                            if modify_name or modify_password:
+                                                res_modify_user = requests.post(BASE_URL + 'updateUser', json=modify_user_dict, headers=HEADER_dict)
+                                                # sg.cprint(f'Изменяем пользователя - {res_modify_user.status_code}')
+                                                if res_modify_user.status_code == 200:
+                                                    if modify_name:
+                                                        logging.info(f'Пользователю {modify_user_login} изменили имя')
+                                                    if modify_password:
+                                                        logging.info(f'Пользователю {modify_user_login} изменили пароль')
+                                                else:
+                                                    logging.error(f'Ошибка изменения пользователя - {res_modify_user.status_code}')
+                                            if modify_is_disp or modify_name or modify_password:
+                                                users_from_server = get_users_from_server()
+                                                add_users(users_from_server)
+                                                users_from_db = get_users_from_db()
+                                                users_from_db.sort(key=lambda i: i['login'])
+                                                # user_list = list()
+                                                drop_db('user_in_groups')
+                                                add_user_in_groups(users_from_server)
+                                                user_list, treedata_update_user = get_user_list(users_from_db)
+                                                if filter_status:
+                                                    search_str = values['-filterUser-']
+                                                    # print(search_str)
+                                                    filtered_users = filter(lambda x: search_str in x['login'],
+                                                                            users_from_db)
+                                                    filtered_users_list_of_dict = list(filtered_users)
+                                                    # print(filtered_users_list_of_dict)
+                                                    # print(len(filtered_users_list_of_dict))
+                                                    # filtered_users_list = list()
+                                                    filtered_users_list = get_filter_user_list(filtered_users_list_of_dict)
+                                                    # users_from_db = filtered_users_list_of_dict
+                                                    # for filtered_user_list_of_dict in filtered_users_list_of_dict:
+                                                    #     filtered_users_list.append([filtered_user_list_of_dict['id'],
+                                                    #                                 filtered_user_list_of_dict['login'],
+                                                    #                                 filtered_user_list_of_dict['name']])
+                                                    window['-users-'].update(filtered_users_list)
+                                                else:
+                                                    window['-users-'].update(user_list)
+                                                window['-TREE2-'].update(treedata_update_user)
+                                                # user_list, treedata_update_user = get_user_list(users_from_db)
+                                                # window['-users-'].update(user_list)
+                                                # window['-TREE2-'].update(treedata_update_user)
+                                                window_modify_user.close()
+                                                sg.popup("Пользователь изменён!", title='Инфо', icon=ICON_BASE_64,
+                                                         no_titlebar=True, background_color='lightgray')
                                             else:
-                                                logging.error(f'Ошибка изменения пользователя - {res_modify_user.status_code}')
-                                        if modify_is_disp or modify_name or modify_password:
-                                            users_from_server = get_users_from_server()
-                                            add_users(users_from_server)
-                                            users_from_db = get_users_from_db()
-                                            users_from_db.sort(key=lambda i: i['login'])
-                                            # user_list = list()
-                                            drop_db('user_in_groups')
-                                            add_user_in_groups(users_from_server)
-                                            user_list, treedata_update_user = get_user_list(users_from_db)
-                                            if filter_status:
-                                                search_str = values['-filterUser-']
-                                                # print(search_str)
-                                                filtered_users = filter(lambda x: search_str in x['login'],
-                                                                        users_from_db)
-                                                filtered_users_list_of_dict = list(filtered_users)
-                                                # print(filtered_users_list_of_dict)
-                                                # print(len(filtered_users_list_of_dict))
-                                                # filtered_users_list = list()
-                                                filtered_users_list = get_filter_user_list(filtered_users_list_of_dict)
-                                                # users_from_db = filtered_users_list_of_dict
-                                                # for filtered_user_list_of_dict in filtered_users_list_of_dict:
-                                                #     filtered_users_list.append([filtered_user_list_of_dict['id'],
-                                                #                                 filtered_user_list_of_dict['login'],
-                                                #                                 filtered_user_list_of_dict['name']])
-                                                window['-users-'].update(filtered_users_list)
-                                            else:
-                                                window['-users-'].update(user_list)
-                                            window['-TREE2-'].update(treedata_update_user)
-                                            # user_list, treedata_update_user = get_user_list(users_from_db)
-                                            # window['-users-'].update(user_list)
-                                            # window['-TREE2-'].update(treedata_update_user)
-                                            window_modify_user.close()
-                                            sg.popup("Пользователь изменён!", title='Инфо', icon=ICON_BASE_64,
-                                                     no_titlebar=True, background_color='lightgray')
-                                        else:
-                                            sg.popup("Нет никаких изменений!", title='Инфо', icon=ICON_BASE_64,
-                                                     no_titlebar=True, background_color='lightgray')
-                                            # break
+                                                sg.popup("Нет никаких изменений!", title='Инфо', icon=ICON_BASE_64,
+                                                         no_titlebar=True, background_color='lightgray')
+                                                # break
                             if event == 'Изменить группу':
                                 # print('Изменяем группу')
                                 group_to_change = groups_from_db[values['-groups2-'][0]]
@@ -1485,10 +1504,12 @@ if __name__ == '__main__':
                                         if password_clear:
                                             window_add_user['userPassword'].update(password_char='*')
                                             window_add_user['showPassword'].update(image_data=ICON_SHOW_BASE_64)
+                                            window_add_user['showPasswordText'].update('Показать пароль')
                                             password_clear = False
                                         else:
                                             window_add_user['userPassword'].update(password_char='')
                                             window_add_user['showPassword'].update(image_data=ICON_HIDE_BASE_64)
+                                            window_add_user['showPasswordText'].update('Скрыть пароль')
                                             password_clear = True
                                     if ev_add_user == 'addUserButton':
                                         new_user_login, new_user_name, new_user_password, is_dispatcher = val_add_user.values()
@@ -1653,16 +1674,33 @@ if __name__ == '__main__':
                                                 password_clear = True
                                         if ev_clone_user == 'cloneUserButton':
                                             clone_user_login, clone_user_name, clone_user_password = val_clone_user.values()
+                                            logging.info(f"Клонируем пользователя {user_clone['login']} с именем {clone_user_login}")
                                             clone_user_dict = {}
                                             clone_user_dict['login'] = clone_user_login
                                             clone_user_dict['displayName'] = clone_user_name
                                             clone_user_dict['password'] = clone_user_password
                                             # print(clone_user_dict)
+                                            # check_disp(user_clone)
                                             res_clone_user = requests.post(BASE_URL + 'addUser', json=clone_user_dict, headers=HEADER_dict)
                                             # print(res_clone_user.status_code)
                                             # print(res_clone_user.text)
                                             if res_clone_user.status_code == 200:
                                                 logging.info(f'Новый пользователь {clone_user_login} создан')
+                                                if user_clone['is_dispatcher']:
+                                                    add_to_disp_dict = {}
+                                                    add_to_disp_dict['id'] = res_clone_user.text[1:-1]
+                                                    res_add_disp = requests.post(BASE_URL + 'addToDispatchers',
+                                                                                 json=add_to_disp_dict,
+                                                                                 headers=HEADER_dict)
+                                                    if res_add_disp.status_code == 200:
+                                                        logging.info(
+                                                            f'Пользователь {clone_user_login} стал диспетчером')
+                                                    else:
+                                                        logging.error(
+                                                            f'Пользователь {clone_user_login} НЕ стал диспетчером - {res_add_disp.status_code}')
+                                                        sg.popup("Пользователь не стал диспетчером!", title='Инфо',
+                                                                 icon=ICON_BASE_64,
+                                                                 no_titlebar=True, background_color='lightgray')
                                                 original_groups = get_groups_for_user_from_db(user_clone['id'])
                                                 original_groups_ids = []
                                                 for or_gr in original_groups:
@@ -1712,9 +1750,10 @@ if __name__ == '__main__':
                                                     window['-TREE2-'].update(treedata_update_user)
                                                     # window_clone_user.close()
                                                     treedata_update_user = sg.TreeData()
-                                                    for user_id, user_login, user_name  in user_list:
+                                                    for user_id, user_login, user_name, is_dispatcher in user_list:
                                                         treedata_update_user.insert('', user_id, '',
-                                                                                    values=[user_login, user_name],
+                                                                                    values=[user_login, user_name,
+                                                                                            is_dispatcher],
                                                                                     icon=check[0])
                                                     window['-TREE2-'].update(treedata_update_user)
                                                     window_clone_user.close()
