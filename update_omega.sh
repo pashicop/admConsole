@@ -23,7 +23,7 @@ printf '\n##### deleting and creating DB #####\n'
 sleep 1
 export PGPASSWORD=omega1q2w &&
 psql -U omega_user -d omega_db -f dropAllTables.sql >> ~/update_log.txt 2>&1 &&
-psql -d omega_db -U omega_user -f create_script &>> ~/update_log.txt 2>&1 &&
+psql -d omega_db -U omega_user -f create_script >> ~/update_log.txt 2>&1 &&
 unset PGPASSWORD
 if [[ $? == 0 ]]
   then printf '\n##### DB dropped and created ######\n'
