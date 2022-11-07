@@ -566,7 +566,8 @@ def make_modify_user_window(user: dict):
             [sg.Push(), sg.Text('Логин'), sg.Input(disabled=True, default_text=user['login'], key='UserModifyLogin')],
             [sg.Push(), sg.Text('Имя'), sg.Input(default_text=user['name'], key='UserModifyName')],
             [sg.Push(), sg.Text('Пароль'), sg.Input(default_text='', key='userModifyPassword', password_char='*')],
-            [sg.Push(), sg.Button(key='showModifyPassword', image_data=ICON_SHOW_BASE_64)],
+            [sg.Push(), sg.Text('Показать пароль', key='showModifyPasswordText'),
+             sg.Button(key='showModifyPassword', image_data=ICON_SHOW_BASE_64)],
             [sg.Checkbox('Диспетчер', default=True, key='modifyUserDispatcher'), sg.Push()],
             [sg.Push(), sg.Ok(button_text='Изменить', key='modifyUserButton')]
         ]
@@ -575,7 +576,8 @@ def make_modify_user_window(user: dict):
             [sg.Push(), sg.Text('Логин'), sg.Input(disabled=True, default_text=user['login'], key='UserModifyLogin')],
             [sg.Push(), sg.Text('Имя'), sg.Input(default_text=user['name'], key='UserModifyName')],
             [sg.Push(), sg.Text('Пароль'), sg.Input(default_text='', key='userModifyPassword', password_char='*')],
-            [sg.Push(), sg.Button(key='showModifyPassword', image_data=ICON_SHOW_BASE_64)],
+            [sg.Push(), sg.Text('Показать пароль', key='showModifyPasswordText'),
+             sg.Button(key='showModifyPassword', image_data=ICON_SHOW_BASE_64)],
             [sg.Checkbox('Диспетчер', default=False, key='modifyUserDispatcher'), sg.Push()],
             [sg.Push(), sg.Ok(button_text='Изменить', key='modifyUserButton')]
         ]
@@ -625,7 +627,8 @@ def make_clone_user_window(user):
         [sg.Push(), sg.Text('Логин'), sg.Input(key='CloneUserLogin')],
         [sg.Push(), sg.Text('Имя'), sg.Input(key='CloneUserName')],
         [sg.Push(), sg.Text('Пароль'), sg.Input(key='CloneUserPassword', password_char='*')],
-        [sg.Push(), sg.Button('Показать', key='showPasswordCloneUser')],
+        [sg.Push(), sg.Text('Показать пароль', key='showClonePasswordText'),
+         sg.Button(key='showPasswordCloneUser', image_data=ICON_SHOW_BASE_64)],
         [sg.Push(), sg.Ok(button_text='Клонировать', key='cloneUserButton')]
     ]
     return sg.Window('Клонировать пользователя', layout_clone_user, icon=ICON_BASE_64, use_ttk_buttons=True,
@@ -1186,11 +1189,13 @@ if __name__ == '__main__':
                                         if ev_modify_user == 'showModifyPassword':
                                             if password_clear:
                                                 window_modify_user['userModifyPassword'].update(password_char='*')
+                                                window_modify_user['showModifyPasswordText'].update("Показать пароль")
                                                 window_modify_user['showModifyPassword'].update(
                                                     image_data=ICON_SHOW_BASE_64)
                                                 password_clear = False
                                             else:
                                                 window_modify_user['userModifyPassword'].update(password_char='')
+                                                window_modify_user['showModifyPasswordText'].update("Скрыть пароль")
                                                 window_modify_user['showModifyPassword'].update(
                                                     image_data=ICON_HIDE_BASE_64)
                                                 password_clear = True
@@ -1564,7 +1569,7 @@ if __name__ == '__main__':
                                 password_clear = False
                                 while True:
                                     ev_add_user, val_add_user = window_add_user.Read()
-                                    print(ev_add_user, val_add_user)
+                                    # print(ev_add_user, val_add_user)
                                     if ev_add_user == sg.WIN_CLOSED or ev_add_user == 'Exit':
                                         # print('Закрыл окно добавления пользователя')
                                         break
@@ -1739,11 +1744,13 @@ if __name__ == '__main__':
                                         if ev_clone_user == 'showPasswordCloneUser':
                                             if password_clear:
                                                 window_clone_user['CloneUserPassword'].update(password_char='*')
-                                                window_clone_user['showPasswordCloneUser'].update('Показать')
+                                                window_clone_user['showClonePasswordText'].update('Показать пароль')
+                                                window_clone_user['showPasswordCloneUser'].update(image_data=ICON_SHOW_BASE_64)
                                                 password_clear = False
                                             else:
                                                 window_clone_user['CloneUserPassword'].update(password_char='')
-                                                window_clone_user['showPasswordCloneUser'].update('Скрыть')
+                                                window_clone_user['showClonePasswordText'].update('Скрыть пароль')
+                                                window_clone_user['showPasswordCloneUser'].update(image_data=ICON_HIDE_BASE_64)
                                                 password_clear = True
                                         if ev_clone_user == 'cloneUserButton':
                                             clone_user_login, clone_user_name, \
