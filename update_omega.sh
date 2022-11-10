@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
-printf '##### Start updating OMEGA #####\n'
-printf '\n##### Please wait! #####\n'
+set -euo pipefail
+printf '##### Start updating OMEGA #####\n' | tee update_log.txt
+printf '\n##### Please wait! #####\n' | tee -a update_log.txt
 sleep 1
+#while [ -n "$1" ]
+#do
+#case "$1" in
+#-t) printf "NTP";;
+#*) printf "Неправильная опция $1";;
+#esac
+#shift
+#done
 sudo systemctl restart ntp > ~/update_log.txt
 date >> ~/update_log.txt
 printf '\n##### Stopping service #####\n'
