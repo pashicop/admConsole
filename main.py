@@ -444,6 +444,9 @@ def make_main_window(ip):
 
         ],
         [sg.Push(),
+         sg.Checkbox('Выбрать все группы', enable_events=True, key='-checkAllGroups-', default=False,
+                     pad=[30, 0],
+                     disabled=True),
          sg.Button('Применить', key='Apply', disabled=True,
                    disabled_button_color='gray', pad=((0, 10), (5, 10)))],
     ]
@@ -475,6 +478,9 @@ def make_main_window(ip):
                                             ), ]], expand_y=True, expand_x=True),
          ],
         [sg.Push(),
+         sg.Checkbox('Выбрать всех пользователей', enable_events=True, key='-checkAllUsers-', default=False,
+                     pad=[30, 0],
+                     disabled=True),
          sg.Button('Применить', key='Apply2', disabled=True, disabled_button_color='gray',
                    pad=((0, 10), (5, 10)))],
     ]
@@ -1125,6 +1131,8 @@ if __name__ == '__main__':
                                             user_id = users_from_db[event[2][0]]['id']
                                         # print(user_id)
                                         window['Apply'].update(disabled=True)
+                                        window['-checkAllGroups-'].update(disabled=False)
+                                        window['-checkAllGroups-'].update(False)
                                         groups_for_user = get_groups_for_user_from_db(user_id)
                                         group_for_user_ids = []
                                         for group_for_user in groups_for_user:
@@ -1140,7 +1148,6 @@ if __name__ == '__main__':
                                             else:
                                                 tree.update(key=group_id_for_tree, icon=check[0])
                                 elif event[0] == '-groups2-' and event[1] == '+CLICKED+':
-                                    window['Apply2'].update(disabled=True)
                                     # print(values['-groups2-'])
                                     if event[2][0] is None:
                                         pass
@@ -1150,6 +1157,9 @@ if __name__ == '__main__':
                                         else:
                                             group_id = groups_from_db[event[2][0]]['id']
                                         # group_id = groups_from_db[event[2][0]]['id']
+                                        window['Apply2'].update(disabled=True)
+                                        window['-checkAllUsers-'].update(disabled=False)
+                                        window['-checkAllUsers-'].update(False)
                                         users_for_group = get_users_for_group_from_db(group_id)
                                         users_for_group_ids = []
                                         for user_for_group in users_for_group:
@@ -2274,6 +2284,46 @@ if __name__ == '__main__':
                                     output_text = "\n".join(filtered_journal)
                                     window['journal'].update(output_text)
                                     window['countLogs'].update(len(filtered_journal))
+                            if event == '-checkAllGroups-':
+                                # print(f'{values}')
+                                if filter_status:
+                                    user_id = filtered_users_list_of_dict[values['-users-'][0]]['id']
+                                else:
+                                    # print(f"{values['-users-']}")
+                                    # print(f"{values['-users-'][0]}")
+                                    user_id = users_from_db[values['-users-'][0]]['id']
+                                # print(f'{user_id}')
+                                all_group_ids = []
+                                for group_from_all in groups_from_db:
+                                    all_group_ids.append(group_from_all['id'])
+                                tree.metadata = []
+                                if values['-checkAllGroups-']:
+                                    for group_id_for_tree in all_group_ids:
+                                        tree.metadata.append(group_id_for_tree)
+                                        tree.update(key=group_id_for_tree, icon=check[1])
+                                else:
+                                    for group_id_for_tree in all_group_ids:
+                                        tree.update(key=group_id_for_tree, icon=check[0])
+                                    # tree.metadata = []
+                                window['Apply'].update(disabled=False)
+                            if event == '-checkAllUsers-':
+                                # print(f'{values}')
+                                if filter_status:
+                                    group_id = filtered_groups_list_of_dict[values['-groups2-'][0]]['id']
+                                else:
+                                    group_id = groups_from_db[values['-groups2-'][0]]['id']
+                                all_user_ids = []
+                                for user_from_all in users_from_db:
+                                    all_user_ids.append(user_from_all['id'])
+                                tree2.metadata = []
+                                if values['-checkAllUsers-']:
+                                    for user_id_for_tree in all_user_ids:
+                                        tree2.metadata.append(user_id_for_tree)
+                                        tree2.update(key=user_id_for_tree, icon=check[1])
+                                else:
+                                    for user_id_for_tree in all_user_ids:
+                                        tree2.update(key=user_id_for_tree, icon=check[0])
+                                window['Apply2'].update(disabled=False)
                     else:
                         sg.popup('Введите правильный ip!', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
                                  background_color='lightgray')
