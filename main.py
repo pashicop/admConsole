@@ -462,7 +462,7 @@ def make_main_window(ip):
                                 right_click_selects=True,
                                 right_click_menu=[1, 'Изменить группу'],
                                 select_mode='browse',
-                                selected_row_colors='red on gray',
+                                # selected_row_colors='red on gray',
                                 visible_column_map=[False, True, True, True],
                                 key='-groups2-', expand_y=True, expand_x=True,
                                 auto_size_columns=False, col_widths=[0, 10, 30, 2])], ],
@@ -474,7 +474,7 @@ def make_main_window(ip):
                                             show_expanded=False, enable_events=True, justification='left',
                                             expand_y=True,
                                             select_mode=sg.TABLE_SELECT_MODE_BROWSE,
-                                            selected_row_colors='red on gray',
+                                            # selected_row_colors='red on gray',
                                             ), ]], expand_y=True, expand_x=True),
          ],
         [sg.Push(),
@@ -490,7 +490,9 @@ def make_main_window(ip):
                                        key='-filterJournal-')],
         [sg.Frame('Логи',
                   [[sg.Multiline(key='journal', write_only=True, disabled=True, expand_x=True, expand_y=True,
-                                 autoscroll=True, auto_refresh=True)]], expand_x=True, expand_y=True
+                                 autoscroll=True, auto_refresh=True,
+                                 background_color='white')]],
+                  expand_x=True, expand_y=True
                   ),
          sg.Frame('Типы',
                   [
@@ -903,8 +905,28 @@ if __name__ == '__main__':
     # get_icon()
     # sg.theme_global('GreenTan')
     # sg.theme_global('SystemDefaultForReal')
+    # sg.theme_global('SystemDefault1')
     # vers = sys.version_info
     # print(vers)
+    omega_theme = {'BACKGROUND': '#ffffff',
+                    'TEXT': '#000000',
+                    'INPUT': '#f2f2f2',
+                    'TEXT_INPUT': '#000000',
+                    'SCROLL': '#bfbfbf',
+                    'BUTTON': ('white', '#35536b'),
+                    'PROGRESS': ('#01826B', '#D0D0D0'),
+                    'BORDER': 1,
+                    'SLIDER_DEPTH': 0,
+                    'PROGRESS_DEPTH': 0}
+
+    # Add your dictionary to the PySimpleGUI themes
+    sg.theme_add_new('OmegaTheme', omega_theme)
+
+    # Switch your theme to use the newly added one. You can add spaces to make it more readable
+    sg.theme('OmegaTheme')
+    #
+    # # Call a popup to show what the theme looks like
+    # sg.popup_get_text('This how the MyNewTheme custom theme looks')
     if sys.version_info[1] < 9:
         logging.basicConfig(filename='admin.log', filemode='a', format='%(asctime)s %(levelname)s %(message)s',
                             datefmt='%m/%d/%Y %H:%M:%S', level=logging.INFO)
@@ -980,7 +1002,7 @@ if __name__ == '__main__':
                         tree2.Widget.heading("#0", text='id')
                         if server_status['run']:
                             bar_text = 'Пользователей онлайн: обновление..' + ', Версия БД: ' + str(server_status['db'])
-                            window['-StatusBar-'].update(bar_text, background_color='lightgreen')
+                            window['-StatusBar-'].update(bar_text, background_color='#699349')
                         else:
                             window['-StatusBar-'].update('Сервер не доступен', background_color='red')
                         thread_started = False
@@ -1011,11 +1033,11 @@ if __name__ == '__main__':
                                     if not server_status['run']:
                                         update_text = 'Пользователей онлайн: обновление..' + ', Версия БД: ' + \
                                                       str(dict_online["databaseVersion"])
-                                        window['-StatusBar-'].update(update_text, background_color='lightgreen')
+                                        window['-StatusBar-'].update(update_text, background_color='#699349')
                                     else:
                                         update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
                                                       + ', Версия БД: ' + str(dict_online["databaseVersion"])
-                                        window['-StatusBar-'].update(update_text, background_color='lightgreen')
+                                        window['-StatusBar-'].update(update_text, background_color='#699349')
                                     window['-Start-'].update(disabled=True)
                                     window['-Stop-'].update(disabled=False)
                                     if not server_status['run']:
@@ -2096,7 +2118,7 @@ if __name__ == '__main__':
                                                           + str(dict_online_after_start["databaseVersion"])
                                             server_status['online'] = dict_online_after_start["onlineUsersCount"]
                                             server_status['db'] = dict_online_after_start["databaseVersion"]
-                                            window['-StatusBar-'].update(update_text, background_color='lightgreen')
+                                            window['-StatusBar-'].update(update_text, background_color='#699349')
                                             window['-Start-'].update(disabled=True)
                                             window['-Stop-'].update(disabled=False)
                                             TOKEN = get_token(BASE_URL_AUTH)
