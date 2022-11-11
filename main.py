@@ -507,6 +507,7 @@ def make_main_window(ip):
                                                    background_color='lightgray', size=10)],
     ]
     layout = [[sg.Menu([
+        ['Настройки', 'Установить лицензию...', 'Настройки'],
         ['Помощь', 'О программе'], ], key='-Menu-')],
         [sg.Frame('Сервер', [[sg.Push(), sg.Button('Старт', key='-Start-',
                                                    disabled_button_color='gray', pad=((0, 20), 0)),
@@ -555,6 +556,38 @@ def make_login_window():
                     [sg.Push(background_color='white'), sg.Ok(key="OK button"), sg.Push(background_color='white')]]
     return sg.Window('Вход на сервер', layout_login, icon=ICON_BASE_64, background_color='white', finalize=True)
 
+
+def make_add_lic():
+    layout_lic = [[sg.Combo(sorted(sg.user_settings_get_entry('-filenames-', [])),
+                        default_value=sg.user_settings_get_entry('-last filename-', ''), size=(50, 1),
+                        key='-FILENAME-'), sg.FileBrowse('Найти')],
+                  [sg.Button('Получить id сервера'), sg.Push(), sg.Button('Загрузить', bind_return_key=True)],
+                 [sg.Frame('Лицензия',
+                  [[sg.Table(['', '', ''], headings=['Наименование', 'Количество', 'Дата '], justification="left",
+                                # num_rows=40,
+                                # enable_events=True,
+                                # enable_click_events=True,
+                                # right_click_selects=True,
+                                # right_click_menu=[1, 'Изменить группу'],
+                                select_mode=sg.TABLE_SELECT_MODE_NONE,
+                                # selected_row_colors='red on gray',
+                                # visible_column_map=[False, True, True, True],
+                                # key='-groups2-', expand_y=True, expand_x=True,
+                                # auto_size_columns=False, col_widths=[0, 10, 30, 2])], ],
+                                # expand_x=True,
+                                # size=(480, 564)
+                             )
+                    ]])],
+                 [sg.Push(), sg.Button('Выйти'), sg.Push()]]
+    return sg.Window('Лицензия', layout_lic, icon=ICON_BASE_64, background_color='white', finalize=True)
+
+
+def make_get_id(id):
+    layout_get_id = [[sg.InputText(id, key='-id-'), sg.Button('Скопировать', key='-Скопировать-')],
+                     [sg.Push(), sg.Button('OK'), sg.Push()]]
+    return sg.Window('id сервера', layout_get_id, icon=ICON_BASE_64, background_color='white',
+                     # size=(300, 40),
+                     finalize=True)
 
 def make_add_user_window():
     layout_add_user = [
@@ -720,7 +753,7 @@ def the_thread(ip, window):
                 output_text = "\n".join(filtered_journal)
                 window['journal'].update(output_text)
                 window['countLogs'].update(len(filtered_journal))
-        sleep(5)
+        sleep(50)
 
 
 def check_server(url_ping):
@@ -1597,6 +1630,29 @@ if __name__ == '__main__':
                             if event == 'О программе':
                                 sg.popup('---------------------Powered by PaShi---------------------',
                                          title='О программе', icon=ICON_BASE_64)
+                            if event == 'Установить лицензию...':
+                                window_add_lic = make_add_lic()
+                                while True:
+                                    ev_add_lic, val_add_lic = window_add_lic.Read()
+                                    print(f'{ev_add_lic}, {val_add_lic}')
+                                    if ev_add_lic == sg.WIN_CLOSED or ev_add_lic == 'Выйти':
+                                        # print(f'{ev_add_lic}, {val_add_lic}')
+                                        window_add_lic.close()
+                                        break
+                                    if ev_add_lic == 'Получить id сервера':
+                                        id_serv = 'ajfhlkjdhflkja lakjhga'
+                                        window_get_id = make_get_id(id_serv)
+                                        while True:
+                                            ev_get_id, val_get_id = window_get_id.Read()
+                                            print(f'{ev_get_id}, {val_get_id}')
+                                            if ev_get_id == sg.WIN_CLOSED or ev_get_id == 'OK':
+                                                window_get_id.close()
+                                                break
+                                            if ev_get_id == '-Скопировать-':
+                                                sg.clipboard_set(val_get_id['-id-'])
+                                        # popup_text = 'id сервера - ' + id_serv
+                                        # sg.popup(id_serv,
+                                        #          title='id сервера', icon=ICON_BASE_64)
                             if event == '-AddUser-':
                                 window_add_user = make_add_user_window()
                                 window_add_user.Element('UserLogin').SetFocus()
