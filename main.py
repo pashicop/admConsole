@@ -31,16 +31,17 @@ ICON_SHOW_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs
 ICON_HIDE_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAzlJREFUWEfFllmojVEYhp9jOGYns2RMpmQqZShliAuJ3IgSDsmUDJFkynBBUrhAISK5UDJcKIkonFA4JENcmDMmMxl69S2ts1p7n/8/e9vem73/tb7hXeubVhH/GUUF8t8buBbzVQgCm4F5wAOgY0jiXxOoCXwzpyKyoNAELgN9gV9AtXyGQDfXCGhuRl8Ab82R89MaeGQfY4EjuRIoBjYCswBdbQzfgd121c+BEuA90DBTsifJgRrAWWBgFSumHfCwqgSmAHsCZWXzKuAE8M72dMIRwBqgkyev0uuTjXi2GzgHDPKU9wLTgJ+V3ITCtMhkalkV1Ac+pMmBJ0ArU1ByKaE+BQaqA/0tHy4CXwGFS3kgbAPm2P/HgMg0S1KGz4CWJngMGBNhfhAYH6yft1IbEJRdN+CWyb4Bmvh6YQiuAmqbwhZgfsT5UWB0JWEYBxzyZNYCy+37DtDV7fkE1gNLbEPxLo04USxVVkKZ5Yhy4jgw0tY/ApILsRWYa4vbgdn67wgoc+/a5g2gZ4YTrgRWRzrbcOCk6ajfq1JiEOl+ttELKHcElEBqNEILQJ0tBp10FKCkauMJ/LD43wR6ZNDVssrVla6StdgRkFK5KV7yWIa2FEfFUxBhGVkHLLO12lYNmTicBobYppK1zM8BlY3arKB4aYSGkFPdlqABo7xZat+7gOlZTu8TPQBMlGxYBcrQzmZEXU0dL8QMYEdkPVtTU2NSgxLUltWe/yCmpFrVpBP2A5MizkRSdd/U9nQanSoGZfxM21A3bOALZWL9GmhsgmpM7b2HhdN/aQQ+A3UjntUV7wNtbU/lq+mo0P1FtmvTIFGpOGwCFpuBwcAZ2+jilbCT9eOttQrNJykByS0E5NjHdSs1vXBuA2q1wlBgg72AfPkVVinR+CR5D6i0rgDdIxbqAF+AepFpd8/aejjEKphJQsApyMlOYIIt7AMm2391vg42qg8DU72WHT25W0xDQDqngGGm7HT1q3H9FFBHTIU0BDRGX5l1DSoNrJyRhoAemZoTirlinxckJaC+fcE8KhndAyNnEkkJ6AGih4gy27XqnJ3LQFICktWbzg2ivDhPSyBvTn1DvwGQ9JMh9I2ufAAAAABJRU5ErkJggg=='
 ICON_CHECK_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAsQAAALEBxi1JjQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAASfSURBVFiFzZdfbBRFHMc/M7t3Vwq09qCAxPKnJbYFKqSatCgEMdGgCKT+xagxkGCID0bA+CT4NyEN/iHBF6I+qPFBTCu+8IKQGMSWllJLQFqsEdoCd71ry9Frr3d7N+PD9Y52uS1XbaLfZLOzs7/5fT87szs7A/+xxCRipwOPAZVAEZALRIA+4BzQCLRPNSDA48IQR4UUMUBPdEhTdgC7gRlZ5K0AKibqgUphigM6rtcACCkoKPfiLZuFp8CDJz8HZSmioSihzgH6zgeJhqIACEMEdULvBr52yL0BqAOGnAC2CSEOaa1Nd56bJU+Xcs/DRbjz3I60OqHpbfXTWXeJgfZ+hCES1furZzbsaog4mHuA/ZkAaoG3ABY/WULpC+WYuaajcSb1tvhACOZUzm1Qluupo8997xu9tR74AcgBDgA77QBvAJ9Kl6Rix0qKHlkwKWMHdZhQfaTmSLXdHGDsoz2K4GOAyl0PMK96/lSYA5ReOdlzHFhqNweQo2e3dMkv0MjSLeVTaU6g1U/bwdbKTOZjAXYoSy2YuTCPJc/eO6XmzfuaUFaCRU8UR2vqaz60x0hACkPuASh/eRlCTGZuys588cYSlm+/zxOTaqc9TgKrdELNnj5/BnPun5sxWd+FIG2ftRK9MZKVeW+Lj+Z9p9Pmy7ZVJM202JIJYDPAvKq7HRNeO3mV7uNXaNhz6o4QvS0+ztQ2oSxF8aZb5gAaSjbU1ywfByBMYx1A4Yo5jknLXlpKfsldhHsGaXj7F0b6M0MEWv2cqW1GWYrFG0tYurVi3P3ojSh/1nVsHweAVsUA0wqnOQK4ZriofvehJMTVMI17b4ewj/nYJ0/p/OdttH/7++tA1S0ARR6Ax5vjCJAJomHPLYhszAF0XKeK89IA6SptD88MUbX3QfIW5TN0LUzj3lN0n+hKv3D2MbcrEUukiioNICQhwHFc7XLnuVn1werRnhik7eBZxzG3a2Qg7XEjDYCgEyASGM4KAMYPBzBht6ektSYSSP8YO1MFU8f1CaAq0OqncKXzl5AJYtX7q7l5JYS3fNYd4wfa+4kPW0iX7FKWup6ql8CPAL7TPsfGTjJzzazMAfxNSU9lqe/G1kugSZrSN+wfwtd4PVPbfy0rbNH1U1fqst4OoFVcvQNw8ZsL6IRiqtVZdwkrHEOY4gTJxWtaxui5Tbrki7FQ1KvjmtkrCqfMvP9iH+cPtaG11iieAcaNdep3HFeW2iqESHTWX+Lqz91TYh4JDNNS24SKK9B8ArTaY4wx5S6gG9jsb/ZhmEbWL1gm3bwc4vR7DYz0jyAMcRzNK2SY7gzb9W9IQLE2eC4gIsFhvGVeDE/2i1Kd0HQdu8zZj5qJ3YwhTKNRJ9QmkpuY2+S0+nheSPGVVtpj5poUb15C0boFTCvMdTSOj8TxN/v443AH4Z7BZKXkSxSvATGndhMtf8qFIfbrhN6QqsgvzqegbBY5BTl4CjzEh+NE+iKEewYJnguirORcL13yL2WpN7F9cv9Ua6SUh4UhhphoayZICFP8CrwKuLJNPpkFoBtYS3JzupDk5jQKBIALwDEgOIl8/w/9DR5k79YG7eHTAAAAAElFTkSuQmCC'
 version = '1.0.2'
-
+folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
+file_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABU0lEQVQ4y52TzStEURiHn/ecc6XG54JSdlMkNhYWsiILS0lsJaUsLW2Mv8CfIDtr2VtbY4GUEvmIZnKbZsY977Uwt2HcyW1+dTZvt6fn9557BGB+aaNQKBR2ifkbgWR+cX13ubO1svz++niVTA1ArDHDg91UahHFsMxbKWycYsjze4muTsP64vT43v7hSf/A0FgdjQPQWAmco68nB+T+SFSqNUQgcIbN1bn8Z3RwvL22MAvcu8TACFgrpMVZ4aUYcn77BMDkxGgemAGOHIBXxRjBWZMKoCPA2h6qEUSRR2MF6GxUUMUaIUgBCNTnAcm3H2G5YQfgvccYIXAtDH7FoKq/AaqKlbrBj2trFVXfBPAea4SOIIsBeN9kkCwxsNkAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK0xAAAAAElFTkSuQmCC'
 
 def icon(check):
-    box = (16, 16)
+    box = (12, 12)
     background = (255, 255, 255, 0)
-    rectangle = (0, 0, 15, 15)
-    line = ((4, 8), (7, 11), (11, 4))
+    rectangle = (0, 0, 11, 11)
+    line = ((2, 6), (5, 9), (9, 2))
     im = Image.new('RGBA', box, background)
     draw = ImageDraw.Draw(im, 'RGBA')
-    draw.rectangle(rectangle, outline='black', width=2)
+    draw.rectangle(rectangle, outline='black', width=1)
     if check == 1:
         draw.line(line, fill='black', width=2, joint='curve')
     elif check == 2:
@@ -411,6 +412,8 @@ def make_main_window(ip):
             else:
                 group_list.append(
                     [group_from_db['id'], group_from_db['name'], group_from_db['desc'], ''])
+    # treedata = sg.TreeData()
+    # treedata.insert('', key='key', text='text', values=[1, 2, 3, 4])
     tab1_layout = [
         [sg.Button('Добавить', key='-AddUser-', pad=((30, 10), (20, 5))),
          sg.Button('Удалить', key='-DelUser-', pad=(10, (20, 5))),
@@ -430,17 +433,20 @@ def make_main_window(ip):
                                    visible_column_map=[False, True, True, True],
                                    right_click_menu=[1, 'Изменить пользователя'],
                                    select_mode='browse',
-                                   # selected_row_colors='red on gray',
+                                   selected_row_colors='black on lightblue',
                                    auto_size_columns=False, col_widths=[0, 10, 30, 5])], ],
                                    expand_x=True,
                                    size=(480, 564)),
-            sg.Frame('Группы', [[sg.Tree(data=treedata, headings=['Имя', 'Описание'], col0_width=4,
+            sg.Frame('Группы', [[sg.Tree(data=treedata,
+                                         headings=['Имя', 'Описание'],
+                                         col0_width=5,
+                                         # col0_heading="",
                                          col_widths=[20, 30],
                                          num_rows=10, key='-TREE-', row_height=20, metadata=[], auto_size_columns=False,
                                          show_expanded=False, enable_events=True, justification='left', expand_y=True,
                                          select_mode=sg.TABLE_SELECT_MODE_BROWSE,
-                                         # selected_row_colors='red on gray',
-                                         ), ]], expand_y=True, expand_x=True),
+                                         selected_row_colors='black on lightblue',
+                                         )]], expand_y=True, expand_x=True),
 
         ],
         [sg.Push(),
@@ -462,19 +468,19 @@ def make_main_window(ip):
                                 right_click_selects=True,
                                 right_click_menu=[1, 'Изменить группу'],
                                 select_mode='browse',
-                                # selected_row_colors='red on gray',
+                                selected_row_colors='black on lightblue',
                                 visible_column_map=[False, True, True, True],
                                 key='-groups2-', expand_y=True, expand_x=True,
                                 auto_size_columns=False, col_widths=[0, 10, 30, 2])], ],
                   expand_x=True, size=(480, 564)),
-         sg.Frame('Пользователи', [[sg.Tree(data=treedata2, headings=['Логин', 'Имя'], col0_width=4,
+         sg.Frame('Пользователи', [[sg.Tree(data=treedata2, headings=['Логин', 'Имя'], col0_width=5,
                                             col_widths=[20, 30],
                                             num_rows=10, key='-TREE2-', row_height=20, metadata=[],
                                             auto_size_columns=False,
                                             show_expanded=False, enable_events=True, justification='left',
                                             expand_y=True,
                                             select_mode=sg.TABLE_SELECT_MODE_BROWSE,
-                                            # selected_row_colors='red on gray',
+                                            selected_row_colors='black on lightblue',
                                             ), ]], expand_y=True, expand_x=True),
          ],
         [sg.Push(),
@@ -496,10 +502,10 @@ def make_main_window(ip):
                   ),
          sg.Frame('Типы',
                   [
-                      [sg.Checkbox('Info', enable_events=True, key='info', default=True)],
-                      [sg.Checkbox('Warning', enable_events=True, key='warning', default=True)],
-                      [sg.Checkbox('Error', enable_events=True, key='error', default=True)],
-                      [sg.Checkbox('Critical', enable_events=True, key='critical', default=True)],
+                      [sg.Checkbox('Инфо', enable_events=True, key='info', default=True)],
+                      [sg.Checkbox('Предупреждение', enable_events=True, key='warning', default=True)],
+                      [sg.Checkbox('Ошибка', enable_events=True, key='error', default=True)],
+                      [sg.Checkbox('Критическая', enable_events=True, key='critical', default=True)],
                   ], vertical_alignment='top')
          ],
         [sg.T('Количество записей:'), sg.Multiline(key='countLogs', no_scrollbar=True,
@@ -562,6 +568,7 @@ def make_add_user_window():
         [sg.Push(), sg.Text('Имя'), sg.Input(key='UserName')],
         [sg.Push(), sg.Text('Пароль'), sg.Input(key='userPassword', password_char='*')],
         [sg.Push(), sg.Text('Показать пароль', key='showPasswordText'), sg.Button(key='showPassword',
+                                                                                  button_color='#ffffff',
                                                                                   image_data=ICON_SHOW_BASE_64)],
         [sg.Checkbox('Диспетчер', default=False, key='addUserDispatcher'), sg.Push()],
         [sg.Push(), sg.Ok(button_text='Создать', key='addUserButton')]
@@ -577,7 +584,9 @@ def make_modify_user_window(user: dict):
             [sg.Push(), sg.Text('Имя'), sg.Input(default_text=user['name'], key='UserModifyName')],
             [sg.Push(), sg.Text('Пароль'), sg.Input(default_text='', key='userModifyPassword', password_char='*')],
             [sg.Push(), sg.Text('Показать пароль', key='showModifyPasswordText'),
-             sg.Button(key='showModifyPassword', image_data=ICON_SHOW_BASE_64)],
+             sg.Button(key='showModifyPassword',
+                       button_color='#ffffff',
+                       image_data=ICON_SHOW_BASE_64)],
             [sg.Checkbox('Диспетчер', default=True, key='modifyUserDispatcher'), sg.Push()],
             [sg.Push(), sg.Ok(button_text='Изменить', key='modifyUserButton')]
         ]
@@ -587,7 +596,9 @@ def make_modify_user_window(user: dict):
             [sg.Push(), sg.Text('Имя'), sg.Input(default_text=user['name'], key='UserModifyName')],
             [sg.Push(), sg.Text('Пароль'), sg.Input(default_text='', key='userModifyPassword', password_char='*')],
             [sg.Push(), sg.Text('Показать пароль', key='showModifyPasswordText'),
-             sg.Button(key='showModifyPassword', image_data=ICON_SHOW_BASE_64)],
+             sg.Button(key='showModifyPassword',
+                       button_color='#ffffff',
+                       image_data=ICON_SHOW_BASE_64)],
             [sg.Checkbox('Диспетчер', default=False, key='modifyUserDispatcher'), sg.Push()],
             [sg.Push(), sg.Ok(button_text='Изменить', key='modifyUserButton')]
         ]
@@ -638,7 +649,9 @@ def make_clone_user_window(user):
         [sg.Push(), sg.Text('Имя'), sg.Input(key='CloneUserName')],
         [sg.Push(), sg.Text('Пароль'), sg.Input(key='CloneUserPassword', password_char='*')],
         [sg.Push(), sg.Text('Показать пароль', key='showClonePasswordText'),
-         sg.Button(key='showPasswordCloneUser', image_data=ICON_SHOW_BASE_64)],
+         sg.Button(key='showPasswordCloneUser',
+                   button_color='#ffffff',
+                   image_data=ICON_SHOW_BASE_64)],
         [sg.Push(), sg.Ok(button_text='Клонировать', key='cloneUserButton')]
     ]
     return sg.Window('Клонировать пользователя', layout_clone_user, icon=ICON_BASE_64, use_ttk_buttons=True,
@@ -997,9 +1010,9 @@ if __name__ == '__main__':
                         # tray.show_message('ОМЕГА К100', 'Приложение запущено!')
                         # sg.cprint(sg.get_versions())
                         tree = window['-TREE-']
-                        tree.Widget.heading("#0", text='id')
+                        # tree.Widget.heading("#0", text='id')
                         tree2 = window['-TREE2-']
-                        tree2.Widget.heading("#0", text='id')
+                        # tree2.Widget.heading("#0", text='id')
                         if server_status['run']:
                             bar_text = 'Пользователей онлайн: обновление..' + ', Версия БД: ' + str(server_status['db'])
                             window['-StatusBar-'].update(bar_text, background_color='#699349')
@@ -1393,6 +1406,7 @@ if __name__ == '__main__':
                                     tree.metadata.append(group_id)
                                     tree.update(key=group_id, icon=check[1])
                                 window['Apply'].update(disabled=False)
+                                window['Apply'].SetFocus()
                             if event == '-TREE2-' and values['-TREE2-'] != []:
                                 user_id = values['-TREE2-'][0]
                                 # print(user_id)
@@ -1403,6 +1417,7 @@ if __name__ == '__main__':
                                     tree2.metadata.append(user_id)
                                     tree2.update(key=user_id, icon=check[1])
                                 window['Apply2'].update(disabled=False)
+                                window['Apply2'].SetFocus()
                             if event == "Apply":
                                 # print("clicked Apply")
                                 if not values['-users-']:
