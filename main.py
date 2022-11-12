@@ -594,13 +594,37 @@ def make_add_lic():
 
 def make_settings():
     layout_settings = [
-        [sg.Text('Общие настройки')],
-        [sg.Push(), sg.Checkbox('Запрет индивидуальных вызовов', default=False,
-                               key='-запрет-инд-')],
+        [sg.Frame('Общие настройки',
+                  [
+                      [sg.Push(), sg.Checkbox('Запрет индивидуальных вызовов', default=False, enable_events=True,
+                               key='-запрет-инд-')]
+                  ]
+                  , expand_x=True)
+        ],
+        # [sg.Text('Общие настройки')],
+        # [sg.Push(), sg.Checkbox('Запрет индивидуальных вызовов', default=False, enable_events=True,
+        #                        key='-запрет-инд-')],
         [sg.Push()],
-        [sg.Text('Настройка портов')],
-        [sg.Push(), sg.Text('Порт подключения'), sg.Input(size=20, key='-порт-подкл-')],
-        [sg.Push(), sg.Text('Порты аудио'), sg.Input(size=20, key='-Аудио-порты-')],
+        [sg.Frame('Настройка портов',
+                  [
+                      [sg.Push(), sg.Text('Порт подключения'), sg.Input(size=20, key='-порт-подкл-', enable_events=True)],
+                      [sg.Push(), sg.Text('Порты аудио'), sg.Input(size=20, key='-Аудио-порты-', enable_events=True)]
+                  ], expand_x=True)
+        ],
+        [sg.Push()],
+        [sg.Frame('Таймауты',
+                  [
+                      [sg.Push(), sg.Text('Групповой вызов (сек)'), sg.Input(size=20,
+                                                                             key='-Групповой-таймаут-',
+                                                                             enable_events=True)],
+                      [sg.Push(), sg.Text('Индивидуальный вызов (сек)'), sg.Input(size=20,
+                                                                                  key='-Индивидуальный-таймаут-',
+                                                                                  enable_events=True)],
+                      [sg.Push(), sg.Text('Диспетчерский вызов (сек)'), sg.Input(size=20,
+                                                                                  key='-Диспетчерский-таймаут-',
+                                                                                  enable_events=True)]
+                  ], expand_x=True)
+        ],
         [sg.ProgressBar(max_value=10, orientation='horizontal', key='-Progress-Bar-',
                         # visible=False,
                         # expand_x=True,
@@ -610,7 +634,7 @@ def make_settings():
                         )],
         [sg.Push(), sg.Button('OK', key='-OK-set-'), sg.Button('Выйти', key='-Exit-set-'), sg.Push()]
     ]
-    return sg.Window('Настройки', layout_settings, icon=ICON_BASE_64, background_color='white', 
+    return sg.Window('Настройки', layout_settings, icon=ICON_BASE_64, background_color='white',
                      modal=True,
                      # size=(500, 400),
                      finalize=True)
@@ -1730,25 +1754,31 @@ if __name__ == '__main__':
                                         #          title='id сервера', icon=ICON_BASE_64)
                             if event == 'Настройки':
                                 window_settings = make_settings()
+                                timeout = 0
+                                # counter = 0
                                 while True:
-                                    ev_set, val_set = window_settings.Read()
+                                    ev_set, val_set = window_settings.Read(1000)
                                     print(f'{ev_set}, {val_set}')
                                     if ev_set == sg.WIN_CLOSED or ev_set == '-Exit-set-':
                                         # print(f'{ev_add_lic}, {val_add_lic}')
                                         window_settings.close()
                                         break
+                                    elif ev_set == '-запрет-инд-' or ev_set == '-порт-подкл-' \
+                                        or ev_set == '-Аудио-порты-':
+                                        counter = 0
+                                        window_settings['-Progress-Bar-'].update_bar(counter)
                                     elif ev_set == '-OK-set-':
                                         print(f"Порт подключения - {val_set['-порт-подкл-']}\n"
                                               f"Аудио порты - {val_set['-Аудио-порты-']}\n"
                                               f"Запрет инд вызовов - {val_set['-запрет-инд-']}")
-                                        window_settings['-Progress-Bar-'].update(visible=True)
-                                        counter = 0
+                                        # window_settings['-Progress-Bar-'].update(visible=True)
                                         window_settings['-OK-set-'].update(disabled=True)
                                         window_settings['-Exit-set-'].update(disabled=True)
                                         window_settings['-запрет-инд-'].update(disabled=True)
                                         window_settings['-порт-подкл-'].update(disabled=True)
                                         window_settings['-Аудио-порты-'].update(disabled=True)
                                         window_settings.DisableClose = True
+                                        counter = 0
                                         while counter < 11:
                                             counter += 1
                                             window_settings['-Progress-Bar-'].update_bar(counter)
@@ -1773,6 +1803,12 @@ if __name__ == '__main__':
                                         #     counter += 1
                                         #     sleep(1)
                                         #     window_apply_settings['-Progress-Bar-'].update_bar(counter)
+                                    else:
+                                        timeout += 1000
+                                        print(f'timeout={timeout}')
+                                        # counter += 1
+                                        # window_settings['-Progress-Bar-'].update_bar(counter)
+                                        # sleep(1)
                             if event == '-AddUser-':
                                 window_add_user = make_add_user_window()
                                 window_add_user.Element('UserLogin').SetFocus()
