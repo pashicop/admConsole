@@ -36,6 +36,7 @@ version = '1.0.2'
 folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
 file_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABU0lEQVQ4y52TzStEURiHn/ecc6XG54JSdlMkNhYWsiILS0lsJaUsLW2Mv8CfIDtr2VtbY4GUEvmIZnKbZsY977Uwt2HcyW1+dTZvt6fn9557BGB+aaNQKBR2ifkbgWR+cX13ubO1svz++niVTA1ArDHDg91UahHFsMxbKWycYsjze4muTsP64vT43v7hSf/A0FgdjQPQWAmco68nB+T+SFSqNUQgcIbN1bn8Z3RwvL22MAvcu8TACFgrpMVZ4aUYcn77BMDkxGgemAGOHIBXxRjBWZMKoCPA2h6qEUSRR2MF6GxUUMUaIUgBCNTnAcm3H2G5YQfgvccYIXAtDH7FoKq/AaqKlbrBj2trFVXfBPAea4SOIIsBeN9kkCwxsNkAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK0xAAAAAElFTkSuQmCC'
 
+
 def icon(check):
     box = (12, 12)
     background = (255, 255, 255, 0)
@@ -437,8 +438,8 @@ def make_main_window(ip):
                                    select_mode='browse',
                                    selected_row_colors='black on lightblue',
                                    auto_size_columns=False, col_widths=[0, 10, 30, 5])], ],
-                                   expand_x=True,
-                                   size=(480, 564)),
+                     expand_x=True,
+                     size=(480, 564)),
             sg.Frame('Группы', [[sg.Tree(data=treedata,
                                          headings=['Имя', 'Описание'],
                                          col0_width=5,
@@ -567,26 +568,27 @@ def make_login_window():
 
 def make_add_lic():
     layout_lic = [[sg.Combo(sorted(sg.user_settings_get_entry('-filenames-', [])),
-                        default_value=sg.user_settings_get_entry('-last filename-', ''), size=(50, 1),
-                        key='-FILENAME-'), sg.FileBrowse('Найти')],
+                            default_value=sg.user_settings_get_entry('-last filename-', ''), size=(50, 1),
+                            key='-FILENAME-'), sg.FileBrowse('Найти')],
                   [sg.Button('Получить id сервера'), sg.Push(), sg.Button('Загрузить', bind_return_key=True)],
-                 [sg.Frame('Лицензия',
-                  [[sg.Table(['', '', ''], headings=['Наименование', 'Количество', 'Дата '], justification="left",
-                                # num_rows=40,
-                                # enable_events=True,
-                                # enable_click_events=True,
-                                # right_click_selects=True,
-                                # right_click_menu=[1, 'Изменить группу'],
-                                select_mode=sg.TABLE_SELECT_MODE_NONE,
-                                # selected_row_colors='red on gray',
-                                # visible_column_map=[False, True, True, True],
-                                # key='-groups2-', expand_y=True, expand_x=True,
-                                # auto_size_columns=False, col_widths=[0, 10, 30, 2])], ],
-                                # expand_x=True,
-                                # size=(480, 564)
-                             )
-                    ]])],
-                 [sg.Push(), sg.Button('Выйти'), sg.Push()]]
+                  [sg.Frame('Лицензия',
+                            [[sg.Table(['', '', ''], headings=['Наименование', 'Количество', 'Дата '],
+                                       justification="left",
+                                       # num_rows=40,
+                                       # enable_events=True,
+                                       # enable_click_events=True,
+                                       # right_click_selects=True,
+                                       # right_click_menu=[1, 'Изменить группу'],
+                                       select_mode=sg.TABLE_SELECT_MODE_NONE,
+                                       # selected_row_colors='red on gray',
+                                       # visible_column_map=[False, True, True, True],
+                                       # key='-groups2-', expand_y=True, expand_x=True,
+                                       # auto_size_columns=False, col_widths=[0, 10, 30, 2])], ],
+                                       # expand_x=True,
+                                       # size=(480, 564)
+                                       )
+                              ]])],
+                  [sg.Push(), sg.Button('Выйти'), sg.Push()]]
     return sg.Window('Лицензия', layout_lic, icon=ICON_BASE_64, background_color='white', finalize=True)
 
 
@@ -595,6 +597,7 @@ def make_get_id(id):
                      [sg.Push(), sg.Button('OK'), sg.Push()]]
     return sg.Window('id сервера', layout_get_id, icon=ICON_BASE_64, background_color='white', modal=True,
                      finalize=True)
+
 
 def make_add_user_window():
     layout_add_user = [
@@ -899,6 +902,8 @@ def get_id(os):
     else:
         system_id = 'smth Linux'
     return system_id
+
+
 # def create_menu():
 #     menu_tray = (item('Выйти', exit_app), item('Отобразить окно', show_app), item('Скрыть окно', hide_app))
 #     return menu_tray
@@ -977,15 +982,15 @@ if __name__ == '__main__':
     # vers = sys.version_info
     # print(vers)
     omega_theme = {'BACKGROUND': '#ffffff',
-                    'TEXT': '#000000',
-                    'INPUT': '#f2f2f2',
-                    'TEXT_INPUT': '#000000',
-                    'SCROLL': '#bfbfbf',
-                    'BUTTON': ('white', '#35536b'),
-                    'PROGRESS': ('#01826B', '#D0D0D0'),
-                    'BORDER': 1,
-                    'SLIDER_DEPTH': 0,
-                    'PROGRESS_DEPTH': 0}
+                   'TEXT': '#000000',
+                   'INPUT': '#f2f2f2',
+                   'TEXT_INPUT': '#000000',
+                   'SCROLL': '#bfbfbf',
+                   'BUTTON': ('white', '#35536b'),
+                   'PROGRESS': ('#01826B', '#D0D0D0'),
+                   'BORDER': 1,
+                   'SLIDER_DEPTH': 0,
+                   'PROGRESS_DEPTH': 0}
 
     # Add your dictionary to the PySimpleGUI themes
     sg.theme_add_new('OmegaTheme', omega_theme)
@@ -1873,12 +1878,14 @@ if __name__ == '__main__':
                                             if password_clear:
                                                 window_clone_user['CloneUserPassword'].update(password_char='*')
                                                 window_clone_user['showClonePasswordText'].update('Показать пароль')
-                                                window_clone_user['showPasswordCloneUser'].update(image_data=ICON_SHOW_BASE_64)
+                                                window_clone_user['showPasswordCloneUser'].update(
+                                                    image_data=ICON_SHOW_BASE_64)
                                                 password_clear = False
                                             else:
                                                 window_clone_user['CloneUserPassword'].update(password_char='')
                                                 window_clone_user['showClonePasswordText'].update('Скрыть пароль')
-                                                window_clone_user['showPasswordCloneUser'].update(image_data=ICON_HIDE_BASE_64)
+                                                window_clone_user['showPasswordCloneUser'].update(
+                                                    image_data=ICON_HIDE_BASE_64)
                                                 password_clear = True
                                         if ev_clone_user == 'cloneUserButton':
                                             clone_user_login, clone_user_name, \
