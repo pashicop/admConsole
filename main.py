@@ -516,7 +516,7 @@ def make_main_window(ip):
                                                    background_color='lightgray', size=10)],
     ]
     layout = [[sg.Menu([
-        ['Настройки', 'Установить лицензию...', 'Настройки'],
+        ['Настройки', ['Установить лицензию...', 'Настройки']],
         ['Помощь', 'О программе'], ], key='-Menu-')],
         [sg.Frame('Сервер', [[sg.Push(), sg.Button('Старт', key='-Start-',
                                                    disabled_button_color='gray', pad=((0, 20), 0)),
@@ -592,6 +592,38 @@ def make_add_lic():
     return sg.Window('Лицензия', layout_lic, icon=ICON_BASE_64, background_color='white', finalize=True)
 
 
+def make_settings():
+    layout_settings = [
+        [sg.Text('Общие настройки')],
+        [sg.Push(), sg.Checkbox('Запрет индивидуальных вызовов', default=False,
+                               key='-запрет-инд-')],
+        [sg.Push()],
+        [sg.Text('Настройка портов')],
+        [sg.Push(), sg.Text('Порт подключения'), sg.Input(size=20, key='-порт-подкл-')],
+        [sg.Push(), sg.Text('Порты аудио'), sg.Input(size=20, key='-Аудио-порты-')],
+        [sg.ProgressBar(max_value=10, orientation='horizontal', key='-Progress-Bar-',
+                        # visible=False,
+                        # expand_x=True,
+                        # expand_y=True,
+                        size_px=(300, 10),
+                        pad=((30, 30),(30, 10))
+                        )],
+        [sg.Push(), sg.Button('OK', key='-OK-set-'), sg.Button('Выйти', key='-Exit-set-'), sg.Push()]
+    ]
+    return sg.Window('Настройки', layout_settings, icon=ICON_BASE_64, background_color='white', 
+                     modal=True,
+                     # size=(500, 400),
+                     finalize=True)
+
+
+def make_apply_set():
+    layout_apply = [
+        [sg.ProgressBar(max_value=10, orientation='horizontal', key='-Progress-Bar-')],
+        [sg.Push(), sg.Button('OK', disabled=True), sg.Button('Отменить'), sg.Push()]
+    ]
+    return sg.Window('Применение настроек на сервере', layout_apply, icon=ICON_BASE_64, background_color='white',
+                     modal=True,
+                     finalize=True)
 def make_get_id(id):
     layout_get_id = [[sg.InputText(id, key='-id-'), sg.Button('Скопировать', key='-Скопировать-')],
                      [sg.Push(), sg.Button('OK'), sg.Push()]]
@@ -1696,6 +1728,51 @@ if __name__ == '__main__':
                                         # popup_text = 'id сервера - ' + id_serv
                                         # sg.popup(id_serv,
                                         #          title='id сервера', icon=ICON_BASE_64)
+                            if event == 'Настройки':
+                                window_settings = make_settings()
+                                while True:
+                                    ev_set, val_set = window_settings.Read()
+                                    print(f'{ev_set}, {val_set}')
+                                    if ev_set == sg.WIN_CLOSED or ev_set == '-Exit-set-':
+                                        # print(f'{ev_add_lic}, {val_add_lic}')
+                                        window_settings.close()
+                                        break
+                                    elif ev_set == '-OK-set-':
+                                        print(f"Порт подключения - {val_set['-порт-подкл-']}\n"
+                                              f"Аудио порты - {val_set['-Аудио-порты-']}\n"
+                                              f"Запрет инд вызовов - {val_set['-запрет-инд-']}")
+                                        window_settings['-Progress-Bar-'].update(visible=True)
+                                        counter = 0
+                                        window_settings['-OK-set-'].update(disabled=True)
+                                        window_settings['-Exit-set-'].update(disabled=True)
+                                        window_settings['-запрет-инд-'].update(disabled=True)
+                                        window_settings['-порт-подкл-'].update(disabled=True)
+                                        window_settings['-Аудио-порты-'].update(disabled=True)
+                                        window_settings.DisableClose = True
+                                        while counter < 11:
+                                            counter += 1
+                                            window_settings['-Progress-Bar-'].update_bar(counter)
+                                            sleep(1)
+                                        window_settings['-OK-set-'].update(disabled=False)
+                                        window_settings['-Exit-set-'].update(disabled=False)
+                                        window_settings['-запрет-инд-'].update(disabled=False)
+                                        window_settings['-порт-подкл-'].update(disabled=False)
+                                        window_settings['-Аудио-порты-'].update(disabled=False)
+                                        window_settings.DisableClose = False
+                                        # window_apply_settings = make_apply_set()
+                                        # counter = 0
+                                        # while True:
+                                        #     ev_apply, val_app = window_apply_settings.Read()
+                                        #     if ev_apply == sg.WIN_CLOSED or ev_apply == 'Выйти':
+                                        #         window_apply_settings.close()
+                                        #         break
+                                        #     if ev_apply == 'Отменить':
+                                        #         window_apply_settings.close()
+                                        #         window_settings.un_hide()
+                                        #         break
+                                        #     counter += 1
+                                        #     sleep(1)
+                                        #     window_apply_settings['-Progress-Bar-'].update_bar(counter)
                             if event == '-AddUser-':
                                 window_add_user = make_add_user_window()
                                 window_add_user.Element('UserLogin').SetFocus()
