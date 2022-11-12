@@ -1,4 +1,6 @@
 import json
+import os
+import platform
 import socket
 import subprocess
 import threading
@@ -591,8 +593,7 @@ def make_add_lic():
 def make_get_id(id):
     layout_get_id = [[sg.InputText(id, key='-id-'), sg.Button('Скопировать', key='-Скопировать-')],
                      [sg.Push(), sg.Button('OK'), sg.Push()]]
-    return sg.Window('id сервера', layout_get_id, icon=ICON_BASE_64, background_color='white',
-                     # size=(300, 40),
+    return sg.Window('id сервера', layout_get_id, icon=ICON_BASE_64, background_color='white', modal=True,
                      finalize=True)
 
 def make_add_user_window():
@@ -877,6 +878,27 @@ def get_icon():
     return icon_logo
 
 
+def check_os():
+    running_os = os.name
+    running_platform = platform.system()
+    print(running_os)
+    print(running_platform)
+    return running_platform
+
+
+def get_id(os):
+    if os == 'Windows':
+        command = 'reg query HKLM\Software\Microsoft\Cryptography /v MachineGuid'
+        # command = 'DIR'
+        # proc = subprocess.Popen(command,
+        #                         shell=True,
+        #                         stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        output_list = str(subprocess.getoutput(command)).split()
+        system_id = output_list[-1]
+        # print(output[-1])
+    else:
+        system_id = 'smth Linux'
+    return system_id
 # def create_menu():
 #     menu_tray = (item('Выйти', exit_app), item('Отобразить окно', show_app), item('Скрыть окно', hide_app))
 #     return menu_tray
@@ -1655,7 +1677,8 @@ if __name__ == '__main__':
                                         window_add_lic.close()
                                         break
                                     if ev_add_lic == 'Получить id сервера':
-                                        id_serv = 'ajfhlkjdhflkja lakjhga'
+                                        # id_serv = 'ajfhlkjdhflkja lakjhga'
+                                        id_serv = get_id(check_os())
                                         window_get_id = make_get_id(id_serv)
                                         while True:
                                             ev_get_id, val_get_id = window_get_id.Read()
