@@ -33,6 +33,8 @@ ICON_SHOW_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs
 ICON_HIDE_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAzlJREFUWEfFllmojVEYhp9jOGYns2RMpmQqZShliAuJ3IgSDsmUDJFkynBBUrhAISK5UDJcKIkonFA4JENcmDMmMxl69S2ts1p7n/8/e9vem73/tb7hXeubVhH/GUUF8t8buBbzVQgCm4F5wAOgY0jiXxOoCXwzpyKyoNAELgN9gV9AtXyGQDfXCGhuRl8Ab82R89MaeGQfY4EjuRIoBjYCswBdbQzfgd121c+BEuA90DBTsifJgRrAWWBgFSumHfCwqgSmAHsCZWXzKuAE8M72dMIRwBqgkyev0uuTjXi2GzgHDPKU9wLTgJ+V3ITCtMhkalkV1Ac+pMmBJ0ArU1ByKaE+BQaqA/0tHy4CXwGFS3kgbAPm2P/HgMg0S1KGz4CWJngMGBNhfhAYH6yft1IbEJRdN+CWyb4Bmvh6YQiuAmqbwhZgfsT5UWB0JWEYBxzyZNYCy+37DtDV7fkE1gNLbEPxLo04USxVVkKZ5Yhy4jgw0tY/ApILsRWYa4vbgdn67wgoc+/a5g2gZ4YTrgRWRzrbcOCk6ajfq1JiEOl+ttELKHcElEBqNEILQJ0tBp10FKCkauMJ/LD43wR6ZNDVssrVla6StdgRkFK5KV7yWIa2FEfFUxBhGVkHLLO12lYNmTicBobYppK1zM8BlY3arKB4aYSGkFPdlqABo7xZat+7gOlZTu8TPQBMlGxYBcrQzmZEXU0dL8QMYEdkPVtTU2NSgxLUltWe/yCmpFrVpBP2A5MizkRSdd/U9nQanSoGZfxM21A3bOALZWL9GmhsgmpM7b2HhdN/aQQ+A3UjntUV7wNtbU/lq+mo0P1FtmvTIFGpOGwCFpuBwcAZ2+jilbCT9eOttQrNJykByS0E5NjHdSs1vXBuA2q1wlBgg72AfPkVVinR+CR5D6i0rgDdIxbqAF+AepFpd8/aejjEKphJQsApyMlOYIIt7AMm2391vg42qg8DU72WHT25W0xDQDqngGGm7HT1q3H9FFBHTIU0BDRGX5l1DSoNrJyRhoAemZoTirlinxckJaC+fcE8KhndAyNnEkkJ6AGih4gy27XqnJ3LQFICktWbzg2ivDhPSyBvTn1DvwGQ9JMh9I2ufAAAAABJRU5ErkJggg=='
 ICON_CHECK_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAsQAAALEBxi1JjQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAASfSURBVFiFzZdfbBRFHMc/M7t3Vwq09qCAxPKnJbYFKqSatCgEMdGgCKT+xagxkGCID0bA+CT4NyEN/iHBF6I+qPFBTCu+8IKQGMSWllJLQFqsEdoCd71ry9Frr3d7N+PD9Y52uS1XbaLfZLOzs7/5fT87szs7A/+xxCRipwOPAZVAEZALRIA+4BzQCLRPNSDA48IQR4UUMUBPdEhTdgC7gRlZ5K0AKibqgUphigM6rtcACCkoKPfiLZuFp8CDJz8HZSmioSihzgH6zgeJhqIACEMEdULvBr52yL0BqAOGnAC2CSEOaa1Nd56bJU+Xcs/DRbjz3I60OqHpbfXTWXeJgfZ+hCES1furZzbsaog4mHuA/ZkAaoG3ABY/WULpC+WYuaajcSb1tvhACOZUzm1Qluupo8997xu9tR74AcgBDgA77QBvAJ9Kl6Rix0qKHlkwKWMHdZhQfaTmSLXdHGDsoz2K4GOAyl0PMK96/lSYA5ReOdlzHFhqNweQo2e3dMkv0MjSLeVTaU6g1U/bwdbKTOZjAXYoSy2YuTCPJc/eO6XmzfuaUFaCRU8UR2vqaz60x0hACkPuASh/eRlCTGZuys588cYSlm+/zxOTaqc9TgKrdELNnj5/BnPun5sxWd+FIG2ftRK9MZKVeW+Lj+Z9p9Pmy7ZVJM202JIJYDPAvKq7HRNeO3mV7uNXaNhz6o4QvS0+ztQ2oSxF8aZb5gAaSjbU1ywfByBMYx1A4Yo5jknLXlpKfsldhHsGaXj7F0b6M0MEWv2cqW1GWYrFG0tYurVi3P3ojSh/1nVsHweAVsUA0wqnOQK4ZriofvehJMTVMI17b4ewj/nYJ0/p/OdttH/7++tA1S0ARR6Ax5vjCJAJomHPLYhszAF0XKeK89IA6SptD88MUbX3QfIW5TN0LUzj3lN0n+hKv3D2MbcrEUukiioNICQhwHFc7XLnuVn1werRnhik7eBZxzG3a2Qg7XEjDYCgEyASGM4KAMYPBzBht6ektSYSSP8YO1MFU8f1CaAq0OqncKXzl5AJYtX7q7l5JYS3fNYd4wfa+4kPW0iX7FKWup6ql8CPAL7TPsfGTjJzzazMAfxNSU9lqe/G1kugSZrSN+wfwtd4PVPbfy0rbNH1U1fqst4OoFVcvQNw8ZsL6IRiqtVZdwkrHEOY4gTJxWtaxui5Tbrki7FQ1KvjmtkrCqfMvP9iH+cPtaG11iieAcaNdep3HFeW2iqESHTWX+Lqz91TYh4JDNNS24SKK9B8ArTaY4wx5S6gG9jsb/ZhmEbWL1gm3bwc4vR7DYz0jyAMcRzNK2SY7gzb9W9IQLE2eC4gIsFhvGVeDE/2i1Kd0HQdu8zZj5qJ3YwhTKNRJ9QmkpuY2+S0+nheSPGVVtpj5poUb15C0boFTCvMdTSOj8TxN/v443AH4Z7BZKXkSxSvATGndhMtf8qFIfbrhN6QqsgvzqegbBY5BTl4CjzEh+NE+iKEewYJnguirORcL13yL2WpN7F9cv9Ua6SUh4UhhphoayZICFP8CrwKuLJNPpkFoBtYS3JzupDk5jQKBIALwDEgOIl8/w/9DR5k79YG7eHTAAAAAElFTkSuQmCC'
 version = '1.0.2'
+
+
 # folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
 # file_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABU0lEQVQ4y52TzStEURiHn/ecc6XG54JSdlMkNhYWsiILS0lsJaUsLW2Mv8CfIDtr2VtbY4GUEvmIZnKbZsY977Uwt2HcyW1+dTZvt6fn9557BGB+aaNQKBR2ifkbgWR+cX13ubO1svz++niVTA1ArDHDg91UahHFsMxbKWycYsjze4muTsP64vT43v7hSf/A0FgdjQPQWAmco68nB+T+SFSqNUQgcIbN1bn8Z3RwvL22MAvcu8TACFgrpMVZ4aUYcn77BMDkxGgemAGOHIBXxRjBWZMKoCPA2h6qEUSRR2MF6GxUUMUaIUgBCNTnAcm3H2G5YQfgvccYIXAtDH7FoKq/AaqKlbrBj2trFVXfBPAea4SOIIsBeN9kkCwxsNkAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK0xAAAAAElFTkSuQmCC'
 
@@ -408,7 +410,7 @@ def make_main_window(ip):
         for index, user_from_db in enumerate(users_from_db):
             user_list.append([user_from_db['id'], user_from_db['login'], user_from_db['name']])
             if user_from_db['is_dispatcher']:
-                    user_list[index].append(u'\u2713')
+                user_list[index].append(u'\u2713')
             else:
                 user_list[index].append('')
             if user_from_db['is_blocked']:
@@ -441,7 +443,7 @@ def make_main_window(ip):
                                    right_click_selects=True,
                                    visible_column_map=[False, True, True, True, True],
                                    right_click_menu=[1, 'Изменить пользователя'],
-                                   select_mode='browse',
+                                   select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                                    selected_row_colors='black on lightblue',
                                    auto_size_columns=False, col_widths=[0, 10, 30, 5, 5])], ],
                      expand_x=True,
@@ -476,7 +478,7 @@ def make_main_window(ip):
                                 enable_click_events=True,
                                 right_click_selects=True,
                                 right_click_menu=[1, 'Изменить группу'],
-                                select_mode='browse',
+                                select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                                 selected_row_colors='black on lightblue',
                                 visible_column_map=[False, True, True, True],
                                 key='-groups2-', expand_y=True, expand_x=True,
@@ -603,20 +605,20 @@ def make_settings():
         [sg.Frame('Общие настройки',
                   [
                       [sg.Push(), sg.Checkbox('Запрет индивидуальных вызовов', default=False, enable_events=True,
-                               key='-запрет-инд-')]
-                  ]
-                  , expand_x=True)
-        ],
+                                              key='-запрет-инд-')]
+                  ], expand_x=True)
+         ],
         # [sg.Text('Общие настройки')],
         # [sg.Push(), sg.Checkbox('Запрет индивидуальных вызовов', default=False, enable_events=True,
         #                        key='-запрет-инд-')],
         [sg.Push()],
         [sg.Frame('Настройка портов',
                   [
-                      [sg.Push(), sg.Text('Порт подключения'), sg.Input(size=20, key='-порт-подкл-', enable_events=True)],
+                      [sg.Push(), sg.Text('Порт подключения'),
+                       sg.Input(size=20, key='-порт-подкл-', enable_events=True)],
                       [sg.Push(), sg.Text('Порты аудио'), sg.Input(size=20, key='-Аудио-порты-', enable_events=True)]
                   ], expand_x=True)
-        ],
+         ],
         [sg.Push()],
         [sg.Frame('Таймауты',
                   [
@@ -627,16 +629,16 @@ def make_settings():
                                                                                   key='-Индивидуальный-таймаут-',
                                                                                   enable_events=True)],
                       [sg.Push(), sg.Text('Диспетчерский вызов (сек)'), sg.Input(size=20,
-                                                                                  key='-Диспетчерский-таймаут-',
-                                                                                  enable_events=True)]
+                                                                                 key='-Диспетчерский-таймаут-',
+                                                                                 enable_events=True)]
                   ], expand_x=True)
-        ],
+         ],
         [sg.ProgressBar(max_value=10, orientation='horizontal', key='-Progress-Bar-',
                         # visible=False,
                         # expand_x=True,
                         # expand_y=True,
                         size_px=(300, 10),
-                        pad=((30, 30),(30, 10))
+                        pad=((30, 30), (30, 10))
                         )],
         [sg.Push(), sg.Button('OK', key='-OK-set-'), sg.Button('Выйти', key='-Exit-set-'), sg.Push()]
     ]
@@ -654,6 +656,8 @@ def make_apply_set():
     return sg.Window('Применение настроек на сервере', layout_apply, icon=ICON_BASE_64, background_color='white',
                      modal=True,
                      finalize=True)
+
+
 def make_get_id(id):
     layout_get_id = [[sg.InputText(id, key='-id-'), sg.Button('Скопировать', key='-Скопировать-')],
                      [sg.Push(), sg.Button('OK'), sg.Push()]]
@@ -678,28 +682,28 @@ def make_add_user_window():
 
 def make_modify_user_window(user: dict):
     layout_modify_user = [
-            [sg.Text('Логин', size=(13)), sg.Input(disabled=True, default_text=user['login'], key='UserModifyLogin')],
-            [sg.Text('Имя', size=(13)), sg.Input(default_text=user['name'], enable_events=True, key='UserModifyName')],
-            [sg.Text('Пароль', size=(13)), sg.Input(default_text='', enable_events=True,
-                                                    key='userModifyPassword', password_char='*')],
-            [sg.Push(), sg.Text('Показать пароль', key='showModifyPasswordText'),
-             sg.Button(key='showModifyPassword',
-                       button_color='#ffffff',
-                       image_data=ICON_SHOW_BASE_64)],
-            [sg.Text('Таймаут (сек)', size=(13)), sg.Input(size=(10), enable_events=True, key='userTimeout')],
-            [sg.Checkbox('Диспетчер',
-                         default=user['is_dispatcher'],
-                         enable_events=True,
-                         key='modifyUserDispatcher'), sg.Push()],
-            [sg.Push()],
-            [sg.Checkbox('Заблокирован',
-                         default=user['is_blocked'],
-                         enable_events=True,
-                         key='modifyUserBlock'), sg.Push()],
-            [sg.Push(), sg.Ok(button_text='Изменить', key='modifyUserButton')]
-        ]
+        [sg.Text('Логин', size=(13)), sg.Input(disabled=True, default_text=user['login'], key='UserModifyLogin')],
+        [sg.Text('Имя', size=(13)), sg.Input(default_text=user['name'], enable_events=True, key='UserModifyName')],
+        [sg.Text('Пароль', size=(13)), sg.Input(default_text='', enable_events=True,
+                                                key='userModifyPassword', password_char='*')],
+        [sg.Push(), sg.Text('Показать пароль', key='showModifyPasswordText'),
+         sg.Button(key='showModifyPassword',
+                   button_color='#ffffff',
+                   image_data=ICON_SHOW_BASE_64)],
+        [sg.Text('Таймаут (сек)', size=(13)), sg.Input(size=(10), enable_events=True, key='userTimeout')],
+        [sg.Checkbox('Диспетчер',
+                     default=user['is_dispatcher'],
+                     enable_events=True,
+                     key='modifyUserDispatcher'), sg.Push()],
+        [sg.Push()],
+        [sg.Checkbox('Заблокирован',
+                     default=user['is_blocked'],
+                     enable_events=True,
+                     key='modifyUserBlock'), sg.Push()],
+        [sg.Push(), sg.Ok(button_text='Изменить', key='modifyUserButton')]
+    ]
     win = sg.Window('Изменить пользователя', layout_modify_user, icon=ICON_BASE_64, use_ttk_buttons=True,
-                     finalize=True, modal=True)
+                    finalize=True, modal=True)
     return win
 
 
@@ -714,7 +718,7 @@ def make_modify_group_window(group: dict):
         [sg.Push(), sg.Ok(button_text='Изменить', key='modifyGroupButton')]
     ]
     win = sg.Window('Изменить группу', layout_modify_group, icon=ICON_BASE_64, use_ttk_buttons=True,
-                     finalize=True, modal=True)
+                    finalize=True, modal=True)
     return win
 
 
@@ -921,14 +925,14 @@ def filter_journal(journal: list):
         return journal
 
 
-def get_icon():
-    try:
-        icon_logo = Image.open('logo.ico')
-    except FileNotFoundError:
-        print('Файл не найден')
-        logging.error('Файл логотипа не найден!')
-    # print(icon_logo.format, icon_logo.size, icon_logo.mode)
-    return icon_logo
+# def get_icon():
+#     try:
+#         icon_logo = Image.open('logo.ico')
+#     except FileNotFoundError:
+#         print('Файл не найден')
+#         logging.error('Файл логотипа не найден!')
+#     # print(icon_logo.format, icon_logo.size, icon_logo.mode)
+#     return icon_logo
 
 
 def check_os():
@@ -1122,11 +1126,6 @@ if __name__ == '__main__':
                         window_main_active = True
                         window_login.Hide()
                         window = make_main_window(ip)
-                        # menu = ['', ['Отобразить окно', 'Скрыть окно', 'Выйти']]
-                        # tray = SystemTray(menu, single_click_events=False, window=window,
-                        #                   icon=ICON_BASE_64)
-                        # tray.show_message('ОМЕГА К100', 'Приложение запущено!')
-                        # sg.cprint(sg.get_versions())
                         tree = window['-TREE-']
                         # tree.Widget.heading("#0", text='id')
                         tree2 = window['-TREE2-']
@@ -1184,16 +1183,12 @@ if __name__ == '__main__':
                                     if not server_status['run']:
                                         TOKEN = get_token(BASE_URL_AUTH)
                                         HEADER_dict = {'Authorization': "Bearer " + TOKEN}
-                                        # print(TOKEN)
-                                        # print(HEADER_dict)
                                         init_db()
                                         users_from_db = get_users_from_db()
                                         groups_from_db = get_groups_from_db()
                                         users_from_db.sort(key=lambda i: i['login'])
                                         groups_from_db.sort(key=lambda i: i['name'])
-                                        # treedata_update_user = sg.TreeData()
                                         treedata_update_group = sg.TreeData()
-                                        # user_list = list()
                                         group_list = list()
                                         if users_from_db != [[]] and groups_from_db != [[]]:
                                             user_list, treedata_update_user = get_user_list(users_from_db)
@@ -1219,9 +1214,6 @@ if __name__ == '__main__':
                                         window['Apply2'].update(disabled=False)
                                         window['-checkAllGroups-'].update(disabled=False)
                                         window['-checkAllUsers-'].update(disabled=False)
-                                        # window['-Menu-'].update([
-                                        #     ['Сервер', ['Установить лицензию...', 'Настройки']],
-                                        #     ['Помощь', 'О программе'], ])
                                         server_status['run'] = True
                                     else:
                                         pass
@@ -1532,7 +1524,7 @@ if __name__ == '__main__':
                                             # print(f'after val_modify_user'
                                             #       f' = {val_modify_user}')
                                             # if val_modify_user != cur_val:
-                                                window_modify_user['modifyUserButton'].update(button_color=button_color_2)
+                                            window_modify_user['modifyUserButton'].update(button_color=button_color_2)
                             if event == 'Изменить группу':
                                 # print('Изменяем группу')
                                 group_to_change = groups_from_db[values['-groups2-'][0]]
@@ -1849,7 +1841,7 @@ if __name__ == '__main__':
                                         window_settings.close()
                                         break
                                     elif ev_set == '-запрет-инд-' or ev_set == '-порт-подкл-' \
-                                        or ev_set == '-Аудио-порты-':
+                                            or ev_set == '-Аудио-порты-':
                                         counter = 0
                                         window_settings['-Progress-Bar-'].update_bar(counter)
                                     elif ev_set == '-OK-set-':
@@ -1916,7 +1908,9 @@ if __name__ == '__main__':
                                             window_add_user['showPasswordText'].update('Скрыть пароль')
                                             password_clear = True
                                     if ev_add_user == 'addUserButton':
-                                        new_user_login, new_user_name, new_user_password, \
+                                        new_user_login, \
+                                            new_user_name, \
+                                            new_user_password, \
                                             is_dispatcher = val_add_user.values()
                                         add_user_dict = {'login': new_user_login,
                                                          'displayName': new_user_name,
@@ -2086,7 +2080,8 @@ if __name__ == '__main__':
                                                     image_data=ICON_HIDE_BASE_64)
                                                 password_clear = True
                                         if ev_clone_user == 'cloneUserButton':
-                                            clone_user_login, clone_user_name, \
+                                            clone_user_login, \
+                                                clone_user_name, \
                                                 clone_user_password = val_clone_user.values()
                                             logging.info(f"Клонируем пользователя {user_clone['login']} с именем "
                                                          f"{clone_user_login}")
