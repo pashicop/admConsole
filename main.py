@@ -424,9 +424,9 @@ def make_main_window(ip):
     # treedata = sg.TreeData()
     # treedata.insert('', key='key', text='text', values=[1, 2, 3, 4])
     tab1_layout = [
-        [sg.Button('Добавить', key='-AddUser-', pad=((30, 10), (20, 5))),
-         sg.Button('Удалить', key='-DelUser-', pad=(10, (20, 5))),
-         sg.Button('Клонировать', key='-CloneUser-', pad=(10, (20, 5)))],
+        [sg.Button('Добавить', disabled_button_color='gray', key='-AddUser-', pad=((30, 10), (20, 5))),
+         sg.Button('Удалить', disabled_button_color='gray', key='-DelUser-', pad=(10, (20, 5))),
+         sg.Button('Клонировать', disabled_button_color='gray', key='-CloneUser-', pad=(10, (20, 5)))],
         [sg.Text('Фильтр: '), sg.Input(size=(20, 1), enable_events=True, key='-filterUser-')],
         [
             sg.Frame('Пользователи',
@@ -466,8 +466,8 @@ def make_main_window(ip):
                    disabled_button_color='gray', pad=((0, 10), (5, 10)))],
     ]
     tab2_layout = [
-        [sg.Button('Добавить', key='-AddGroup-', pad=((30, 10), (20, 5))),
-         sg.Button('Удалить', key='-DelGroup-', pad=(10, (20, 5)))],
+        [sg.Button('Добавить', disabled_button_color='gray', key='-AddGroup-', pad=((30, 10), (20, 5))),
+         sg.Button('Удалить', disabled_button_color='gray', key='-DelGroup-', pad=(10, (20, 5)))],
         [sg.Text('Фильтр: '), sg.Input(size=(20, 1), enable_events=True, key='-filterGroup-')],
         [sg.Frame('Группы',
                   [
@@ -522,7 +522,7 @@ def make_main_window(ip):
                                                    background_color='lightgray', size=10)],
     ]
     layout = [[sg.Menu([
-        ['Настройки', ['Установить лицензию...', 'Настройки']],
+        ['Сервер', ['!Установить лицензию...', '!Настройки']],
         ['Помощь', 'О программе'], ], key='-Menu-')],
         [sg.Frame('Сервер', [[sg.Push(), sg.Button('Старт', key='-Start-',
                                                    disabled_button_color='gray', pad=((0, 20), 0)),
@@ -820,7 +820,7 @@ def the_thread(ip, window):
                 output_text = "\n".join(filtered_journal)
                 window['journal'].update(output_text)
                 window['countLogs'].update(len(filtered_journal))
-        sleep(50)
+        sleep(30)
 
 
 def check_server(url_ping):
@@ -1050,11 +1050,12 @@ if __name__ == '__main__':
                    'TEXT_INPUT': '#000000',
                    'SCROLL': '#bfbfbf',
                    'BUTTON': ('white', '#35536b'),
-                   'PROGRESS': ('#01826B', '#D0D0D0'),
+                   'PROGRESS': ('#699349', '#D0D0D0'),
                    'BORDER': 1,
                    'SLIDER_DEPTH': 0,
                    'PROGRESS_DEPTH': 0}
     button_color_2 = '#a6674c'
+    status_bar_color = '#699349'
     sg.theme_add_new('OmegaTheme', omega_theme)
     sg.theme('OmegaTheme')
     if sys.version_info[1] < 9:
@@ -1132,9 +1133,19 @@ if __name__ == '__main__':
                         # tree2.Widget.heading("#0", text='id')
                         if server_status['run']:
                             bar_text = 'Пользователей онлайн: обновление..' + ', Версия БД: ' + str(server_status['db'])
-                            window['-StatusBar-'].update(bar_text, background_color='#699349')
+                            window['-StatusBar-'].update(bar_text, background_color=status_bar_color)
+                            window['-Menu-'].update([
+                                ['Сервер', ['Установить лицензию...', 'Настройки']],
+                                ['Помощь', 'О программе'], ])
                         else:
-                            window['-StatusBar-'].update('Сервер не доступен', background_color='red')
+                            window['-StatusBar-'].update('Сервер не доступен', background_color=button_color_2)
+                            window['-AddUser-'].update(disabled=True)
+                            window['-DelUser-'].update(disabled=True)
+                            window['-CloneUser-'].update(disabled=True)
+                            window['-AddGroup-'].update(disabled=True)
+                            window['-DelGroup-'].update(disabled=True)
+                            window['-filterUser-'].update(disabled=True)
+                            window['-filterGroup-'].update(disabled=True)
                         thread_started = False
                         filter_status = False
                         filter_status_group = False
@@ -1163,11 +1174,11 @@ if __name__ == '__main__':
                                     if not server_status['run']:
                                         update_text = 'Пользователей онлайн: обновление..' + ', Версия БД: ' + \
                                                       str(dict_online["databaseVersion"])
-                                        window['-StatusBar-'].update(update_text, background_color='#699349')
+                                        window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                     else:
                                         update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
                                                       + ', Версия БД: ' + str(dict_online["databaseVersion"])
-                                        window['-StatusBar-'].update(update_text, background_color='#699349')
+                                        window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                     window['-Start-'].update(disabled=True)
                                     window['-Stop-'].update(disabled=False)
                                     if not server_status['run']:
@@ -1203,12 +1214,25 @@ if __name__ == '__main__':
                                         window['-AddGroup-'].update(disabled=False)
                                         window['-DelGroup-'].update(disabled=False)
                                         window['-filterUser-'].update(disabled=False)
+                                        window['-filterGroup-'].update(disabled=False)
+                                        window['Apply'].update(disabled=False)
+                                        window['Apply2'].update(disabled=False)
+                                        window['-checkAllGroups-'].update(disabled=False)
+                                        window['-checkAllUsers-'].update(disabled=False)
+                                        # window['-Menu-'].update([
+                                        #     ['Сервер', ['Установить лицензию...', 'Настройки']],
+                                        #     ['Помощь', 'О программе'], ])
                                         server_status['run'] = True
+                                    else:
+                                        pass
                                     if not server_status['last_state']:
                                         server_status['last_state'] = True
+                                        window['-Menu-'].update([
+                                            ['Сервер', ['Установить лицензию...', 'Настройки']],
+                                            ['Помощь', 'О программе'], ])
                                     # server_status['run'] = True
                                 else:
-                                    window['-StatusBar-'].update('Сервер не доступен', background_color='red')
+                                    window['-StatusBar-'].update('Сервер не доступен', background_color=button_color_2)
                                     window['-Start-'].update(disabled=False)
                                     window['-Stop-'].update(disabled=True)
                                     window['-users-'].update([[]])
@@ -1222,9 +1246,17 @@ if __name__ == '__main__':
                                     window['-AddGroup-'].update(disabled=True)
                                     window['-DelGroup-'].update(disabled=True)
                                     window['-filterUser-'].update(disabled=True)
+                                    window['-filterGroup-'].update(disabled=True)
+                                    window['Apply'].update(disabled=True)
+                                    window['Apply2'].update(disabled=True)
+                                    window['-checkAllGroups-'].update(disabled=True)
+                                    window['-checkAllUsers-'].update(disabled=True)
                                     server_status['run'] = False
                                     if server_status['last_state']:
                                         server_status['last_state'] = False
+                                        window['-Menu-'].update([
+                                            ['Сервер', ['!Установить лицензию...', '!Настройки']],
+                                            ['Помощь', 'О программе'], ])
                             if event == sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
                                 # break_flag = True
                                 # break
@@ -2385,7 +2417,7 @@ if __name__ == '__main__':
                                                           + str(dict_online_after_start["databaseVersion"])
                                             server_status['online'] = dict_online_after_start["onlineUsersCount"]
                                             server_status['db'] = dict_online_after_start["databaseVersion"]
-                                            window['-StatusBar-'].update(update_text, background_color='#699349')
+                                            window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                             window['-Start-'].update(disabled=True)
                                             window['-Stop-'].update(disabled=False)
                                             TOKEN = get_token(BASE_URL_AUTH)
@@ -2427,6 +2459,14 @@ if __name__ == '__main__':
                                             window['-AddGroup-'].update(disabled=False)
                                             window['-DelGroup-'].update(disabled=False)
                                             window['-filterUser-'].update(disabled=False)
+                                            window['-filterGroup-'].update(disabled=False)
+                                            window['Apply'].update(disabled=False)
+                                            window['Apply2'].update(disabled=False)
+                                            window['-checkAllGroups-'].update(disabled=False)
+                                            window['-checkAllUsers-'].update(disabled=False)
+                                            window['-Menu-'].update([
+                                                ['Сервер', ['Установить лицензию...', 'Настройки']],
+                                                ['Помощь', 'О программе'], ])
                                             # print('after update GUI')
                                             break
                             if event == '-Stop-':
@@ -2451,7 +2491,7 @@ if __name__ == '__main__':
                                     logging.warning(f'Сервер остановлен администратором')
                                     sg.popup('Сервер остановлен', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
                                              non_blocking=True, background_color='lightgray')
-                                    window['-StatusBar-'].update('Сервер не запущен', background_color='red')
+                                    window['-StatusBar-'].update('Сервер не запущен', background_color=button_color_2)
                                     window['-Start-'].update(disabled=False)
                                     window['-Stop-'].update(disabled=True)
                                     window['-users-'].update([[]])
@@ -2465,6 +2505,14 @@ if __name__ == '__main__':
                                     window['-AddGroup-'].update(disabled=True)
                                     window['-DelGroup-'].update(disabled=True)
                                     window['-filterUser-'].update(disabled=True)
+                                    window['-filterGroup-'].update(disabled=True)
+                                    window['Apply'].update(disabled=True)
+                                    window['Apply2'].update(disabled=True)
+                                    window['-checkAllGroups-'].update(disabled=True)
+                                    window['-checkAllUsers-'].update(disabled=True)
+                                    window['-Menu-'].update([
+                                        ['Сервер', ['!Установить лицензию...', '!Настройки']],
+                                        ['Помощь', 'О программе'], ])
                                     server_status['run'] = False
                                     # server_status['last_state'] = True
                                     print(server_status)
