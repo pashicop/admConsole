@@ -679,17 +679,22 @@ def make_add_user_window():
 def make_modify_user_window(user: dict):
     layout_modify_user = [
             [sg.Text('Логин', size=(13)), sg.Input(disabled=True, default_text=user['login'], key='UserModifyLogin')],
-            [sg.Text('Имя', size=(13)), sg.Input(default_text=user['name'], key='UserModifyName')],
-            [sg.Text('Пароль', size=(13)), sg.Input(default_text='', key='userModifyPassword', password_char='*')],
+            [sg.Text('Имя', size=(13)), sg.Input(default_text=user['name'], enable_events=True, key='UserModifyName')],
+            [sg.Text('Пароль', size=(13)), sg.Input(default_text='', enable_events=True,
+                                                    key='userModifyPassword', password_char='*')],
             [sg.Push(), sg.Text('Показать пароль', key='showModifyPasswordText'),
              sg.Button(key='showModifyPassword',
                        button_color='#ffffff',
                        image_data=ICON_SHOW_BASE_64)],
-            [sg.Text('Таймаут (сек)', size=(13)), sg.Input(size=(10), key='userTimeout')],
-            [sg.Checkbox('Диспетчер', default=user['is_dispatcher'], key='modifyUserDispatcher'), sg.Push()],
+            [sg.Text('Таймаут (сек)', size=(13)), sg.Input(size=(10), enable_events=True, key='userTimeout')],
+            [sg.Checkbox('Диспетчер',
+                         default=user['is_dispatcher'],
+                         enable_events=True,
+                         key='modifyUserDispatcher'), sg.Push()],
             [sg.Push()],
             [sg.Checkbox('Заблокирован',
                          default=user['is_blocked'],
+                         enable_events=True,
                          key='modifyUserBlock'), sg.Push()],
             [sg.Push(), sg.Ok(button_text='Изменить', key='modifyUserButton')]
         ]
@@ -1049,15 +1054,9 @@ if __name__ == '__main__':
                    'BORDER': 1,
                    'SLIDER_DEPTH': 0,
                    'PROGRESS_DEPTH': 0}
-
-    # Add your dictionary to the PySimpleGUI themes
+    button_color_2 = '#a6674c'
     sg.theme_add_new('OmegaTheme', omega_theme)
-
-    # Switch your theme to use the newly added one. You can add spaces to make it more readable
     sg.theme('OmegaTheme')
-    #
-    # # Call a popup to show what the theme looks like
-    # sg.popup_get_text('This how the MyNewTheme custom theme looks')
     if sys.version_info[1] < 9:
         logging.basicConfig(filename='admin.log', filemode='a', format='%(asctime)s %(levelname)s %(message)s',
                             datefmt='%m/%d/%Y %H:%M:%S', level=logging.INFO)
@@ -1342,10 +1341,12 @@ if __name__ == '__main__':
                                     while True:
                                         ev_modify_user, val_modify_user = window_modify_user.Read()
                                         print(ev_modify_user, val_modify_user)
+                                        # cur_val = val_modify_user.copy()
+                                        # print(f'cur_val = {cur_val}')
                                         if ev_modify_user == sg.WIN_CLOSED or ev_modify_user == 'Exit':
                                             # print('Закрыл окно добавления пользователя')
                                             break
-                                        if ev_modify_user == 'showModifyPassword':
+                                        elif ev_modify_user == 'showModifyPassword':
                                             if password_clear:
                                                 window_modify_user['userModifyPassword'].update(password_char='*')
                                                 window_modify_user['showModifyPasswordText'].update("Показать пароль")
@@ -1358,7 +1359,7 @@ if __name__ == '__main__':
                                                 window_modify_user['showModifyPassword'].update(
                                                     image_data=ICON_HIDE_BASE_64)
                                                 password_clear = True
-                                        if ev_modify_user == 'modifyUserButton':
+                                        elif ev_modify_user == 'modifyUserButton':
                                             modify_user_login, \
                                                 modify_user_name, \
                                                 modify_user_password, \
@@ -1494,6 +1495,12 @@ if __name__ == '__main__':
                                             else:
                                                 sg.popup("Нет никаких изменений!", title='Инфо', icon=ICON_BASE_64,
                                                          no_titlebar=True, background_color='lightgray')
+                                        else:
+                                            # print(f'after cur_val = {cur_val}')
+                                            # print(f'after val_modify_user'
+                                            #       f' = {val_modify_user}')
+                                            # if val_modify_user != cur_val:
+                                                window_modify_user['modifyUserButton'].update(button_color=button_color_2)
                             if event == 'Изменить группу':
                                 # print('Изменяем группу')
                                 group_to_change = groups_from_db[values['-groups2-'][0]]
