@@ -1,4 +1,6 @@
 import json
+import os
+import platform
 import socket
 import subprocess
 import threading
@@ -31,8 +33,11 @@ ICON_SHOW_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs
 ICON_HIDE_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAzlJREFUWEfFllmojVEYhp9jOGYns2RMpmQqZShliAuJ3IgSDsmUDJFkynBBUrhAISK5UDJcKIkonFA4JENcmDMmMxl69S2ts1p7n/8/e9vem73/tb7hXeubVhH/GUUF8t8buBbzVQgCm4F5wAOgY0jiXxOoCXwzpyKyoNAELgN9gV9AtXyGQDfXCGhuRl8Ab82R89MaeGQfY4EjuRIoBjYCswBdbQzfgd121c+BEuA90DBTsifJgRrAWWBgFSumHfCwqgSmAHsCZWXzKuAE8M72dMIRwBqgkyev0uuTjXi2GzgHDPKU9wLTgJ+V3ITCtMhkalkV1Ac+pMmBJ0ArU1ByKaE+BQaqA/0tHy4CXwGFS3kgbAPm2P/HgMg0S1KGz4CWJngMGBNhfhAYH6yft1IbEJRdN+CWyb4Bmvh6YQiuAmqbwhZgfsT5UWB0JWEYBxzyZNYCy+37DtDV7fkE1gNLbEPxLo04USxVVkKZ5Yhy4jgw0tY/ApILsRWYa4vbgdn67wgoc+/a5g2gZ4YTrgRWRzrbcOCk6ajfq1JiEOl+ttELKHcElEBqNEILQJ0tBp10FKCkauMJ/LD43wR6ZNDVssrVla6StdgRkFK5KV7yWIa2FEfFUxBhGVkHLLO12lYNmTicBobYppK1zM8BlY3arKB4aYSGkFPdlqABo7xZat+7gOlZTu8TPQBMlGxYBcrQzmZEXU0dL8QMYEdkPVtTU2NSgxLUltWe/yCmpFrVpBP2A5MizkRSdd/U9nQanSoGZfxM21A3bOALZWL9GmhsgmpM7b2HhdN/aQQ+A3UjntUV7wNtbU/lq+mo0P1FtmvTIFGpOGwCFpuBwcAZ2+jilbCT9eOttQrNJykByS0E5NjHdSs1vXBuA2q1wlBgg72AfPkVVinR+CR5D6i0rgDdIxbqAF+AepFpd8/aejjEKphJQsApyMlOYIIt7AMm2391vg42qg8DU72WHT25W0xDQDqngGGm7HT1q3H9FFBHTIU0BDRGX5l1DSoNrJyRhoAemZoTirlinxckJaC+fcE8KhndAyNnEkkJ6AGih4gy27XqnJ3LQFICktWbzg2ivDhPSyBvTn1DvwGQ9JMh9I2ufAAAAABJRU5ErkJggg=='
 ICON_CHECK_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAsQAAALEBxi1JjQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAASfSURBVFiFzZdfbBRFHMc/M7t3Vwq09qCAxPKnJbYFKqSatCgEMdGgCKT+xagxkGCID0bA+CT4NyEN/iHBF6I+qPFBTCu+8IKQGMSWllJLQFqsEdoCd71ry9Frr3d7N+PD9Y52uS1XbaLfZLOzs7/5fT87szs7A/+xxCRipwOPAZVAEZALRIA+4BzQCLRPNSDA48IQR4UUMUBPdEhTdgC7gRlZ5K0AKibqgUphigM6rtcACCkoKPfiLZuFp8CDJz8HZSmioSihzgH6zgeJhqIACEMEdULvBr52yL0BqAOGnAC2CSEOaa1Nd56bJU+Xcs/DRbjz3I60OqHpbfXTWXeJgfZ+hCES1furZzbsaog4mHuA/ZkAaoG3ABY/WULpC+WYuaajcSb1tvhACOZUzm1Qluupo8997xu9tR74AcgBDgA77QBvAJ9Kl6Rix0qKHlkwKWMHdZhQfaTmSLXdHGDsoz2K4GOAyl0PMK96/lSYA5ReOdlzHFhqNweQo2e3dMkv0MjSLeVTaU6g1U/bwdbKTOZjAXYoSy2YuTCPJc/eO6XmzfuaUFaCRU8UR2vqaz60x0hACkPuASh/eRlCTGZuys588cYSlm+/zxOTaqc9TgKrdELNnj5/BnPun5sxWd+FIG2ftRK9MZKVeW+Lj+Z9p9Pmy7ZVJM202JIJYDPAvKq7HRNeO3mV7uNXaNhz6o4QvS0+ztQ2oSxF8aZb5gAaSjbU1ywfByBMYx1A4Yo5jknLXlpKfsldhHsGaXj7F0b6M0MEWv2cqW1GWYrFG0tYurVi3P3ojSh/1nVsHweAVsUA0wqnOQK4ZriofvehJMTVMI17b4ewj/nYJ0/p/OdttH/7++tA1S0ARR6Ax5vjCJAJomHPLYhszAF0XKeK89IA6SptD88MUbX3QfIW5TN0LUzj3lN0n+hKv3D2MbcrEUukiioNICQhwHFc7XLnuVn1werRnhik7eBZxzG3a2Qg7XEjDYCgEyASGM4KAMYPBzBht6ektSYSSP8YO1MFU8f1CaAq0OqncKXzl5AJYtX7q7l5JYS3fNYd4wfa+4kPW0iX7FKWup6ql8CPAL7TPsfGTjJzzazMAfxNSU9lqe/G1kugSZrSN+wfwtd4PVPbfy0rbNH1U1fqst4OoFVcvQNw8ZsL6IRiqtVZdwkrHEOY4gTJxWtaxui5Tbrki7FQ1KvjmtkrCqfMvP9iH+cPtaG11iieAcaNdep3HFeW2iqESHTWX+Lqz91TYh4JDNNS24SKK9B8ArTaY4wx5S6gG9jsb/ZhmEbWL1gm3bwc4vR7DYz0jyAMcRzNK2SY7gzb9W9IQLE2eC4gIsFhvGVeDE/2i1Kd0HQdu8zZj5qJ3YwhTKNRJ9QmkpuY2+S0+nheSPGVVtpj5poUb15C0boFTCvMdTSOj8TxN/v443AH4Z7BZKXkSxSvATGndhMtf8qFIfbrhN6QqsgvzqegbBY5BTl4CjzEh+NE+iKEewYJnguirORcL13yL2WpN7F9cv9Ua6SUh4UhhphoayZICFP8CrwKuLJNPpkFoBtYS3JzupDk5jQKBIALwDEgOIl8/w/9DR5k79YG7eHTAAAAAElFTkSuQmCC'
 version = '1.0.2'
-folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
-file_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABU0lEQVQ4y52TzStEURiHn/ecc6XG54JSdlMkNhYWsiILS0lsJaUsLW2Mv8CfIDtr2VtbY4GUEvmIZnKbZsY977Uwt2HcyW1+dTZvt6fn9557BGB+aaNQKBR2ifkbgWR+cX13ubO1svz++niVTA1ArDHDg91UahHFsMxbKWycYsjze4muTsP64vT43v7hSf/A0FgdjQPQWAmco68nB+T+SFSqNUQgcIbN1bn8Z3RwvL22MAvcu8TACFgrpMVZ4aUYcn77BMDkxGgemAGOHIBXxRjBWZMKoCPA2h6qEUSRR2MF6GxUUMUaIUgBCNTnAcm3H2G5YQfgvccYIXAtDH7FoKq/AaqKlbrBj2trFVXfBPAea4SOIIsBeN9kkCwxsNkAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK0xAAAAAElFTkSuQmCC'
+
+
+# folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
+# file_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABU0lEQVQ4y52TzStEURiHn/ecc6XG54JSdlMkNhYWsiILS0lsJaUsLW2Mv8CfIDtr2VtbY4GUEvmIZnKbZsY977Uwt2HcyW1+dTZvt6fn9557BGB+aaNQKBR2ifkbgWR+cX13ubO1svz++niVTA1ArDHDg91UahHFsMxbKWycYsjze4muTsP64vT43v7hSf/A0FgdjQPQWAmco68nB+T+SFSqNUQgcIbN1bn8Z3RwvL22MAvcu8TACFgrpMVZ4aUYcn77BMDkxGgemAGOHIBXxRjBWZMKoCPA2h6qEUSRR2MF6GxUUMUaIUgBCNTnAcm3H2G5YQfgvccYIXAtDH7FoKq/AaqKlbrBj2trFVXfBPAea4SOIIsBeN9kkCwxsNkAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK0xAAAAAElFTkSuQmCC'
+
 
 def icon(check):
     box = (12, 12)
@@ -45,7 +50,7 @@ def icon(check):
     if check == 1:
         draw.line(line, fill='black', width=2, joint='curve')
     elif check == 2:
-        draw.line(line, fill='grey', width=2, joint='curve')
+        draw.line(line, fill='red', width=2, joint='curve')
     with BytesIO() as output:
         im.save(output, format="PNG")
         png = output.getvalue()
@@ -296,7 +301,8 @@ def get_users_from_db():
         user_for_table = {'login': user[1],
                           'name': user[3],
                           'id': user[0],
-                          'is_dispatcher': user[4]}
+                          'is_dispatcher': user[4],
+                          'is_blocked': user[6]}
         users_for_table.append(user_for_table)
     # print('---')
     con.close()
@@ -401,11 +407,16 @@ def make_main_window(ip):
     group_list = list()
     label_text = 'Панель администратора ОМЕГА К100 ' + ip + ' Версия ' + version
     if users_from_db != [[]] and groups_from_db != [[]]:
-        for user_from_db in users_from_db:
+        for index, user_from_db in enumerate(users_from_db):
+            user_list.append([user_from_db['id'], user_from_db['login'], user_from_db['name']])
             if user_from_db['is_dispatcher']:
-                user_list.append([user_from_db['id'], user_from_db['login'], user_from_db['name'], u'\u2713'])
+                user_list[index].append(u'\u2713')
             else:
-                user_list.append([user_from_db['id'], user_from_db['login'], user_from_db['name'], ''])
+                user_list[index].append('')
+            if user_from_db['is_blocked']:
+                user_list[index].append(u'\u274c')
+            else:
+                user_list[index].append('')
         for group_from_db in groups_from_db:
             if group_from_db['is_emergency']:
                 group_list.append([group_from_db['id'], group_from_db['name'], group_from_db['desc'], u'\u2713'])
@@ -415,14 +426,14 @@ def make_main_window(ip):
     # treedata = sg.TreeData()
     # treedata.insert('', key='key', text='text', values=[1, 2, 3, 4])
     tab1_layout = [
-        [sg.Button('Добавить', key='-AddUser-', pad=((30, 10), (20, 5))),
-         sg.Button('Удалить', key='-DelUser-', pad=(10, (20, 5))),
-         sg.Button('Клонировать', key='-CloneUser-', pad=(10, (20, 5)))],
+        [sg.Button('Добавить', disabled_button_color='gray', key='-AddUser-', pad=((30, 10), (20, 5))),
+         sg.Button('Удалить', disabled_button_color='gray', key='-DelUser-', pad=(10, (20, 5))),
+         sg.Button('Клонировать', disabled_button_color='gray', key='-CloneUser-', pad=(10, (20, 5)))],
         [sg.Text('Фильтр: '), sg.Input(size=(20, 1), enable_events=True, key='-filterUser-')],
         [
             sg.Frame('Пользователи',
                      [
-                         [sg.Table(user_list, headings=['id', 'Логин', 'Имя', 'Дисп'], justification="left",
+                         [sg.Table(user_list, headings=['id', 'Логин', 'Имя', 'Дисп', 'Блок'], justification="left",
                                    # num_rows=20,
                                    key='-users-', expand_y=True, expand_x=True,
                                    enable_click_events=True,
@@ -430,13 +441,13 @@ def make_main_window(ip):
                                    # bind_return_key=True,
                                    # background_color='green',
                                    right_click_selects=True,
-                                   visible_column_map=[False, True, True, True],
+                                   visible_column_map=[False, True, True, True, True],
                                    right_click_menu=[1, 'Изменить пользователя'],
-                                   select_mode='browse',
+                                   select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                                    selected_row_colors='black on lightblue',
-                                   auto_size_columns=False, col_widths=[0, 10, 30, 5])], ],
-                                   expand_x=True,
-                                   size=(480, 564)),
+                                   auto_size_columns=False, col_widths=[0, 10, 30, 5, 5])], ],
+                     expand_x=True,
+                     size=(480, 564)),
             sg.Frame('Группы', [[sg.Tree(data=treedata,
                                          headings=['Имя', 'Описание'],
                                          col0_width=5,
@@ -457,8 +468,8 @@ def make_main_window(ip):
                    disabled_button_color='gray', pad=((0, 10), (5, 10)))],
     ]
     tab2_layout = [
-        [sg.Button('Добавить', key='-AddGroup-', pad=((30, 10), (20, 5))),
-         sg.Button('Удалить', key='-DelGroup-', pad=(10, (20, 5)))],
+        [sg.Button('Добавить', disabled_button_color='gray', key='-AddGroup-', pad=((30, 10), (20, 5))),
+         sg.Button('Удалить', disabled_button_color='gray', key='-DelGroup-', pad=(10, (20, 5)))],
         [sg.Text('Фильтр: '), sg.Input(size=(20, 1), enable_events=True, key='-filterGroup-')],
         [sg.Frame('Группы',
                   [
@@ -467,7 +478,7 @@ def make_main_window(ip):
                                 enable_click_events=True,
                                 right_click_selects=True,
                                 right_click_menu=[1, 'Изменить группу'],
-                                select_mode='browse',
+                                select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                                 selected_row_colors='black on lightblue',
                                 visible_column_map=[False, True, True, True],
                                 key='-groups2-', expand_y=True, expand_x=True,
@@ -513,6 +524,7 @@ def make_main_window(ip):
                                                    background_color='lightgray', size=10)],
     ]
     layout = [[sg.Menu([
+        ['Сервер', ['!Установить лицензию...', '!Настройки']],
         ['Помощь', 'О программе'], ], key='-Menu-')],
         [sg.Frame('Сервер', [[sg.Push(), sg.Button('Старт', key='-Start-',
                                                    disabled_button_color='gray', pad=((0, 20), 0)),
@@ -562,6 +574,97 @@ def make_login_window():
     return sg.Window('Вход на сервер', layout_login, icon=ICON_BASE_64, background_color='white', finalize=True)
 
 
+def make_add_lic():
+    layout_lic = [[sg.Combo(sorted(sg.user_settings_get_entry('-filenames-', [])),
+                            default_value=sg.user_settings_get_entry('-last filename-', ''), size=(50, 1),
+                            key='-FILENAME-'), sg.FileBrowse('Найти')],
+                  [sg.Button('Получить id сервера'), sg.Push(), sg.Button('Загрузить', bind_return_key=True)],
+                  [sg.Frame('Лицензия',
+                            [[sg.Table(['', '', ''], headings=['Наименование', 'Количество', 'Дата '],
+                                       justification="left",
+                                       # num_rows=40,
+                                       # enable_events=True,
+                                       # enable_click_events=True,
+                                       # right_click_selects=True,
+                                       # right_click_menu=[1, 'Изменить группу'],
+                                       select_mode=sg.TABLE_SELECT_MODE_NONE,
+                                       # selected_row_colors='red on gray',
+                                       # visible_column_map=[False, True, True, True],
+                                       # key='-groups2-', expand_y=True, expand_x=True,
+                                       # auto_size_columns=False, col_widths=[0, 10, 30, 2])], ],
+                                       # expand_x=True,
+                                       # size=(480, 564)
+                                       )
+                              ]])],
+                  [sg.Push(), sg.Button('Выйти'), sg.Push()]]
+    return sg.Window('Лицензия', layout_lic, icon=ICON_BASE_64, background_color='white', finalize=True)
+
+
+def make_settings():
+    layout_settings = [
+        [sg.Frame('Общие настройки',
+                  [
+                      [sg.Push(), sg.Checkbox('Запрет индивидуальных вызовов', default=False, enable_events=True,
+                                              key='-запрет-инд-')]
+                  ], expand_x=True)
+         ],
+        # [sg.Text('Общие настройки')],
+        # [sg.Push(), sg.Checkbox('Запрет индивидуальных вызовов', default=False, enable_events=True,
+        #                        key='-запрет-инд-')],
+        [sg.Push()],
+        [sg.Frame('Настройка портов',
+                  [
+                      [sg.Push(), sg.Text('Порт подключения'),
+                       sg.Input(size=20, key='-порт-подкл-', enable_events=True)],
+                      [sg.Push(), sg.Text('Порты аудио'), sg.Input(size=20, key='-Аудио-порты-', enable_events=True)]
+                  ], expand_x=True)
+         ],
+        [sg.Push()],
+        [sg.Frame('Таймауты',
+                  [
+                      [sg.Push(), sg.Text('Групповой вызов (сек)'), sg.Input(size=20,
+                                                                             key='-Групповой-таймаут-',
+                                                                             enable_events=True)],
+                      [sg.Push(), sg.Text('Индивидуальный вызов (сек)'), sg.Input(size=20,
+                                                                                  key='-Индивидуальный-таймаут-',
+                                                                                  enable_events=True)],
+                      [sg.Push(), sg.Text('Диспетчерский вызов (сек)'), sg.Input(size=20,
+                                                                                 key='-Диспетчерский-таймаут-',
+                                                                                 enable_events=True)]
+                  ], expand_x=True)
+         ],
+        [sg.ProgressBar(max_value=10, orientation='horizontal', key='-Progress-Bar-',
+                        # visible=False,
+                        # expand_x=True,
+                        # expand_y=True,
+                        size_px=(300, 10),
+                        pad=((30, 30), (30, 10))
+                        )],
+        [sg.Push(), sg.Button('OK', key='-OK-set-'), sg.Button('Выйти', key='-Exit-set-'), sg.Push()]
+    ]
+    return sg.Window('Настройки', layout_settings, icon=ICON_BASE_64, background_color='white',
+                     modal=True,
+                     # size=(500, 400),
+                     finalize=True)
+
+
+def make_apply_set():
+    layout_apply = [
+        [sg.ProgressBar(max_value=10, orientation='horizontal', key='-Progress-Bar-')],
+        [sg.Push(), sg.Button('OK', disabled=True), sg.Button('Отменить'), sg.Push()]
+    ]
+    return sg.Window('Применение настроек на сервере', layout_apply, icon=ICON_BASE_64, background_color='white',
+                     modal=True,
+                     finalize=True)
+
+
+def make_get_id(id):
+    layout_get_id = [[sg.InputText(id, key='-id-'), sg.Button('Скопировать', key='-Скопировать-')],
+                     [sg.Push(), sg.Button('OK'), sg.Push()]]
+    return sg.Window('id сервера', layout_get_id, icon=ICON_BASE_64, background_color='white', modal=True,
+                     finalize=True)
+
+
 def make_add_user_window():
     layout_add_user = [
         [sg.Push(), sg.Text('Логин'), sg.Input(key='UserLogin')],
@@ -578,57 +681,45 @@ def make_add_user_window():
 
 
 def make_modify_user_window(user: dict):
-    if user['is_dispatcher']:
-        layout_modify_user = [
-            [sg.Push(), sg.Text('Логин'), sg.Input(disabled=True, default_text=user['login'], key='UserModifyLogin')],
-            [sg.Push(), sg.Text('Имя'), sg.Input(default_text=user['name'], key='UserModifyName')],
-            [sg.Push(), sg.Text('Пароль'), sg.Input(default_text='', key='userModifyPassword', password_char='*')],
-            [sg.Push(), sg.Text('Показать пароль', key='showModifyPasswordText'),
-             sg.Button(key='showModifyPassword',
-                       button_color='#ffffff',
-                       image_data=ICON_SHOW_BASE_64)],
-            [sg.Checkbox('Диспетчер', default=True, key='modifyUserDispatcher'), sg.Push()],
-            [sg.Push(), sg.Ok(button_text='Изменить', key='modifyUserButton')]
-        ]
-    else:
-        layout_modify_user = [
-            [sg.Push(), sg.Text('Логин'), sg.Input(disabled=True, default_text=user['login'], key='UserModifyLogin')],
-            [sg.Push(), sg.Text('Имя'), sg.Input(default_text=user['name'], key='UserModifyName')],
-            [sg.Push(), sg.Text('Пароль'), sg.Input(default_text='', key='userModifyPassword', password_char='*')],
-            [sg.Push(), sg.Text('Показать пароль', key='showModifyPasswordText'),
-             sg.Button(key='showModifyPassword',
-                       button_color='#ffffff',
-                       image_data=ICON_SHOW_BASE_64)],
-            [sg.Checkbox('Диспетчер', default=False, key='modifyUserDispatcher'), sg.Push()],
-            [sg.Push(), sg.Ok(button_text='Изменить', key='modifyUserButton')]
-        ]
-    return sg.Window('Изменить пользователя', layout_modify_user, icon=ICON_BASE_64, use_ttk_buttons=True,
-                     finalize=True, modal=True)
+    layout_modify_user = [
+        [sg.Text('Логин', size=(13)), sg.Input(disabled=True, default_text=user['login'], key='UserModifyLogin')],
+        [sg.Text('Имя', size=(13)), sg.Input(default_text=user['name'], enable_events=True, key='UserModifyName')],
+        [sg.Text('Пароль', size=(13)), sg.Input(default_text='', enable_events=True,
+                                                key='userModifyPassword', password_char='*')],
+        [sg.Push(), sg.Text('Показать пароль', key='showModifyPasswordText'),
+         sg.Button(key='showModifyPassword',
+                   button_color='#ffffff',
+                   image_data=ICON_SHOW_BASE_64)],
+        [sg.Text('Таймаут (сек)', size=(13)), sg.Input(size=(10), enable_events=True, key='userTimeout')],
+        [sg.Checkbox('Диспетчер',
+                     default=user['is_dispatcher'],
+                     enable_events=True,
+                     key='modifyUserDispatcher'), sg.Push()],
+        [sg.Push()],
+        [sg.Checkbox('Заблокирован',
+                     default=user['is_blocked'],
+                     enable_events=True,
+                     key='modifyUserBlock'), sg.Push()],
+        [sg.Push(), sg.Ok(button_text='Изменить', key='modifyUserButton')]
+    ]
+    win = sg.Window('Изменить пользователя', layout_modify_user, icon=ICON_BASE_64, use_ttk_buttons=True,
+                    finalize=True, modal=True)
+    return win
 
 
 def make_modify_group_window(group: dict):
-    if group['is_emergency'] == 1:
-        layout_modify_group = [
-            [sg.Push(), sg.Text('Имя Группы'), sg.Input(size=(40, 1), default_text=group['name'],
-                                                        key='GroupModifyName')],
-            [sg.Push(), sg.Text('Описание Группы'),
-             sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), default_text=group['desc'],
-                          key='GroupModifyDesc')],
-            [sg.Push(), sg.Checkbox('Экстренная', default=True, key='GroupModifyEmergency')],
-            [sg.Push(), sg.Ok(button_text='Изменить', key='modifyGroupButton')]
-        ]
-    else:
-        layout_modify_group = [
-            [sg.Push(), sg.Text('Имя Группы'),
-             sg.Input(size=(40, 1), default_text=group['name'], key='GroupModifyName')],
-            [sg.Push(), sg.Text('Описание Группы'),
-             sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), default_text=group['desc'],
-                          key='GroupModifyDesc')],
-            [sg.Push(), sg.Checkbox('Экстренная', default=False, key='GroupModifyEmergency')],
-            [sg.Push(), sg.Ok(button_text='Изменить', key='modifyGroupButton')]
-        ]
-    return sg.Window('Изменить группу', layout_modify_group, icon=ICON_BASE_64, use_ttk_buttons=True,
-                     finalize=True, modal=True)
+    layout_modify_group = [
+        [sg.Push(), sg.Text('Имя Группы'),
+         sg.Input(size=(40, 1), default_text=group['name'], key='GroupModifyName')],
+        [sg.Push(), sg.Text('Описание Группы'),
+         sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), default_text=group['desc'],
+                      key='GroupModifyDesc')],
+        [sg.Push(), sg.Checkbox('Экстренная', default=group['is_emergency'], key='GroupModifyEmergency')],
+        [sg.Push(), sg.Ok(button_text='Изменить', key='modifyGroupButton')]
+    ]
+    win = sg.Window('Изменить группу', layout_modify_group, icon=ICON_BASE_64, use_ttk_buttons=True,
+                    finalize=True, modal=True)
+    return win
 
 
 def make_del_user_window(user):
@@ -733,7 +824,7 @@ def the_thread(ip, window):
                 output_text = "\n".join(filtered_journal)
                 window['journal'].update(output_text)
                 window['countLogs'].update(len(filtered_journal))
-        sleep(5)
+        sleep(30)
 
 
 def check_server(url_ping):
@@ -834,14 +925,37 @@ def filter_journal(journal: list):
         return journal
 
 
-def get_icon():
-    try:
-        icon_logo = Image.open('logo.ico')
-    except FileNotFoundError:
-        print('Файл не найден')
-        logging.error('Файл логотипа не найден!')
-    # print(icon_logo.format, icon_logo.size, icon_logo.mode)
-    return icon_logo
+# def get_icon():
+#     try:
+#         icon_logo = Image.open('logo.ico')
+#     except FileNotFoundError:
+#         print('Файл не найден')
+#         logging.error('Файл логотипа не найден!')
+#     # print(icon_logo.format, icon_logo.size, icon_logo.mode)
+#     return icon_logo
+
+
+def check_os():
+    running_os = os.name
+    running_platform = platform.system()
+    print(running_os)
+    print(running_platform)
+    return running_platform
+
+
+def get_id(os):
+    if os == 'Windows':
+        command = 'reg query HKLM\Software\Microsoft\Cryptography /v MachineGuid'
+        # command = 'DIR'
+        # proc = subprocess.Popen(command,
+        #                         shell=True,
+        #                         stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        output_list = str(subprocess.getoutput(command)).split()
+        system_id = output_list[-1]
+        # print(output[-1])
+    else:
+        system_id = 'smth Linux'
+    return system_id
 
 
 # def create_menu():
@@ -886,13 +1000,17 @@ def show_app(icon):
 def get_user_list(users_from_db):
     treedata_update_user = sg.TreeData()
     user_list = []
-    for user_from_db in users_from_db:
+
+    for index, user_from_db in enumerate(users_from_db):
+        user_list.append([user_from_db['id'], user_from_db['login'], user_from_db['name']])
         if user_from_db['is_dispatcher']:
-            user_list.append([user_from_db['id'], user_from_db['login'],
-                              user_from_db['name'], u'\u2713'])
+            user_list[index].append(u'\u2713')
         else:
-            user_list.append([user_from_db['id'], user_from_db['login'],
-                              user_from_db['name'], ''])
+            user_list[index].append('')
+        if user_from_db['is_blocked']:
+            user_list[index].append(u'\u274c')
+        else:
+            user_list[index].append('')
         treedata_update_user.insert('', user_from_db['id'], '',
                                     values=[user_from_db['login'],
                                             user_from_db['name']],
@@ -912,6 +1030,15 @@ def get_filter_user_list(filter_users_from_db):
     return user_list
 
 
+def block_user(user_id, blocked):
+    con = sqlite3.connect('adm.db')
+    cur = con.cursor()
+    db_update_user = "UPDATE Users SET is_blocked=" + (str(1) if blocked else str(0)) + " WHERE id='" + user_id + "'"
+    cur.execute(db_update_user)
+    con.commit()
+    con.close()
+
+
 if __name__ == '__main__':
     # print(sg.theme_global())
     # print(sg.theme_list())
@@ -922,24 +1049,19 @@ if __name__ == '__main__':
     # vers = sys.version_info
     # print(vers)
     omega_theme = {'BACKGROUND': '#ffffff',
-                    'TEXT': '#000000',
-                    'INPUT': '#f2f2f2',
-                    'TEXT_INPUT': '#000000',
-                    'SCROLL': '#bfbfbf',
-                    'BUTTON': ('white', '#35536b'),
-                    'PROGRESS': ('#01826B', '#D0D0D0'),
-                    'BORDER': 1,
-                    'SLIDER_DEPTH': 0,
-                    'PROGRESS_DEPTH': 0}
-
-    # Add your dictionary to the PySimpleGUI themes
+                   'TEXT': '#000000',
+                   'INPUT': '#f2f2f2',
+                   'TEXT_INPUT': '#000000',
+                   'SCROLL': '#bfbfbf',
+                   'BUTTON': ('white', '#35536b'),
+                   'PROGRESS': ('#699349', '#D0D0D0'),
+                   'BORDER': 1,
+                   'SLIDER_DEPTH': 0,
+                   'PROGRESS_DEPTH': 0}
+    button_color_2 = '#a6674c'
+    status_bar_color = '#699349'
     sg.theme_add_new('OmegaTheme', omega_theme)
-
-    # Switch your theme to use the newly added one. You can add spaces to make it more readable
     sg.theme('OmegaTheme')
-    #
-    # # Call a popup to show what the theme looks like
-    # sg.popup_get_text('This how the MyNewTheme custom theme looks')
     if sys.version_info[1] < 9:
         logging.basicConfig(filename='admin.log', filemode='a', format='%(asctime)s %(levelname)s %(message)s',
                             datefmt='%m/%d/%Y %H:%M:%S', level=logging.INFO)
@@ -1004,20 +1126,25 @@ if __name__ == '__main__':
                         window_main_active = True
                         window_login.Hide()
                         window = make_main_window(ip)
-                        # menu = ['', ['Отобразить окно', 'Скрыть окно', 'Выйти']]
-                        # tray = SystemTray(menu, single_click_events=False, window=window,
-                        #                   icon=ICON_BASE_64)
-                        # tray.show_message('ОМЕГА К100', 'Приложение запущено!')
-                        # sg.cprint(sg.get_versions())
                         tree = window['-TREE-']
                         # tree.Widget.heading("#0", text='id')
                         tree2 = window['-TREE2-']
                         # tree2.Widget.heading("#0", text='id')
                         if server_status['run']:
                             bar_text = 'Пользователей онлайн: обновление..' + ', Версия БД: ' + str(server_status['db'])
-                            window['-StatusBar-'].update(bar_text, background_color='#699349')
+                            window['-StatusBar-'].update(bar_text, background_color=status_bar_color)
+                            window['-Menu-'].update([
+                                ['Сервер', ['Установить лицензию...', 'Настройки']],
+                                ['Помощь', 'О программе'], ])
                         else:
-                            window['-StatusBar-'].update('Сервер не доступен', background_color='red')
+                            window['-StatusBar-'].update('Сервер не доступен', background_color=button_color_2)
+                            window['-AddUser-'].update(disabled=True)
+                            window['-DelUser-'].update(disabled=True)
+                            window['-CloneUser-'].update(disabled=True)
+                            window['-AddGroup-'].update(disabled=True)
+                            window['-DelGroup-'].update(disabled=True)
+                            window['-filterUser-'].update(disabled=True)
+                            window['-filterGroup-'].update(disabled=True)
                         thread_started = False
                         filter_status = False
                         filter_status_group = False
@@ -1046,26 +1173,22 @@ if __name__ == '__main__':
                                     if not server_status['run']:
                                         update_text = 'Пользователей онлайн: обновление..' + ', Версия БД: ' + \
                                                       str(dict_online["databaseVersion"])
-                                        window['-StatusBar-'].update(update_text, background_color='#699349')
+                                        window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                     else:
                                         update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
                                                       + ', Версия БД: ' + str(dict_online["databaseVersion"])
-                                        window['-StatusBar-'].update(update_text, background_color='#699349')
+                                        window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                     window['-Start-'].update(disabled=True)
                                     window['-Stop-'].update(disabled=False)
                                     if not server_status['run']:
                                         TOKEN = get_token(BASE_URL_AUTH)
                                         HEADER_dict = {'Authorization': "Bearer " + TOKEN}
-                                        # print(TOKEN)
-                                        # print(HEADER_dict)
                                         init_db()
                                         users_from_db = get_users_from_db()
                                         groups_from_db = get_groups_from_db()
                                         users_from_db.sort(key=lambda i: i['login'])
                                         groups_from_db.sort(key=lambda i: i['name'])
-                                        # treedata_update_user = sg.TreeData()
                                         treedata_update_group = sg.TreeData()
-                                        # user_list = list()
                                         group_list = list()
                                         if users_from_db != [[]] and groups_from_db != [[]]:
                                             user_list, treedata_update_user = get_user_list(users_from_db)
@@ -1086,12 +1209,22 @@ if __name__ == '__main__':
                                         window['-AddGroup-'].update(disabled=False)
                                         window['-DelGroup-'].update(disabled=False)
                                         window['-filterUser-'].update(disabled=False)
+                                        window['-filterGroup-'].update(disabled=False)
+                                        window['Apply'].update(disabled=False)
+                                        window['Apply2'].update(disabled=False)
+                                        window['-checkAllGroups-'].update(disabled=False)
+                                        window['-checkAllUsers-'].update(disabled=False)
                                         server_status['run'] = True
+                                    else:
+                                        pass
                                     if not server_status['last_state']:
                                         server_status['last_state'] = True
+                                        window['-Menu-'].update([
+                                            ['Сервер', ['Установить лицензию...', 'Настройки']],
+                                            ['Помощь', 'О программе'], ])
                                     # server_status['run'] = True
                                 else:
-                                    window['-StatusBar-'].update('Сервер не доступен', background_color='red')
+                                    window['-StatusBar-'].update('Сервер не доступен', background_color=button_color_2)
                                     window['-Start-'].update(disabled=False)
                                     window['-Stop-'].update(disabled=True)
                                     window['-users-'].update([[]])
@@ -1105,9 +1238,17 @@ if __name__ == '__main__':
                                     window['-AddGroup-'].update(disabled=True)
                                     window['-DelGroup-'].update(disabled=True)
                                     window['-filterUser-'].update(disabled=True)
+                                    window['-filterGroup-'].update(disabled=True)
+                                    window['Apply'].update(disabled=True)
+                                    window['Apply2'].update(disabled=True)
+                                    window['-checkAllGroups-'].update(disabled=True)
+                                    window['-checkAllUsers-'].update(disabled=True)
                                     server_status['run'] = False
                                     if server_status['last_state']:
                                         server_status['last_state'] = False
+                                        window['-Menu-'].update([
+                                            ['Сервер', ['!Установить лицензию...', '!Настройки']],
+                                            ['Помощь', 'О программе'], ])
                             if event == sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
                                 # break_flag = True
                                 # break
@@ -1210,10 +1351,6 @@ if __name__ == '__main__':
                                             else:
                                                 tree2.update(key=user_id_for_tree, icon=check[0])
                             if event == 'Изменить пользователя':
-                                print('Изменяем пользователя')
-                                print(values)
-                                print(values['-users-'])
-                                # print(values['-users-'][0])
                                 if not values['-users-']:
                                     sg.popup('Не выбран пользователь', title='Инфо', icon=ICON_BASE_64,
                                              no_titlebar=True, background_color='lightgray')
@@ -1222,18 +1359,18 @@ if __name__ == '__main__':
                                         user_to_change = filtered_users_list_of_dict[values['-users-'][0]]
                                     else:
                                         user_to_change = users_from_db[values['-users-'][0]]
-                                    # user_to_change = users_from_db[values['-users-'][0]]
-                                    # print(user_to_change)
                                     window_modify_user = make_modify_user_window(user_to_change)
                                     window_modify_user.Element('UserModifyLogin').SetFocus()
                                     password_clear = False
                                     while True:
                                         ev_modify_user, val_modify_user = window_modify_user.Read()
-                                        # print(ev_modify_user, val_modify_user)
+                                        print(ev_modify_user, val_modify_user)
+                                        # cur_val = val_modify_user.copy()
+                                        # print(f'cur_val = {cur_val}')
                                         if ev_modify_user == sg.WIN_CLOSED or ev_modify_user == 'Exit':
                                             # print('Закрыл окно добавления пользователя')
                                             break
-                                        if ev_modify_user == 'showModifyPassword':
+                                        elif ev_modify_user == 'showModifyPassword':
                                             if password_clear:
                                                 window_modify_user['userModifyPassword'].update(password_char='*')
                                                 window_modify_user['showModifyPasswordText'].update("Показать пароль")
@@ -1246,13 +1383,18 @@ if __name__ == '__main__':
                                                 window_modify_user['showModifyPassword'].update(
                                                     image_data=ICON_HIDE_BASE_64)
                                                 password_clear = True
-                                        if ev_modify_user == 'modifyUserButton':
-                                            modify_user_login, modify_user_name, modify_user_password, \
-                                                modify_user_is_disp = val_modify_user.values()
+                                        elif ev_modify_user == 'modifyUserButton':
+                                            modify_user_login, \
+                                                modify_user_name, \
+                                                modify_user_password, \
+                                                modify_user_timeout, \
+                                                modify_user_is_disp, \
+                                                modify_user_is_blocked = val_modify_user.values()
                                             modify_user_dict = {}
                                             modify_name = False
                                             modify_password = False
                                             modify_is_disp = False
+                                            modify_is_blocked = False
                                             modify_user_dict['id'] = user_to_change['id']
                                             modify_user_dict['login'] = modify_user_login
                                             if modify_user_name != user_to_change['name']:
@@ -1290,7 +1432,53 @@ if __name__ == '__main__':
                                                         logging.error(
                                                             f'Ошибка при удалении пользователя из диспетчеров - '
                                                             f'{res_modify_user_is_disp.status_code}')
-                                            # print(modify_user_dict)
+                                            if modify_user_is_blocked != user_to_change['is_blocked']:
+                                                modify_is_blocked = True
+                                                user_block_dict = {'id': user_to_change['id']}
+                                                block_user(user_to_change['id'], modify_user_is_blocked)
+                                                users_from_db = get_users_from_db()
+                                                users_from_db.sort(key=lambda i: i['login'])
+                                                user_list, treedata_update_user = get_user_list(users_from_db)
+                                                if filter_status:
+                                                    search_str = values['-filterUser-']
+                                                    filtered_users = filter(lambda x: search_str in x['login'],
+                                                                            users_from_db)
+                                                    filtered_users_list_of_dict = list(filtered_users)
+                                                    filtered_users_list = get_filter_user_list(
+                                                        filtered_users_list_of_dict)
+                                                    window['-users-'].update(filtered_users_list)
+                                                else:
+                                                    window['-users-'].update(user_list)
+                                                window['-TREE2-'].update(treedata_update_user)
+                                                # window_modify_user.close()
+                                                # sg.popup("Пользователь изменён!", title='Инфо', icon=ICON_BASE_64,
+                                                #          no_titlebar=True, background_color='lightgray')
+                                                # if modify_user_is_blocked:
+                                                #     res_modify_user_is_blocked = requests.post(BASE_URL +
+                                                #                                             'addToBlock',
+                                                #                                             json=user_block_dict,
+                                                #                                             headers=HEADER_dict)
+                                                # else:
+                                                #     res_modify_user_is_blocked = requests.post(BASE_URL +
+                                                #                                             'removeFromBlock',
+                                                #                                             json=user_block_dict,
+                                                #                                             headers=HEADER_dict)
+                                                # if res_modify_user_is_blocked.status_code == 200:
+                                                #     if modify_user_is_blocked:
+                                                #         logging.info(f'Пользователь {modify_user_login} '
+                                                #                      f'ЗАБЛОКИРОВАН')
+                                                #     else:
+                                                #         logging.info(f'Пользователь {modify_user_login} '
+                                                #                      f'РАЗБЛОКИРОВАН')
+                                                # else:
+                                                #     if modify_user_is_blocked:
+                                                #         logging.error(
+                                                #             f'Ошибка при блокировании пользователя - '
+                                                #             f'{res_modify_user_is_blocked.status_code}')
+                                                #     else:
+                                                #         logging.error(
+                                                #             f'Ошибка при разблокировании пользователя - '
+                                                #             f'{res_modify_user_is_blocked.status_code}')
                                             if modify_name or modify_password:
                                                 res_modify_user = requests.post(BASE_URL + 'updateUser',
                                                                                 json=modify_user_dict,
@@ -1305,33 +1493,38 @@ if __name__ == '__main__':
                                                 else:
                                                     logging.error(f'Ошибка изменения пользователя - '
                                                                   f'{res_modify_user.status_code}')
-                                            if modify_is_disp or modify_name or modify_password:
-                                                users_from_server = get_users_from_server()
-                                                add_users(users_from_server)
-                                                users_from_db = get_users_from_db()
-                                                users_from_db.sort(key=lambda i: i['login'])
-                                                # user_list = list()
-                                                drop_db('user_in_groups')
-                                                add_user_in_groups(users_from_server)
-                                                user_list, treedata_update_user = get_user_list(users_from_db)
-                                                if filter_status:
-                                                    search_str = values['-filterUser-']
-                                                    filtered_users = filter(lambda x: search_str in x['login'],
-                                                                            users_from_db)
-                                                    filtered_users_list_of_dict = list(filtered_users)
-                                                    filtered_users_list = get_filter_user_list(
-                                                        filtered_users_list_of_dict)
-                                                    window['-users-'].update(filtered_users_list)
-                                                else:
-                                                    window['-users-'].update(user_list)
-                                                window['-TREE2-'].update(treedata_update_user)
+                                            if modify_is_disp or modify_name or modify_password or modify_is_blocked:
+                                                # users_from_server = get_users_from_server()
+                                                # add_users(users_from_server)
+                                                # users_from_db = get_users_from_db()
+                                                # users_from_db.sort(key=lambda i: i['login'])
+                                                # # user_list = list()
+                                                # drop_db('user_in_groups')
+                                                # add_user_in_groups(users_from_server)
+                                                # user_list, treedata_update_user = get_user_list(users_from_db)
+                                                # if filter_status:
+                                                #     search_str = values['-filterUser-']
+                                                #     filtered_users = filter(lambda x: search_str in x['login'],
+                                                #                             users_from_db)
+                                                #     filtered_users_list_of_dict = list(filtered_users)
+                                                #     filtered_users_list = get_filter_user_list(
+                                                #         filtered_users_list_of_dict)
+                                                #     window['-users-'].update(filtered_users_list)
+                                                # else:
+                                                #     window['-users-'].update(user_list)
+                                                # window['-TREE2-'].update(treedata_update_user)
                                                 window_modify_user.close()
                                                 sg.popup("Пользователь изменён!", title='Инфо', icon=ICON_BASE_64,
                                                          no_titlebar=True, background_color='lightgray')
                                             else:
                                                 sg.popup("Нет никаких изменений!", title='Инфо', icon=ICON_BASE_64,
                                                          no_titlebar=True, background_color='lightgray')
-                                                # break
+                                        else:
+                                            # print(f'after cur_val = {cur_val}')
+                                            # print(f'after val_modify_user'
+                                            #       f' = {val_modify_user}')
+                                            # if val_modify_user != cur_val:
+                                            window_modify_user['modifyUserButton'].update(button_color=button_color_2)
                             if event == 'Изменить группу':
                                 # print('Изменяем группу')
                                 group_to_change = groups_from_db[values['-groups2-'][0]]
@@ -1612,6 +1805,87 @@ if __name__ == '__main__':
                             if event == 'О программе':
                                 sg.popup('---------------------Powered by PaShi---------------------',
                                          title='О программе', icon=ICON_BASE_64)
+                            if event == 'Установить лицензию...':
+                                window_add_lic = make_add_lic()
+                                while True:
+                                    ev_add_lic, val_add_lic = window_add_lic.Read()
+                                    print(f'{ev_add_lic}, {val_add_lic}')
+                                    if ev_add_lic == sg.WIN_CLOSED or ev_add_lic == 'Выйти':
+                                        # print(f'{ev_add_lic}, {val_add_lic}')
+                                        window_add_lic.close()
+                                        break
+                                    if ev_add_lic == 'Получить id сервера':
+                                        # id_serv = 'ajfhlkjdhflkja lakjhga'
+                                        id_serv = get_id(check_os())
+                                        window_get_id = make_get_id(id_serv)
+                                        while True:
+                                            ev_get_id, val_get_id = window_get_id.Read()
+                                            print(f'{ev_get_id}, {val_get_id}')
+                                            if ev_get_id == sg.WIN_CLOSED or ev_get_id == 'OK':
+                                                window_get_id.close()
+                                                break
+                                            if ev_get_id == '-Скопировать-':
+                                                sg.clipboard_set(val_get_id['-id-'])
+                                        # popup_text = 'id сервера - ' + id_serv
+                                        # sg.popup(id_serv,
+                                        #          title='id сервера', icon=ICON_BASE_64)
+                            if event == 'Настройки':
+                                window_settings = make_settings()
+                                timeout = 0
+                                # counter = 0
+                                while True:
+                                    ev_set, val_set = window_settings.Read(1000)
+                                    print(f'{ev_set}, {val_set}')
+                                    if ev_set == sg.WIN_CLOSED or ev_set == '-Exit-set-':
+                                        # print(f'{ev_add_lic}, {val_add_lic}')
+                                        window_settings.close()
+                                        break
+                                    elif ev_set == '-запрет-инд-' or ev_set == '-порт-подкл-' \
+                                            or ev_set == '-Аудио-порты-':
+                                        counter = 0
+                                        window_settings['-Progress-Bar-'].update_bar(counter)
+                                    elif ev_set == '-OK-set-':
+                                        print(f"Порт подключения - {val_set['-порт-подкл-']}\n"
+                                              f"Аудио порты - {val_set['-Аудио-порты-']}\n"
+                                              f"Запрет инд вызовов - {val_set['-запрет-инд-']}")
+                                        # window_settings['-Progress-Bar-'].update(visible=True)
+                                        window_settings['-OK-set-'].update(disabled=True)
+                                        window_settings['-Exit-set-'].update(disabled=True)
+                                        window_settings['-запрет-инд-'].update(disabled=True)
+                                        window_settings['-порт-подкл-'].update(disabled=True)
+                                        window_settings['-Аудио-порты-'].update(disabled=True)
+                                        window_settings.DisableClose = True
+                                        counter = 0
+                                        while counter < 11:
+                                            counter += 1
+                                            window_settings['-Progress-Bar-'].update_bar(counter)
+                                            sleep(1)
+                                        window_settings['-OK-set-'].update(disabled=False)
+                                        window_settings['-Exit-set-'].update(disabled=False)
+                                        window_settings['-запрет-инд-'].update(disabled=False)
+                                        window_settings['-порт-подкл-'].update(disabled=False)
+                                        window_settings['-Аудио-порты-'].update(disabled=False)
+                                        window_settings.DisableClose = False
+                                        # window_apply_settings = make_apply_set()
+                                        # counter = 0
+                                        # while True:
+                                        #     ev_apply, val_app = window_apply_settings.Read()
+                                        #     if ev_apply == sg.WIN_CLOSED or ev_apply == 'Выйти':
+                                        #         window_apply_settings.close()
+                                        #         break
+                                        #     if ev_apply == 'Отменить':
+                                        #         window_apply_settings.close()
+                                        #         window_settings.un_hide()
+                                        #         break
+                                        #     counter += 1
+                                        #     sleep(1)
+                                        #     window_apply_settings['-Progress-Bar-'].update_bar(counter)
+                                    else:
+                                        timeout += 1000
+                                        print(f'timeout={timeout}')
+                                        # counter += 1
+                                        # window_settings['-Progress-Bar-'].update_bar(counter)
+                                        # sleep(1)
                             if event == '-AddUser-':
                                 window_add_user = make_add_user_window()
                                 window_add_user.Element('UserLogin').SetFocus()
@@ -1634,7 +1908,9 @@ if __name__ == '__main__':
                                             window_add_user['showPasswordText'].update('Скрыть пароль')
                                             password_clear = True
                                     if ev_add_user == 'addUserButton':
-                                        new_user_login, new_user_name, new_user_password, \
+                                        new_user_login, \
+                                            new_user_name, \
+                                            new_user_password, \
                                             is_dispatcher = val_add_user.values()
                                         add_user_dict = {'login': new_user_login,
                                                          'displayName': new_user_name,
@@ -1794,15 +2070,18 @@ if __name__ == '__main__':
                                             if password_clear:
                                                 window_clone_user['CloneUserPassword'].update(password_char='*')
                                                 window_clone_user['showClonePasswordText'].update('Показать пароль')
-                                                window_clone_user['showPasswordCloneUser'].update(image_data=ICON_SHOW_BASE_64)
+                                                window_clone_user['showPasswordCloneUser'].update(
+                                                    image_data=ICON_SHOW_BASE_64)
                                                 password_clear = False
                                             else:
                                                 window_clone_user['CloneUserPassword'].update(password_char='')
                                                 window_clone_user['showClonePasswordText'].update('Скрыть пароль')
-                                                window_clone_user['showPasswordCloneUser'].update(image_data=ICON_HIDE_BASE_64)
+                                                window_clone_user['showPasswordCloneUser'].update(
+                                                    image_data=ICON_HIDE_BASE_64)
                                                 password_clear = True
                                         if ev_clone_user == 'cloneUserButton':
-                                            clone_user_login, clone_user_name, \
+                                            clone_user_login, \
+                                                clone_user_name, \
                                                 clone_user_password = val_clone_user.values()
                                             logging.info(f"Клонируем пользователя {user_clone['login']} с именем "
                                                          f"{clone_user_login}")
@@ -2133,7 +2412,7 @@ if __name__ == '__main__':
                                                           + str(dict_online_after_start["databaseVersion"])
                                             server_status['online'] = dict_online_after_start["onlineUsersCount"]
                                             server_status['db'] = dict_online_after_start["databaseVersion"]
-                                            window['-StatusBar-'].update(update_text, background_color='#699349')
+                                            window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                             window['-Start-'].update(disabled=True)
                                             window['-Stop-'].update(disabled=False)
                                             TOKEN = get_token(BASE_URL_AUTH)
@@ -2175,6 +2454,14 @@ if __name__ == '__main__':
                                             window['-AddGroup-'].update(disabled=False)
                                             window['-DelGroup-'].update(disabled=False)
                                             window['-filterUser-'].update(disabled=False)
+                                            window['-filterGroup-'].update(disabled=False)
+                                            window['Apply'].update(disabled=False)
+                                            window['Apply2'].update(disabled=False)
+                                            window['-checkAllGroups-'].update(disabled=False)
+                                            window['-checkAllUsers-'].update(disabled=False)
+                                            window['-Menu-'].update([
+                                                ['Сервер', ['Установить лицензию...', 'Настройки']],
+                                                ['Помощь', 'О программе'], ])
                                             # print('after update GUI')
                                             break
                             if event == '-Stop-':
@@ -2199,7 +2486,7 @@ if __name__ == '__main__':
                                     logging.warning(f'Сервер остановлен администратором')
                                     sg.popup('Сервер остановлен', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
                                              non_blocking=True, background_color='lightgray')
-                                    window['-StatusBar-'].update('Сервер не запущен', background_color='red')
+                                    window['-StatusBar-'].update('Сервер не запущен', background_color=button_color_2)
                                     window['-Start-'].update(disabled=False)
                                     window['-Stop-'].update(disabled=True)
                                     window['-users-'].update([[]])
@@ -2213,6 +2500,14 @@ if __name__ == '__main__':
                                     window['-AddGroup-'].update(disabled=True)
                                     window['-DelGroup-'].update(disabled=True)
                                     window['-filterUser-'].update(disabled=True)
+                                    window['-filterGroup-'].update(disabled=True)
+                                    window['Apply'].update(disabled=True)
+                                    window['Apply2'].update(disabled=True)
+                                    window['-checkAllGroups-'].update(disabled=True)
+                                    window['-checkAllUsers-'].update(disabled=True)
+                                    window['-Menu-'].update([
+                                        ['Сервер', ['!Установить лицензию...', '!Настройки']],
+                                        ['Помощь', 'О программе'], ])
                                     server_status['run'] = False
                                     # server_status['last_state'] = True
                                     print(server_status)
