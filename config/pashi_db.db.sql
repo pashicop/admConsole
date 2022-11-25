@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS "Users" (
 	"is_dispatcher"	INTEGER DEFAULT 0,
 	"is_admin"	INTEGER DEFAULT 0,
 	"is_blocked"	INTEGER DEFAULT 0,
+	"en_ind"	INTEGER DEFAULT 1,
 	PRIMARY KEY("id")
 );
 CREATE TABLE IF NOT EXISTS "Groups" (
@@ -25,6 +26,7 @@ CREATE TABLE IF NOT EXISTS "Groups" (
 	"priority"	INTEGER DEFAULT 0,
 	"is_broadcast"	INTEGER DEFAULT 0,
 	"is_emergency"	INTEGER DEFAULT 0,
+	"is_disabled"	INTEGER DEFAULT 0,
 	PRIMARY KEY("id")
 );
 COMMIT;
