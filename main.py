@@ -296,7 +296,8 @@ def get_users_from_db():
                           'name': user[3],
                           'id': user[0],
                           'is_dispatcher': user[4],
-                          'is_blocked': user[6]}
+                          'is_blocked': user[6],
+                          'en_ind': user[7]}
         users_for_table.append(user_for_table)
     # print('---')
     con.close()
@@ -315,7 +316,8 @@ def get_groups_from_db():
         group_for_table = {'name': group[1],
                            'id': group[0],
                            'desc': group[2],
-                           'is_emergency': group[5]}
+                           'is_emergency': group[5],
+                           'is_disabled': group[6]}
         # print(group_for_table)
         groups_for_table.append(group_for_table)
     # print('---')
@@ -391,7 +393,18 @@ def get_user_name_by_id_from_db(id):
     con.close()
     return user_name
 
-
+def get_user_list(local_users):
+    for index, user in enumerate(local_users):
+        user_list.append([user['id'], user['login'], user['name']])
+        if user['is_dispatcher']:
+            user_list[index].append(u'\u2713')
+        else:
+            user_list[index].append('')
+        if user['is_blocked']:
+            user_list[index].append(u'\u274c')
+        else:
+            user_list[index].append('')
+    return user_list
 def make_main_window(ip):
     if server_status['run']:
         users_online_text = 'Данные загружаются...'
@@ -401,22 +414,29 @@ def make_main_window(ip):
     group_list = list()
     label_text = 'Панель администратора ОМЕГА К100 ' + ip + ' Версия ' + version + ' https: ' + str(https_on)
     if users_from_db != [[]] and groups_from_db != [[]]:
-        for index, user_from_db in enumerate(users_from_db):
-            user_list.append([user_from_db['id'], user_from_db['login'], user_from_db['name']])
-            if user_from_db['is_dispatcher']:
-                user_list[index].append(u'\u2713')
-            else:
-                user_list[index].append('')
-            if user_from_db['is_blocked']:
-                user_list[index].append(u'\u274c')
-            else:
-                user_list[index].append('')
-        for group_from_db in groups_from_db:
+        user_list = get_user_list(users_from_db)
+        # for index, user_from_db in enumerate(users_from_db):
+        #     user_list.append([user_from_db['id'], user_from_db['login'], user_from_db['name']])
+        #     if user_from_db['is_dispatcher']:
+        #         user_list[index].append(u'\u2713')
+        #     else:
+        #         user_list[index].append('')
+        #     if user_from_db['is_blocked']:
+        #         user_list[index].append(u'\u274c')
+        #     else:
+        #         user_list[index].append('')
+        for index, group_from_db in enumerate(groups_from_db):
+            group_list.append([group_from_db['id'], group_from_db['name'], group_from_db['desc']])
             if group_from_db['is_emergency']:
-                group_list.append([group_from_db['id'], group_from_db['name'], group_from_db['desc'], u'\u2713'])
+                group_list[index].append(u'\u2713')
             else:
-                group_list.append(
-                    [group_from_db['id'], group_from_db['name'], group_from_db['desc'], ''])
+                group_list[index].append('')
+        # for group_from_db in groups_from_db:
+        #     if group_from_db['is_emergency']:
+        #         group_list.append([group_from_db['id'], group_from_db['name'], group_from_db['desc'], u'\u2713'])
+        #     else:
+        #         group_list.append(
+        #             [group_from_db['id'], group_from_db['name'], group_from_db['desc'], ''])
     # treedata = sg.TreeData()
     # treedata.insert('', key='key', text='text', values=[1, 2, 3, 4])
     tab1_layout = [
@@ -559,7 +579,7 @@ def make_login_window():
         ip = ''
     print(ip)
     layout_login = [[sg.Push(background_color='white'), sg.Text("Адрес сервера", background_color='white'),
-                     sg.Input(default_text="195.19.102.233", key="ip")],
+                     sg.Input(default_text="10.1.4.78", key="ip")],
                     [sg.Push(background_color='white'), sg.Text("Пароль", background_color='white'), sg.Input(
                         focus=True,
                         default_text='qwerty',
@@ -596,47 +616,71 @@ def make_add_lic():
 
 
 def make_settings():
-    layout_settings = [
-        [sg.Frame('Общие настройки',
-                  [
-                      [sg.Push(), sg.Checkbox('Запрет индивидуальных вызовов', default=False, enable_events=True,
-                                              key='-запрет-инд-')]
-                  ], expand_x=True)
-         ],
-        # [sg.Text('Общие настройки')],
-        # [sg.Push(), sg.Checkbox('Запрет индивидуальных вызовов', default=False, enable_events=True,
-        #                        key='-запрет-инд-')],
-        [sg.Push()],
-        [sg.Frame('Настройка портов',
-                  [
-                      [sg.Push(), sg.Text('Порт подключения'),
-                       sg.Input(size=20, key='-порт-подкл-', enable_events=True)],
-                      [sg.Push(), sg.Text('Порты аудио'), sg.Input(size=20, key='-Аудио-порты-', enable_events=True)]
-                  ], expand_x=True)
-         ],
-        [sg.Push()],
-        [sg.Frame('Таймауты',
-                  [
-                      [sg.Push(), sg.Text('Групповой вызов (сек)'), sg.Input(size=20,
-                                                                             key='-Групповой-таймаут-',
-                                                                             enable_events=True)],
-                      [sg.Push(), sg.Text('Индивидуальный вызов (сек)'), sg.Input(size=20,
-                                                                                  key='-Индивидуальный-таймаут-',
-                                                                                  enable_events=True)],
-                      [sg.Push(), sg.Text('Диспетчерский вызов (сек)'), sg.Input(size=20,
-                                                                                 key='-Диспетчерский-таймаут-',
-                                                                                 enable_events=True)]
-                  ], expand_x=True)
-         ],
-        [sg.ProgressBar(max_value=10, orientation='horizontal', key='-Progress-Bar-',
-                        # visible=False,
-                        # expand_x=True,
-                        # expand_y=True,
-                        size_px=(300, 10),
-                        pad=((30, 30), (30, 10))
-                        )],
-        [sg.Push(), sg.Button('OK', key='-OK-set-'), sg.Button('Выйти', key='-Exit-set-'), sg.Push()]
-    ]
+    settings = get_settings(BASE_URL_SETTINGS)
+    if settings:
+        layout_settings = [
+            # [
+                # sg.Frame('Общие настройки',
+                #       [
+                #           [sg.Push(), sg.Checkbox('Запрет индивидуальных вызовов', default=False, enable_events=True,
+                #                                   key='-запрет-инд-')]
+                #       ], expand_x=True)
+             # ],
+            # [sg.Frame('Настройка портов',
+            #           [
+            #               [sg.Push(), sg.Text('Порт подключения'),
+            #                sg.Input(size=20, key='-порт-подкл-', enable_events=True)],
+            #               [sg.Push(), sg.Text('Порты аудио'), sg.Input(size=20, key='-Аудио-порты-', enable_events=True)]
+            #           ], expand_x=True)
+            #  ],
+            # [sg.Push()],
+            [sg.Frame('Таймауты',
+                      [
+                          [sg.Push(), sg.Text('Индивидуальный вызов (сек)'),
+                           sg.Input(default_text=settings['privateCallTimout'],
+                                    size=20,
+                                    key='-Индивидуальный-таймаут-',
+                                    enable_events=True)],
+                          [sg.Push(), sg.Text('Групповой вызов (сек)'),
+                           sg.Input(default_text=settings['groupCallTimeout'],
+                                                 size=20,
+                                                 key='-Групповой-таймаут-',
+                                                 enable_events=True)],
+                          [sg.Push(), sg.Text('Таймаут окончания вызова (сек)'),
+                           sg.Input(default_text=settings['finalizeCallTimeout'],
+                                    size=20,
+                                    key='-таймаут-окончания-',
+                                    enable_events=True)],
+                          [sg.Push(), sg.Text('Длительность тонального вызова (сек)'),
+                           sg.Input(default_text=settings['tonalTimeout'],
+                                    size=20,
+                                    disabled=True, disabled_readonly_background_color=disabled_input,
+                                    key='-таймаут-тонового-сигнала-',
+                                    enable_events=True)],
+                          [sg.Push(), sg.Text('Длительность скрытого прослушивания (сек)'),
+                           sg.Input(default_text=settings['ambientCallDuration'],
+                                    size=20,
+                                    key='-таймаут-прослушивания-',
+                                    enable_events=True)],
+                          # [sg.Push(), sg.Text('Диспетчерский вызов (сек)'), sg.Input(size=20,
+                          #                                                            key='-Диспетчерский-таймаут-',
+                          #                                                            enable_events=True)]
+                      ], expand_x=True)
+             ],
+            [sg.ProgressBar(max_value=10, orientation='horizontal', key='-Progress-Bar-',
+                            # visible=False,
+                            # expand_x=True,
+                            # expand_y=True,
+                            size_px=(400, 10),
+                            pad=((30, 30), (30, 10))
+                            )],
+            [sg.Push(), sg.Button('OK', disabled=True, key='-OK-set-'), sg.Button('Выйти', key='-Exit-set-'), sg.Push()]
+        ]
+    else:
+        layout_settings =[
+            [sg.Push(), sg.Text('Настройки недоступны', justification='center', size=60), sg.Push()],
+            [sg.Push(), sg.Button('Выйти', key='-Exit-set-'), sg.Push()]
+        ]
     return sg.Window('Настройки', layout_settings, icon=ICON_BASE_64, background_color='white',
                      modal=True,
                      # size=(500, 400),
@@ -685,7 +729,12 @@ def make_modify_user_window(user: dict):
          sg.Button(key='showModifyPassword',
                    button_color='#ffffff',
                    image_data=ICON_SHOW_BASE_64)],
-        [sg.Text('Таймаут (сек)', size=(13)), sg.Input(size=(10), enable_events=True, key='userTimeout')],
+        # [sg.Text('Таймаут (сек)', size=(13)), sg.Input(size=(10), enable_events=True, key='userTimeout')],
+        [sg.Checkbox('Разрешить индивидуальные вызовы',
+                     default=user['en_ind'],
+                     enable_events=True,
+                     key='modifyUserIndCallEn'), sg.Push()],
+        [sg.Push()],
         [sg.Checkbox('Диспетчер',
                      default=user['is_dispatcher'],
                      enable_events=True,
@@ -710,6 +759,8 @@ def make_modify_group_window(group: dict):
          sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), default_text=group['desc'],
                       key='GroupModifyDesc')],
         [sg.Push(), sg.Checkbox('Экстренная', default=group['is_emergency'], key='GroupModifyEmergency')],
+        [sg.Push(), sg.Checkbox('Заблокировать', text_color='red', default=group['is_disabled'],
+                                key='GroupModifyBlocked')],
         [sg.Push(), sg.Ok(button_text='Изменить', key='modifyGroupButton')]
     ]
     win = sg.Window('Изменить группу', layout_modify_group, icon=ICON_BASE_64, use_ttk_buttons=True,
@@ -854,7 +905,7 @@ def check_server(url_ping):
 def get_token(url_auth):
     token = ''
     res_auth = ''
-    dict_auth = {'login': 'admin', 'password': 'qwerty'}
+    dict_auth = {'login': 'admin', 'password': 'qwerty'} #TODO
     try:
         res_auth = requests.post(url_auth, json=dict_auth)
     except Exception as e:
@@ -877,6 +928,24 @@ def get_token(url_auth):
             print(f'Некорректный ответ {res_auth.status_code} от сервера {url_auth}')
     return token
 
+
+def get_settings(url):
+    res = ''
+    res_dict = dict()
+    try:
+        res = requests.get(url, timeout=3, headers=HEADER_dict)
+    except Exception as e:
+        print(f"Ошибка подключения. {e}")
+    if res == '':
+        print('Сервер не отвечает')
+        logging.info(f'Сервер НЕ доступен при запуске приложения')
+        # status['last_state'] = False
+    else:
+        if res.status_code == 200:
+            res_dict = json.loads(res.text)
+        else:
+            print(f'Некорректный ответ {res.status_code} от сервера {url}')
+    return res_dict
 
 def filter_journal(journal: list):
     if filter_journal_info:
@@ -1049,6 +1118,29 @@ def get_users_in_treedata():
                          icon=check[0])
     return td
 
+
+def disable_input(win):
+    win['-OK-set-'].update(disabled=True)
+    win['-Exit-set-'].update(disabled=True)
+    win['-Индивидуальный-таймаут-'].update(disabled=True)
+    win['-Групповой-таймаут-'].update(disabled=True)
+    win['-таймаут-окончания-'].update(disabled=True)
+    win['-таймаут-тонового-сигнала-'].update(disabled=True)
+    win['-таймаут-прослушивания-'].update(disabled=True)
+    win.DisableClose = True
+
+
+def enable_input(win):
+    win['-OK-set-'].update(disabled=False)
+    win['-Exit-set-'].update(disabled=False)
+    win['-Индивидуальный-таймаут-'].update(disabled=False)
+    win['-Групповой-таймаут-'].update(disabled=False)
+    win['-таймаут-окончания-'].update(disabled=False)
+    # win['-таймаут-тонового-сигнала-'].update(disabled=False)
+    win['-таймаут-прослушивания-'].update(disabled=False)
+    win.DisableClose = False
+
+
 if __name__ == '__main__':
     # print(sg.theme_global())
     # print(sg.theme_list())
@@ -1068,8 +1160,10 @@ if __name__ == '__main__':
                    'BORDER': 1,
                    'SLIDER_DEPTH': 0,
                    'PROGRESS_DEPTH': 0}
+    button_color = omega_theme['BUTTON'][1]
     button_color_2 = '#a6674c'
     status_bar_color = '#699349'
+    disabled_input = 'dark gray'
     sg.theme_add_new('OmegaTheme', omega_theme)
     sg.theme('OmegaTheme')
     if sys.version_info[1] < 9:
@@ -1104,17 +1198,23 @@ if __name__ == '__main__':
                     except ValueError:
                         print('Неверный ip')
                     if ip != '':
-                        BASE_URL = 'http://' + val_login['ip'] + ':5000/api/admin/'
-                        BASE_URL_PING = 'http://' + val_login['ip'] + ':5000/api/ping'
-                        BASE_URL_AUTH = 'http://' + val_login['ip'] + ':5000/api/auth'
+                        https_on = True if val_login['https_on'] else False
+                        if https_on:
+                            BASE_URL = BASE_URL_PING = BASE_URL_AUTH = BASE_URL_SETTINGS = 'https://'
+                        else:
+                            BASE_URL = BASE_URL_PING = BASE_URL_AUTH = BASE_URL_SETTINGS = 'http://'
+                        BASE_URL += val_login['ip'] + ':5000/api/admin/'
+                        BASE_URL_PING += val_login['ip'] + ':5000/api/ping'
+                        BASE_URL_AUTH += val_login['ip'] + ':5000/api/auth'
+                        BASE_URL_SETTINGS += val_login['ip'] + ':5000/api/admin/settings'
                         server_status = check_server(BASE_URL_PING)
                         current_db = server_status['db']
-                        https_on = True if val_login['https_on'] else False
                         if server_status['run']:
                             TOKEN = get_token(BASE_URL_AUTH)
                             HEADER_dict = {'Authorization': "Bearer " + TOKEN}
                             # print(TOKEN)
                             # print(HEADER_dict)
+                            print(get_settings(BASE_URL_SETTINGS))
                             create_db()
                             init_db()
                             users_from_db = get_users_from_db()
@@ -1389,15 +1489,17 @@ if __name__ == '__main__':
                                                     image_data=ICON_HIDE_BASE_64)
                                                 password_clear = True
                                         elif ev_modify_user == 'modifyUserButton':
+                                            # modify_user_timeout, \
                                             modify_user_login, \
                                                 modify_user_name, \
                                                 modify_user_password, \
-                                                modify_user_timeout, \
+                                                modify_user_en_ind, \
                                                 modify_user_is_disp, \
                                                 modify_user_is_blocked = val_modify_user.values()
                                             modify_user_dict = {}
                                             modify_name = False
                                             modify_password = False
+                                            modify_is_en_ind = False
                                             modify_is_disp = False
                                             modify_is_blocked = False
                                             modify_user_dict['id'] = user_to_change['id']
@@ -1408,6 +1510,35 @@ if __name__ == '__main__':
                                             if modify_user_password:
                                                 modify_user_dict['password'] = modify_user_password
                                                 modify_password = True
+                                            if modify_user_en_ind != user_to_change['en_ind']:
+                                                modify_is_en_ind = True
+                                                user_en_ind_dict = {'userIds': [user_to_change['id']], 'roles': [0]}
+                                                if modify_user_en_ind:
+                                                    res_modify_user_en_ind = requests.post(BASE_URL +
+                                                                                          'addToRole',
+                                                                                           json=user_en_ind_dict,
+                                                                                           headers=HEADER_dict)
+                                                else:
+                                                    res_modify_user_en_ind = requests.post(BASE_URL +
+                                                                                           'removeFromRole',
+                                                                                           json=user_en_ind_dict,
+                                                                                           headers=HEADER_dict)
+                                                if res_modify_user_en_ind.status_code == 200:
+                                                    if modify_user_en_ind:
+                                                        logging.info(f'Пользователю {modify_user_login} '
+                                                                     f'разрешено совершать индивидуальные вызовы')
+                                                    else:
+                                                        logging.info(f'Пользователю {modify_user_login} '
+                                                                     f'запрещено совершать индивидуальные вызовы')
+                                                else:
+                                                    if modify_user_en_ind:
+                                                        logging.error(
+                                                            f'Ошибка при разрешении индивидуальных вызовов - '
+                                                            f'{res_modify_user_en_ind.status_code}')
+                                                    else:
+                                                        logging.error(
+                                                            f'Ошибка при запрещении индивидуальных вызовов - '
+                                                            f'{res_modify_user_en_ind.status_code}')
                                             if modify_user_is_disp != user_to_change['is_dispatcher']:
                                                 modify_is_disp = True
                                                 user_disp_dict = {'id': user_to_change['id']}
@@ -1498,7 +1629,8 @@ if __name__ == '__main__':
                                                 else:
                                                     logging.error(f'Ошибка изменения пользователя - '
                                                                   f'{res_modify_user.status_code}')
-                                            if modify_is_disp or modify_name or modify_password or modify_is_blocked:
+                                            if modify_is_disp or modify_name or modify_password \
+                                                    or modify_is_en_ind or modify_is_blocked:
                                                 users_from_server = get_users_from_server()
                                                 add_users(users_from_server)
                                                 users_from_db = get_users_from_db()
@@ -1546,6 +1678,7 @@ if __name__ == '__main__':
                                         modify_group_name = val_modify_group['GroupModifyName']
                                         modify_group_desc = val_modify_group['GroupModifyDesc']
                                         modify_group_emergency = int(val_modify_group['GroupModifyEmergency'])
+                                        modify_group_blocked = int(val_modify_group['GroupModifyBlocked'])
                                         modify_group_dict = {}
                                         modify_group = False
                                         modify_group_dict['id'] = group_to_change['id']
@@ -1599,6 +1732,14 @@ if __name__ == '__main__':
                                         else:
                                             sg.popup("Нет изменений", title='Инфо', icon=ICON_BASE_64,
                                                      no_titlebar=True, background_color='lightgray')
+                                        if modify_group_blocked != group_to_change['is_disabled']:
+                                            modify_group_is_blocked = True
+                                            if modify_group_blocked:
+                                                res_modify_group_is_disabled = requests.post(BASE_URL + 'disableGroup',
+                                                                                             json=modify_group_dict,
+                                                                                             headers=HEADER_dict)
+                                                if res_modify_group_is_disabled.status_code == 200:
+                                                    logging.info(f'Группа {modify_group_name} заблокирована')
                             if event == '-TREE-' and values['-TREE-'] != []:
                                 group_id = values['-TREE-'][0]
                                 # print(group_id)
@@ -1845,54 +1986,59 @@ if __name__ == '__main__':
                                 # counter = 0
                                 while True:
                                     ev_set, val_set = window_settings.Read(1000)
-                                    print(f'{ev_set}, {val_set}')
+                                    # print(f'{ev_set}, {val_set}')
                                     if ev_set == sg.WIN_CLOSED or ev_set == '-Exit-set-':
-                                        # print(f'{ev_add_lic}, {val_add_lic}')
                                         window_settings.close()
                                         break
-                                    elif ev_set == '-запрет-инд-' or ev_set == '-порт-подкл-' \
-                                            or ev_set == '-Аудио-порты-':
+                                    elif ev_set == '-Индивидуальный-таймаут-'\
+                                            or ev_set == '-Групповой-таймаут-' \
+                                            or ev_set == '-таймаут-окончания-'\
+                                            or ev_set == '-таймаут-тонового-сигнала-'\
+                                            or ev_set == '-таймаут-прослушивания-':
                                         counter = 0
                                         window_settings['-Progress-Bar-'].update_bar(counter)
-                                    elif ev_set == '-OK-set-':
-                                        print(f"Порт подключения - {val_set['-порт-подкл-']}\n"
-                                              f"Аудио порты - {val_set['-Аудио-порты-']}\n"
-                                              f"Запрет инд вызовов - {val_set['-запрет-инд-']}")
-                                        # window_settings['-Progress-Bar-'].update(visible=True)
-                                        window_settings['-OK-set-'].update(disabled=True)
-                                        window_settings['-Exit-set-'].update(disabled=True)
-                                        window_settings['-запрет-инд-'].update(disabled=True)
-                                        window_settings['-порт-подкл-'].update(disabled=True)
-                                        window_settings['-Аудио-порты-'].update(disabled=True)
-                                        window_settings.DisableClose = True
-                                        counter = 0
-                                        while counter < 11:
-                                            counter += 1
-                                            window_settings['-Progress-Bar-'].update_bar(counter)
-                                            sleep(1)
                                         window_settings['-OK-set-'].update(disabled=False)
-                                        window_settings['-Exit-set-'].update(disabled=False)
-                                        window_settings['-запрет-инд-'].update(disabled=False)
-                                        window_settings['-порт-подкл-'].update(disabled=False)
-                                        window_settings['-Аудио-порты-'].update(disabled=False)
-                                        window_settings.DisableClose = False
-                                        # window_apply_settings = make_apply_set()
-                                        # counter = 0
-                                        # while True:
-                                        #     ev_apply, val_app = window_apply_settings.Read()
-                                        #     if ev_apply == sg.WIN_CLOSED or ev_apply == 'Выйти':
-                                        #         window_apply_settings.close()
-                                        #         break
-                                        #     if ev_apply == 'Отменить':
-                                        #         window_apply_settings.close()
-                                        #         window_settings.un_hide()
-                                        #         break
-                                        #     counter += 1
-                                        #     sleep(1)
-                                        #     window_apply_settings['-Progress-Bar-'].update_bar(counter)
+                                        window_settings['-OK-set-'].update(button_color=button_color_2)
+                                    elif ev_set == '-OK-set-':
+                                        # print(val_set.values())
+                                        validate = True
+                                        for val in val_set.values():
+                                            if not val.isdigit():
+                                                validate = False
+                                        if validate:
+                                            settings_dict = {'privateCallTimout': val_set['-Индивидуальный-таймаут-'],
+                                                             'groupCallTimeout': val_set['-Групповой-таймаут-'],
+                                                             'finalizeCallTimeout': val_set['-таймаут-окончания-'],
+                                                             'finalizeTonalTimeout': val_set['-таймаут-тонового-сигнала-'],
+                                                             'ambientCallDuration': val_set['-таймаут-прослушивания-']}
+                                            res_update_set = requests.post(BASE_URL_SETTINGS,
+                                                                             json=settings_dict,
+                                                                             headers=HEADER_dict)
+                                            if res_update_set.status_code == 200:
+                                                logging.info(
+                                                    f'Настройки изменены')
+                                            else:
+                                                logging.error(
+                                                    f'Ошибка при изменении настроек - {res_update_set.status_code}')
+                                                sg.popup("Ошибка при изменении настроек", title='Инфо', icon=ICON_BASE_64,
+                                                         no_titlebar=True, background_color='lightgray')
+                                            disable_input(window_settings)
+                                            counter = 0
+                                            while counter < 11:
+                                                counter += 2
+                                                sleep(1)
+                                                window_settings['-Progress-Bar-'].update_bar(counter)
+                                            enable_input(window_settings)
+                                            window_settings['-OK-set-'].update(disabled=True)
+                                            window_settings['-OK-set-'].update(button_color=button_color)
+                                        else:
+                                            sg.popup("Введены некорректные данные!", title='Инфо',
+                                                     icon=ICON_BASE_64,
+                                                     no_titlebar=True, background_color='lightgray')
                                     else:
-                                        timeout += 1000
-                                        print(f'timeout={timeout}')
+                                        pass
+                                        # timeout += 1000
+                                        # print(f'timeout={timeout}')
                                         # counter += 1
                                         # window_settings['-Progress-Bar-'].update_bar(counter)
                                         # sleep(1)

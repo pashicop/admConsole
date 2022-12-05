@@ -46,7 +46,7 @@ psql -d omega_db -U omega_user -f create_script >> ~/install_log.txt &&
 unset PGPASSWORD
 printf '\n##### OK! #####\n'
 printf '\n##### First run #####'
-chmod +x first_run run Api TimeoutManager
+chmod +x first_run run Api
 ./first_run
 printf '\n##### First run OK! #####\n'
 #./run

@@ -1,0 +1,18 @@
+[Unit]
+    Description=Omega soft
+    Requires=postgresql.service network-manager.service network-online.target
+    After=postgresql.service network-online.target
+
+[Service]
+    Type=forking
+    ExecStart=/home/omega/Omega/run
+    RemainAfterExit=True
+#    StandardOutput=syslog
+#    StandardError=syslog
+#    SyslogIdentifier=omega_log
+    Restart=on-failure
+    RestartSec=30
+    User=omega
+
+[Install]
+    WantedBy=multi-user.target
