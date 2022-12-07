@@ -28,14 +28,14 @@ pyenv global 3.9.10
 python --version
 #cd ~
 #unzip ~/admConsole-tray.zip >> ~/install_log.txt
-cd ~/admConsole-tray/
+cd ~/admConsole/
 pip install -r requirements.txt >> ~/install_log.txt
 cd ~
-cp ~/admConsole-tray/adm.sh ~/Desktop/
+cp ~/admConsole/adm.sh ~/Desktop/
 chmod +x ~/Desktop/adm.sh
 date
 printf '\n##### Add rights to start/stop OMEGA #####\n'
-echo 'astracom ALL=(ALL) NOPASSWD: /bin/systemctl * omega' | sudo EDITOR='tee -a' visudo
+echo 'omega ALL=(ALL) NOPASSWD: /bin/systemctl * omega' | sudo EDITOR='tee -a' visudo
 printf '\n##### Rights added #####\n'
 printf '\n##### Admin panel installed successfully #####\n'
 #lsof -i :5000
