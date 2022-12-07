@@ -7,62 +7,31 @@ date | tee -a update_log.txt
 NTP=0
 DB=0
 STATUS=0
-function help(){
-    echo
-    echo "USAGE: update_omega.sh -t, -d, -h"
-    echo "This script updates OMEGA server "
-    echo "-t - enable NTP if server has internet connection!"
-    echo "-d - recreate database"
-    echo "-h - help"
-}
 
-while getopts ":tdh" OPT; do
-#  echo "BEFORE CASE: OPT=$OPT "
-#  echo "OPTIND=$OPTIND"
-  case $OPT in
-    t)
-      echo "-t выбрано"
-      NTP=1
-      ;;
-    d)
-      echo "-d выбрано"
-      echo -e "\033[31mВы уверены, что хотите обновить БД? Все данные будут потеряны![Y/n|Д/н]:\033[0m"
-      read -n 3 CONF
+echo -e "\033[31mВы хотите обновить БД? Все данные будут потеряны![Y/n|Д/н]:\033[0m"
+read -n 3 CONF_D
 #      read -r -n 3 -p "\033[31mВы уверены, что хотите обновить БД? Все данные будут потеряны![Y/n|Д/н]:\033[0m"$'\n' CONF
-      CONF="${CONF:-Y}"
-      echo "$CONF"
-      case $CONF in
-        y|Y|yes|Yes|"Д"|"д"|"Да"|"да")
-          echo "БД будет обновлена"
-          DB=1;;
-        n|N|no|No|"Н"|"н"|"Нет"|"нет")
-          echo "БД не будет обновлена. Перезапустите скрипт заново."
-          exit 13;;
-        *)
-          echo "Ответ не распознан"
-          exit 14;;
-      esac
-      ;;
-    h)
-      help
-      ;;
-    \?)
-      echo "Неизвестный ключ: -$OPTARG"
-      help
-      exit 1
-      ;;
-    :)
-      echo "Ключ -$OPTARG требует аргумент."
-      help
-      exit 1
-      ;;
-    *)
-      echo "Некорректный аргумент"
-      help
-      ;;
-  esac
-done
-shift "$((OPTIND-1))"
+CONF_D="${CONF_D:-Y}"
+echo "$CONF_D"
+case $CONF_D in
+  y|Y|yes|Yes|"Д"|"д"|"Да"|"да")
+    echo "БД будет обновлена"
+    DB=1;;
+  n|N|no|No|"Н"|"н"|"Нет"|"нет")
+    echo "БД не будет обновлена";;
+esac
+echo -e "\033[31mВы хотите обновить время?[Y/n|Д/н]:\033[0m"
+read -n 3 CONF_T
+#      read -r -n 3 -p "\033[31mВы уверены, что хотите обновить БД? Все данные будут потеряны![Y/n|Д/н]:\033[0m"$'\n' CONF
+CONF_T="${CONF_T:-Y}"
+echo "$CONF_T"
+case $CONF_T in
+  y|Y|yes|Yes|"Д"|"д"|"Да"|"да")
+    echo "Время будет обновлено"
+    NTP=1;;
+  n|N|no|No|"Н"|"н"|"Нет"|"нет")
+    echo "Время не будет обновлено";;
+esac
 echo "NTP = $NTP" | tee -a update_log.txt
 echo "DB = $DB" | tee -a update_log.txt
 if [[ $NTP -eq 1 ]]

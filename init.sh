@@ -49,16 +49,6 @@ printf '\n##### First run #####'
 chmod +x first_run run Api
 ./first_run
 printf '\n##### First run OK! #####\n'
-#./run
-#if [[ $? == 0 ]]
-#  then export ip_host=$(hostname -I | awk '{print $1}')
-#    printf '\n##### Server started successfully on '
-#    printf "$ip_host"
-#    printf '! ######\n'
-#    unset ip_host
-#  else printf '\n##### Error while starting #####\n'
-#  exit 15
-#fi
 printf '\n##### Install OMEGA service #####\n'
 sudo cp ~/Omega/omega.service /lib/systemd/system/ &&
 sudo systemctl enable omega
