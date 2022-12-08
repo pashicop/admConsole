@@ -91,6 +91,7 @@ cd ~/Python-3.9.10/
 make
 sudo make install
 export PATH=/opt/python/3.9.10/bin/:$PATH
+. ~/.bashrc
 python3 --version
 cd ~/admConsole/
 pip3 install -r requirements.txt

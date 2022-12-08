@@ -31,12 +31,11 @@ python --version
 cd ~/admConsole/
 pip install -r requirements.txt >> ~/install_log.txt
 cd ~
-cp ~/admConsole/adm.sh ~/Desktop/
-chmod +x ~/Desktop/adm.sh
+mv ~/admConsole/run.sh ~/admConsole/shortcut.desktop ~/Desktop/
+chmod +x ~/Desktop/run.sh
 date
 printf '\n##### Add rights to start/stop OMEGA #####\n'
 echo 'omega ALL=(ALL) NOPASSWD: /bin/systemctl * omega' | sudo EDITOR='tee -a' visudo
 printf '\n##### Rights added #####\n'
 printf '\n##### Admin panel installed successfully #####\n'
-#lsof -i :5000
 exit 0
