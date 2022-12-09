@@ -82,20 +82,26 @@ libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-d
 cd ~/admConsole
 tar -xvzf Python-3.9.10.tgz -C ~/
 cd ~/Python-3.9.10/
-./configure \
-    --prefix=/opt/python/3.9.10 \
-    --enable-shared \
-    --enable-optimizations \
-    --enable-ipv6 \
-    LDFLAGS=-Wl,-rpath=/opt/python/3.9.10/lib,--disable-new-dtags
-make
-sudo make install
-export PATH=/opt/python/3.9.10/bin/:$PATH
-. ~/.bashrc
-python3 --version
+./configure --prefix=/opt/python/3.9.10/ --enable-optimizations --with-lto --with-computed-gotos --with-system-ffi
+make -j "$(nproc)"
+sudo make altinstall
+sudo ln -s /opt/python/3.9.10/bin/python3.9        /opt/python/3.9.10/bin/python3
+sudo ln -s /opt/python/3.9.10/bin/python3.9        /opt/python/3.9.10/bin/python
+sudo ln -s /opt/python/3.9.10/bin/pip3.9           /opt/python/3.9.10/bin/pip3
+sudo ln -s /opt/python/3.9.10/bin/pip3.9           /opt/python/3.9.10/bin/pip
+sudo ln -s /opt/python/3.9.10/bin/pydoc3.9         /opt/python/3.9.10/bin/pydoc
+sudo ln -s /opt/python/3.9.10/bin/idle3.9          /opt/python/3.9.10/bin/idle
+sudo ln -s /opt/python/3.9.10/bin/python3.9-config      /opt/python/3.9.10/bin/python-config
+#printenv
+#export PATH="/opt/python/3.9.10/bin/:$PATH"
+#printenv
+#. ~/.bashrc
+#python3 --version || true
+#pip3 --version || true
 cd ~/admConsole/
-pip3 install -r requirements.txt
-cp run.sh ~/Desktop/
+#pip3 install -r requirements.txt
+sudo /opt/python/3.9.10/bin/python3 -m pip install -r requirements.txt
+mv ~/admConsole/run.sh ~/admConsole/shortcut.desktop ~/Desktop/
 chmod +x ~/Desktop/run.sh
 date
 printf '\n##### Add rights to start/stop OMEGA #####\n'
