@@ -33,7 +33,7 @@ ICON_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAAMcAAADJCAYAAACXDya2AAAABmJLR0QA/wD/AP+
 ICON_SHOW_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAi9JREFUWEft1surT1EUB/DP9X6WJEaYeowkpKirGJGBGWWmyFiZmJmYmJgzEP4BN93BJXdAlIQ8hoqJR1555hGt2kf7Hvv8fufnXn6T3xqds9djf/da37X2HtJnGerz/gYABhn4mwwswX7sxspE4qcYwVk874XYbQFMwykcpitxf+I0DuFHNzBtABzHsUKgL3id1hdjTsHmJI50AtEJwFy8wIIswA3sw+OGoMtxHlsz/WcsxYeSTxOA1XiYOdzFRnztltKkn4Hr2JDZr8ftun8JwObkXNnuxKWa4/REuD0IflxGfEdZctmGK9nCDozlBnUAq/AoGQSZgvFVnSu/ZXjWkIl1uFPTLcTbBDRUEzKRA5iHj9nm8V8/UaiD2XHqkJv4hDhpJaEL8LnMTLEqv0V4FwY5gNhsdvL6bdAhpTEDniR9ZOpl+g7WB/vrMj8j4jfMygFcxK7ksT3VtJTlC9iLN4jWy+VVWgvyri05YxOik0KuRuaqDOQA/iBKFixaLNow0h4nyiXWonWvYUsLAOMY7rUEQaBbKXhMuwPp+wSOpu9iuyXA1Sz4juDFBA60JWHM+hgsJYk7YUVB0YqE4ZcPoKY2DLv7hTo31b51G1bA2wyisI2MBV+CzaN4Xzh5z4OoirEGD7KA99JY/S+juNq3dBnF4Ik2bLqMov7npuIyyrPZt+s4B9Hrg+QMDk7Vg6TOrfxJFimPWfLPn2QNbT/55TZPssnv0iHCAMAgA78ACiR5IZsXaIEAAAAASUVORK5CYII='
 ICON_HIDE_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAzlJREFUWEfFllmojVEYhp9jOGYns2RMpmQqZShliAuJ3IgSDsmUDJFkynBBUrhAISK5UDJcKIkonFA4JENcmDMmMxl69S2ts1p7n/8/e9vem73/tb7hXeubVhH/GUUF8t8buBbzVQgCm4F5wAOgY0jiXxOoCXwzpyKyoNAELgN9gV9AtXyGQDfXCGhuRl8Ab82R89MaeGQfY4EjuRIoBjYCswBdbQzfgd121c+BEuA90DBTsifJgRrAWWBgFSumHfCwqgSmAHsCZWXzKuAE8M72dMIRwBqgkyev0uuTjXi2GzgHDPKU9wLTgJ+V3ITCtMhkalkV1Ac+pMmBJ0ArU1ByKaE+BQaqA/0tHy4CXwGFS3kgbAPm2P/HgMg0S1KGz4CWJngMGBNhfhAYH6yft1IbEJRdN+CWyb4Bmvh6YQiuAmqbwhZgfsT5UWB0JWEYBxzyZNYCy+37DtDV7fkE1gNLbEPxLo04USxVVkKZ5Yhy4jgw0tY/ApILsRWYa4vbgdn67wgoc+/a5g2gZ4YTrgRWRzrbcOCk6ajfq1JiEOl+ttELKHcElEBqNEILQJ0tBp10FKCkauMJ/LD43wR6ZNDVssrVla6StdgRkFK5KV7yWIa2FEfFUxBhGVkHLLO12lYNmTicBobYppK1zM8BlY3arKB4aYSGkFPdlqABo7xZat+7gOlZTu8TPQBMlGxYBcrQzmZEXU0dL8QMYEdkPVtTU2NSgxLUltWe/yCmpFrVpBP2A5MizkRSdd/U9nQanSoGZfxM21A3bOALZWL9GmhsgmpM7b2HhdN/aQQ+A3UjntUV7wNtbU/lq+mo0P1FtmvTIFGpOGwCFpuBwcAZ2+jilbCT9eOttQrNJykByS0E5NjHdSs1vXBuA2q1wlBgg72AfPkVVinR+CR5D6i0rgDdIxbqAF+AepFpd8/aejjEKphJQsApyMlOYIIt7AMm2391vg42qg8DU72WHT25W0xDQDqngGGm7HT1q3H9FFBHTIU0BDRGX5l1DSoNrJyRhoAemZoTirlinxckJaC+fcE8KhndAyNnEkkJ6AGih4gy27XqnJ3LQFICktWbzg2ivDhPSyBvTn1DvwGQ9JMh9I2ufAAAAABJRU5ErkJggg=='
 ICON_CHECK_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAsQAAALEBxi1JjQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAASfSURBVFiFzZdfbBRFHMc/M7t3Vwq09qCAxPKnJbYFKqSatCgEMdGgCKT+xagxkGCID0bA+CT4NyEN/iHBF6I+qPFBTCu+8IKQGMSWllJLQFqsEdoCd71ry9Frr3d7N+PD9Y52uS1XbaLfZLOzs7/5fT87szs7A/+xxCRipwOPAZVAEZALRIA+4BzQCLRPNSDA48IQR4UUMUBPdEhTdgC7gRlZ5K0AKibqgUphigM6rtcACCkoKPfiLZuFp8CDJz8HZSmioSihzgH6zgeJhqIACEMEdULvBr52yL0BqAOGnAC2CSEOaa1Nd56bJU+Xcs/DRbjz3I60OqHpbfXTWXeJgfZ+hCES1furZzbsaog4mHuA/ZkAaoG3ABY/WULpC+WYuaajcSb1tvhACOZUzm1Qluupo8997xu9tR74AcgBDgA77QBvAJ9Kl6Rix0qKHlkwKWMHdZhQfaTmSLXdHGDsoz2K4GOAyl0PMK96/lSYA5ReOdlzHFhqNweQo2e3dMkv0MjSLeVTaU6g1U/bwdbKTOZjAXYoSy2YuTCPJc/eO6XmzfuaUFaCRU8UR2vqaz60x0hACkPuASh/eRlCTGZuys588cYSlm+/zxOTaqc9TgKrdELNnj5/BnPun5sxWd+FIG2ftRK9MZKVeW+Lj+Z9p9Pmy7ZVJM202JIJYDPAvKq7HRNeO3mV7uNXaNhz6o4QvS0+ztQ2oSxF8aZb5gAaSjbU1ywfByBMYx1A4Yo5jknLXlpKfsldhHsGaXj7F0b6M0MEWv2cqW1GWYrFG0tYurVi3P3ojSh/1nVsHweAVsUA0wqnOQK4ZriofvehJMTVMI17b4ewj/nYJ0/p/OdttH/7++tA1S0ARR6Ax5vjCJAJomHPLYhszAF0XKeK89IA6SptD88MUbX3QfIW5TN0LUzj3lN0n+hKv3D2MbcrEUukiioNICQhwHFc7XLnuVn1werRnhik7eBZxzG3a2Qg7XEjDYCgEyASGM4KAMYPBzBht6ektSYSSP8YO1MFU8f1CaAq0OqncKXzl5AJYtX7q7l5JYS3fNYd4wfa+4kPW0iX7FKWup6ql8CPAL7TPsfGTjJzzazMAfxNSU9lqe/G1kugSZrSN+wfwtd4PVPbfy0rbNH1U1fqst4OoFVcvQNw8ZsL6IRiqtVZdwkrHEOY4gTJxWtaxui5Tbrki7FQ1KvjmtkrCqfMvP9iH+cPtaG11iieAcaNdep3HFeW2iqESHTWX+Lqz91TYh4JDNNS24SKK9B8ArTaY4wx5S6gG9jsb/ZhmEbWL1gm3bwc4vR7DYz0jyAMcRzNK2SY7gzb9W9IQLE2eC4gIsFhvGVeDE/2i1Kd0HQdu8zZj5qJ3YwhTKNRJ9QmkpuY2+S0+nheSPGVVtpj5poUb15C0boFTCvMdTSOj8TxN/v443AH4Z7BZKXkSxSvATGndhMtf8qFIfbrhN6QqsgvzqegbBY5BTl4CjzEh+NE+iKEewYJnguirORcL13yL2WpN7F9cv9Ua6SUh4UhhphoayZICFP8CrwKuLJNPpkFoBtYS3JzupDk5jQKBIALwDEgOIl8/w/9DR5k79YG7eHTAAAAAElFTkSuQmCC'
-version = '1.0.4'
+version = '1.0'
 
 
 # folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
@@ -464,8 +464,7 @@ def get_user_list(users):
         else:
             user_list[index].append('')
         if users != [{}]:
-            for user in users:
-                user_treedata.insert('', user['id'], '', values=[user['login'], user['name']],
+            user_treedata.insert('', user_from_db['id'], '', values=[user_from_db['login'], user_from_db['name']],
                           icon=check[0])
     return user_list, user_treedata
 
@@ -489,9 +488,8 @@ def get_group_list(groups):
         else:
             gr_list[index].append('')
         if groups != [{}]:
-            for gr in groups:
-                group_treedata.insert('', gr['id'], '', values=[gr['name'], gr['desc']],
-                          icon=check[0])
+            group_treedata.insert('', gr_from_db['id'], '', values=[gr_from_db['name'], gr_from_db['desc']],
+                      icon=check[0])
     return gr_list, group_treedata
 
 
@@ -531,6 +529,8 @@ def make_main_window(ip):
         users_online_text = 'Сервер не запущен...'
     user_list = list()
     group_list = list()
+    treedata = sg.TreeData()
+    treedata2 = sg.TreeData()
     label_text = 'Панель администратора ОМЕГА К100 ' + ip + ' Версия ' + version + ' https: ' + str(https_on)
     if users_from_db != [{}] and groups_from_db != [{}]:
         user_list, treedata2 = get_user_list(users_from_db)
@@ -677,7 +677,7 @@ def make_login_window():
         ip = ''
     print(ip)
     layout_login = [[sg.Push(background_color='white'), sg.Text("Адрес сервера", background_color='white'),
-                     sg.Input(default_text="10.1.4.78", key="ip")],
+                     sg.Input(default_text="127.0.0.1", key="ip")],
                     [sg.Push(background_color='white'), sg.Text("Пароль", background_color='white'), sg.Input(
                         focus=True,
                         default_text='qwerty',
@@ -1683,15 +1683,19 @@ if __name__ == '__main__':
                                                     logging.error(f'Ошибка изменения пользователя - '
                                                                   f'{res_modify_user.status_code}')
                                             if modify_is_disp or modify_name or modify_password \
-                                                    or modify_is_en_ind or modify_is_blocked:
-                                                users_from_server = get_users_from_server()
-                                                add_users(users_from_server)
-                                                users_from_db = get_users_from_db()
-                                                users_from_db.sort(key=lambda i: i['login'])
-                                                # user_list = list()
-                                                drop_db('user_in_groups')
-                                                add_user_in_groups(users_from_server)
-                                                user_list, treedata_update_user = get_user_list(users_from_db)
+                                                    or modify_is_en_ind \
+                                                    or modify_is_blocked:
+                                                if modify_is_blocked:
+                                                    pass
+                                                else:
+                                                    users_from_server = get_users_from_server()
+                                                    add_users(users_from_server)
+                                                    users_from_db = get_users_from_db()
+                                                    users_from_db.sort(key=lambda i: i['login'])
+                                                    # user_list = list()
+                                                    drop_db('user_in_groups')
+                                                    add_user_in_groups(users_from_server)
+                                                    user_list, treedata_update_user = get_user_list(users_from_db)
                                                 if filter_status:
                                                     search_str = values['-filterUser-']
                                                     filtered_users = filter(lambda x: search_str in x['login'],
@@ -2152,7 +2156,7 @@ if __name__ == '__main__':
                                                              no_titlebar=True, background_color='lightgray')
                                             add_users(get_users_from_server())
                                             users_from_db = get_users_from_db()
-                                            users_from_db.sort(key=lambda i: i['login'])
+                                            # users_from_db.sort(key=lambda i: i['login'])
                                             user_list, treedata_update_user = get_user_list(users_from_db)
                                             if filter_status:
                                                 search_str = values['-filterUser-']

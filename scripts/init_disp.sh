@@ -6,6 +6,7 @@ sudo systemctl status ntp >> ~/install_disp_log.txt
 date
 sudo apt-get update >> ~/install_disp_log.txt &&
 sudo apt-get -y install openssh-server >> ~/install_disp_log.txt &&
+sudo apt-get -y install xorgxrdp xrdp >> ~/install_disp_log.txt
 if [[ $? == 0 ]]
   then printf '\n##### Update packets done! ######\n'
   else printf '\n##### Error with updating packets #####\n'
@@ -21,9 +22,10 @@ if [[ $? == 0 ]]
   exit 112
 fi
 printf '\n##### COPY dispatcher #####'
-sudo cp './Диспетчер.sh' ~/Desktop/ &&
-sudo chown omega:omega ~/Desktop/Диспетчер.sh &&
-sudo chmod 777 ~/Desktop/Диспетчер.sh
+sudo cp './run.sh' ~/Desktop/ &&
+sudo chown omega:omega ~/Desktop/run.sh &&
+sudo chmod 777 ~/Desktop/run.sh
+mv ./shortcut.desktop ~/Desktop/
 if [[ $? == 0 ]]
   then printf '\n##### Dispatcher has copied to Desktop! ######\n'
   else printf '\n##### Error with copying dispatcher #####\n'
