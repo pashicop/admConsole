@@ -1,3 +1,4 @@
 CREATE DATABASE omega_db;
 CREATE USER omega_user with encrypted password 'omega1q2w';
 GRANT ALL PRIVILEGES ON DATABASE "omega_db" TO omega_user;
+ALTER DATABASE omega_db OWNER TO omega_user;
