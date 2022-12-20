@@ -1,30 +1,31 @@
 #!/usr/bin/env bash
-printf '##### Start installing OMEGA #####\n'
-printf '##### Deleting old versions #####\n'
+printf '##### Установка сервиса ОМЕГА #####\n'
+printf '\n##### Удаление старой версии #####\n'
 . ~/.bashrc
 #pyenv uninstall 3.9.10
 #export PGPASSWORD=omega1q2w &&
 #psql -d omega_db -U omega_user -f Omega/dropAllTables.sql &&
 #unset PGPASSWORD
-sudo systemctl stop omega
-PGPASSWORD=omega1q2w dropdb -U omega_user --if-exists -w omega_db
-sudo rm /lib/systemd/system/omega.service
-sudo rm -rf ~/.pyenv
-sudo rm ~/Desktop/run.sh
-sudo rm ~/Desktop/shortcut.desktop
-sudo rm -rf ~/Omega
-sudo rm -rf ~/admConsole
+sudo systemctl stop omega > ~/install_log.txt 2>&1
+PGPASSWORD=omega1q2w dropdb -U omega_user --if-exists -w omega_db >> ~/install_log.txt 2>&1
+sudo rm /lib/systemd/system/omega.service >> ~/install_log.txt 2>&1
+sudo rm -rf ~/.pyenv >> ~/install_log.txt 2>&1
+sudo rm ~/Desktop/run.sh >> ~/install_log.txt 2>&1
+sudo rm ~/Desktop/shortcut.desktop >> ~/install_log.txt 2>&1
+sudo rm -rf ~/Omega >> ~/install_log.txt 2>&1
+sudo rm -rf ~/admConsole >> ~/install_log.txt 2>&1
 sed -i.bak '/omega start/,/stop omega/d' ~/.bashrc
+printf '\n##### ----------------------- #####\n'
 printf '\n##### UPDATE packets #####'
 printf '\n##### It may take a long time!! #####'
 printf '\n##### Please wait! #####\n\n'
-sudo systemctl start ntp > ~/install_log.txt
-sudo systemctl enable ntp >> ~/install_log.txt
-sudo systemctl status ntp >> ~/install_log.txt
+sudo systemctl start ntp >> ~/install_log.txt 2>&1
+sudo systemctl enable ntp >> ~/install_log.txt 2>&1
+sudo systemctl status ntp >> ~/install_log.txt 2>&1
 date
-sudo apt-get update >> ~/install_log.txt &&
-sudo apt-get -y install openssh-server >> ~/install_log.txt &&
-sudo apt-get -y install postgresql >> ~/install_log.txt
+sudo apt-get update >> ~/install_log.txt 2>&1 &&
+sudo apt-get -y install openssh-server >> ~/install_log.txt 2>&1 &&
+sudo apt-get -y install postgresql >> ~/install_log.txt 2>&1
 if [[ $? == 0 ]]
   then printf '\n##### Update packets done! ######\n'
   else printf '\n##### Error with updating packets #####\n'
