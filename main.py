@@ -118,11 +118,11 @@ def add_users(users_list):
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
     for user in users_list:
-        is_dispatcher, enabled_ind = 1 if user["userType"] == 15 else 0, \
-            1 if 0 in user["userRoles"] else 0
-        db_insert_user = """insert or replace into Users(id, login, Display_name, is_dispatcher, en_ind)
-        Values (?, ?, ?, ?, ?)"""
-        user_data = user['id'], user['login'], user['displayName'], is_dispatcher, enabled_ind
+        is_dispatcher, enabled_ind, en_del_chats = 1 if user["userType"] == 15 else 0, \
+            1 if 0 in user["userRoles"] else 0, 1 if 1 in user['userRoles'] else 0
+        db_insert_user = """insert or replace into Users(id, login, Display_name, is_dispatcher, en_ind, en_del_chats)
+        Values (?, ?, ?, ?, ?, ?)"""
+        user_data = user['id'], user['login'], user['displayName'], is_dispatcher, enabled_ind, en_del_chats
         cur.execute(db_insert_user, user_data)
     con.commit()
     con.close()
@@ -155,16 +155,16 @@ def add_user_in_groups(users_list):
     con.close()
 
 
-def add_groups_to_user_after_apply(groups_for_user_dict):
-    con = sqlite3.connect('adm.db')
-    cur = con.cursor()
-    for user_id in groups_for_user_dict['UserIds']:
-        for group_id in groups_for_user_dict['GroupIds']:
-            db_insert_group_for_user = "insert or replace into Users_in_Groups(user_id, group_id) Values " \
-                                       "('" + user_id + "', '" + group_id + "')"
-            cur.execute(db_insert_group_for_user)
-    con.commit()
-    con.close()
+# def add_groups_to_user_after_apply(groups_for_user_dict):
+#     con = sqlite3.connect('adm.db')
+#     cur = con.cursor()
+#     for user_id in groups_for_user_dict['UserIds']:
+#         for group_id in groups_for_user_dict['GroupIds']:
+#             db_insert_group_for_user = "insert or replace into Users_in_Groups(user_id, group_id) Values " \
+#                                        "('" + user_id + "', '" + group_id + "')"
+#             cur.execute(db_insert_group_for_user)
+#     con.commit()
+#     con.close()
 
 
 def add_del_groups_to_user_after_apply(groups_for_user_dict):
@@ -185,16 +185,16 @@ def add_del_groups_to_user_after_apply(groups_for_user_dict):
     con.close()
 
 
-def add_users_to_group_after_apply(users_for_group_dict):
-    con = sqlite3.connect('adm.db')
-    cur = con.cursor()
-    for group_id in users_for_group_dict['GroupIds']:
-        for user_id in users_for_group_dict['UserIds']:
-            db_insert_user_for_group = "insert or replace into Users_in_Groups(user_id, group_id) Values " \
-                                       "('" + user_id + "', '" + group_id + "')"
-            cur.execute(db_insert_user_for_group)
-    con.commit()
-    con.close()
+# def add_users_to_group_after_apply(users_for_group_dict):
+#     con = sqlite3.connect('adm.db')
+#     cur = con.cursor()
+#     for group_id in users_for_group_dict['GroupIds']:
+#         for user_id in users_for_group_dict['UserIds']:
+#             db_insert_user_for_group = "insert or replace into Users_in_Groups(user_id, group_id) Values " \
+#                                        "('" + user_id + "', '" + group_id + "')"
+#             cur.execute(db_insert_user_for_group)
+#     con.commit()
+#     con.close()
 
 
 def add_del_users_to_group_after_apply(users_for_group_dict):
@@ -214,16 +214,16 @@ def add_del_users_to_group_after_apply(users_for_group_dict):
     con.close()
 
 
-def del_groups_to_user_after_apply(groups_for_user_dict):
-    con = sqlite3.connect('adm.db')
-    cur = con.cursor()
-    for user_id in groups_for_user_dict['UserIds']:
-        for group_id in groups_for_user_dict['GroupIds']:
-            db_delete_group_for_user = "delete from Users_in_Groups where user_id = '" + user_id + \
-                                       "' and  group_id = '" + group_id + "'"
-            cur.execute(db_delete_group_for_user)
-    con.commit()
-    con.close()
+# def del_groups_to_user_after_apply(groups_for_user_dict):
+#     con = sqlite3.connect('adm.db')
+#     cur = con.cursor()
+#     for user_id in groups_for_user_dict['UserIds']:
+#         for group_id in groups_for_user_dict['GroupIds']:
+#             db_delete_group_for_user = "delete from Users_in_Groups where user_id = '" + user_id + \
+#                                        "' and  group_id = '" + group_id + "'"
+#             cur.execute(db_delete_group_for_user)
+#     con.commit()
+#     con.close()
 
 
 def del_users_in_groups_after_delete_group(del_group_id):
@@ -244,16 +244,16 @@ def del_users_in_groups_after_delete_user(del_user_id):
     con.close()
 
 
-def del_users_to_groups_after_apply(users_for_group_dict):
-    con = sqlite3.connect('adm.db')
-    cur = con.cursor()
-    for group_id in users_for_group_dict['GroupIds']:
-        for user_id in users_for_group_dict['UserIds']:
-            db_delete_user_for_group = "delete from Users_in_Groups where user_id = '" + user_id + \
-                                       "' and  group_id = '" + group_id + "'"
-            cur.execute(db_delete_user_for_group)
-    con.commit()
-    con.close()
+# def del_users_to_groups_after_apply(users_for_group_dict):
+#     con = sqlite3.connect('adm.db')
+#     cur = con.cursor()
+#     for group_id in users_for_group_dict['GroupIds']:
+#         for user_id in users_for_group_dict['UserIds']:
+#             db_delete_user_for_group = "delete from Users_in_Groups where user_id = '" + user_id + \
+#                                        "' and  group_id = '" + group_id + "'"
+#             cur.execute(db_delete_user_for_group)
+#     con.commit()
+#     con.close()
 
 
 def drop_db(table):
@@ -300,7 +300,8 @@ def get_users_from_db() -> list[dict]:
                           'id': user[0],
                           'is_dispatcher': user[4],
                           'is_blocked': user[6],
-                          'en_ind': user[7]}
+                          'en_ind': user[7],
+                          'en_del_chats': user[8]}
         users_for_table.append(user_for_table)
     # print('---')
     con.close()
@@ -677,7 +678,8 @@ def make_login_window():
         ip = ''
     print(ip)
     layout_login = [[sg.Push(background_color='white'), sg.Text("Адрес сервера", background_color='white'),
-                     sg.Input(default_text="127.0.0.1", key="ip")],
+                     # sg.Input(default_text="127.0.0.1", key="ip")],
+                     sg.Input(default_text="10.1.4.78", key="ip")],
                     [sg.Push(background_color='white'), sg.Text("Пароль", background_color='white'), sg.Input(
                         focus=True,
                         default_text='qwerty',
@@ -832,6 +834,11 @@ def make_modify_user_window(user: dict):
                      default=user['en_ind'],
                      enable_events=True,
                      key='modifyUserIndCallEn'), sg.Push()],
+        [sg.Checkbox('Разрешить удалять переписку в чатах',
+                     default=user['en_del_chats'],
+                     disabled=False if user['is_dispatcher'] else True,
+                     enable_events=True,
+                     key='modifyUserAllowDelChats'), sg.Push()],
         [sg.Push()],
         [sg.Checkbox('Диспетчер',
                      default=user['is_dispatcher'],
@@ -841,6 +848,7 @@ def make_modify_user_window(user: dict):
         [sg.Checkbox('Заблокирован',
                      default=user['is_blocked'],
                      enable_events=True,
+                     disabled=True,
                      key='modifyUserBlock'), sg.Push()],
         [sg.Push(), sg.Ok(button_text='Изменить', key='modifyUserButton')]
     ]
@@ -1516,6 +1524,7 @@ if __name__ == '__main__':
                                     if filter_status:
                                         user_to_change = filtered_users_list_of_dict[values['-users-'][0]]
                                     else:
+                                        # users_from_db = get_users_from_db()
                                         user_to_change = users_from_db[values['-users-'][0]]
                                     window_modify_user = make_modify_user_window(user_to_change)
                                     window_modify_user.Element('UserModifyLogin').SetFocus()
@@ -1543,30 +1552,32 @@ if __name__ == '__main__':
                                                 password_clear = True
                                         elif ev_modify_user == 'modifyUserButton':
                                             # modify_user_timeout, \
-                                            modify_user_login, \
-                                                modify_user_name, \
-                                                modify_user_password, \
-                                                modify_user_en_ind, \
-                                                modify_user_is_disp, \
-                                                modify_user_is_blocked = val_modify_user.values()
+                                            # modify_user_login, \
+                                            #     modify_user_name, \
+                                            #     modify_user_password, \
+                                            #     modify_user_en_ind, \
+                                            #     # modify_user_en_del_chats, \
+                                            #     modify_user_is_disp, \
+                                            #     modify_user_is_blocked = val_modify_user.values()
                                             modify_user_dict = {}
                                             modify_name = False
                                             modify_password = False
                                             modify_is_en_ind = False
                                             modify_is_disp = False
                                             modify_is_blocked = False
+                                            modify_en_del_chats = False
                                             modify_user_dict['id'] = user_to_change['id']
-                                            modify_user_dict['login'] = modify_user_login
-                                            if modify_user_name != user_to_change['name']:
-                                                modify_user_dict['displayName'] = modify_user_name
+                                            modify_user_dict['login'] = val_modify_user['UserModifyLogin']
+                                            if val_modify_user['UserModifyName'] != user_to_change['name']:
+                                                modify_user_dict['displayName'] = val_modify_user['UserModifyName']
                                                 modify_name = True
-                                            if modify_user_password:
-                                                modify_user_dict['password'] = modify_user_password
+                                            if val_modify_user['userModifyPassword']:
+                                                modify_user_dict['password'] = val_modify_user['userModifyPassword']
                                                 modify_password = True
-                                            if modify_user_en_ind != user_to_change['en_ind']:
+                                            if val_modify_user['modifyUserIndCallEn'] != user_to_change['en_ind']:
                                                 modify_is_en_ind = True
                                                 user_en_ind_dict = {'userIds': [user_to_change['id']], 'roles': [0]}
-                                                if modify_user_en_ind:
+                                                if val_modify_user['modifyUserIndCallEn']:
                                                     res_modify_user_en_ind = requests.post(BASE_URL +
                                                                                           'addToRole',
                                                                                            json=user_en_ind_dict,
@@ -1577,14 +1588,14 @@ if __name__ == '__main__':
                                                                                            json=user_en_ind_dict,
                                                                                            headers=HEADER_dict)
                                                 if res_modify_user_en_ind.status_code == 200:
-                                                    if modify_user_en_ind:
-                                                        logging.info(f'Пользователю {modify_user_login} '
+                                                    if val_modify_user['modifyUserIndCallEn']:
+                                                        logging.info(f"'Пользователю {val_modify_user['UserModifyLogin']} "
                                                                      f'разрешено совершать индивидуальные вызовы')
                                                     else:
-                                                        logging.info(f'Пользователю {modify_user_login} '
+                                                        logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
                                                                      f'запрещено совершать индивидуальные вызовы')
                                                 else:
-                                                    if modify_user_en_ind:
+                                                    if val_modify_user['modifyUserIndCallEn']:
                                                         logging.error(
                                                             f'Ошибка при разрешении индивидуальных вызовов - '
                                                             f'{res_modify_user_en_ind.status_code}')
@@ -1592,10 +1603,41 @@ if __name__ == '__main__':
                                                         logging.error(
                                                             f'Ошибка при запрещении индивидуальных вызовов - '
                                                             f'{res_modify_user_en_ind.status_code}')
-                                            if modify_user_is_disp != user_to_change['is_dispatcher']:
+                                            if val_modify_user['modifyUserAllowDelChats'] != user_to_change['en_del_chats']:
+                                                modify_en_del_chats = True
+                                                user_en_del_chats = {'userIds': [user_to_change['id']], 'roles': [1]}
+                                                if val_modify_user['modifyUserAllowDelChats']:
+                                                    res_modify_user_en_del_chats = requests.post(BASE_URL +
+                                                                                          'addToRole',
+                                                                                           json=user_en_del_chats,
+                                                                                           headers=HEADER_dict)
+                                                else:
+                                                    res_modify_user_en_del_chats = requests.post(BASE_URL +
+                                                                                           'removeFromRole',
+                                                                                           json=user_en_del_chats,
+                                                                                           headers=HEADER_dict)
+                                                if res_modify_user_en_del_chats.status_code == 200:
+                                                    if val_modify_user['modifyUserAllowDelChats']:
+                                                        logging.info(f"Пользователю "
+                                                                     f"{val_modify_user['UserModifyLogin']}"
+                                                                     f' разрешено удалять чаты групп')
+                                                    else:
+                                                        logging.info(f"Пользователю "
+                                                                     f"{val_modify_user['UserModifyLogin']}"
+                                                                     f' запрещено удалять чаты групп')
+                                                else:
+                                                    if val_modify_user['modifyUserAllowDelChats']:
+                                                        logging.error(
+                                                            f'Ошибка при разрешении удаления чатов групп - '
+                                                            f'{res_modify_user_en_del_chats.status_code}')
+                                                    else:
+                                                        logging.error(
+                                                            f'Ошибка при запрещении удаления чатов групп - '
+                                                            f'{res_modify_user_en_del_chats.status_code}')
+                                            if val_modify_user['modifyUserDispatcher'] != user_to_change['is_dispatcher']:
                                                 modify_is_disp = True
                                                 user_disp_dict = {'id': user_to_change['id']}
-                                                if modify_user_is_disp:
+                                                if val_modify_user['modifyUserDispatcher']:
                                                     res_modify_user_is_disp = requests.post(BASE_URL +
                                                                                             'addToDispatchers',
                                                                                             json=user_disp_dict,
@@ -1606,14 +1648,14 @@ if __name__ == '__main__':
                                                                                             json=user_disp_dict,
                                                                                             headers=HEADER_dict)
                                                 if res_modify_user_is_disp.status_code == 200:
-                                                    if modify_user_is_disp:
-                                                        logging.info(f'Пользователь {modify_user_login} '
+                                                    if val_modify_user['modifyUserDispatcher']:
+                                                        logging.info(f"Пользователь {val_modify_user['UserModifyLogin']} "
                                                                      f'стал диспетчером')
                                                     else:
-                                                        logging.info(f'Пользователь {modify_user_login} '
+                                                        logging.info(f"Пользователь {val_modify_user['UserModifyLogin']} "
                                                                      f'перестал быть диспетчером')
                                                 else:
-                                                    if modify_user_is_disp:
+                                                    if val_modify_user['modifyUserDispatcher']:
                                                         logging.error(
                                                             f'Ошибка при добавлении пользователя в диспетчеры - '
                                                             f'{res_modify_user_is_disp.status_code}')
@@ -1621,10 +1663,10 @@ if __name__ == '__main__':
                                                         logging.error(
                                                             f'Ошибка при удалении пользователя из диспетчеров - '
                                                             f'{res_modify_user_is_disp.status_code}')
-                                            if modify_user_is_blocked != user_to_change['is_blocked']:
+                                            if val_modify_user['modifyUserBlock'] != user_to_change['is_blocked']:
                                                 modify_is_blocked = True
                                                 user_block_dict = {'id': user_to_change['id']}
-                                                block_user(user_to_change['id'], modify_user_is_blocked)
+                                                block_user(user_to_change['id'], val_modify_user['modifyUserBlock'])
                                                 users_from_db = get_users_from_db()
                                                 users_from_db.sort(key=lambda i: i['login'])
                                                 user_list, treedata_update_user = get_user_list(users_from_db)
@@ -1642,7 +1684,7 @@ if __name__ == '__main__':
                                                 # window_modify_user.close()
                                                 # sg.popup("Пользователь изменён!", title='Инфо', icon=ICON_BASE_64,
                                                 #          no_titlebar=True, background_color='lightgray')
-                                                # if modify_user_is_blocked:
+                                                # if val_modify_user['modifyUserBlock']:
                                                 #     res_modify_user_is_blocked = requests.post(BASE_URL +
                                                 #                                             'addToBlock',
                                                 #                                             json=user_block_dict,
@@ -1653,14 +1695,14 @@ if __name__ == '__main__':
                                                 #                                             json=user_block_dict,
                                                 #                                             headers=HEADER_dict)
                                                 # if res_modify_user_is_blocked.status_code == 200:
-                                                #     if modify_user_is_blocked:
-                                                #         logging.info(f'Пользователь {modify_user_login} '
+                                                #     if val_modify_user['modifyUserBlock']:
+                                                #         logging.info(f'Пользователь {val_modify_user['UserModifyLogin']} '
                                                 #                      f'ЗАБЛОКИРОВАН')
                                                 #     else:
-                                                #         logging.info(f'Пользователь {modify_user_login} '
+                                                #         logging.info(f'Пользователь {val_modify_user['UserModifyLogin']} '
                                                 #                      f'РАЗБЛОКИРОВАН')
                                                 # else:
-                                                #     if modify_user_is_blocked:
+                                                #     if val_modify_user['modifyUserBlock']:
                                                 #         logging.error(
                                                 #             f'Ошибка при блокировании пользователя - '
                                                 #             f'{res_modify_user_is_blocked.status_code}')
@@ -1675,15 +1717,16 @@ if __name__ == '__main__':
                                                 # sg.cprint(f'Изменяем пользователя - {res_modify_user.status_code}')
                                                 if res_modify_user.status_code == 200:
                                                     if modify_name:
-                                                        logging.info(f'Пользователю {modify_user_login} изменили имя')
+                                                        logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} изменили имя")
                                                     if modify_password:
-                                                        logging.info(f'Пользователю {modify_user_login} '
+                                                        logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
                                                                      f'изменили пароль')
                                                 else:
                                                     logging.error(f'Ошибка изменения пользователя - '
                                                                   f'{res_modify_user.status_code}')
                                             if modify_is_disp or modify_name or modify_password \
                                                     or modify_is_en_ind \
+                                                    or modify_en_del_chats \
                                                     or modify_is_blocked:
                                                 if modify_is_blocked:
                                                     pass

@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS "Users" (
 	"is_admin"	INTEGER DEFAULT 0,
 	"is_blocked"	INTEGER DEFAULT 0,
 	"en_ind"	INTEGER DEFAULT 1,
+	"en_del_chats" INTEGER DEFAULT 0,
 	PRIMARY KEY("id")
 );
 CREATE TABLE IF NOT EXISTS "Groups" (
