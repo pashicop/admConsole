@@ -864,7 +864,7 @@ def make_modify_group_window(group: dict):
         [sg.Push(), sg.Text('Описание Группы'),
          sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), default_text=group['desc'],
                       key='GroupModifyDesc')],
-        [sg.Push(), sg.Checkbox('Экстренная', default=group['is_emergency'], key='GroupModifyEmergency')],
+        [sg.Button(button_text='Очистить чат', key='modifyGroupDelChat'), sg.Push(), sg.Checkbox('Экстренная', default=group['is_emergency'], key='GroupModifyEmergency')],
         [sg.Push(), sg.Checkbox('Заблокировать', text_color='red', default=group['is_disabled'],
                                 key='GroupModifyBlocked')],
         [sg.Push(), sg.Ok(button_text='Изменить', key='modifyGroupButton')]
@@ -1776,6 +1776,24 @@ if __name__ == '__main__':
                                     if ev_modify_group == sg.WIN_CLOSED or ev_modify_group == 'Exit':
                                         # print('Закрыл окно изменения группы')
                                         break
+                                    if ev_modify_group == 'modifyGroupDelChat':
+                                        modify_froup_del_chat_dict = {}
+                                        modify_froup_del_chat_dict['GroupId'] = group_to_change['id']
+                                        res_modify_group_del_chat = requests.post(BASE_URL + 'clearGroupMessages',
+                                                                         json=modify_froup_del_chat_dict,
+                                                                         headers=HEADER_dict)
+                                        # print(res_modify_group.status_code)
+                                        if res_modify_group_del_chat.status_code == 200:
+                                            logging.info(f"Группу {group_to_change['name']} изменили")
+                                            sg.popup("Группа почищена!", title='Инфо', icon=ICON_BASE_64,
+                                                     no_titlebar=True, background_color='lightgray')
+                                            window_modify_group.close()
+                                        else:
+                                            logging.error(f'ошибка изменения группы - '
+                                                          f'{res_modify_group_del_chat.status_code}')
+                                            sg.popup("Ошибка при очистке групп!", title='Инфо', icon=ICON_BASE_64,
+                                                     no_titlebar=True, background_color='lightgray')
+                                            window_modify_group.close()
                                     if ev_modify_group == 'modifyGroupButton':
                                         modify_group_name = val_modify_group['GroupModifyName']
                                         modify_group_desc = val_modify_group['GroupModifyDesc']
