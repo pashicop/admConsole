@@ -20,6 +20,7 @@ from PIL import Image, ImageDraw
 import ipaddress
 import logging
 import sys
+from enum import Enum
 
 # import netifaces
 # from pystray import MenuItem as item, Menu as menu
@@ -35,6 +36,7 @@ ICON_HIDE_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs
 ICON_CHECK_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAsQAAALEBxi1JjQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAASfSURBVFiFzZdfbBRFHMc/M7t3Vwq09qCAxPKnJbYFKqSatCgEMdGgCKT+xagxkGCID0bA+CT4NyEN/iHBF6I+qPFBTCu+8IKQGMSWllJLQFqsEdoCd71ry9Frr3d7N+PD9Y52uS1XbaLfZLOzs7/5fT87szs7A/+xxCRipwOPAZVAEZALRIA+4BzQCLRPNSDA48IQR4UUMUBPdEhTdgC7gRlZ5K0AKibqgUphigM6rtcACCkoKPfiLZuFp8CDJz8HZSmioSihzgH6zgeJhqIACEMEdULvBr52yL0BqAOGnAC2CSEOaa1Nd56bJU+Xcs/DRbjz3I60OqHpbfXTWXeJgfZ+hCES1furZzbsaog4mHuA/ZkAaoG3ABY/WULpC+WYuaajcSb1tvhACOZUzm1Qluupo8997xu9tR74AcgBDgA77QBvAJ9Kl6Rix0qKHlkwKWMHdZhQfaTmSLXdHGDsoz2K4GOAyl0PMK96/lSYA5ReOdlzHFhqNweQo2e3dMkv0MjSLeVTaU6g1U/bwdbKTOZjAXYoSy2YuTCPJc/eO6XmzfuaUFaCRU8UR2vqaz60x0hACkPuASh/eRlCTGZuys588cYSlm+/zxOTaqc9TgKrdELNnj5/BnPun5sxWd+FIG2ftRK9MZKVeW+Lj+Z9p9Pmy7ZVJM202JIJYDPAvKq7HRNeO3mV7uNXaNhz6o4QvS0+ztQ2oSxF8aZb5gAaSjbU1ywfByBMYx1A4Yo5jknLXlpKfsldhHsGaXj7F0b6M0MEWv2cqW1GWYrFG0tYurVi3P3ojSh/1nVsHweAVsUA0wqnOQK4ZriofvehJMTVMI17b4ewj/nYJ0/p/OdttH/7++tA1S0ARR6Ax5vjCJAJomHPLYhszAF0XKeK89IA6SptD88MUbX3QfIW5TN0LUzj3lN0n+hKv3D2MbcrEUukiioNICQhwHFc7XLnuVn1werRnhik7eBZxzG3a2Qg7XEjDYCgEyASGM4KAMYPBzBht6ektSYSSP8YO1MFU8f1CaAq0OqncKXzl5AJYtX7q7l5JYS3fNYd4wfa+4kPW0iX7FKWup6ql8CPAL7TPsfGTjJzzazMAfxNSU9lqe/G1kugSZrSN+wfwtd4PVPbfy0rbNH1U1fqst4OoFVcvQNw8ZsL6IRiqtVZdwkrHEOY4gTJxWtaxui5Tbrki7FQ1KvjmtkrCqfMvP9iH+cPtaG11iieAcaNdep3HFeW2iqESHTWX+Lqz91TYh4JDNNS24SKK9B8ArTaY4wx5S6gG9jsb/ZhmEbWL1gm3bwc4vR7DYz0jyAMcRzNK2SY7gzb9W9IQLE2eC4gIsFhvGVeDE/2i1Kd0HQdu8zZj5qJ3YwhTKNRJ9QmkpuY2+S0+nheSPGVVtpj5poUb15C0boFTCvMdTSOj8TxN/v443AH4Z7BZKXkSxSvATGndhMtf8qFIfbrhN6QqsgvzqegbBY5BTl4CjzEh+NE+iKEewYJnguirORcL13yL2WpN7F9cv9Ua6SUh4UhhphoayZICFP8CrwKuLJNPpkFoBtYS3JzupDk5jQKBIALwDEgOIl8/w/9DR5k79YG7eHTAAAAAElFTkSuQmCC'
 version = '1.0'
 
+role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop')
 
 # folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
 # file_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABU0lEQVQ4y52TzStEURiHn/ecc6XG54JSdlMkNhYWsiILS0lsJaUsLW2Mv8CfIDtr2VtbY4GUEvmIZnKbZsY977Uwt2HcyW1+dTZvt6fn9557BGB+aaNQKBR2ifkbgWR+cX13ubO1svz++niVTA1ArDHDg91UahHFsMxbKWycYsjze4muTsP64vT43v7hSf/A0FgdjQPQWAmco68nB+T+SFSqNUQgcIbN1bn8Z3RwvL22MAvcu8TACFgrpMVZ4aUYcn77BMDkxGgemAGOHIBXxRjBWZMKoCPA2h6qEUSRR2MF6GxUUMUaIUgBCNTnAcm3H2G5YQfgvccYIXAtDH7FoKq/AaqKlbrBj2trFVXfBPAea4SOIIsBeN9kkCwxsNkAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK0xAAAAAElFTkSuQmCC'
@@ -118,11 +120,14 @@ def add_users(users_list):
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
     for user in users_list:
-        is_dispatcher, enabled_ind, en_del_chats = 1 if user["userType"] == 15 else 0, \
-            1 if 0 in user["userRoles"] else 0, 1 if 1 in user['userRoles'] else 0
-        db_insert_user = """insert or replace into Users(id, login, Display_name, is_dispatcher, en_ind, en_del_chats)
-        Values (?, ?, ?, ?, ?, ?)"""
-        user_data = user['id'], user['login'], user['displayName'], is_dispatcher, enabled_ind, en_del_chats
+        is_dispatcher, enabled_ind, en_del_chats, en_partial_drop = 1 if user["userType"] == 15 else 0, \
+            1 if role.allow_ind_call.value in user["userRoles"] else 0, \
+            1 if role.allow_delete_chats.value in user['userRoles'] else 0, \
+            1 if role.allow_partial_drop.value in user['userRoles'] else 0
+        db_insert_user = """insert or replace into Users(id, login, Display_name, is_dispatcher, en_ind, en_del_chats, en_partial_drop)
+        Values (?, ?, ?, ?, ?, ?, ?)"""
+        user_data = user['id'], user['login'], user['displayName'], \
+            is_dispatcher, enabled_ind, en_del_chats, en_partial_drop
         cur.execute(db_insert_user, user_data)
     con.commit()
     con.close()
@@ -301,7 +306,8 @@ def get_users_from_db() -> list[dict]:
                           'is_dispatcher': user[4],
                           'is_blocked': user[6],
                           'en_ind': user[7],
-                          'en_del_chats': user[8]}
+                          'en_del_chats': user[8],
+                          'en_partial_drop': user[9]}
         users_for_table.append(user_for_table)
     # print('---')
     con.close()
@@ -839,6 +845,11 @@ def make_modify_user_window(user: dict):
                      disabled=False if user['is_dispatcher'] else True,
                      enable_events=True,
                      key='modifyUserAllowDelChats'), sg.Push()],
+        [sg.Checkbox('Разрешить удалять данные БД',
+                     default=user['en_partial_drop'],
+                     disabled=False if user['is_dispatcher'] else True,
+                     enable_events=True,
+                     key='modifyUserAllowPartialDrop'), sg.Push()],
         [sg.Push()],
         [sg.Checkbox('Диспетчер',
                      default=user['is_dispatcher'],
@@ -1220,6 +1231,20 @@ def enable_input(win):
     win.DisableClose = False
 
 
+def change_role(role: Enum, set: int):
+    user_dict = {'userIds': [user_to_change['id']], 'roles': [role.value]}
+    if set:
+        res_modify_user_role = requests.post(BASE_URL +
+                                               'addToRole',
+                                               json=user_dict,
+                                               headers=HEADER_dict)
+    else:
+        res_modify_user_role = requests.post(BASE_URL +
+                                               'removeFromRole',
+                                               json=user_dict,
+                                               headers=HEADER_dict)
+    return res_modify_user_role
+
 if __name__ == '__main__':
     # print(sg.theme_global())
     # print(sg.theme_list())
@@ -1531,7 +1556,7 @@ if __name__ == '__main__':
                                     password_clear = False
                                     while True:
                                         ev_modify_user, val_modify_user = window_modify_user.Read()
-                                        # print(ev_modify_user, val_modify_user)
+                                        print(ev_modify_user, val_modify_user)
                                         # cur_val = val_modify_user.copy()
                                         # print(f'cur_val = {cur_val}')
                                         if ev_modify_user == sg.WIN_CLOSED or ev_modify_user == 'Exit':
@@ -1566,6 +1591,7 @@ if __name__ == '__main__':
                                             modify_is_disp = False
                                             modify_is_blocked = False
                                             modify_en_del_chats = False
+                                            modify_en_partial_drop = False
                                             modify_user_dict['id'] = user_to_change['id']
                                             modify_user_dict['login'] = val_modify_user['UserModifyLogin']
                                             if val_modify_user['UserModifyName'] != user_to_change['name']:
@@ -1576,17 +1602,7 @@ if __name__ == '__main__':
                                                 modify_password = True
                                             if val_modify_user['modifyUserIndCallEn'] != user_to_change['en_ind']:
                                                 modify_is_en_ind = True
-                                                user_en_ind_dict = {'userIds': [user_to_change['id']], 'roles': [0]}
-                                                if val_modify_user['modifyUserIndCallEn']:
-                                                    res_modify_user_en_ind = requests.post(BASE_URL +
-                                                                                          'addToRole',
-                                                                                           json=user_en_ind_dict,
-                                                                                           headers=HEADER_dict)
-                                                else:
-                                                    res_modify_user_en_ind = requests.post(BASE_URL +
-                                                                                           'removeFromRole',
-                                                                                           json=user_en_ind_dict,
-                                                                                           headers=HEADER_dict)
+                                                res_modify_user_en_ind = change_role(role.allow_ind_call, val_modify_user['modifyUserIndCallEn'])
                                                 if res_modify_user_en_ind.status_code == 200:
                                                     if val_modify_user['modifyUserIndCallEn']:
                                                         logging.info(f"'Пользователю {val_modify_user['UserModifyLogin']} "
@@ -1605,17 +1621,7 @@ if __name__ == '__main__':
                                                             f'{res_modify_user_en_ind.status_code}')
                                             if val_modify_user['modifyUserAllowDelChats'] != user_to_change['en_del_chats']:
                                                 modify_en_del_chats = True
-                                                user_en_del_chats = {'userIds': [user_to_change['id']], 'roles': [1]}
-                                                if val_modify_user['modifyUserAllowDelChats']:
-                                                    res_modify_user_en_del_chats = requests.post(BASE_URL +
-                                                                                          'addToRole',
-                                                                                           json=user_en_del_chats,
-                                                                                           headers=HEADER_dict)
-                                                else:
-                                                    res_modify_user_en_del_chats = requests.post(BASE_URL +
-                                                                                           'removeFromRole',
-                                                                                           json=user_en_del_chats,
-                                                                                           headers=HEADER_dict)
+                                                res_modify_user_en_del_chats = change_role(role.allow_delete_chats, val_modify_user['modifyUserAllowDelChats'])
                                                 if res_modify_user_en_del_chats.status_code == 200:
                                                     if val_modify_user['modifyUserAllowDelChats']:
                                                         logging.info(f"Пользователю "
@@ -1634,6 +1640,27 @@ if __name__ == '__main__':
                                                         logging.error(
                                                             f'Ошибка при запрещении удаления чатов групп - '
                                                             f'{res_modify_user_en_del_chats.status_code}')
+                                            if val_modify_user['modifyUserAllowPartialDrop'] != user_to_change['en_partial_drop']:
+                                                modify_en_partial_drop = True
+                                                res_modify_user_en_partial_drop = change_role(role.allow_partial_drop, val_modify_user['modifyUserAllowPartialDrop'])
+                                                if res_modify_user_en_partial_drop.status_code == 200:
+                                                    if val_modify_user['modifyUserAllowPartialDrop']:
+                                                        logging.info(f"Пользователю "
+                                                                     f"{val_modify_user['UserModifyLogin']}"
+                                                                     f' разрешено удалять данные БД')
+                                                    else:
+                                                        logging.info(f"Пользователю "
+                                                                     f"{val_modify_user['UserModifyLogin']}"
+                                                                     f' запрещено удалять данные БД')
+                                                else:
+                                                    if val_modify_user['modifyUserAllowDelChats']:
+                                                        logging.error(
+                                                            f'Ошибка при разрешении удаления данных БД - '
+                                                            f'{res_modify_user_en_partial_drop.status_code}')
+                                                    else:
+                                                        logging.error(
+                                                            f'Ошибка при запрещении удаления данных БД - '
+                                                            f'{res_modify_user_en_partial_drop.status_code}')
                                             if val_modify_user['modifyUserDispatcher'] != user_to_change['is_dispatcher']:
                                                 modify_is_disp = True
                                                 user_disp_dict = {'id': user_to_change['id']}
@@ -1727,6 +1754,7 @@ if __name__ == '__main__':
                                             if modify_is_disp or modify_name or modify_password \
                                                     or modify_is_en_ind \
                                                     or modify_en_del_chats \
+                                                    or modify_en_partial_drop \
                                                     or modify_is_blocked:
                                                 if modify_is_blocked:
                                                     pass
