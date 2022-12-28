@@ -579,7 +579,8 @@ def make_main_window(ip):
                                          )]], expand_y=True, expand_x=True),
 
         ],
-        [sg.Push(),
+        [sg.Graph(canvas_size=(110, 12), graph_bottom_left=(1, 1), graph_top_right=(108, 10), k='-free-space-'), sg.Text('', key='-free-space-perc-'),
+         sg.Push(),
          sg.Checkbox('Выбрать все группы', enable_events=True, key='-checkAllGroups-', default=False,
                      pad=[30, 0],
                      disabled=True),
@@ -1031,6 +1032,8 @@ def check_server(url_ping):
             status['online'] = res_dict['onlineUsersCount']
             status['db'] = res_dict['databaseVersion']
             status['last_state'] = True
+            status['freeSpace'] = res_dict['freeSpace']
+            status['spaceTotal'] = res_dict['spaceTotal']
             # print(status)
         else:
             print(f'Некорректный ответ {res_ping.status_code} от сервера {url_ping}')
@@ -1369,6 +1372,12 @@ if __name__ == '__main__':
                                         update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
                                                       + ', Версия БД: ' + str(dict_online["databaseVersion"])
                                         window['-StatusBar-'].update(update_text, background_color=status_bar_color)
+                                        graph:sg.Graph = window['-free-space-']
+                                        free_space = int(round((server_status['spaceTotal'] - server_status['freeSpace'])*100/server_status['spaceTotal'], 0))
+                                        graph.draw_rectangle(top_left=(0, 10), bottom_right=(100 - free_space, 0), fill_color='red', line_width=0)
+                                        graph.draw_rectangle(top_left=(100 - free_space, 10), bottom_right=(100, 0), fill_color='green', line_width=0)
+                                        upd_t = str(free_space) + '% свободного места на сервере'
+                                        window['-free-space-perc-'].update(upd_t)
                                     window['-Start-'].update(disabled=True)
                                     window['-Stop-'].update(disabled=False)
                                     if not server_status['run']:
