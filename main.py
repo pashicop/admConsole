@@ -1373,10 +1373,18 @@ if __name__ == '__main__':
                                                       + ', Версия БД: ' + str(dict_online["databaseVersion"])
                                         window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                         graph:sg.Graph = window['-free-space-']
-                                        free_space = int(round((server_status['spaceTotal'] - server_status['freeSpace'])*100/server_status['spaceTotal'], 0))
-                                        graph.draw_rectangle(top_left=(0, 10), bottom_right=(100 - free_space, 0), fill_color='red', line_width=0)
-                                        graph.draw_rectangle(top_left=(100 - free_space, 10), bottom_right=(100, 0), fill_color='green', line_width=0)
-                                        upd_t = str(free_space) + '% свободного места на сервере'
+                                        free_space_perc = round((server_status['spaceTotal'] - server_status['freeSpace']) * 100 / server_status['spaceTotal'], 1)
+                                        graph.draw_rectangle(top_left=(0, 10),
+                                                             bottom_right=(100 - int(free_space_perc), 0),
+                                                             fill_color='red',
+                                                             line_width=0)
+                                        graph.draw_rectangle(top_left=(100 - int(free_space_perc), 10),
+                                                             bottom_right=(100, 0),
+                                                             fill_color='green',
+                                                             line_width=0)
+                                        upd_t = str(free_space_perc) + '% (' \
+                                                + str(round(server_status['freeSpace']/1024/1024/1024, 1)) \
+                                                + 'Гб) свободного места на сервере'
                                         window['-free-space-perc-'].update(upd_t)
                                     window['-Start-'].update(disabled=True)
                                     window['-Stop-'].update(disabled=False)
