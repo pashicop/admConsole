@@ -852,14 +852,18 @@ def make_add_user_window():
         #                                                                           button_color='#ffffff',
         #                                                                           image_data=ICON_SHOW_BASE_64)],
         [sg.Frame('Тип', [[sg.Radio('Диспетчер', key='disp', group_id='u_type', enable_events=True)],
-                  [sg.Radio('Шлюз К500', key='gw', group_id='u_type', enable_events=True)],
+                  [sg.Radio('Концентратор К500', key='gw', group_id='u_type', enable_events=True)],
                   [sg.Radio('Администратор', key='adm', group_id='u_type', enable_events=True)]],
          size=(200, 120), pad=((0, 0), (10, 0)))],
         # [sg.Checkbox('Диспетчер', default=False, key='addUserDispatcher'), sg.Push()],
         [sg.Push(), sg.Button(button_text='Создать', key='addUserButton', disabled=True, disabled_button_color='gray')]
     ]
-    return sg.Window('Добавить пользователя', layout_add_user, icon=ICON_BASE_64, use_ttk_buttons=True,
-                     finalize=True, modal=True)
+    return sg.Window('Добавить пользователя', layout_add_user,
+                     icon=ICON_BASE_64,
+                     use_ttk_buttons=True,
+                     finalize=True,
+                     disable_minimize=True,
+                     modal=True)
 
 
 def make_modify_user_window(user: dict):
@@ -2332,14 +2336,15 @@ if __name__ == '__main__':
                                         # window_settings['-Progress-Bar-'].update_bar(counter)
                                         # sleep(1)
                             if event == '-AddUser-':
+                                """
+                                Новая модель с userType
+                                """
                                 window_add_user = make_add_user_window()
                                 window_add_user.Element('UserLogin').SetFocus()
                                 password_clear = False
                                 while True:
                                     ev_add_user, val_add_user = window_add_user.Read()
-                                    # print(ev_add_user, val_add_user)
                                     if ev_add_user == sg.WIN_CLOSED or ev_add_user == 'Exit':
-                                        # print('Закрыл окно добавления пользователя')
                                         break
                                     if ev_add_user == 'UserPassword':
                                         window_add_user['showPassword'].update(disabled=False)
@@ -2348,13 +2353,12 @@ if __name__ == '__main__':
                                         if password_clear:
                                             window_add_user['UserPassword'].update(password_char='*')
                                             window_add_user['showPassword'].update(image_data=ICON_SHOW_BASE_64)
-                                            window_add_user.Element('UserPassword').SetFocus()
                                             password_clear = False
                                         else:
                                             window_add_user['UserPassword'].update(password_char='')
                                             window_add_user['showPassword'].update(image_data=ICON_HIDE_BASE_64)
-                                            window_add_user.Element('UserPassword').SetFocus()
                                             password_clear = True
+                                        window_add_user.Element('UserPassword').SetFocus()
                                     if ev_add_user == 'addUserButton':
                                         if validate('add_user'):
                                             new_user_type = get_user_type('add_user')
@@ -2369,14 +2373,12 @@ if __name__ == '__main__':
                                                 if new_user_type == user_type['dispatcher']:
                                                     logging.info(f"Пользователь {val_add_user['UserLogin']} "
                                                                          f'стал диспетчером')
-                                                else:
-                                                    logging.error(
-                                                        f"Ошибка при добавлении пользователя {val_add_user['UserLogin']} "
-                                                        f'в диспетчеры - '
-                                                        f'{res_add_user.status_code}')
-                                                    sg.popup("Пользователь не стал диспетчером!", title='Инфо',
-                                                             icon=ICON_BASE_64,
-                                                             no_titlebar=True, background_color='lightgray')
+                                                elif new_user_type == user_type['box']:
+                                                    logging.info(f"Пользователь {val_add_user['UserLogin']} "
+                                                                 f'для концентратора К500')
+                                                elif new_user_type == user_type['admin']:
+                                                    logging.info(f"Пользователь {val_add_user['UserLogin']} "
+                                                                 f'стал администратором')
                                                 add_users(get_users_from_server())
                                                 users_from_db = get_users_from_db()
                                                 # users_from_db.sort(key=lambda i: i['login'])
