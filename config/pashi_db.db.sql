@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS "Users" (
 	"is_dispatcher"	INTEGER DEFAULT 0,
 	"is_admin"	INTEGER DEFAULT 0,
 	"is_blocked"	INTEGER DEFAULT 0,
+	"is_gw"	INTEGER DEFAULT 0,
+	"previous_type"	INTEGER DEFAULT 0,
 	"en_ind"	INTEGER DEFAULT 1,
 	"en_del_chats" INTEGER DEFAULT 0,
 	"en_partial_drop" INTEGER DEFAULT 0,
