@@ -129,9 +129,9 @@ def add_users(users_list):
     for user in users_list:
         is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, en_del_chats, \
             en_partial_drop, priority = 1 if user["userType"] == 15 or user['previousType'] == 15 else 0, \
-            1 if user["userType"] == 30 else 0, \
+            1 if user["userType"] == 30 or user['previousType'] == 30 else 0, \
             1 if user["userType"] == -1 else 0, \
-            1 if user["userType"] == 1 else 0, \
+            1 if user["userType"] == 1 or user['previousType'] == 1 else 0, \
             user['previousType'], \
             1 if role.allow_ind_call.value in user["userRoles"] else 0, \
             1 if role.allow_delete_chats.value in user['userRoles'] else 0, \
