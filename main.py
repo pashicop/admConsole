@@ -31,6 +31,18 @@ MIN_LEN_PASSWORD = 6
 MAX_LEN_PASSWORD = 20
 MAX_LEN_GROUPNAME = 20
 MAX_LEN_GROUPDESC = 100
+MIN_CALL_TM = 10
+MAX_CALL_TM = 120
+MIN_CALL_END_TM = 1
+MAX_CALL_END_TM = 10
+MIN_TONAL_CALL_END_TM = 3
+MAX_TONAL_CALL_END_TM = 10
+MIN_AMB_LIST_TM = 3
+MAX_AMB_LIST_TM = 30
+MIN_AUDIO_PORT = 1025
+MAX_AUDIO_PORT= 65535
+MIN_PORTS = 20
+MAX_PORTS= 1000
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
 version = '1.0.4 СТИС'
@@ -599,13 +611,7 @@ def make_main_window(ip):
                                          )]], expand_y=True, expand_x=True),
 
         ],
-        [sg.Graph(canvas_size=(110, 12), graph_bottom_left=(1, 1), graph_top_right=(108, 10), k='-free-space-'),
-         sg.Text('', size=40, key='-free-space-perc-'),
-         sg.Button('Очистить частично', key='-partially-dropDB-', disabled=False,
-                   disabled_button_color='gray', pad=((0, 10), (5, 10))),
-         sg.Button('Очистить', key='-dropDB-', disabled=False,
-                   disabled_button_color='gray', pad=((0, 10), (5, 10))),
-         sg.Push(),
+        [         sg.Push(),
          sg.Checkbox('Выбрать все группы', enable_events=True, key='-checkAllGroups-', default=False,
                      pad=[30, 0],
                      disabled=True),
@@ -671,10 +677,26 @@ def make_main_window(ip):
     layout = [[sg.Menu([
         ['Сервер', ['!Установить лицензию...', '!Настройки']],
         ['Помощь', 'О программе'], ], key='-Menu-')],
-        [sg.Frame('Сервер', [[sg.Push(), sg.Button('Старт', key='-Start-',
-                                                   disabled_button_color='gray', pad=((0, 20), 0)),
+        [sg.Frame('Сервер', [[sg.Push(),
+                              sg.Button('Старт', key='-Start-',
+                                        disabled_button_color='gray',
+                                        size=8,
+                                        pad=((20, 10), (5, 10))),
                               sg.Button('Стоп', key='-Stop-',
-                                        disabled_button_color='gray'), sg.Push()]], size=(186, 60), )],
+                                        disabled_button_color='gray',
+                                        size=8,
+                                        pad=((10, 20), (5, 10))),
+                              sg.Push()]], size=(200, 62), ),
+        sg.Frame('Место на сервере', [[sg.Graph(canvas_size=(110, 12), graph_bottom_left=(1, 1),
+                                      graph_top_right=(108, 10),
+                                       k='-free-space-',
+                                       pad=((20, 10), (0, 0), )),
+                              sg.Text('', size=40, key='-free-space-perc-'),
+                              sg.Button('Очистить частично', key='-partially-dropDB-', disabled=False,
+                                       disabled_button_color='gray', pad=((0, 10), (5, 10))),
+                              sg.Button('Очистить', key='-dropDB-', disabled=False,
+                                       disabled_button_color='gray', pad=((0, 10), (5, 10))),]],)
+         ],
         [sg.TabGroup(
             [[sg.Tab('Пользователи', tab1_layout, key="Tab1"),
               sg.Tab('Группы', tab2_layout, key="Tab2"),
@@ -758,18 +780,10 @@ def make_settings():
                 #                                   key='-запрет-инд-')]
                 #       ], expand_x=True)
              # ],
-            # [sg.Frame('Настройка портов',
-            #           [
-            #               [sg.Push(), sg.Text('Порт подключения'),
-            #                sg.Input(size=20, key='-порт-подкл-', enable_events=True)],
-            #               [sg.Push(), sg.Text('Порты аудио'), sg.Input(size=20, key='-Аудио-порты-', enable_events=True)]
-            #           ], expand_x=True)
-            #  ],
-            # [sg.Push()],
             [sg.Frame('Таймауты',
                       [
                           [sg.Push(), sg.Text('Индивидуальный вызов (сек)'),
-                           sg.Input(default_text=settings['privateCallTimout'],
+                           sg.Input(default_text=settings['privateCallTimeout'],
                                     size=20,
                                     key='-Индивидуальный-таймаут-',
                                     enable_events=True)],
@@ -799,6 +813,22 @@ def make_settings():
                           #                                                            enable_events=True)]
                       ], expand_x=True)
              ],
+            [sg.Frame('Настройка портов',
+                      [
+                          # [sg.Push(), sg.Text('Порт подключения'),
+                          #  sg.Input(size=20, key='-порт-подкл-', enable_events=True)],
+                          [sg.Push(), sg.Text('Минимальный порт аудио (UDP)'),
+                           sg.Input(size=20, key='-Мин-аудио-порт-',
+                                    default_text=(settings['udpPortsRange'].rpartition('-')[0] \
+                                    if 6 < len(settings['udpPortsRange']) < 12 else 0),
+                                    enable_events=True)],
+                          [sg.Push(), sg.Text('Максимальный порт аудио (UDP)'),
+                           sg.Input(size=20, key='-Макс-аудио-порт-',
+                                    default_text=(settings['udpPortsRange'].rpartition('-')[2] \
+                                    if 6 < len(settings['udpPortsRange']) < 12 else 0), enable_events=True)]
+                      ], expand_x=True)
+             ],
+            [sg.Push()],
             [sg.ProgressBar(max_value=10, orientation='horizontal', key='-Progress-Bar-',
                             # visible=False,
                             # expand_x=True,
@@ -914,19 +944,19 @@ def make_modify_user_window(user: dict):
                                                    default=user['is_dispatcher'],
                                                    key='modifyUserDispatcher',
                                                    group_id='u_type',
-                                                   disabled=True if user['is_blocked'] else False,
+                                                   disabled=True if user['is_blocked'] or user['is_admin'] else False,
                                                    enable_events=True)],
                   [sg.Radio('Концентратор К500',
                             default=user['is_gw'],
                             key='modifyUserGw',
                             group_id='u_type',
-                            disabled=True if user['is_blocked'] else False,
+                            disabled=True if user['is_blocked'] or user['is_admin'] else False,
                             enable_events=True)],
                   [sg.Radio('Администратор',
                             default=user['is_admin'],
                             key='modifyUserAdm',
                             group_id='u_type',
-                            disabled=True if user['is_blocked'] else False,
+                            disabled=True,
                             enable_events=True)]],
          size=(300, 110), pad=((8, 0), (10, 10)))],
         [sg.Frame('Дополнительные разрешения', [
@@ -1091,11 +1121,12 @@ def make_confirm_window(message):
 
 
 def set_window_running_server():
-    bar_text = 'Пользователей онлайн: обновление..' + ', Версия БД: ' + str(server_status['db'])
+    bar_text = 'Пользователей онлайн: ' + str(server_status['online']) + ', Версия БД: ' + str(server_status['db'])
     window['-StatusBar-'].update(bar_text, background_color=status_bar_color)
     window['-Menu-'].update([
                         ['Сервер', ['Установить лицензию...', 'Настройки']],
                         ['Помощь', 'О программе'], ])
+    update_free_space(server_status)
 
 
 def set_window_not_running_server():
@@ -1107,16 +1138,18 @@ def set_window_not_running_server():
     window['-DelGroup-'].update(disabled=True)
     window['-filterUser-'].update(disabled=True)
     window['-filterGroup-'].update(disabled=True)
+    window['-partially-dropDB-'].update(disabled=True)
+    window['-dropDB-'].update(disabled=True)
 
 
 def the_thread(ip, window):
     sleep(10)
     num = 0
-    # print('Запускаем поток')
+    print('Запускаем поток')
     while True:
         res_ping = ''
         change_state = False
-        print(f' Thread {num} - {server_status}')
+        print(f" Thread {num} before - {server_status['last_state']}")
         try:
             res_ping = requests.get(ip, timeout=3)
         except Exception as e:
@@ -1125,18 +1158,17 @@ def the_thread(ip, window):
             if server_status['last_state']:
                 logging.info(f'[{num}] Сервер НЕ доступен ')
                 change_state = True
-                # server_status['last_state'] = False
-            # server_status['run'] = False
-            # logging.error(f'[{num}] Сервер не доступен')
-            # print('Сервер не доступен')
-            default_json = json.dumps({"onlineUsersCount": -5, "databaseVersion": 0})
+            default_status_dict = {"onlineUsersCount": '', "databaseVersion": '',
+                                   'last_state': server_status['last_state'], 'freeSpace': 0, 'spaceTotal': 1}
+            default_json = json.dumps(default_status_dict)
+            print(f' Thread {num} after - {default_status_dict}')
             window.write_event_value('-THREAD-', (threading.currentThread().name, default_json))
         else:
             if res_ping.status_code == 200:
-                # print(f'[{num}] Пингуем.. {res_ping.text}')
                 if not server_status['last_state']:
                     logging.info(f'[{num}] Сервер доступен ')
                     change_state = True
+                print(f' Thread {num} after - {res_ping.text}')
                 window.write_event_value('-THREAD-', (threading.currentThread().name, res_ping.text))
                 # server_status['run'] = True
         num += 1
@@ -1152,11 +1184,11 @@ def the_thread(ip, window):
                 output_text = "\n".join(filtered_journal)
                 window['journal'].update(output_text)
                 window['countLogs'].update(len(filtered_journal))
-        sleep(30)
+        sleep(10)
 
 
 def check_server(url_ping):
-    status = {'last_state': False, 'run': False, 'online': '', 'db': ''}
+    status = {'last_state': False, 'run': False, 'online': '', 'db': '', 'freeSpace': 0, 'spaceTotal': 1}
     res_ping = ''
     try:
         res_ping = requests.get(url_ping, timeout=3)
@@ -1572,6 +1604,88 @@ def validate(window: str):
             window_modify_group['GroupModifyDesc'].update(background_color=button_color_2,
                                                    text_color=omega_theme['BACKGROUND'])
             return False
+    if window == 'settings':
+        print(val_set)
+        if MIN_CALL_TM <= int(val_set['-Индивидуальный-таймаут-']) <= MAX_CALL_TM:
+            window_settings['-Индивидуальный-таймаут-'].update(background_color=omega_theme['BACKGROUND'],
+                                                 text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Длительность индивидуального вызова должна быть не менее " + str(MIN_CALL_TM) + " и не более " + str(MAX_CALL_TM) + " секунд"))
+            window_settings.Element('-Индивидуальный-таймаут-').SetFocus()
+            window_settings['-Индивидуальный-таймаут-'].update(background_color=button_color_2,
+                                                 text_color=omega_theme['BACKGROUND'])
+            return False
+        if 10 <= int(val_set['-Групповой-таймаут-']) <= 120:
+            window_settings['-Групповой-таймаут-'].update(background_color=omega_theme['BACKGROUND'],
+                                                 text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Длительность группового вызова должна быть не менее " + str(MIN_CALL_TM) + " и не более " + str(
+                MAX_CALL_TM) + " секунд"))
+            window_settings.Element('-Групповой-таймаут-').SetFocus()
+            window_settings['-Групповой-таймаут-'].update(background_color=button_color_2,
+                                                               text_color=omega_theme['BACKGROUND'])
+            return False
+        if MIN_CALL_END_TM <= int(val_set['-таймаут-окончания-']) <= MAX_CALL_END_TM:
+            window_settings['-таймаут-окончания-'].update(background_color=omega_theme['BACKGROUND'],
+                                                 text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Таймаут окончания вызова должен быть не менее " + str(MIN_CALL_END_TM) + " и не более " + str(
+                MAX_CALL_END_TM) + " секунд"))
+            window_settings.Element('-таймаут-окончания-').SetFocus()
+            window_settings['-таймаут-окончания-'].update(background_color=button_color_2,
+                                                               text_color=omega_theme['BACKGROUND'])
+            return False
+        if MIN_TONAL_CALL_END_TM <= int(val_set['-таймаут-тонового-сигнала-']) <= MAX_TONAL_CALL_END_TM:
+            window_settings['-таймаут-тонового-сигнала-'].update(background_color=omega_theme['BACKGROUND'],
+                                                 text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Длительность тонального вызова должна быть не менее " + str(MIN_TONAL_CALL_END_TM) + " и не более " + str(
+                MAX_TONAL_CALL_END_TM) + " секунд"))
+            window_settings.Element('-таймаут-тонового-сигнала-').SetFocus()
+            window_settings['-таймаут-тонового-сигнала-'].update(background_color=button_color_2,
+                                                               text_color=omega_theme['BACKGROUND'])
+            return False
+        if MIN_AMB_LIST_TM <= int(val_set['-таймаут-прослушивания-']) <= MAX_AMB_LIST_TM:
+            window_settings['-таймаут-прослушивания-'].update(background_color=omega_theme['BACKGROUND'],
+                                                 text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Длительность скрытого прослушивания должна быть не менее " + str(MIN_AMB_LIST_TM) + " и не более " + str(
+                MAX_AMB_LIST_TM) + " секунд"))
+            window_settings.Element('-таймаут-прослушивания-').SetFocus()
+            window_settings['-таймаут-прослушивания-'].update(background_color=button_color_2,
+                                                               text_color=omega_theme['BACKGROUND'])
+            return False
+        if MIN_AUDIO_PORT <= int(val_set['-Мин-аудио-порт-']) <= MAX_AUDIO_PORT:
+            window_settings['-Мин-аудио-порт-'].update(background_color=omega_theme['BACKGROUND'],
+                                                 text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Порт должен быть не менее " + str(MIN_AUDIO_PORT) + " и не более " + str(
+                MAX_AUDIO_PORT) + " секунд"))
+            window_settings.Element('-Мин-аудио-порт-').SetFocus()
+            window_settings['-Мин-аудио-порт-'].update(background_color=button_color_2,
+                                                               text_color=omega_theme['BACKGROUND'])
+            return False
+        if MIN_AUDIO_PORT <= int(val_set['-Макс-аудио-порт-']) <= MAX_AUDIO_PORT:
+            window_settings['-Макс-аудио-порт-'].update(background_color=omega_theme['BACKGROUND'],
+                                                 text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Порт должен быть не менее " + str(MIN_AUDIO_PORT) + " и не более " + str(
+                MAX_AUDIO_PORT) + " секунд"))
+            window_settings.Element('-Макс-аудио-порт-').SetFocus()
+            window_settings['-Макс-аудио-порт-'].update(background_color=button_color_2,
+                                                               text_color=omega_theme['BACKGROUND'])
+            return False
+        if MIN_PORTS <= int(val_set['-Макс-аудио-порт-']) - int(val_set['-Мин-аудио-порт-']) <= MAX_PORTS:
+            pass
+        else:
+            my_popup(("Диапазон портов должен быть не менее " + str(MIN_PORTS) + " и не более " + str(
+                MAX_PORTS) + " секунд"))
+            window_settings.Element('-Мин-аудио-порт-').SetFocus()
+            window_settings['-Макс-аудио-порт-'].update(background_color=button_color_2,
+                                                        text_color=omega_theme['BACKGROUND'])
+            window_settings['-Мин-аудио-порт-'].update(background_color=button_color_2,
+                                                       text_color=omega_theme['BACKGROUND'])
+            return False
     return result
 
 
@@ -1613,6 +1727,7 @@ def get_user_type(window):
 def update_users():
     users_from_server = get_users_from_server()
     add_users(users_from_server)
+    global users_from_db
     users_from_db = get_users_from_db()
     users_from_db.sort(key=lambda i: i['login'])
     # user_list = list()
@@ -1634,6 +1749,7 @@ def update_users():
 
 def update_groups():
     add_groups(get_groups_from_server())
+    global groups_from_db
     groups_from_db = get_groups_from_db()
     groups_from_db.sort(key=lambda i: i['name'])
     group_list, treedata_update_group = get_group_list(groups_from_db)
@@ -1655,6 +1771,25 @@ def update_groups():
     else:
         window['-groups2-'].update(group_list)
     window['-TREE-'].update(treedata_update_group)
+
+
+def update_free_space(status):
+    graph: sg.Graph = window[
+        '-free-space-']  # TODO: no server_status['spaceTotal'] if server was not available on startup
+    nonfree_space_perc = round((status['spaceTotal'] -
+                                status['freeSpace']) * 100 / status['spaceTotal'], 1)
+    graph.draw_rectangle(top_left=(0, 10),
+                         bottom_right=(int(nonfree_space_perc), 0),
+                         fill_color=button_color_2,
+                         line_width=0)
+    graph.draw_rectangle(top_left=(int(nonfree_space_perc), 10),
+                         bottom_right=(100, 0),
+                         fill_color=status_bar_color,
+                         line_width=0)
+    upd_t = str(round((100 - nonfree_space_perc), 1)) + '% (' \
+            + str(round(status['freeSpace'] / 1024 / 1024 / 1024, 1)) \
+            + ' Гб) свободного места на сервере'
+    window['-free-space-perc-'].update(upd_t)
 
 
 if __name__ == '__main__':
@@ -1690,7 +1825,7 @@ if __name__ == '__main__':
                             encoding='cp1251', datefmt='%d/%m/%Y %H:%M:%S', level=logging.INFO)
     logging.info('Старт лога')
     window_login = make_login_window()
-    window_main_active = False
+    # window_main_active = False
     while True:
         break_flag = False
         break_flag2 = False
@@ -1698,7 +1833,7 @@ if __name__ == '__main__':
         # print(ev_login, val_login)
         if ev_login == sg.WIN_CLOSED or ev_login == 'Exit':
             break
-        if ev_login == "OK button" and not window_main_active:
+        if ev_login == "OK button":
             if binascii.hexlify(str(val_login['password']).encode('ascii')) == b'717765727479':
                 ip = ''
                 while True:
@@ -1737,8 +1872,8 @@ if __name__ == '__main__':
                             # treedata2 = sg.TreeData()
                             users_from_db = [{}]
                             groups_from_db = [{}]
-                        window_main_active = True
-                        window_login.Hide()
+                        # window_main_active = True
+                        window_login.close()
                         window = make_main_window(ip)
                         tree = window['-TREE-']
                         # tree.Widget.heading("#0", text='id')
@@ -1769,33 +1904,20 @@ if __name__ == '__main__':
                             event, values = window.read()
                             # print(event, type(event), values)
                             if event == '-THREAD-':
-                                current_db = server_status['db']
+                                # current_db = server_status['db']
                                 dict_online = json.loads(values['-THREAD-'][1])
                                 # print(dict_online)
-                                if dict_online["onlineUsersCount"] != -5:
+                                if dict_online["onlineUsersCount"] != '':
                                     if not server_status['run']:
-                                        update_text = 'Пользователей онлайн: обновление..' + ', Версия БД: ' + \
+                                        update_text = 'Пользователей онлайн: ' + str(dict_online['onlineUsersCount']) + \
+                                                      ', Версия БД: ' + \
                                                       str(dict_online["databaseVersion"])
                                         window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                     else:
                                         update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
                                                       + ', Версия БД: ' + str(dict_online["databaseVersion"])
                                         window['-StatusBar-'].update(update_text, background_color=status_bar_color)
-                                        graph:sg.Graph = window['-free-space-'] # TODO: no server_status['spaceTotal'] if server was not available on startup
-                                        nonfree_space_perc = round((server_status['spaceTotal'] -
-                                            server_status['freeSpace']) * 100 / server_status['spaceTotal'], 1)
-                                        graph.draw_rectangle(top_left=(0, 10),
-                                                             bottom_right=(int(nonfree_space_perc), 0),
-                                                             fill_color='red',
-                                                             line_width=0)
-                                        graph.draw_rectangle(top_left=(int(nonfree_space_perc), 10),
-                                                             bottom_right=(100, 0),
-                                                             fill_color='green',
-                                                             line_width=0)
-                                        upd_t = str(100 - nonfree_space_perc) + '% (' \
-                                                + str(round(server_status['freeSpace']/1024/1024/1024, 1)) \
-                                                + ' Гб) свободного места на сервере'
-                                        window['-free-space-perc-'].update(upd_t)
+                                        update_free_space(dict_online)
                                     window['-Start-'].update(disabled=True)
                                     window['-Stop-'].update(disabled=False)
                                     if not server_status['run']:
@@ -1832,7 +1954,10 @@ if __name__ == '__main__':
                                         window['Apply2'].update(disabled=False)
                                         window['-checkAllGroups-'].update(disabled=False)
                                         window['-checkAllUsers-'].update(disabled=False)
+                                        window['-partially-dropDB-'].update(disabled=False)
+                                        window['-dropDB-'].update(disabled=False)
                                         server_status['run'] = True
+                                        update_free_space(dict_online)
                                     else:
                                         pass
                                     if not server_status['last_state']:
@@ -1861,7 +1986,10 @@ if __name__ == '__main__':
                                     window['Apply2'].update(disabled=True)
                                     window['-checkAllGroups-'].update(disabled=True)
                                     window['-checkAllUsers-'].update(disabled=True)
+                                    window['-partially-dropDB-'].update(disabled=True)
+                                    window['-dropDB-'].update(disabled=True)
                                     server_status['run'] = False
+                                    update_free_space(dict_online)
                                     if server_status['last_state']:
                                         server_status['last_state'] = False
                                         window['-Menu-'].update([
@@ -1989,16 +2117,16 @@ if __name__ == '__main__':
                                         print(ev_modify_user, val_modify_user)
                                         if ev_modify_user == sg.WIN_CLOSED or ev_modify_user == 'Exit':
                                             break
-                                        elif ev_modify_user == 'userModifyPassword':
+                                        if ev_modify_user == 'userModifyPassword':
                                             window_modify_user['showModifyPassword'].update(disabled=False)
                                             window_modify_user['showModifyPassword'].update(image_data=ICON_SHOW_BASE_64)
-                                        elif ev_modify_user == 'modifyUserDispatcher' or ev_modify_user == 'modifyUserAdm':
+                                        if ev_modify_user == 'modifyUserDispatcher' or ev_modify_user == 'modifyUserAdm':
                                             window_modify_user['modifyUserAllowDelChats'].update(disabled=False)
                                             window_modify_user['modifyUserAllowPartialDrop'].update(disabled=False)
-                                        elif ev_modify_user == 'modifyUserGw':
+                                        if ev_modify_user == 'modifyUserGw':
                                             window_modify_user['modifyUserAllowDelChats'].update(disabled=True)
                                             window_modify_user['modifyUserAllowPartialDrop'].update(disabled=True)
-                                        elif ev_modify_user == 'UserModifyPriority':
+                                        if ev_modify_user == 'UserModifyPriority':
                                             if val_modify_user['UserModifyPriority'] == '':
                                                 window_modify_user['UserModifyPriority'].update(
                                                     background_color=omega_theme['INPUT'])
@@ -2014,7 +2142,7 @@ if __name__ == '__main__':
                                                         background_color=button_color_2)
                                             else:
                                                 window_modify_user['UserModifyPriority'].update(background_color=button_color_2)
-                                        elif ev_modify_user == 'showModifyPassword':
+                                        if ev_modify_user == 'showModifyPassword':
                                             if password_clear:
                                                 window_modify_user['userModifyPassword'].update(password_char='*')
                                                 window_modify_user['showModifyPassword'].update(
@@ -2025,7 +2153,7 @@ if __name__ == '__main__':
                                                 window_modify_user['showModifyPassword'].update(
                                                     image_data=ICON_HIDE_BASE_64)
                                                 password_clear = True
-                                        elif ev_modify_user == 'modifyUserButton':
+                                        if ev_modify_user == 'modifyUserButton':
                                             if validate('modify_user'):
                                                 modify_user_type = get_user_type('modify_user')
                                                 modify_user_dict = {'id': user_to_change['id']}
@@ -2551,7 +2679,7 @@ if __name__ == '__main__':
                                 # counter = 0
                                 while True:
                                     ev_set, val_set = window_settings.Read(1000)
-                                    # print(f'{ev_set}, {val_set}')
+                                    print(f'{ev_set}, {val_set}')
                                     if ev_set == sg.WIN_CLOSED or ev_set == '-Exit-set-':
                                         window_settings.close()
                                         break
@@ -2560,28 +2688,60 @@ if __name__ == '__main__':
                                             or ev_set == '-таймаут-окончания-'\
                                             or ev_set == '-таймаут-тонового-сигнала-'\
                                             or ev_set == '-таймаут-прослушивания-':
+                                        if val_set[ev_set].isdigit():
+                                            window_settings[ev_set].update(
+                                                background_color=omega_theme['INPUT'])
+                                            if 0 < int(val_set[ev_set]) <= MAX_CALL_TM:
+                                                window_settings[ev_set].update(
+                                                    background_color=omega_theme['INPUT'],
+                                                    text_color=omega_theme['TEXT'])
+                                            else:
+                                                window_settings[ev_set].update(background_color=button_color_2)
+                                        else:
+                                            window_settings[ev_set].update(background_color=button_color_2)
+                                        counter = 0
+                                        window_settings['-Progress-Bar-'].update_bar(counter)
+                                        window_settings['-OK-set-'].update(disabled=False)
+                                        window_settings['-OK-set-'].update(button_color=button_color_2)
+                                    elif ev_set == '-Макс-аудио-порт-'\
+                                         or ev_set == '-Мин-аудио-порт-':
+                                        if val_set[ev_set].isdigit():
+                                            window_settings[ev_set].update(
+                                                background_color=omega_theme['INPUT'])
+                                            if 1024 < int(val_set[ev_set]) <= 65535:
+                                                window_settings[ev_set].update(
+                                                    background_color=omega_theme['INPUT'],
+                                                    text_color=omega_theme['TEXT'])
+                                            else:
+                                                window_settings[ev_set].update(background_color=button_color_2)
+                                        else:
+                                            window_settings[ev_set].update(background_color=button_color_2)
                                         counter = 0
                                         window_settings['-Progress-Bar-'].update_bar(counter)
                                         window_settings['-OK-set-'].update(disabled=False)
                                         window_settings['-OK-set-'].update(button_color=button_color_2)
                                     elif ev_set == '-OK-set-':
                                         # print(val_set.values())
-                                        validate_set = True
-                                        for val in val_set.values():
-                                            if not val.isdigit():
-                                                validate_set = False
-                                        if validate_set:
-                                            settings_dict = {'privateCallTimout': val_set['-Индивидуальный-таймаут-'],
+                                        if validate('settings'):
+                                            settings_dict = {'privateCallTimeout': val_set['-Индивидуальный-таймаут-'],
                                                              'groupCallTimeout': val_set['-Групповой-таймаут-'],
                                                              'finalizeCallTimeout': val_set['-таймаут-окончания-'],
                                                              'finalizeTonalTimeout': val_set['-таймаут-тонового-сигнала-'],
-                                                             'ambientCallDuration': val_set['-таймаут-прослушивания-']}
+                                                             'ambientCallDuration': val_set['-таймаут-прослушивания-'],
+                                                             'udpPortsRange': val_set['-Мин-аудио-порт-'] + '-' + val_set['-Макс-аудио-порт-']}
                                             res_update_set = requests.post(BASE_URL_SETTINGS,
                                                                              json=settings_dict,
                                                                              headers=HEADER_dict)
                                             if res_update_set.status_code == 200:
                                                 logging.info(
-                                                    f'Настройки изменены')
+                                                    f"Настройки изменены: "
+                                                    f"Инд. вызов - {settings_dict['privateCallTimeout']}, "
+                                                    f"Гр. вызов - {settings_dict['groupCallTimeout']}, "
+                                                    f"Таймаут окончания вызова - {settings_dict['finalizeCallTimeout']}, "
+                                                    f"Тональный вызов - {settings_dict['finalizeTonalTimeout']}, "
+                                                    f"Скрытое прослушивание - {settings_dict['ambientCallDuration']}, "
+                                                    f"Аудио порты - {settings_dict['udpPortsRange']}, "
+                                                )
                                             else:
                                                 logging.error(
                                                     f'Ошибка при изменении настроек - {res_update_set.status_code}')
@@ -2595,6 +2755,8 @@ if __name__ == '__main__':
                                             enable_input(window_settings)
                                             window_settings['-OK-set-'].update(disabled=True)
                                             window_settings['-OK-set-'].update(button_color=button_color)
+                                            my_popup("Настройки изменены")
+                                            window_settings.close()
                                         else:
                                             my_popup("Введены некорректные данные!")
                                     else:
@@ -3140,23 +3302,14 @@ if __name__ == '__main__':
                                             window['-Stop-'].update(disabled=False)
                                             TOKEN = get_token(BASE_URL_AUTH)
                                             HEADER_dict = {"Authorization": "Bearer " + TOKEN}
-                                            # print(TOKEN)
-                                            # print(HEADER_dict)
                                             server_status['run'] = True
-                                            # server_status['last_state'] = False
                                             print(server_status)
-                                            # print('before init')
                                             init_db()
-                                            # print('after init')
                                             users_from_db = get_users_from_db()
-                                            # print(users_from_db)
                                             groups_from_db = get_groups_from_db()
-                                            # print(groups_from_db)
                                             users_from_db.sort(key=lambda i: i['login'])
                                             groups_from_db.sort(key=lambda i: i['name'])
-                                            # treedata_update_user = sg.TreeData()
                                             treedata_update_group = sg.TreeData()
-                                            # user_list = list()
                                             group_list = list()
                                             user_list, treedata_update_user = get_user_list(users_from_db)
                                             if users_from_db != [[]] and groups_from_db != [[]]:
@@ -3182,10 +3335,13 @@ if __name__ == '__main__':
                                             window['Apply2'].update(disabled=False)
                                             window['-checkAllGroups-'].update(disabled=False)
                                             window['-checkAllUsers-'].update(disabled=False)
+                                            window['-partially-dropDB-'].update(disabled=False)
+                                            window['-dropDB-'].update(disabled=False)
                                             window['-Menu-'].update([
                                                 ['Сервер', ['Установить лицензию...', 'Настройки']],
                                                 ['Помощь', 'О программе'], ])
                                             # print('after update GUI')
+                                            update_free_space(dict_online_after_start)
                                             break
                             if event == '-Stop-':
                                 # print('Останавливаем сервер')
@@ -3228,10 +3384,13 @@ if __name__ == '__main__':
                                     window['Apply2'].update(disabled=True)
                                     window['-checkAllGroups-'].update(disabled=True)
                                     window['-checkAllUsers-'].update(disabled=True)
+                                    window['-partially-dropDB-'].update(disabled=True)
+                                    window['-dropDB-'].update(disabled=True)
                                     window['-Menu-'].update([
                                         ['Сервер', ['!Установить лицензию...', '!Настройки']],
                                         ['Помощь', 'О программе'], ])
                                     server_status['run'] = False
+                                    update_free_space({'freeSpace': 0, 'spaceTotal': 1})
                                     # server_status['last_state'] = True
                                     print(server_status)
                             if event == 'Tabs':
@@ -3404,11 +3563,11 @@ if __name__ == '__main__':
                     else:
                         my_popup('Введите правильный ip!')
                         break
-                if window_main_active:
-                    window.close()
-                    break
+                # if window_main_active:
+                # window.close()
+                # break
             else:
                 my_popup("Неправильный пароль!!!")
                 window_login['password'].update('')
-    if not window_main_active:
-        window_login.close()
+    # if not window_main_active:
+    window_login.close()
