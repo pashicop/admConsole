@@ -5,15 +5,10 @@ import platform
 import socket
 import subprocess
 import threading
-# from datetime import datetime
 from time import sleep
-# from psgtray import SystemTray
 import requests
-# import socket
-# import os
 from pathlib import Path
 import sqlite3
-# import re
 import PySimpleGUI as sg
 from io import BytesIO
 from PIL import Image, ImageDraw
@@ -22,14 +17,7 @@ import logging
 import sys
 from enum import Enum
 
-# import netifaces
-# from pystray import MenuItem as item, Menu as menu
-# import pystray
-# import subprocess
-# from multiprocessing import Pool
-# from multiprocessing import Process, Queue
 
-# BASE_URL = 'http://10.1.4.147:5000/api/admin/'
 ICON_BASE_64 = b'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'
 ICON_BLANK_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZSURBVDhPY/hPIhjVQAwY1UAMGHQa/v8HAK+t/R8kTA7nAAAAAElFTkSuQmCC'
 # ICON_SHOW_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAi9JREFUWEft1surT1EUB/DP9X6WJEaYeowkpKirGJGBGWWmyFiZmJmYmJgzEP4BN93BJXdAlIQ8hoqJR1555hGt2kf7Hvv8fufnXn6T3xqds9djf/da37X2HtJnGerz/gYABhn4mwwswX7sxspE4qcYwVk874XYbQFMwykcpitxf+I0DuFHNzBtABzHsUKgL3id1hdjTsHmJI50AtEJwFy8wIIswA3sw+OGoMtxHlsz/WcsxYeSTxOA1XiYOdzFRnztltKkn4Hr2JDZr8ftun8JwObkXNnuxKWa4/REuD0IflxGfEdZctmGK9nCDozlBnUAq/AoGQSZgvFVnSu/ZXjWkIl1uFPTLcTbBDRUEzKRA5iHj9nm8V8/UaiD2XHqkJv4hDhpJaEL8LnMTLEqv0V4FwY5gNhsdvL6bdAhpTEDniR9ZOpl+g7WB/vrMj8j4jfMygFcxK7ksT3VtJTlC9iLN4jWy+VVWgvyri05YxOik0KuRuaqDOQA/iBKFixaLNow0h4nyiXWonWvYUsLAOMY7rUEQaBbKXhMuwPp+wSOpu9iuyXA1Sz4juDFBA60JWHM+hgsJYk7YUVB0YqE4ZcPoKY2DLv7hTo31b51G1bA2wyisI2MBV+CzaN4Xzh5z4OoirEGD7KA99JY/S+juNq3dBnF4Ik2bLqMov7npuIyyrPZt+s4B9Hrg+QMDk7Vg6TOrfxJFimPWfLPn2QNbT/55TZPssnv0iHCAMAgA78ACiR5IZsXaIEAAAAASUVORK5CYII='
@@ -37,14 +25,16 @@ ICON_SHOW_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs
 # ICON_HIDE_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAzlJREFUWEfFllmojVEYhp9jOGYns2RMpmQqZShliAuJ3IgSDsmUDJFkynBBUrhAISK5UDJcKIkonFA4JENcmDMmMxl69S2ts1p7n/8/e9vem73/tb7hXeubVhH/GUUF8t8buBbzVQgCm4F5wAOgY0jiXxOoCXwzpyKyoNAELgN9gV9AtXyGQDfXCGhuRl8Ab82R89MaeGQfY4EjuRIoBjYCswBdbQzfgd121c+BEuA90DBTsifJgRrAWWBgFSumHfCwqgSmAHsCZWXzKuAE8M72dMIRwBqgkyev0uuTjXi2GzgHDPKU9wLTgJ+V3ITCtMhkalkV1Ac+pMmBJ0ArU1ByKaE+BQaqA/0tHy4CXwGFS3kgbAPm2P/HgMg0S1KGz4CWJngMGBNhfhAYH6yft1IbEJRdN+CWyb4Bmvh6YQiuAmqbwhZgfsT5UWB0JWEYBxzyZNYCy+37DtDV7fkE1gNLbEPxLo04USxVVkKZ5Yhy4jgw0tY/ApILsRWYa4vbgdn67wgoc+/a5g2gZ4YTrgRWRzrbcOCk6ajfq1JiEOl+ttELKHcElEBqNEILQJ0tBp10FKCkauMJ/LD43wR6ZNDVssrVla6StdgRkFK5KV7yWIa2FEfFUxBhGVkHLLO12lYNmTicBobYppK1zM8BlY3arKB4aYSGkFPdlqABo7xZat+7gOlZTu8TPQBMlGxYBcrQzmZEXU0dL8QMYEdkPVtTU2NSgxLUltWe/yCmpFrVpBP2A5MizkRSdd/U9nQanSoGZfxM21A3bOALZWL9GmhsgmpM7b2HhdN/aQQ+A3UjntUV7wNtbU/lq+mo0P1FtmvTIFGpOGwCFpuBwcAZ2+jilbCT9eOttQrNJykByS0E5NjHdSs1vXBuA2q1wlBgg72AfPkVVinR+CR5D6i0rgDdIxbqAF+AepFpd8/aejjEKphJQsApyMlOYIIt7AMm2391vg42qg8DU72WHT25W0xDQDqngGGm7HT1q3H9FFBHTIU0BDRGX5l1DSoNrJyRhoAemZoTirlinxckJaC+fcE8KhndAyNnEkkJ6AGih4gy27XqnJ3LQFICktWbzg2ivDhPSyBvTn1DvwGQ9JMh9I2ufAAAAABJRU5ErkJggg=='
 ICON_HIDE_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAU9JREFUOE+V088rp2EUBfCPYSZJmcgsSGOhzExpsrCwMMWfYGMnyU7ZKAsLNJtpasrGYmYxK/4IFpQdUhJSI+Xnhkg2mmGGnum+9fbN1zfP7n3ec84999z7lHn+eYF/Ga3s+Xy36MJK4pYSKA/MXRQawwSqn3LwGktoL3C3iY9owX4xgW8YxSr6cBTAJmzFd1teON/CIrrRHMBKzONliB0j3X1GJz7lM/iBoQCkkNJJSW/gdxB+BqYi7mYxkBx8wA7qcJmzfIAUYgfWCgKvwVXKJGvhL75jOASS1Rv0YAGDmMv1Po0RVGQCtbjAF4wHMInNhFBVjjyFSbzBeT7ERpxgN0b4J3JoxS+8wjrSFN5mEypcpNTzNt5F5UO8xxnqsReZZYtVdBMbcIpkvTdIX3FduPrFVjlVXkZ/qbfymEAWaKl38l+7GCjd35eqnv4/AN2DP0ArBQAaAAAAAElFTkSuQmCC'
 ICON_CHECK_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAsQAAALEBxi1JjQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAASfSURBVFiFzZdfbBRFHMc/M7t3Vwq09qCAxPKnJbYFKqSatCgEMdGgCKT+xagxkGCID0bA+CT4NyEN/iHBF6I+qPFBTCu+8IKQGMSWllJLQFqsEdoCd71ry9Frr3d7N+PD9Y52uS1XbaLfZLOzs7/5fT87szs7A/+xxCRipwOPAZVAEZALRIA+4BzQCLRPNSDA48IQR4UUMUBPdEhTdgC7gRlZ5K0AKibqgUphigM6rtcACCkoKPfiLZuFp8CDJz8HZSmioSihzgH6zgeJhqIACEMEdULvBr52yL0BqAOGnAC2CSEOaa1Nd56bJU+Xcs/DRbjz3I60OqHpbfXTWXeJgfZ+hCES1furZzbsaog4mHuA/ZkAaoG3ABY/WULpC+WYuaajcSb1tvhACOZUzm1Qluupo8997xu9tR74AcgBDgA77QBvAJ9Kl6Rix0qKHlkwKWMHdZhQfaTmSLXdHGDsoz2K4GOAyl0PMK96/lSYA5ReOdlzHFhqNweQo2e3dMkv0MjSLeVTaU6g1U/bwdbKTOZjAXYoSy2YuTCPJc/eO6XmzfuaUFaCRU8UR2vqaz60x0hACkPuASh/eRlCTGZuys588cYSlm+/zxOTaqc9TgKrdELNnj5/BnPun5sxWd+FIG2ftRK9MZKVeW+Lj+Z9p9Pmy7ZVJM202JIJYDPAvKq7HRNeO3mV7uNXaNhz6o4QvS0+ztQ2oSxF8aZb5gAaSjbU1ywfByBMYx1A4Yo5jknLXlpKfsldhHsGaXj7F0b6M0MEWv2cqW1GWYrFG0tYurVi3P3ojSh/1nVsHweAVsUA0wqnOQK4ZriofvehJMTVMI17b4ewj/nYJ0/p/OdttH/7++tA1S0ARR6Ax5vjCJAJomHPLYhszAF0XKeK89IA6SptD88MUbX3QfIW5TN0LUzj3lN0n+hKv3D2MbcrEUukiioNICQhwHFc7XLnuVn1werRnhik7eBZxzG3a2Qg7XEjDYCgEyASGM4KAMYPBzBht6ektSYSSP8YO1MFU8f1CaAq0OqncKXzl5AJYtX7q7l5JYS3fNYd4wfa+4kPW0iX7FKWup6ql8CPAL7TPsfGTjJzzazMAfxNSU9lqe/G1kugSZrSN+wfwtd4PVPbfy0rbNH1U1fqst4OoFVcvQNw8ZsL6IRiqtVZdwkrHEOY4gTJxWtaxui5Tbrki7FQ1KvjmtkrCqfMvP9iH+cPtaG11iieAcaNdep3HFeW2iqESHTWX+Lqz91TYh4JDNNS24SKK9B8ArTaY4wx5S6gG9jsb/ZhmEbWL1gm3bwc4vR7DYz0jyAMcRzNK2SY7gzb9W9IQLE2eC4gIsFhvGVeDE/2i1Kd0HQdu8zZj5qJ3YwhTKNRJ9QmkpuY2+S0+nheSPGVVtpj5poUb15C0boFTCvMdTSOj8TxN/v443AH4Z7BZKXkSxSvATGndhMtf8qFIfbrhN6QqsgvzqegbBY5BTl4CjzEh+NE+iKEewYJnguirORcL13yL2WpN7F9cv9Ua6SUh4UhhphoayZICFP8CrwKuLJNPpkFoBtYS3JzupDk5jQKBIALwDEgOIl8/w/9DR5k79YG7eHTAAAAAElFTkSuQmCC'
-version = '1.0.3 СТИС'
-
-role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop')
-user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
 MAX_LEN_LOGIN = 10
 MAX_LEN_USERNAME = 20
 MIN_LEN_PASSWORD = 6
 MAX_LEN_PASSWORD = 20
+MAX_LEN_GROUPNAME = 20
+MAX_LEN_GROUPDESC = 100
+role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop')
+user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
+version = '1.0.4 СТИС'
+
 # folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
 # file_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABU0lEQVQ4y52TzStEURiHn/ecc6XG54JSdlMkNhYWsiILS0lsJaUsLW2Mv8CfIDtr2VtbY4GUEvmIZnKbZsY977Uwt2HcyW1+dTZvt6fn9557BGB+aaNQKBR2ifkbgWR+cX13ubO1svz++niVTA1ArDHDg91UahHFsMxbKWycYsjze4muTsP64vT43v7hSf/A0FgdjQPQWAmco68nB+T+SFSqNUQgcIbN1bn8Z3RwvL22MAvcu8TACFgrpMVZ4aUYcn77BMDkxGgemAGOHIBXxRjBWZMKoCPA2h6qEUSRR2MF6GxUUMUaIUgBCNTnAcm3H2G5YQfgvccYIXAtDH7FoKq/AaqKlbrBj2trFVXfBPAea4SOIIsBeN9kkCwxsNkAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK0xAAAAAElFTkSuQmCC'
 
@@ -450,25 +440,25 @@ def get_only_user_list(local_users) -> list[list]:
     return us_list
 
 
-def get_only_group_list(local_groups) -> list[list]:
-    """Get groups from DB and return Groups in list
-        Input:
-        local_groups: [{},]
-        Output:
-        gr_list: [[],]
-        """
-    gr_list = []
-    for index, gr_from_db in enumerate(local_groups):
-        gr_list.append([gr_from_db['id'], gr_from_db['name'], gr_from_db['desc']])
-        if gr_from_db['is_emergency']:
-            gr_list[index].append(u'\u2713')
-        else:
-            gr_list[index].append('')
-        if gr_from_db['is_disabled']:
-            gr_list[index].append(u'\u274c')
-        else:
-            gr_list[index].append('')
-    return gr_list
+# def get_only_group_list(local_groups) -> list[list]:
+#     """Get groups from DB and return Groups in list
+#         Input:
+#         local_groups: [{},]
+#         Output:
+#         gr_list: [[],]
+#         """
+#     gr_list = []
+#     for index, gr_from_db in enumerate(local_groups):
+#         gr_list.append([gr_from_db['id'], gr_from_db['name'], gr_from_db['desc']])
+#         if gr_from_db['is_emergency']:
+#             gr_list[index].append(u'\u2713')
+#         else:
+#             gr_list[index].append('')
+#         if gr_from_db['is_disabled']:
+#             gr_list[index].append(u'\u274c')
+#         else:
+#             gr_list[index].append('')
+#     return gr_list
 
 
 def get_user_list(users):
@@ -515,11 +505,11 @@ def get_group_list(groups):
     for index, gr_from_db in enumerate(groups):
         gr_list.append([gr_from_db['id'], gr_from_db['name'], gr_from_db['desc']])
         if gr_from_db['is_emergency']:
-            gr_list[index].append(u'\u2713')
+            gr_list[index].append(u'\u0020\u0020\u0020\u2713')
         else:
             gr_list[index].append('')
         if gr_from_db['is_disabled']:
-            gr_list[index].append(u'\u274c')
+            gr_list[index].append(u'\u0020\u0020\u0020\u274c')
         else:
             gr_list[index].append('')
         if groups != [{}]:
@@ -539,22 +529,22 @@ def get_filter_user_list(filter_users_from_db):
                               user_from_db['name'], ''])
     return user_list
 
-def get_groups_in_treedata(groups):
-    td = sg.TreeData()
-    if groups != [{}]:
-        for gr in groups:
-            td.insert('', gr['id'], '', values=[gr['name'], gr['desc']],
-                            icon=check[0])
-    return td
+# def get_groups_in_treedata(groups):
+#     td = sg.TreeData()
+#     if groups != [{}]:
+#         for gr in groups:
+#             td.insert('', gr['id'], '', values=[gr['name'], gr['desc']],
+#                             icon=check[0])
+#     return td
 
 
-def get_users_in_treedata(users):
-    td = sg.TreeData()
-    if users != [{}]:
-        for user in users:
-            td.insert('', user['id'], '', values=[user['login'], user['name']],
-                             icon=check[0])
-    return td
+# def get_users_in_treedata(users):
+#     td = sg.TreeData()
+#     if users != [{}]:
+#         for user in users:
+#             td.insert('', user['id'], '', values=[user['login'], user['name']],
+#                              icon=check[0])
+#     return td
 
 
 def make_main_window(ip):
@@ -632,7 +622,7 @@ def make_main_window(ip):
                                 num_rows=40, enable_events=True,
                                 enable_click_events=True,
                                 right_click_selects=True,
-                                right_click_menu=[1, 'Изменить группу'],
+                                right_click_menu=[1, ['Изменить группу', 'Очистить чат']],
                                 select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                                 selected_row_colors='black on lightblue',
                                 visible_column_map=[False, True, True, True, True],
@@ -893,7 +883,9 @@ def make_add_user_window():
                      enable_events=True,
                      key='addUserBlock')],
         # [sg.Checkbox('Диспетчер', default=False, key='addUserDispatcher'), sg.Push()],
-        [sg.Push(), sg.Button(button_text='Создать', key='addUserButton', disabled=True, disabled_button_color='gray')]
+        [sg.Push(), sg.Button(button_text='Создать', key='addUserButton',
+                              disabled=True,
+                              disabled_button_color='gray')]
     ]
     return sg.Window('Добавить пользователя', layout_add_user,
                      icon=ICON_BASE_64,
@@ -963,7 +955,9 @@ def make_modify_user_window(user: dict):
                      enable_events=True,
                      key='modifyUserBlock')],
         # [sg.Text('Таймаут (сек)', size=(13)), sg.Input(size=(10), enable_events=True, key='userTimeout')],
-        [sg.Push(), sg.Ok(button_text='Изменить', key='modifyUserButton')]
+        [sg.Push(), sg.Button(button_text='Изменить', key='modifyUserButton',
+                          disabled=True,
+                          disabled_button_color='gray')]
     ]
     return sg.Window('Изменить пользователя', layout_modify_user,
                     icon=ICON_BASE_64,
@@ -976,16 +970,31 @@ def make_modify_user_window(user: dict):
 def make_modify_group_window(group: dict):
     layout_modify_group = [
         [sg.Push(), sg.Text('Имя Группы'),
-         sg.Input(size=(40, 1), default_text=group['name'], key='GroupModifyName')],
+         sg.Input(size=(40, 1), default_text=group['name'],
+                  disabled=True,
+                  enable_events=True,
+                  key='GroupModifyName')],
         [sg.Push(), sg.Text('Описание Группы'),
-         sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), default_text=group['desc'],
+         sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3),
+                      default_text=group['desc'],
+                      enable_events=True,
                       key='GroupModifyDesc')],
-        [sg.Button(button_text='Очистить чат', key='modifyGroupDelChat'), sg.Push(), sg.Checkbox('Экстренная', default=group['is_emergency'], key='GroupModifyEmergency')],
-        [sg.Push(), sg.Checkbox('Заблокировать', text_color='red', default=group['is_disabled'],
+        [sg.Button(button_text='Очистить чат', key='modifyGroupDelChat'), sg.Push(),
+         sg.Checkbox('Экстренная', default=group['is_emergency'],
+                     enable_events=True,
+                     key='GroupModifyEmergency')],
+        [sg.Push(), sg.Checkbox('Заблокировать', text_color='red',
+                                enable_events=True,
+                                default=group['is_disabled'],
                                 key='GroupModifyBlocked')],
-        [sg.Push(), sg.Ok(button_text='Изменить', key='modifyGroupButton')]
+        [sg.Push(), sg.Button(button_text='Изменить',
+                          disabled=True,
+                          disabled_button_color='gray',
+                          key='modifyGroupButton')]
     ]
-    win = sg.Window('Изменить группу', layout_modify_group, icon=ICON_BASE_64, use_ttk_buttons=True,
+    win = sg.Window('Изменить группу', layout_modify_group, icon=ICON_BASE_64,
+                    use_ttk_buttons=True,
+                    disable_minimize=True,
                     finalize=True, modal=True)
     return win
 
@@ -1019,14 +1028,29 @@ def make_clone_user_window(user):
 
 def make_add_group_window():
     layout_add_group = [
-        [sg.Push(), sg.Text('Имя Группы'), sg.Input(size=(40, 1), key='GroupName')],
+        [sg.Push(), sg.Text('Имя Группы'), sg.Input(size=(40, 1), key='GroupName',
+                                                    enable_events=True,
+                                                    tooltip=('Не больше ' + str(MAX_LEN_GROUPNAME) + ' символов'))],
         [sg.Push(), sg.Text('Описание Группы'),
-         sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), key='description')],
-        [sg.Push(), sg.Checkbox('Экстренная', key='emergency')],
-        [sg.Push(), sg.Ok(button_text='Создать', key='addGroupButton')]
+         sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), key='description',
+                      enable_events=True,
+                      tooltip=('Не больше ' + str(MAX_LEN_GROUPDESC) + ' символов'))],
+        [sg.Push(), sg.Checkbox('Экстренная', key='emergency',
+                                enable_events=True,
+                                pad=(0, 10))],
+        [sg.Push(), sg.Checkbox('Заблокирована',
+                                default=False,
+                                disabled=False,
+                                text_color='red',
+                                enable_events=True,
+                                key='addGroupBlock')],
+        [sg.Push(), sg.Button(button_text='Создать', disabled=True, key='addGroupButton',
+                          disabled_button_color='gray')]
     ]
     return sg.Window('Добавить группу', layout_add_group, icon=ICON_BASE_64, use_ttk_buttons=True,
-                     finalize=True, modal=True)
+                     finalize=True,
+                     disable_minimize=True,
+                     modal=True)
 
 
 def make_del_group_window(group):
@@ -1045,16 +1069,20 @@ def make_exit_window():
         [sg.Text(exit_text)],
         [sg.Button('Да', key="okExit"), sg.Button('Нет', key='noExit')]
     ]
-    return sg.Window('Выход', layout_exit, icon=ICON_BASE_64, use_ttk_buttons=True,
+    return sg.Window('Выход', layout_exit, icon=ICON_BASE_64,
+                     disable_minimize=True,
+                     use_ttk_buttons=True,
                      finalize=True, modal=True)
 
-def make_confirm_window():
-    exit_text = 'Вы уверены, что хотите удалить всю БД и все файлы???'
+def make_confirm_window(message):
     layout_exit = [
-        [sg.Text(exit_text)],
-        [sg.Button('Да', key="okExit"), sg.Button('Нет', key='noExit')]
+        [sg.Text(message)],
+        [sg.Push(), sg.Button('Да', key="okExit", pad=((0, 10), (10, 10))), sg.Button('Нет', key='noExit',
+                                                                                    pad=((10, 0), (10, 10))), sg.Push()]
     ]
-    return sg.Window('Выход', layout_exit, icon=ICON_BASE_64, use_ttk_buttons=True,
+    return sg.Window('Подтверждение', layout_exit, icon=ICON_BASE_64,
+                     disable_minimize=True,
+                     use_ttk_buttons=True,
                      finalize=True, modal=True)
 
 
@@ -1314,8 +1342,6 @@ def show_app(icon):
 #     print('hide')
 
 
-
-
 def block_user(set, id):
     user_dict = {'id': id}
     if set:
@@ -1327,6 +1353,21 @@ def block_user(set, id):
         res = requests.post(BASE_URL +
                                      'enableUser',
                                      json=user_dict,
+                                     headers=HEADER_dict)
+    return res
+
+
+def block_group(set, id):
+    group_dict = {'id': id}
+    if set:
+        res = requests.post(BASE_URL +
+                                     'disableGroup',
+                                     json=group_dict,
+                                     headers=HEADER_dict)
+    else:
+        res = requests.post(BASE_URL +
+                                     'enableGroup',
+                                     json=group_dict,
                                      headers=HEADER_dict)
     return res
 
@@ -1487,6 +1528,46 @@ def validate(window: str):
             window_modify_user['UserModifyPriority'].update(background_color=button_color_2,
                                                    text_color=omega_theme['BACKGROUND'])
             return False
+    if window =='add_group':
+        print(val_add_group)
+        if 0 < len(str(val_add_group['GroupName'])) <= MAX_LEN_GROUPNAME:
+            window_add_group['GroupName'].update(background_color=omega_theme['BACKGROUND'],
+                                               text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Имя должно быть не более " + str(MAX_LEN_GROUPNAME) + " символов"))
+            window_add_group.Element('GroupName').SetFocus()
+            window_add_group['GroupName'].update(background_color=button_color_2,
+                                               text_color=omega_theme['BACKGROUND'])
+            return False
+        if 0 <= len(str(val_add_group['description'])) <= MAX_LEN_GROUPDESC:
+            window_add_group['description'].update(background_color=omega_theme['BACKGROUND'],
+                                               text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Имя должно быть не более " + str(MAX_LEN_GROUPDESC) + " символов"))
+            window_add_group.Element('description').SetFocus()
+            window_add_group['description'].update(background_color=button_color_2,
+                                               text_color=omega_theme['BACKGROUND'])
+            return False
+    if window == 'modify_group':
+        print(val_modify_group)
+        if 0 < len(str(val_modify_group['GroupModifyName'])) <= MAX_LEN_GROUPNAME:
+            window_modify_group['GroupModifyName'].update(background_color=omega_theme['BACKGROUND'],
+                                                 text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Имя должно быть не более " + str(MAX_LEN_GROUPNAME) + " символов"))
+            window_modify_group.Element('GroupModifyName').SetFocus()
+            window_modify_group['GroupModifyName'].update(background_color=button_color_2,
+                                                 text_color=omega_theme['BACKGROUND'])
+            return False
+        if 0 <= len(str(val_modify_group['GroupModifyDesc'])) <= MAX_LEN_GROUPDESC:
+            window_modify_group['GroupModifyDesc'].update(background_color=omega_theme['BACKGROUND'],
+                                                   text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Имя должно быть не более " + str(MAX_LEN_GROUPDESC) + " символов"))
+            window_modify_group.Element('GroupModifyDesc').SetFocus()
+            window_modify_group['GroupModifyDesc'].update(background_color=button_color_2,
+                                                   text_color=omega_theme['BACKGROUND'])
+            return False
     return result
 
 
@@ -1545,6 +1626,31 @@ def update_users():
     else:
         window['-users-'].update(user_list)
     window['-TREE2-'].update(treedata_update_user)
+
+
+def update_groups():
+    add_groups(get_groups_from_server())
+    groups_from_db = get_groups_from_db()
+    groups_from_db.sort(key=lambda i: i['name'])
+    group_list, treedata_update_group = get_group_list(groups_from_db)
+    if filter_status_group:
+        search_str = values['-filterGroup-']
+        # print(search_str)
+        filtered_groups = filter(lambda x: search_str in x['name'],
+                                 groups_from_db)
+        filtered_groups_list_of_dict = list(filtered_groups)
+        # print(filtered_groups_list_of_dict)
+        # print(len(filtered_groups_list_of_dict))
+        filtered_groups_list = list()
+        # users_from_db = filtered_users_list_of_dict
+        for filtered_group_list_of_dict in filtered_groups_list_of_dict:
+            filtered_groups_list.append([filtered_group_list_of_dict['id'],
+                                         filtered_group_list_of_dict['name'],
+                                         filtered_group_list_of_dict['desc']])
+        window['-groups2-'].update(filtered_groups_list)
+    else:
+        window['-groups2-'].update(group_list)
+    window['-TREE-'].update(treedata_update_group)
 
 
 if __name__ == '__main__':
@@ -2074,6 +2180,7 @@ if __name__ == '__main__':
                                                     sg.popup("Нет никаких изменений!", title='Инфо', icon=ICON_BASE_64,
                                                              no_titlebar=True, background_color='lightgray')
                                         else:
+                                            window_modify_user['modifyUserButton'].update(disabled=False)
                                             window_modify_user['modifyUserButton'].update(button_color=button_color_2)
                             if event == 'Изменить группу':
                                 """обновляем group_from_db вконце"""
@@ -2089,94 +2196,124 @@ if __name__ == '__main__':
                                     if ev_modify_group == sg.WIN_CLOSED or ev_modify_group == 'Exit':
                                         # print('Закрыл окно изменения группы')
                                         break
-                                    if ev_modify_group == 'modifyGroupDelChat':
-                                        modify_froup_del_chat_dict = {}
-                                        modify_froup_del_chat_dict['GroupId'] = group_to_change['id']
+                                    elif ev_modify_group == 'modifyGroupDelChat':
+                                        window_confirm = make_confirm_window('Вы уверены, что хотите очистить чат????')
+                                        while True:
+                                            ev_confirm, val_confirm = window_confirm.Read()
+                                            # print(ev_exit, val_confirm)
+                                            if ev_confirm == 'okExit':
+                                                modify_group_del_chat_dict = {}
+                                                modify_group_del_chat_dict['GroupId'] = group_to_change['id']
+                                                res_modify_group_del_chat = requests.post(
+                                                    BASE_URL + 'clearGroupMessages',
+                                                    json=modify_group_del_chat_dict,
+                                                    headers=HEADER_dict)
+                                                # print(res_modify_group.status_code)
+                                                if res_modify_group_del_chat.status_code == 200:
+                                                    logging.info(f"Группу {group_to_change['name']} почистили")
+                                                    my_popup("Группа почищена!")
+                                                    window_confirm.close()
+                                                else:
+                                                    logging.error(f'ошибка очищения группы - '
+                                                                  f'{res_modify_group_del_chat.status_code}')
+                                                    my_popup("Ошибка при очистке групп!")
+                                                    window_confirm.close()
+                                            if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
+                                                break
+                                            if ev_confirm == 'noExit':
+                                                window_confirm.close()
+                                                break
+                                    elif ev_modify_group == 'modifyGroupButton':
+                                        if validate('modify_group'):
+                                            modify_group_name = val_modify_group['GroupModifyName']
+                                            modify_group_desc = val_modify_group['GroupModifyDesc']
+                                            modify_group_emergency = int(val_modify_group['GroupModifyEmergency'])
+                                            modify_group_blocked = int(val_modify_group['GroupModifyBlocked'])
+                                            modify_group_dict = {}
+                                            modify_group = False
+                                            modify_group_is_blocked = False
+                                            modify_group_dict['id'] = group_to_change['id']
+                                            if modify_group_name != group_to_change['name']:
+                                                modify_group_dict['name'] = modify_group_name
+                                                modify_group = True
+                                            if modify_group_desc != group_to_change['desc']:
+                                                modify_group_dict['description'] = modify_group_desc
+                                                modify_group = True
+                                            if modify_group_emergency != group_to_change['is_emergency']:
+                                                modify_group_dict['groupType'] = modify_group_emergency
+                                                modify_group = True
+                                            else:
+                                                modify_group_dict['groupType'] = group_to_change['is_emergency']
+                                            if modify_group:
+                                                # print(modify_group_dict)
+                                                res_modify_group = requests.post(BASE_URL + 'updateGroup',
+                                                                                 json=modify_group_dict,
+                                                                                 headers=HEADER_dict)
+                                                # print(res_modify_group.status_code)
+                                                if res_modify_group.status_code == 200:
+                                                    logging.info(f'Группу {modify_group_name} изменили')
+                                                    # break
+                                                else:
+                                                    logging.error(f'ошибка изменения группы - '
+                                                                  f'{res_modify_group.status_code}')
+                                            if modify_group_blocked != group_to_change['is_disabled']:
+                                                modify_group_is_blocked = True
+                                                if modify_group_blocked:
+                                                    res_modify_group_is_disabled = requests.post(BASE_URL + 'disableGroup',
+                                                                                                 json=modify_group_dict,
+                                                                                                 headers=HEADER_dict)
+                                                    if res_modify_group_is_disabled.status_code == 200:
+                                                        logging.info(f'Группа {modify_group_name} заблокирована')
+                                                    elif res_modify_group_is_disabled.status_code == 400:
+                                                        logging.info(f'Группа {modify_group_name} уже была заблокирована')
+                                                    else:
+                                                        logging.info(f'Группа {modify_group_name} не заблокирована, '
+                                                                     f'ошибка - {res_modify_group_is_disabled.status_code}')
+                                                else:
+                                                    res_modify_group_is_disabled = requests.post(BASE_URL + 'enableGroup',
+                                                                                                 json=modify_group_dict,
+                                                                                                 headers=HEADER_dict)
+                                                    if res_modify_group_is_disabled.status_code == 200:
+                                                        logging.info(f'Группа {modify_group_name} раблокирована')
+                                                    elif res_modify_group_is_disabled.status_code == 400:
+                                                        logging.info(f'Группа {modify_group_name} уже была разблокирована')
+                                                    else:
+                                                        logging.info(f'Группа {modify_group_name} не разблокирована, '
+                                                                     f'ошибка - {res_modify_group_is_disabled.status_code}')
+                                            if modify_group or modify_group_is_blocked:
+                                                update_groups()
+                                                window_modify_group.close()
+                                                my_popup("Группа изменена!")
+                                            else:
+                                                my_popup("Нет изменений")
+                                    else:
+                                        window_modify_group['modifyGroupButton'].update(disabled=False)
+                                        window_modify_group['modifyGroupButton'].update(button_color=button_color_2)
+                            if event == 'Очистить чат':
+                                window_confirm = make_confirm_window('Вы уверены, что хотите очистить чат????')
+                                while True:
+                                    ev_confirm, val_confirm = window_confirm.Read()
+                                    # print(ev_exit, val_confirm)
+                                    if ev_confirm == 'okExit':
+                                        group_to_change = groups_from_db[values['-groups2-'][0]]
+                                        modify_group_del_chat_dict = {'GroupId': group_to_change['id']}
                                         res_modify_group_del_chat = requests.post(BASE_URL + 'clearGroupMessages',
-                                                                         json=modify_froup_del_chat_dict,
-                                                                         headers=HEADER_dict)
+                                                                                  json=modify_group_del_chat_dict,
+                                                                                  headers=HEADER_dict)
                                         # print(res_modify_group.status_code)
                                         if res_modify_group_del_chat.status_code == 200:
-                                            logging.info(f"Группу {group_to_change['name']} изменили")
-                                            sg.popup("Группа почищена!", title='Инфо', icon=ICON_BASE_64,
-                                                     no_titlebar=True, background_color='lightgray')
-                                            window_modify_group.close()
+                                            logging.info(f"Группу {group_to_change['name']} почистили")
+                                            my_popup("Группа почищена!")
                                         else:
-                                            logging.error(f'ошибка изменения группы - '
+                                            logging.error(f'ошибка очищения группы - '
                                                           f'{res_modify_group_del_chat.status_code}')
-                                            sg.popup("Ошибка при очистке групп!", title='Инфо', icon=ICON_BASE_64,
-                                                     no_titlebar=True, background_color='lightgray')
-                                            window_modify_group.close()
-                                    if ev_modify_group == 'modifyGroupButton':
-                                        modify_group_name = val_modify_group['GroupModifyName']
-                                        modify_group_desc = val_modify_group['GroupModifyDesc']
-                                        modify_group_emergency = int(val_modify_group['GroupModifyEmergency'])
-                                        modify_group_blocked = int(val_modify_group['GroupModifyBlocked'])
-                                        modify_group_dict = {}
-                                        modify_group = False
-                                        modify_group_is_blocked = False
-                                        modify_group_dict['id'] = group_to_change['id']
-                                        if modify_group_name != group_to_change['name']:
-                                            modify_group_dict['name'] = modify_group_name
-                                            modify_group = True
-                                        if modify_group_desc != group_to_change['desc']:
-                                            modify_group_dict['description'] = modify_group_desc
-                                            modify_group = True
-                                        if modify_group_emergency != group_to_change['is_emergency']:
-                                            modify_group_dict['groupType'] = modify_group_emergency
-                                            modify_group = True
-                                        else:
-                                            modify_group_dict['groupType'] = group_to_change['is_emergency']
-                                        if modify_group:
-                                            # print(modify_group_dict)
-                                            res_modify_group = requests.post(BASE_URL + 'updateGroup',
-                                                                             json=modify_group_dict,
-                                                                             headers=HEADER_dict)
-                                            # print(res_modify_group.status_code)
-                                            if res_modify_group.status_code == 200:
-                                                logging.info(f'Группу {modify_group_name} изменили')
-                                                # break
-                                            else:
-                                                logging.error(f'ошибка изменения группы - '
-                                                              f'{res_modify_group.status_code}')
-                                        if modify_group_blocked != group_to_change['is_disabled']:
-                                            modify_group_is_blocked = True
-                                            if modify_group_blocked:
-                                                res_modify_group_is_disabled = requests.post(BASE_URL + 'disableGroup',
-                                                                                             json=modify_group_dict,
-                                                                                             headers=HEADER_dict)
-                                                if res_modify_group_is_disabled.status_code == 200:
-                                                    logging.info(f'Группа {modify_group_name} заблокирована')
-                                                elif res_modify_group_is_disabled.status_code == 400:
-                                                    logging.info(f'Группа {modify_group_name} уже была заблокирована')
-                                                else:
-                                                    logging.info(f'Группа {modify_group_name} не заблокирована, '
-                                                                 f'ошибка - {res_modify_group_is_disabled.status_code}')
-                                            else:
-                                                res_modify_group_is_disabled = requests.post(BASE_URL + 'enableGroup',
-                                                                                             json=modify_group_dict,
-                                                                                             headers=HEADER_dict)
-                                                if res_modify_group_is_disabled.status_code == 200:
-                                                    logging.info(f'Группа {modify_group_name} раблокирована')
-                                                elif res_modify_group_is_disabled.status_code == 400:
-                                                    logging.info(f'Группа {modify_group_name} уже была разблокирована')
-                                                else:
-                                                    logging.info(f'Группа {modify_group_name} не разблокирована, '
-                                                                 f'ошибка - {res_modify_group_is_disabled.status_code}')
-                                        if modify_group or modify_group_is_blocked:
-                                            add_groups(get_groups_from_server())
-                                            groups_from_db = get_groups_from_db()
-                                            # treedata_update_group = sg.TreeData()
-                                            # group_list = list()
-                                            group_list, treedata_update_group = get_group_list(get_groups_from_db())
-                                            window['-groups2-'].update(group_list)
-                                            window['-TREE-'].update(treedata_update_group)
-                                            window_modify_group.close()
-                                            sg.popup("Группа изменена!", title='Инфо', icon=ICON_BASE_64,
-                                                     no_titlebar=True, background_color='lightgray')
-                                        else:
-                                            sg.popup("Нет изменений", title='Инфо', icon=ICON_BASE_64,
-                                                     no_titlebar=True, background_color='lightgray')
+                                            my_popup("Ошибка при очистке групп!")
+                                        window_confirm.close()
+                                    if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
+                                        break
+                                    if ev_confirm == 'noExit':
+                                        window_confirm.close()
+                                        break
                             if event == '-TREE-' and values['-TREE-'] != []:
                                 group_id = values['-TREE-'][0]
                                 # print(group_id)
@@ -2203,8 +2340,7 @@ if __name__ == '__main__':
                                 # print("clicked Apply")
                                 if not values['-users-']:
                                     print(f"Не выбран пользователь")
-                                    sg.popup('Не выбран пользователь', title='Инфо', icon=ICON_BASE_64,
-                                             no_titlebar=True, background_color='lightgray')
+                                    my_popup('Не выбран пользователь')
                                 else:
                                     add_group = False
                                     del_group = False
@@ -2254,8 +2390,7 @@ if __name__ == '__main__':
                                             add_del_groups_to_user_after_apply(add_del_dict)
                                         else:
                                             logging.error(f'Добавление групп НЕ выполнено для {chosen_login["name"]}')
-                                            sg.popup("Добавление не выполнено", title='Инфо', icon=ICON_BASE_64,
-                                                     no_titlebar=True, background_color='lightgray')
+                                            my_popup("Добавление не выполнено")
                                     elif add_group:
                                         print(add_del_dict)
                                         res_add = requests.post(BASE_URL + 'changeUserGroups',
@@ -2266,8 +2401,7 @@ if __name__ == '__main__':
                                             add_del_groups_to_user_after_apply(add_del_dict)
                                         else:
                                             logging.error(f'Добавление групп НЕ выполнено для {chosen_login["name"]}')
-                                            sg.popup("Добавление не выполнено", title='Инфо',
-                                                     icon=ICON_BASE_64, no_titlebar=True, background_color='lightgray')
+                                            my_popup("Добавление не выполнено")
                                     elif del_group:
                                         print(add_del_dict)
                                         res_del = requests.post(BASE_URL + 'changeUserGroups', json=add_del_dict,
@@ -2278,24 +2412,20 @@ if __name__ == '__main__':
                                             add_del_groups_to_user_after_apply(add_del_dict)
                                         else:
                                             logging.error(f'Удаление групп НЕ выполнено для {chosen_login["name"]}')
-                                            sg.popup("Удаление не выполнено", title='Инфо', icon=ICON_BASE_64,
-                                                     no_titlebar=True, background_color='lightgray')
+                                            my_popup("Удаление не выполнено")
                                     if add_group or del_group:
                                         add_del_text = 'Изменение групп для ' + chosen_login['name'] + ' выполнено'
                                         # logging.info(f'Добавление групп НЕ выполнено для {chosen_login["name"]}')
-                                        sg.popup(add_del_text, title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
-                                                 background_color='lightgray')
+                                        my_popup(add_del_text)
                                         window['Apply'].update(disabled=True)
                                     else:
                                         # logging.error(f'')
-                                        sg.popup('Нет изменений', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
-                                                 background_color='lightgray')
+                                        my_popup('Нет изменений')
                             if event == "Apply2":
                                 # print("clicked Apply2")
                                 if not values['-groups2-']:
                                     # print(f"Не выбрана группа")
-                                    sg.popup('Не выбрана группа', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
-                                             background_color='lightgray')
+                                    my_popup('Не выбрана группа')
                                 else:
                                     add_user = False
                                     del_user = False
@@ -2350,8 +2480,7 @@ if __name__ == '__main__':
                                             logging.error(
                                                 f'Изменение пользователей НЕ выполнено для {chosen_group["name"]} - '
                                                 f'{res_add_del.status_code}')
-                                            sg.popup("Добавление не выполнено", title='Инфо', icon=ICON_BASE_64,
-                                                     no_titlebar=True, background_color='lightgray')
+                                            my_popup("Добавление не выполнено")
                                     elif add_user:
                                         res_add = requests.post(BASE_URL + 'changeGroupUsers', json=add_del_dict,
                                                                 headers=HEADER_dict)
@@ -2365,8 +2494,7 @@ if __name__ == '__main__':
                                             logging.error(
                                                 f'Добавление пользователей НЕ выполнено для {chosen_group["name"]} - '
                                                 f'{res_add.status_code}')
-                                            sg.popup("Добавление не выполнено", title='Инфо', icon=ICON_BASE_64,
-                                                     no_titlebar=True, background_color='lightgray')
+                                            my_popup("Добавление не выполнено")
                                     elif del_user:
                                         res_del = requests.post(BASE_URL + 'changeGroupUsers', json=add_del_dict,
                                                                 headers=HEADER_dict)
@@ -2379,20 +2507,16 @@ if __name__ == '__main__':
                                             logging.error(
                                                 f'Удаление пользователей НЕ выполнено для {chosen_group["name"]} - '
                                                 f'{res_del.status_code}')
-                                            sg.popup("Удаление не выполнено", title='Инфо', icon=ICON_BASE_64,
-                                                     no_titlebar=True, background_color='lightgray')
+                                            my_popup("Удаление не выполнено")
                                     if add_user or del_user:
                                         add_del_text = 'Изменение пользователей для ' + \
                                                        chosen_group['name'] + ' выполнено'
-                                        sg.popup(add_del_text, title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
-                                                 background_color='lightgray')
+                                        my_popup(add_del_text)
                                         window['Apply2'].update(disabled=True)
                                     else:
-                                        sg.popup('Нет изменений', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
-                                                 background_color='lightgray')
+                                        my_popup('Нет изменений')
                             if event == 'О программе':
-                                sg.popup('---------------------Powered by PaShi---------------------',
-                                         title='О программе', icon=ICON_BASE_64)
+                                my_popup('---------------------Powered by PaShi---------------------')
                             if event == 'Установить лицензию...':
                                 window_add_lic = make_add_lic()
                                 while True:
@@ -2457,8 +2581,7 @@ if __name__ == '__main__':
                                             else:
                                                 logging.error(
                                                     f'Ошибка при изменении настроек - {res_update_set.status_code}')
-                                                sg.popup("Ошибка при изменении настроек", title='Инфо', icon=ICON_BASE_64,
-                                                         no_titlebar=True, background_color='lightgray')
+                                                my_popup("Ошибка при изменении настроек")
                                             disable_input(window_settings)
                                             counter = 0
                                             while counter < 11:
@@ -2469,9 +2592,7 @@ if __name__ == '__main__':
                                             window_settings['-OK-set-'].update(disabled=True)
                                             window_settings['-OK-set-'].update(button_color=button_color)
                                         else:
-                                            sg.popup("Введены некорректные данные!", title='Инфо',
-                                                     icon=ICON_BASE_64,
-                                                     no_titlebar=True, background_color='lightgray')
+                                            my_popup("Введены некорректные данные!")
                                     else:
                                         pass
                                         # timeout += 1000
@@ -2491,16 +2612,16 @@ if __name__ == '__main__':
                                     print(ev_add_user, val_add_user)
                                     if ev_add_user == sg.WIN_CLOSED or ev_add_user == 'Exit':
                                         break
-                                    if ev_add_user == 'UserPassword':
+                                    elif ev_add_user == 'UserPassword':
                                         window_add_user['showPassword'].update(disabled=False)
                                         window_add_user['showPassword'].update(image_data=ICON_SHOW_BASE_64)
-                                    if ev_add_user == 'disp' or ev_add_user == 'adm':
+                                    elif ev_add_user == 'disp' or ev_add_user == 'adm':
                                         window_add_user['addUserAllowDelChats'].update(disabled=False)
                                         window_add_user['addUserAllowPartialDrop'].update(disabled=False)
-                                    if ev_add_user == 'gw':
+                                    elif ev_add_user == 'gw':
                                         window_add_user['addUserAllowDelChats'].update(disabled=True)
                                         window_add_user['addUserAllowPartialDrop'].update(disabled=True)
-                                    if ev_add_user == 'UserPriority':
+                                    elif ev_add_user == 'UserPriority':
                                         if val_add_user['UserPriority'] == '':
                                             window_add_user['UserPriority'].update(background_color=omega_theme['INPUT'],
                                                                                    text_color=omega_theme['TEXT'])
@@ -2516,7 +2637,7 @@ if __name__ == '__main__':
                                                 window_add_user['UserPriority'].update(background_color=button_color_2)
                                         else:
                                             window_add_user['UserPriority'].update(background_color=button_color_2)
-                                    if ev_add_user == 'showPassword':
+                                    elif ev_add_user == 'showPassword':
                                         if password_clear:
                                             window_add_user['UserPassword'].update(password_char='*')
                                             window_add_user['showPassword'].update(image_data=ICON_SHOW_BASE_64)
@@ -2526,7 +2647,7 @@ if __name__ == '__main__':
                                             window_add_user['showPassword'].update(image_data=ICON_HIDE_BASE_64)
                                             password_clear = True
                                         window_add_user.Element('UserPassword').SetFocus()
-                                    if ev_add_user == 'addUserButton':
+                                    elif ev_add_user == 'addUserButton':
                                         if validate('add_user'):
                                             new_user_type = get_user_type('add_user')
                                             add_user_dict = {'login': val_add_user['UserLogin'],
@@ -2631,29 +2752,25 @@ if __name__ == '__main__':
                                                                 f'{res_block.status_code}')
                                                 update_users()
                                                 window_add_user.close()
-                                                sg.popup("Пользователь добавлен!", title='Инфо', icon=ICON_BASE_64,
-                                                         no_titlebar=True, background_color='lightgray')
+                                                my_popup("Пользователь добавлен!")
                                             else:
                                                 logging.error(f"Пользователь {val_add_user['UserLogin']} НЕ добавлен - "
                                                               f'{res_add_user.status_code}')
-                                                sg.popup("Пользователь не добавлен!", title='Инфо', icon=ICON_BASE_64,
-                                                         no_titlebar=True, background_color='lightgray')
+                                                my_popup("Пользователь не добавлен!")
                                     else:
                                         window_add_user['addUserButton'].update(disabled=False)
                                         window_add_user['addUserButton'].update(button_color=button_color_2)
                             if event == '-DelUser-':
                                 if not values['-users-']:
                                     # print(f"Не выбран пользователь")
-                                    sg.popup('Не выбран пользователь', title='Инфо', icon=ICON_BASE_64,
-                                             no_titlebar=True, background_color='lightgray')
+                                    my_popup('Не выбран пользователь')
                                 else:
                                     if filter_status:
                                         del_user = filtered_users_list_of_dict[values['-users-'][0]]
                                     else:
                                         del_user = users_from_db[values['-users-'][0]]
-                                    if del_user == 'admin':
-                                        sg.popup("Нельзя удалить admin", title='Инфо', icon=ICON_BASE_64,
-                                                 no_titlebar=True, background_color='lightgray')
+                                    if del_user['login'] == 'admin':
+                                        my_popup("Нельзя удалить пользователя admin")
                                     else:
                                         window_del_user = make_del_user_window(del_user['name'])
                                         while True:
@@ -2705,8 +2822,7 @@ if __name__ == '__main__':
                             if event == '-CloneUser-':
                                 if not values['-users-']:
                                     # print(f"Не выбран пользователь")
-                                    sg.popup('Не выбран пользователь', title='Инфо', icon=ICON_BASE_64,
-                                             no_titlebar=True, background_color='lightgray')
+                                    my_popup('Не выбран пользователь')
                                 else:
                                     if filter_status:
                                         user_clone = filtered_users_list_of_dict[values['-users-'][0]]
@@ -2764,9 +2880,7 @@ if __name__ == '__main__':
                                                         logging.error(
                                                             f'Пользователь {clone_user_login} НЕ стал диспетчером - '
                                                             f'{res_add_disp.status_code}')
-                                                        sg.popup("Пользователь не стал диспетчером!", title='Инфо',
-                                                                 icon=ICON_BASE_64,
-                                                                 no_titlebar=True, background_color='lightgray')
+                                                        my_popup("Пользователь не стал диспетчером!")
                                                 original_groups = get_groups_for_user_from_db(user_clone['id'])
                                                 original_groups_ids = []
                                                 for or_gr in original_groups:
@@ -2810,20 +2924,15 @@ if __name__ == '__main__':
                                                                                     icon=check[0])
                                                     window['-TREE2-'].update(treedata_update_user)
                                                     window_clone_user.close()
-                                                    sg.popup("Пользователь клонирован!", title='Инфо',
-                                                             icon=ICON_BASE_64,
-                                                             no_titlebar=True, background_color='lightgray')
+                                                    my_popup("Пользователь клонирован!")
                                                     break
                                                 else:
                                                     logging.error(f'Добавление групп для {clone_user_login} '
                                                                   f'НЕ выполнено - {res_clone_add_group.status_code}')
-                                                    sg.popup("Добавление групп не выполнено", title='Инфо',
-                                                             icon=ICON_BASE_64,
-                                                             no_titlebar=True, background_color='lightgray')
+                                                    my_popup("Добавление групп не выполнено")
                                             else:
                                                 logging.error(f'Новый пользователь {clone_user_login} НЕ добавлен')
-                                                sg.popup("Пользователь не добавлен!", title='Инфо', icon=ICON_BASE_64,
-                                                         no_titlebar=True, background_color='lightgray')
+                                                my_popup("Пользователь не добавлен!")
                             if event == '-filterUser-':
                                 filter_status = True
                                 if values['-filterUser-']:
@@ -2877,67 +2986,42 @@ if __name__ == '__main__':
                                 window_add_group.Element('GroupName').SetFocus()
                                 while True:
                                     ev_add_group, val_add_group = window_add_group.Read()
-                                    # print(ev_add_group, val_add_group)
+                                    print(ev_add_group, val_add_group)
                                     if ev_add_group == sg.WIN_CLOSED or ev_add_group == 'Exit':
                                         # print('Закрыл окно добавления группы')
                                         break
-                                    if ev_add_group == 'addGroupButton':
-                                        new_group_name = val_add_group['GroupName']
-                                        new_group_desc = val_add_group['description']
-                                        new_group_is_emergency = int(val_add_group['emergency'])
-                                        add_group_dict = {'name': new_group_name,
-                                                          'description': new_group_desc,
-                                                          'groupType': new_group_is_emergency}
-                                        # print(add_group_dict)
-                                        res_add_user = requests.post(BASE_URL + 'addGroup',
-                                                                     json=add_group_dict, headers=HEADER_dict)
-                                        # print(res_add_user.status_code)
-                                        if res_add_user.status_code == 200:
-                                            logging.info(f'Группа {new_group_name} добавлена')
-                                            add_groups(get_groups_from_server())
-                                            groups_from_db = get_groups_from_db()
-                                            groups_from_db.sort(key=lambda i: i['name'])
-                                            treedata_update_group = sg.TreeData()
-                                            group_list = list()
-                                            for group_from_db in groups_from_db:
-                                                group_list.append([group_from_db['id'], group_from_db['name'],
-                                                                   group_from_db['desc']])
-                                                treedata_update_group.insert('', group_from_db['id'], '',
-                                                                             values=[group_from_db['name'],
-                                                                                     group_from_db['desc']],
-                                                                             icon=check[0])
-                                            if filter_status_group:
-                                                search_str = values['-filterGroup-']
-                                                # print(search_str)
-                                                filtered_groups = filter(lambda x: search_str in x['name'],
-                                                                         groups_from_db)
-                                                filtered_groups_list_of_dict = list(filtered_groups)
-                                                # print(filtered_groups_list_of_dict)
-                                                # print(len(filtered_groups_list_of_dict))
-                                                filtered_groups_list = list()
-                                                # users_from_db = filtered_users_list_of_dict
-                                                for filtered_group_list_of_dict in filtered_groups_list_of_dict:
-                                                    filtered_groups_list.append([filtered_group_list_of_dict['id'],
-                                                                                 filtered_group_list_of_dict['name'],
-                                                                                 filtered_group_list_of_dict['desc']])
-                                                window['-groups2-'].update(filtered_groups_list)
+                                    elif ev_add_group == 'addGroupButton':
+                                        if validate('add_group'):
+                                            new_group_name = val_add_group['GroupName']
+                                            new_group_desc = val_add_group['description']
+                                            new_group_is_emergency = int(val_add_group['emergency'])
+                                            new_group_blocked = int(val_add_group['addGroupBlock'])
+                                            add_group_dict = {'name': new_group_name,
+                                                              'description': new_group_desc,
+                                                              'groupType': new_group_is_emergency}
+                                            # print(add_group_dict)
+                                            res_add_user = requests.post(BASE_URL + 'addGroup',
+                                                                         json=add_group_dict, headers=HEADER_dict)
+                                            # print(res_add_user.status_code)
+                                            if res_add_user.status_code == 200:
+                                                logging.info(f'Группа {new_group_name} добавлена')
+                                                if val_add_group['addGroupBlock']:
+                                                    block_group(new_group_blocked, res_add_user.text[1:-1])
+                                                update_groups()
+                                                window_add_group.close()
+                                                my_popup("Группа добавлена!")
+                                                break
                                             else:
-                                                window['-groups2-'].update(group_list)
-                                            window['-TREE-'].update(treedata_update_group)
-                                            window_add_group.close()
-                                            sg.popup("Группа добавлена!", title='Инфо', icon=ICON_BASE_64,
-                                                     no_titlebar=True, background_color='lightgray')
-                                            break
-                                        else:
-                                            logging.error(f'Группа {new_group_name} НЕ добавлена')
-                                            sg.popup("Группа не добавлена!", title='Инфо', icon=ICON_BASE_64,
-                                                     no_titlebar=True, background_color='lightgray')
-                                            window_add_group.Element('GroupName').SetFocus()
+                                                logging.error(f'Группа {new_group_name} НЕ добавлена')
+                                                my_popup("Группа не добавлена!")
+                                                window_add_group.Element('GroupName').SetFocus()
+                                    else:
+                                        window_add_group['addGroupButton'].update(disabled=False)
+                                        window_add_group['addGroupButton'].update(button_color=button_color_2)
                             if event == '-DelGroup-':
                                 if not values['-groups2-']:
                                     # print(f"Не выбрана группа")
-                                    sg.popup('Не выбрана группа', title='Инфо', icon=ICON_BASE_64,
-                                             no_titlebar=True, background_color='lightgray')
+                                    my_popup('Не выбрана группа')
                                 else:
                                     if filter_status_group:
                                         del_group = filtered_groups_list_of_dict[values['-groups2-'][0]]
@@ -3002,14 +3086,12 @@ if __name__ == '__main__':
                                                 # window['-groups2-'].update(group_list)
                                                 window['-TREE-'].update(treedata_update_group)
                                                 window_del_group.close()
-                                                sg.popup("Группа удалена!", title='Инфо', icon=ICON_BASE_64,
-                                                         no_titlebar=True, background_color='lightgray')
+                                                my_popup("Группа удалена!")
                                                 break
                                             else:
                                                 logging.error(f'Группа {del_group["name"]} НЕ удалена - '
                                                               f'{res_del_group.status_code}')
-                                                sg.popup("Группа не удалена!", title='Инфо', icon=ICON_BASE_64,
-                                                         no_titlebar=True, background_color='lightgray')
+                                                my_popup("Группа не удалена!")
                             if event == '-Start-':
                                 print('Стартуем сервер')
                                 sg.popup('Запускаем сервер, ждите..', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
@@ -3038,9 +3120,7 @@ if __name__ == '__main__':
                                         print('Нет ответа сервера')
                                         if i == 2:
                                             logging.critical(f'Сервер не отвечает - {res_ping}')
-                                            sg.popup("Сервер не отвечает", title='Инфо', icon=ICON_BASE_64,
-                                                     no_titlebar=True,
-                                                     background_color='lightgray')
+                                            my_popup("Сервер не отвечает")
                                     else:
                                         if res_ping.status_code == 200:
                                             logging.info(f'Сервер запущен администратором')
@@ -3225,8 +3305,7 @@ if __name__ == '__main__':
                             if event == '-checkAllGroups-':
                                 # print(f'{values}')
                                 if not values['-users-']:
-                                    sg.popup('Не выбран пользователь', title='Инфо', icon=ICON_BASE_64,
-                                             no_titlebar=True, background_color='lightgray')
+                                    my_popup('Не выбран пользователь')
                                     window['-checkAllGroups-'].update(False)
                                 else:
                                     if filter_status:
@@ -3252,8 +3331,7 @@ if __name__ == '__main__':
                             if event == '-checkAllUsers-':
                                 # print(f'{values}')
                                 if not values['-groups2-']:
-                                    sg.popup('Не выбрана группа', title='Инфо', icon=ICON_BASE_64,
-                                             no_titlebar=True, background_color='lightgray')
+                                    my_popup('Не выбрана группа')
                                     window['-checkAllUsers-'].update(False)
                                 else:
                                     if filter_status:
@@ -3273,7 +3351,7 @@ if __name__ == '__main__':
                                             tree2.update(key=user_id_for_tree, icon=check[0])
                                     window['Apply2'].update(disabled=False)
                             if event == '-dropDB-':
-                                window_confirm = make_confirm_window()
+                                window_confirm = make_confirm_window('Вы уверены, что хотите удалить всю БД и все файлы???')
                                 while True:
                                     ev_confirm, val_confirm = window_confirm.Read()
                                     # print(ev_exit, val_confirm)
@@ -3297,7 +3375,7 @@ if __name__ == '__main__':
                                         window_confirm.close()
                                         break
                             if event == '-partially-dropDB-':
-                                window_confirm = make_confirm_window()
+                                window_confirm = make_confirm_window('Вы уверены, что хотите удалить все данные???')
                                 while True:
                                     ev_confirm, val_confirm = window_confirm.Read()
                                     # print(ev_exit, val_confirm)
@@ -3308,9 +3386,7 @@ if __name__ == '__main__':
                                         if res_drop_db.status_code == 200:
                                             logging.info('Удаляем всё, кроме абонентов и групп')
                                             logging.info('Стоп лога')
-                                            sg.popup('БД частично удалена', title='Инфо', icon=ICON_BASE_64,
-                                                     no_titlebar=True,
-                                                     background_color='lightgray')
+                                            my_popup('БД частично удалена')
                                         else:
                                             logging.info('Проблема с удалением всего, кроме абонентов и групп!')
                                         window_confirm.close()
@@ -3322,15 +3398,13 @@ if __name__ == '__main__':
                                         window_confirm.close()
                                         break
                     else:
-                        sg.popup('Введите правильный ip!', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
-                                 background_color='lightgray')
+                        my_popup('Введите правильный ip!')
                         break
                 if window_main_active:
                     window.close()
                     break
             else:
-                sg.popup("Неправильный пароль!!!", title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
-                         background_color='lightgray')
+                my_popup("Неправильный пароль!!!")
                 window_login['password'].update('')
     if not window_main_active:
         window_login.close()
