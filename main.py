@@ -1067,7 +1067,8 @@ def make_exit_window():
     exit_text = 'Вы уверены, что хотите выйти???'
     layout_exit = [
         [sg.Text(exit_text)],
-        [sg.Button('Да', key="okExit"), sg.Button('Нет', key='noExit')]
+        [sg.Push(), sg.Button('Да', key="okExit", pad=((0, 10), (10, 10)), size=10),
+         sg.Button('Нет', key='noExit', pad=((10, 0), (10, 10)), size=10), sg.Push()]
     ]
     return sg.Window('Выход', layout_exit, icon=ICON_BASE_64,
                      disable_minimize=True,
@@ -1077,8 +1078,8 @@ def make_exit_window():
 def make_confirm_window(message):
     layout_exit = [
         [sg.Text(message)],
-        [sg.Push(), sg.Button('Да', key="okExit", pad=((0, 10), (10, 10))), sg.Button('Нет', key='noExit',
-                                                                                    pad=((10, 0), (10, 10))), sg.Push()]
+        [sg.Push(), sg.Button('Да', key="okExit", pad=((0, 10), (10, 10)), size=10),
+         sg.Button('Нет', key='noExit', pad=((10, 0), (10, 10)), size=10), sg.Push()]
     ]
     return sg.Window('Подтверждение', layout_exit, icon=ICON_BASE_64,
                      disable_minimize=True,
