@@ -43,9 +43,12 @@ MIN_AUDIO_PORT = 1025
 MAX_AUDIO_PORT= 65535
 MIN_PORTS = 20
 MAX_PORTS= 1000
+MIN_PING_TM = 2
+MAX_PING_TM = 120
+DEF_PING_TM = 5
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
-version = '1.0.4 СТИС'
+version = '1.0.5 СТИС'
 
 # folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
 # file_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABU0lEQVQ4y52TzStEURiHn/ecc6XG54JSdlMkNhYWsiILS0lsJaUsLW2Mv8CfIDtr2VtbY4GUEvmIZnKbZsY977Uwt2HcyW1+dTZvt6fn9557BGB+aaNQKBR2ifkbgWR+cX13ubO1svz++niVTA1ArDHDg91UahHFsMxbKWycYsjze4muTsP64vT43v7hSf/A0FgdjQPQWAmco68nB+T+SFSqNUQgcIbN1bn8Z3RwvL22MAvcu8TACFgrpMVZ4aUYcn77BMDkxGgemAGOHIBXxRjBWZMKoCPA2h6qEUSRR2MF6GxUUMUaIUgBCNTnAcm3H2G5YQfgvccYIXAtDH7FoKq/AaqKlbrBj2trFVXfBPAea4SOIIsBeN9kkCwxsNkAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK0xAAAAAElFTkSuQmCC'
@@ -580,7 +583,9 @@ def make_main_window(ip):
         [sg.Button('Добавить', disabled_button_color='gray', key='-AddUser-', pad=((30, 10), (20, 5))),
          sg.Button('Удалить', disabled_button_color='gray', key='-DelUser-', pad=(10, (20, 5))),
          sg.Button('Клонировать', disabled_button_color='gray', key='-CloneUser-', pad=(10, (20, 5)))],
-        [sg.Text('Фильтр: '), sg.Input(size=(20, 1), enable_events=True, key='-filterUser-')],
+        [sg.Text('Фильтр: '), sg.Input(size=(20, 1), enable_events=True,
+                                       disabled=True,
+                                       key='-filterUser-')],
         [
             sg.Frame('Пользователи',
                      [
@@ -608,8 +613,10 @@ def make_main_window(ip):
                                          show_expanded=False, enable_events=True, justification='left', expand_y=True,
                                          select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                                          selected_row_colors='black on lightblue',
-                                         )]], expand_y=True, expand_x=True),
-
+                                         )]], expand_y=True,
+                                         # expand_x=True
+                     ),
+            # sg.Multiline('', expand_x=True, expand_y=True, key='online-users', )
         ],
         [         sg.Push(),
          sg.Checkbox('Выбрать все группы', enable_events=True, key='-checkAllGroups-', default=False,
@@ -621,7 +628,9 @@ def make_main_window(ip):
     tab2_layout = [
         [sg.Button('Добавить', disabled_button_color='gray', key='-AddGroup-', pad=((30, 10), (20, 5))),
          sg.Button('Удалить', disabled_button_color='gray', key='-DelGroup-', pad=(10, (20, 5)))],
-        [sg.Text('Фильтр: '), sg.Input(size=(20, 1), enable_events=True, key='-filterGroup-')],
+        [sg.Text('Фильтр: '), sg.Input(size=(20, 1), enable_events=True,
+                                       disabled=True,
+                                       key='-filterGroup-')],
         [sg.Frame('Группы',
                   [
                       [sg.Table(group_list, headings=['id', 'Имя', 'Описание', 'Э', 'Блок'], justification="left",
@@ -695,13 +704,25 @@ def make_main_window(ip):
                               sg.Button('Очистить частично', key='-partially-dropDB-', disabled=False,
                                        disabled_button_color='gray', pad=((0, 10), (5, 10))),
                               sg.Button('Очистить', key='-dropDB-', disabled=False,
-                                       disabled_button_color='gray', pad=((0, 10), (5, 10))),]],)
+                                       disabled_button_color='gray', pad=((0, 10), (5, 10))),]],),
          ],
         [sg.TabGroup(
             [[sg.Tab('Пользователи', tab1_layout, key="Tab1"),
               sg.Tab('Группы', tab2_layout, key="Tab2"),
               sg.Tab('Журнал', tab3_layout, key="Tab3"),
-              ]], key="Tabs", size=(1000, 690), enable_events=True)],
+              ]], key="Tabs", size=(1000, 690), enable_events=True),
+        sg.Frame('Онлайн', [[sg.Multiline('',
+                                          # expand_x=True,
+                                          horizontal_scroll=True,
+                                          size=(20, 1),
+                                          expand_y=True,
+                                          key='online-users',
+                                          write_only=True,
+                                          disabled=True,
+                                          auto_refresh=True, )]],
+                 expand_x=True, expand_y=True,
+                 pad=((0, 5), (18, 2)))
+        ],
         [sg.StatusBar(users_online_text, key='-StatusBar-', size=(100, 1))]]
     return sg.Window(label_text, layout, icon=ICON_BASE_64, use_ttk_buttons=True,
                      enable_close_attempted_event=True,
@@ -828,6 +849,14 @@ def make_settings():
                                     if 6 < len(settings['udpPortsRange']) < 12 else 0), enable_events=True)]
                       ], expand_x=True)
              ],
+            [sg.Frame('Настройки сервера',
+                      [
+                          [sg.Push(), sg.Text('Таймаут опроса сервера, сек'),
+                           sg.Input(size=20, key='-пинг-таймаут-',
+                                    default_text=ping_timeout,
+                                    enable_events=True)],
+                      ], expand_x=True)
+             ],
             [sg.Push()],
             [sg.ProgressBar(max_value=10, orientation='horizontal', key='-Progress-Bar-',
                             # visible=False,
@@ -883,10 +912,16 @@ def make_add_user_window():
         # [sg.Push(), sg.Text('Показать пароль', key='showPasswordText'), sg.Button(key='showPassword',
         #                                                                           button_color='#ffffff',
         #                                                                           image_data=ICON_SHOW_BASE_64)],
-        [sg.Frame('Дополнительный Тип', [[sg.Radio('Диспетчер', key='disp', group_id='u_type', enable_events=True)],
-                  [sg.Radio('Концентратор К500', key='gw', group_id='u_type', enable_events=True)],
-                  [sg.Radio('Администратор', key='adm', group_id='u_type', enable_events=True)]],
-         size=(300, 110), pad=((8, 0), (10, 10)))],
+        [sg.Frame('Тип', [
+                          [sg.Radio('Пользователь',
+                                    default=True,
+                                    key='user',
+                                    group_id='u_type',
+                                    enable_events=True)],
+                          [sg.Radio('Диспетчер', key='disp', group_id='u_type', enable_events=True)],
+                          [sg.Radio('Концентратор К500', key='gw', group_id='u_type', enable_events=True)],
+                          [sg.Radio('Администратор', key='adm', group_id='u_type', enable_events=True)]],
+         size=(300, 140), pad=((8, 0), (10, 10)))],
         [sg.Frame('Дополнительные разрешения', [
             [sg.Checkbox('Разрешить индивидуальные вызовы',
                      default=True,
@@ -940,12 +975,19 @@ def make_modify_user_window(user: dict):
                    button_color='#ffffff',
                    image_data=ICON_BLANK_BASE_64,
                    disabled=True)],
-        [sg.Frame('Дополнительный Тип', [[sg.Radio('Диспетчер',
-                                                   default=user['is_dispatcher'],
-                                                   key='modifyUserDispatcher',
-                                                   group_id='u_type',
-                                                   disabled=True if user['is_blocked'] or user['is_admin'] else False,
-                                                   enable_events=True)],
+        [sg.Frame('Тип', [
+                  [sg.Radio('Пользователь',
+                            default=True,
+                            key='modifyUserUser',
+                            group_id='u_type',
+                            disabled=True if user['is_blocked'] or user['is_admin'] else False,
+                            enable_events=True)],
+                  [sg.Radio('Диспетчер',
+                            default=user['is_dispatcher'],
+                            key='modifyUserDispatcher',
+                            group_id='u_type',
+                            disabled=True if user['is_blocked'] or user['is_admin'] else False,
+                            enable_events=True)],
                   [sg.Radio('Концентратор К500',
                             default=user['is_gw'],
                             key='modifyUserGw',
@@ -958,20 +1000,21 @@ def make_modify_user_window(user: dict):
                             group_id='u_type',
                             disabled=True,
                             enable_events=True)]],
-         size=(300, 110), pad=((8, 0), (10, 10)))],
+         size=(300, 140), pad=((8, 0), (10, 10)))],
         [sg.Frame('Дополнительные разрешения', [
             [sg.Checkbox('Разрешить индивидуальные вызовы',
-                     default=user['en_ind'],
+                     default=False if user['is_admin'] else user['en_ind'],
                      enable_events=True,
+                     disabled=True if user['is_admin'] else False,
                      key='modifyUserIndCallEn'), sg.Push()],
             [sg.Checkbox('Разрешить удалять переписку в чатах',
-                     default=user['en_del_chats'],
-                     disabled=False if user['is_dispatcher'] or user['is_admin'] else True,
+                     default=True if user['is_admin'] else user['en_partial_drop'],
+                     disabled=False if user['is_dispatcher'] else True,
                      enable_events=True,
                      key='modifyUserAllowDelChats'), sg.Push()],
             [sg.Checkbox('Разрешить удалять данные БД',
-                     default=user['en_partial_drop'],
-                     disabled=False if user['is_dispatcher'] or user['is_admin'] else True,
+                     default=True if user['is_admin'] else user['en_partial_drop'],
+                     disabled=False if user['is_dispatcher'] else True,
                      enable_events=True,
                      key='modifyUserAllowPartialDrop'), sg.Push()]
             ],
@@ -979,11 +1022,12 @@ def make_modify_user_window(user: dict):
         [sg.Text('Приоритет'), sg.Input(key='UserModifyPriority',
                                         default_text=user['priority'],
                                         size=(4, 1),
+                                        disabled=True if user['is_admin'] else False,
                                         enable_events=True,
                                         tooltip=('От 1 до 15'))],
         [sg.Push(), sg.Checkbox('Заблокирован',
                      default=user['is_blocked'],
-                     disabled=False,
+                     disabled=True if user['is_admin'] else False,
                      text_color='red',
                      enable_events=True,
                      key='modifyUserBlock')],
@@ -1045,17 +1089,20 @@ def make_del_user_window(user):
 def make_clone_user_window(user):
     clone_text = 'Клонируем пользователя ' + user
     layout_clone_user = [
-        [sg.Push(), sg.Text(clone_text), sg.Push()],
-        [sg.Push(), sg.Text('Логин'), sg.Input(key='CloneUserLogin')],
-        [sg.Push(), sg.Text('Имя'), sg.Input(key='CloneUserName')],
-        [sg.Push(), sg.Text('Пароль'), sg.Input(key='CloneUserPassword', password_char='*')],
-        [sg.Push(), sg.Text('Показать пароль', key='showClonePasswordText'),
-         sg.Button(key='showPasswordCloneUser',
+        [sg.Text('Логин'), sg.Push(), sg.Input(key='CloneUserLogin', pad=((0, 40), (0, 0)), enable_events=True,
+                                               tooltip=('Не больше ' + str(MAX_LEN_LOGIN) + ' символов'))],
+        [sg.Text('Имя'), sg.Push(), sg.Input(key='CloneUserName', pad=((0, 40), (2, 0)), enable_events=True,
+                                             tooltip=('Не больше ' + str(MAX_LEN_USERNAME) + ' символов'))],
+        [sg.Text('Пароль'), sg.Push(), sg.Input(key='CloneUserPassword', password_char='*', enable_events=True,
+                                                tooltip=('Не меньше ' + str(MIN_LEN_PASSWORD) + ' и не больше '
+                                                         + str(MAX_LEN_PASSWORD) + ' символов')),
+         sg.Button(key='CloneUserShowPassword',
                    button_color='#ffffff',
-                   image_data=ICON_SHOW_BASE_64)],
+                   image_data=ICON_BLANK_BASE_64,
+                   disabled=True)],
         [sg.Push(), sg.Ok(button_text='Клонировать', key='cloneUserButton')]
     ]
-    return sg.Window('Клонировать пользователя', layout_clone_user, icon=ICON_BASE_64, use_ttk_buttons=True,
+    return sg.Window(('Клонировать пользователя ' + user), layout_clone_user, icon=ICON_BASE_64, use_ttk_buttons=True,
                      finalize=True, modal=True)
 
 
@@ -1120,6 +1167,15 @@ def make_confirm_window(message):
                      finalize=True, modal=True)
 
 
+def get_online_users(users: list):
+    usernames = []
+    for user in users:
+        usernames.append(get_user_name_by_id_from_db(user))
+
+    return "\n".join(sorted(usernames))
+
+
+
 def set_window_running_server():
     bar_text = 'Пользователей онлайн: ' + str(server_status['online']) + ', Версия БД: ' + str(server_status['db'])
     window['-StatusBar-'].update(bar_text, background_color=status_bar_color)
@@ -1127,6 +1183,7 @@ def set_window_running_server():
                         ['Сервер', ['Установить лицензию...', 'Настройки']],
                         ['Помощь', 'О программе'], ])
     update_free_space(server_status)
+    window['online-users'].update(get_online_users(server_status['onlineUserIds']))
 
 
 def set_window_not_running_server():
@@ -1140,55 +1197,65 @@ def set_window_not_running_server():
     window['-filterGroup-'].update(disabled=True)
     window['-partially-dropDB-'].update(disabled=True)
     window['-dropDB-'].update(disabled=True)
+    window.Element('-Start-').SetFocus()
 
 
-def the_thread(ip, window):
-    sleep(10)
-    num = 0
-    print('Запускаем поток')
-    while True:
-        res_ping = ''
-        change_state = False
-        print(f" Thread {num} before - {server_status['last_state']}")
-        try:
-            res_ping = requests.get(ip, timeout=3)
-        except Exception as e:
-            print(f'Сервер не доступен {e}')
-        if res_ping == '':
-            if server_status['last_state']:
-                logging.info(f'[{num}] Сервер НЕ доступен ')
-                change_state = True
-            default_status_dict = {"onlineUsersCount": '', "databaseVersion": '',
-                                   'last_state': server_status['last_state'], 'freeSpace': 0, 'spaceTotal': 1}
-            default_json = json.dumps(default_status_dict)
-            print(f' Thread {num} after - {default_status_dict}')
-            window.write_event_value('-THREAD-', (threading.currentThread().name, default_json))
-        else:
-            if res_ping.status_code == 200:
-                if not server_status['last_state']:
-                    logging.info(f'[{num}] Сервер доступен ')
+def the_thread(ip):
+    try:
+        sleep(5)
+        num = 0
+        print('Запускаем поток')
+        while True:
+            # if num == 3:
+            #     raise Exception('alarm!')
+            res_ping = ''
+            global change_state
+            change_state = False
+            # print(f" Thread {num} before - {server_status['last_state']}")
+            try:
+                res_ping = requests.get(ip, timeout=3)
+            except Exception as e:
+                print(f'Сервер не доступен {e}')
+            print(res_ping)
+            if res_ping == '':
+                if server_status['run']:
+                    logging.info(f'[{num}] Сервер НЕ доступен ')
                     change_state = True
-                print(f' Thread {num} after - {res_ping.text}')
-                window.write_event_value('-THREAD-', (threading.currentThread().name, res_ping.text))
-                # server_status['run'] = True
-        num += 1
-        if change_state:
-            with open('admin.log', mode='r', encoding='cp1251') as log_f:
-                s = log_f.read()
-                s = s.rstrip('\n')
-                journal_list = s.split('\n')
-                # filtered_journal = []
-                filtered_journal = filter_journal(journal_list)
-                if filter_status_journal:
-                    filtered_journal = list(filter(lambda x: search_str in x, filtered_journal))
-                output_text = "\n".join(filtered_journal)
-                window['journal'].update(output_text)
-                window['countLogs'].update(len(filtered_journal))
-        sleep(10)
+                default_status_dict = {"onlineUsersCount": '',
+                                       "databaseVersion": '',
+                                       'run': server_status['run'],
+                                       'freeSpace': 0,
+                                       'spaceTotal': 1,
+                                       'onlineUserIds': []}
+                default_json = json.dumps(default_status_dict)
+                print(f' Thread {num} after - {default_status_dict}')
+                window.write_event_value('-THREAD-', (threading.currentThread().name, default_json))
+            else:
+                if res_ping.status_code == 200:
+                    if not server_status['run']:
+                        logging.info(f'[{num}] Сервер доступен ')
+                        change_state = True
+                    print(f' Thread {num} after - {res_ping.text}')
+                    window.write_event_value('-THREAD-', (threading.currentThread().name, res_ping.text))
+                    # server_status['run'] = True
+            num += 1
+            sleep(ping_timeout)
+    except Exception as e:
+        global thread_started
+        thread_started = False
+        print(f'Exception! {e}, thread_started = {thread_started}')
+        window.write_event_value('-THREAD-', (threading.currentThread().name, json.dumps({'restart': 'true'})))
 
 
 def check_server(url_ping):
-    status = {'last_state': False, 'run': False, 'online': '', 'db': '', 'freeSpace': 0, 'spaceTotal': 1}
+    status = {
+              # 'last_state': False,
+              'run': False,
+              'online': '',
+              'db': '',
+              'freeSpace': 0,
+              'spaceTotal': 1,
+              'onlineUserIds': []}
     res_ping = ''
     try:
         res_ping = requests.get(url_ping, timeout=3)
@@ -1209,10 +1276,11 @@ def check_server(url_ping):
             #               + ', Версия БД: ' + str(res_dict['databaseVersion'])
             status['online'] = res_dict['onlineUsersCount']
             status['db'] = res_dict['databaseVersion']
-            status['last_state'] = True
+            # status['last_state'] = True
             status['freeSpace'] = res_dict['freeSpace']
             status['spaceTotal'] = res_dict['spaceTotal']
-            # print(status)
+            status['onlineUserIds'] = res_dict['onlineUserIds']
+            print(status)
         else:
             print(f'Некорректный ответ {res_ping.status_code} от сервера {url_ping}')
     return status
@@ -1686,6 +1754,46 @@ def validate(window: str):
             window_settings['-Мин-аудио-порт-'].update(background_color=button_color_2,
                                                        text_color=omega_theme['BACKGROUND'])
             return False
+        if MIN_PING_TM <= int(val_set['-пинг-таймаут-']) <= MAX_PING_TM:
+            window_settings['-пинг-таймаут-'].update(background_color=omega_theme['BACKGROUND'],
+                                                 text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Интервал пинга должен быть не менее " + str(MIN_PING_TM) + " и не более " + str(
+                MAX_PING_TM) + " секунд"))
+            window_settings.Element('-пинг-таймаут-').SetFocus()
+            window_settings['-пинг-таймаут-'].update(background_color=button_color_2,
+                                                               text_color=omega_theme['BACKGROUND'])
+            return False
+    if window == 'clone_user':
+        print(val_clone_user)
+        if 0 < len(str(val_clone_user['CloneUserLogin'])) <= MAX_LEN_LOGIN:
+            window_clone_user['CloneUserLogin'].update(background_color=omega_theme['BACKGROUND'],
+                                                text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Логин должен быть не более " + str(MAX_LEN_LOGIN) + " символов"))
+            window_clone_user.Element('CloneUserLogin').SetFocus()
+            window_clone_user['CloneUserLogin'].update(background_color=button_color_2,
+                                                text_color=omega_theme['BACKGROUND'])
+            return False
+        if 0 < len(str(val_clone_user['CloneUserName'])) <= MAX_LEN_USERNAME:
+            window_clone_user['CloneUserName'].update(background_color=omega_theme['BACKGROUND'],
+                                               text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Имя должно быть не более " + str(MAX_LEN_USERNAME) + " символов"))
+            window_clone_user.Element('CloneUserName').SetFocus()
+            window_clone_user['CloneUserName'].update(background_color=button_color_2,
+                                               text_color=omega_theme['BACKGROUND'])
+            return False
+        if MIN_LEN_PASSWORD <= len(str(val_clone_user['CloneUserPassword'])) <= MAX_LEN_PASSWORD:
+            window_clone_user['CloneUserPassword'].update(background_color=omega_theme['BACKGROUND'],
+                                                   text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Пароль должен быть не менее " + str(MIN_LEN_PASSWORD) + " и не более "
+                      + str(MAX_LEN_PASSWORD) + " символов"))
+            window_clone_user.Element('CloneUserPassword').SetFocus()
+            window_clone_user['CloneUserPassword'].update(background_color=button_color_2,
+                                                   text_color=omega_theme['BACKGROUND'])
+            return False
     return result
 
 
@@ -1701,6 +1809,8 @@ def get_user_type(window):
         elif val_add_user['adm']:
             result = user_type['admin']
             return result
+        elif val_add_user['user']:
+            return result
     elif window == 'modify_user':
         if val_modify_user['modifyUserDispatcher']:
             result = user_type['dispatcher']
@@ -1710,6 +1820,8 @@ def get_user_type(window):
             return result
         elif val_modify_user['modifyUserAdm']:
             result = user_type['admin']
+            return result
+        elif val_modify_user['modifyUserUser']:
             return result
     elif type(window) is dict:
         if window['is_dispatcher']:
@@ -1773,6 +1885,26 @@ def update_groups():
     window['-TREE-'].update(treedata_update_group)
 
 
+def update_users_and_groups():
+    init_db()
+    global users_from_db
+    users_from_db = get_users_from_db()
+    global groups_from_db
+    groups_from_db = get_groups_from_db()
+    users_from_db.sort(key=lambda i: i['login'])
+    groups_from_db.sort(key=lambda i: i['name'])
+    treedata_update_group = sg.TreeData()
+    if users_from_db != [[]]:
+        user_list, treedata_update_user = get_user_list(users_from_db)
+    if groups_from_db != [[]]:
+        group_list, treedata_update_group = get_group_list(groups_from_db)
+    window['-users-'].update(user_list)
+    window['-TREE2-'].update(treedata_update_user)
+    window['-groups2-'].update(group_list)
+    window['-TREE-'].update(treedata_update_group)
+
+
+
 def update_free_space(status):
     graph: sg.Graph = window[
         '-free-space-']  # TODO: no server_status['spaceTotal'] if server was not available on startup
@@ -1790,6 +1922,22 @@ def update_free_space(status):
             + str(round(status['freeSpace'] / 1024 / 1024 / 1024, 1)) \
             + ' Гб) свободного места на сервере'
     window['-free-space-perc-'].update(upd_t)
+
+
+def set_buttons_disabled(set=True):
+    window['-AddUser-'].update(disabled=set)
+    window['-DelUser-'].update(disabled=set)
+    window['-CloneUser-'].update(disabled=set)
+    window['-AddGroup-'].update(disabled=set)
+    window['-DelGroup-'].update(disabled=set)
+    window['-filterUser-'].update(disabled=set)
+    window['-filterGroup-'].update(disabled=set)
+    window['Apply'].update(disabled=True)
+    window['Apply2'].update(disabled=True)
+    window['-checkAllGroups-'].update(disabled=set)
+    window['-checkAllUsers-'].update(disabled=set)
+    window['-partially-dropDB-'].update(disabled=set)
+    window['-dropDB-'].update(disabled=set)
 
 
 if __name__ == '__main__':
@@ -1857,11 +2005,11 @@ if __name__ == '__main__':
                         BASE_URL_SETTINGS += val_login['ip'] + ':5000/api/admin/settings'
                         server_status = check_server(BASE_URL_PING)
                         current_db = server_status['db']
+                        create_db()
                         if server_status['run']:
                             TOKEN = get_token(BASE_URL_AUTH)
                             HEADER_dict = {'Authorization': "Bearer " + TOKEN}
                             print(get_settings(BASE_URL_SETTINGS))
-                            create_db()
                             init_db()
                             users_from_db = get_users_from_db()
                             groups_from_db = get_groups_from_db()
@@ -1891,110 +2039,95 @@ if __name__ == '__main__':
                         filter_journal_warning = True
                         filter_journal_error = True
                         filter_journal_critical = True
+                        ping_timeout = DEF_PING_TM
                         while True:
                             if break_flag2:
                                 break
-                            if server_status['run']:
+                            if server_status['run']: #TODO
                                 window['-Start-'].update(disabled=True)
                             else:
                                 window['-Stop-'].update(disabled=True)
                             if not thread_started:
-                                threading.Thread(target=the_thread, args=(BASE_URL_PING, window,), daemon=True).start()
+                                threading.Thread(target=the_thread, args=[BASE_URL_PING], daemon=True).start()
                                 thread_started = True
                             event, values = window.read()
                             # print(event, type(event), values)
                             if event == '-THREAD-':
-                                # current_db = server_status['db']
-                                dict_online = json.loads(values['-THREAD-'][1])
-                                # print(dict_online)
-                                if dict_online["onlineUsersCount"] != '':
-                                    if not server_status['run']:
-                                        update_text = 'Пользователей онлайн: ' + str(dict_online['onlineUsersCount']) + \
-                                                      ', Версия БД: ' + \
-                                                      str(dict_online["databaseVersion"])
-                                        window['-StatusBar-'].update(update_text, background_color=status_bar_color)
-                                    else:
+                                if not thread_started:
+                                    print(json.loads(values['-THREAD-'][1]))
+                                    threading.Thread(target=the_thread, args=[BASE_URL_PING], daemon=True).start()
+                                    thread_started = True
+                                else:
+                                    # current_db = server_status['db']
+                                    dict_online = json.loads(values['-THREAD-'][1])
+                                    # print(dict_online)
+                                    print(f"server_status[run] = {server_status['run']}")
+                                    # print(f"server_status[last_state] = {server_status['last_state']}")
+                                    if dict_online["onlineUsersCount"] != '':
                                         update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
                                                       + ', Версия БД: ' + str(dict_online["databaseVersion"])
                                         window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                         update_free_space(dict_online)
-                                    window['-Start-'].update(disabled=True)
-                                    window['-Stop-'].update(disabled=False)
-                                    if not server_status['run']:
-                                        TOKEN = get_token(BASE_URL_AUTH)
-                                        HEADER_dict = {'Authorization': "Bearer " + TOKEN}
-                                        init_db()
-                                        users_from_db = get_users_from_db()
-                                        groups_from_db = get_groups_from_db()
-                                        users_from_db.sort(key=lambda i: i['login'])
-                                        groups_from_db.sort(key=lambda i: i['name'])
-                                        treedata_update_group = sg.TreeData()
-                                        group_list = list()
-                                        if users_from_db != [[]] and groups_from_db != [[]]:
-                                            user_list, treedata_update_user = get_user_list(users_from_db)
-                                            for group_from_db in groups_from_db:
-                                                group_list.append([group_from_db['id'], group_from_db['name'],
-                                                                   group_from_db['desc']])
-                                        for group in groups_from_db:
-                                            treedata_update_group.insert('', group['id'], '',
-                                                                         values=[group['name'], group['desc']],
-                                                                         icon=check[0])
-                                        window['-users-'].update(user_list)
-                                        window['-TREE2-'].update(treedata_update_user)
-                                        window['-groups2-'].update(group_list)
-                                        window['-TREE-'].update(treedata_update_group)
-                                        window['-AddUser-'].update(disabled=False)
-                                        window['-DelUser-'].update(disabled=False)
-                                        window['-CloneUser-'].update(disabled=False)
-                                        window['-AddGroup-'].update(disabled=False)
-                                        window['-DelGroup-'].update(disabled=False)
-                                        window['-filterUser-'].update(disabled=False)
-                                        window['-filterGroup-'].update(disabled=False)
-                                        window['Apply'].update(disabled=False)
-                                        window['Apply2'].update(disabled=False)
-                                        window['-checkAllGroups-'].update(disabled=False)
-                                        window['-checkAllUsers-'].update(disabled=False)
-                                        window['-partially-dropDB-'].update(disabled=False)
-                                        window['-dropDB-'].update(disabled=False)
+                                        window['-Start-'].update(disabled=True)
+                                        window['-Stop-'].update(disabled=False)
+                                        window['online-users'].update(get_online_users(dict_online['onlineUserIds']))
+                                        if not server_status['run']:
+                                            TOKEN = get_token(BASE_URL_AUTH)
+                                            HEADER_dict = {'Authorization': "Bearer " + TOKEN}
+                                            update_users_and_groups()
+                                            window['-Menu-'].update([
+                                                ['Сервер', ['Установить лицензию...', 'Настройки']],
+                                                ['Помощь', 'О программе'], ])
+                                        if current_db != dict_online['databaseVersion']:
+                                            update_users_and_groups()
+                                            current_db = dict_online['databaseVersion']
+                                        set_buttons_disabled(False)
                                         server_status['run'] = True
-                                        update_free_space(dict_online)
                                     else:
-                                        pass
-                                    if not server_status['last_state']:
-                                        server_status['last_state'] = True
-                                        window['-Menu-'].update([
-                                            ['Сервер', ['Установить лицензию...', 'Настройки']],
-                                            ['Помощь', 'О программе'], ])
-                                    # server_status['run'] = True
-                                else:
-                                    window['-StatusBar-'].update('Сервер не доступен', background_color=button_color_2)
-                                    window['-Start-'].update(disabled=False)
-                                    window['-Stop-'].update(disabled=True)
-                                    window['-users-'].update([[]])
-                                    window['-groups2-'].update([[]])
-                                    clear_treedata = sg.TreeData()
-                                    window['-TREE-'].update(clear_treedata)
-                                    window['-TREE2-'].update(clear_treedata)
-                                    window['-AddUser-'].update(disabled=True)
-                                    window['-DelUser-'].update(disabled=True)
-                                    window['-CloneUser-'].update(disabled=True)
-                                    window['-AddGroup-'].update(disabled=True)
-                                    window['-DelGroup-'].update(disabled=True)
-                                    window['-filterUser-'].update(disabled=True)
-                                    window['-filterGroup-'].update(disabled=True)
-                                    window['Apply'].update(disabled=True)
-                                    window['Apply2'].update(disabled=True)
-                                    window['-checkAllGroups-'].update(disabled=True)
-                                    window['-checkAllUsers-'].update(disabled=True)
-                                    window['-partially-dropDB-'].update(disabled=True)
-                                    window['-dropDB-'].update(disabled=True)
-                                    server_status['run'] = False
-                                    update_free_space(dict_online)
-                                    if server_status['last_state']:
-                                        server_status['last_state'] = False
-                                        window['-Menu-'].update([
-                                            ['Сервер', ['!Установить лицензию...', '!Настройки']],
-                                            ['Помощь', 'О программе'], ])
+                                        window['-StatusBar-'].update('Сервер не доступен', background_color=button_color_2)
+                                        window['-Start-'].update(disabled=False)
+                                        window['-Stop-'].update(disabled=True)
+                                        window['-users-'].update([[]])
+                                        window['-groups2-'].update([[]])
+                                        clear_treedata = sg.TreeData()
+                                        window['-TREE-'].update(clear_treedata)
+                                        window['-TREE2-'].update(clear_treedata)
+                                        set_buttons_disabled()
+                                        window.Element('-Start-').SetFocus()
+                                        # window['-AddUser-'].update(disabled=True)
+                                        # window['-DelUser-'].update(disabled=True)
+                                        # window['-CloneUser-'].update(disabled=True)
+                                        # window['-AddGroup-'].update(disabled=True)
+                                        # window['-DelGroup-'].update(disabled=True)
+                                        # window['-filterUser-'].update(disabled=True)
+                                        # window['-filterGroup-'].update(disabled=True)
+                                        # window['Apply'].update(disabled=True)
+                                        # window['Apply2'].update(disabled=True)
+                                        # window['-checkAllGroups-'].update(disabled=True)
+                                        # window['-checkAllUsers-'].update(disabled=True)
+                                        # window['-partially-dropDB-'].update(disabled=True)
+                                        # window['-dropDB-'].update(disabled=True)
+                                        server_status['run'] = False
+                                        update_free_space(dict_online)
+                                        window['online-users'].update('')
+                                        if server_status['run']:
+                                            server_status['run'] = False
+                                            window['-Menu-'].update([
+                                                ['Сервер', ['!Установить лицензию...', '!Настройки']],
+                                                ['Помощь', 'О программе'], ])
+                                    if change_state: #TODO
+                                        with open('admin.log', mode='r', encoding='cp1251') as log_f:
+                                            s = log_f.read()
+                                            s = s.rstrip('\n')
+                                            journal_list = s.split('\n')
+                                            # filtered_journal = []
+                                            filtered_journal = filter_journal(journal_list)
+                                            if filter_status_journal:
+                                                filtered_journal = list(
+                                                    filter(lambda x: search_str in x, filtered_journal))
+                                            output_text = "\n".join(filtered_journal)
+                                            window['journal'].update(output_text)
+                                            window['countLogs'].update(len(filtered_journal))
                             if event == sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
                                 # break_flag = True
                                 # break
@@ -2123,7 +2256,7 @@ if __name__ == '__main__':
                                         if ev_modify_user == 'modifyUserDispatcher' or ev_modify_user == 'modifyUserAdm':
                                             window_modify_user['modifyUserAllowDelChats'].update(disabled=False)
                                             window_modify_user['modifyUserAllowPartialDrop'].update(disabled=False)
-                                        if ev_modify_user == 'modifyUserGw':
+                                        if ev_modify_user == 'modifyUserGw' or ev_modify_user == 'modifyUserUser':
                                             window_modify_user['modifyUserAllowDelChats'].update(disabled=True)
                                             window_modify_user['modifyUserAllowPartialDrop'].update(disabled=True)
                                         if ev_modify_user == 'UserModifyPriority':
@@ -2180,7 +2313,7 @@ if __name__ == '__main__':
                                                 if val_modify_user['modifyUserIndCallEn'] != user_to_change['en_ind']:
                                                     modify_is_en_ind = True
                                                     res_modify_user_en_ind = change_role(role.allow_ind_call,
-                                                        val_modify_user['modifyUserIndCallEn'], user_to_change['id'])
+                                                                                         val_modify_user['modifyUserIndCallEn'], user_to_change['id'])
                                                     if res_modify_user_en_ind.status_code == 200:
                                                         if val_modify_user['modifyUserIndCallEn']:
                                                             logging.info(f"'Пользователю {val_modify_user['UserModifyLogin']} "
@@ -2200,8 +2333,8 @@ if __name__ == '__main__':
                                                 if val_modify_user['modifyUserAllowDelChats'] != user_to_change['en_del_chats']:
                                                     modify_en_del_chats = True
                                                     res_modify_user_en_del_chats = change_role(role.allow_delete_chats,
-                                                        val_modify_user['modifyUserAllowDelChats'],
-                                                        user_to_change['id'])
+                                                                                               val_modify_user['modifyUserAllowDelChats'],
+                                                                                               user_to_change['id'])
                                                     if res_modify_user_en_del_chats.status_code == 200:
                                                         if val_modify_user['modifyUserAllowDelChats']:
                                                             logging.info(f"Пользователю "
@@ -2223,8 +2356,8 @@ if __name__ == '__main__':
                                                 if val_modify_user['modifyUserAllowPartialDrop'] != user_to_change['en_partial_drop']:
                                                     modify_en_partial_drop = True
                                                     res_modify_user_en_partial_drop = change_role(role.allow_partial_drop,
-                                                        val_modify_user['modifyUserAllowPartialDrop'],
-                                                        user_to_change['id'])
+                                                                                                  val_modify_user['modifyUserAllowPartialDrop'],
+                                                                                                  user_to_change['id'])
                                                     if res_modify_user_en_partial_drop.status_code == 200:
                                                         if val_modify_user['modifyUserAllowPartialDrop']:
                                                             logging.info(f"Пользователю "
@@ -2306,11 +2439,9 @@ if __name__ == '__main__':
                                                         or modify_u_t:
                                                     update_users()
                                                     window_modify_user.close()
-                                                    sg.popup("Пользователь изменён!", title='Инфо', icon=ICON_BASE_64,
-                                                             no_titlebar=True, background_color='lightgray')
+                                                    my_popup("Пользователь изменён!")
                                                 else:
-                                                    sg.popup("Нет никаких изменений!", title='Инфо', icon=ICON_BASE_64,
-                                                             no_titlebar=True, background_color='lightgray')
+                                                    my_popup("Нет никаких изменений!")
                                         else:
                                             window_modify_user['modifyUserButton'].update(disabled=False)
                                             window_modify_user['modifyUserButton'].update(button_color=button_color_2)
@@ -2683,11 +2814,12 @@ if __name__ == '__main__':
                                     if ev_set == sg.WIN_CLOSED or ev_set == '-Exit-set-':
                                         window_settings.close()
                                         break
-                                    elif ev_set == '-Индивидуальный-таймаут-'\
+                                    elif ev_set == '-Индивидуальный-таймаут-' \
                                             or ev_set == '-Групповой-таймаут-' \
-                                            or ev_set == '-таймаут-окончания-'\
-                                            or ev_set == '-таймаут-тонового-сигнала-'\
-                                            or ev_set == '-таймаут-прослушивания-':
+                                            or ev_set == '-таймаут-окончания-' \
+                                            or ev_set == '-таймаут-тонового-сигнала-' \
+                                            or ev_set == '-таймаут-прослушивания-' \
+                                            or ev_set == '-пинг-таймаут-':
                                         if val_set[ev_set].isdigit():
                                             window_settings[ev_set].update(
                                                 background_color=omega_theme['INPUT'])
@@ -2703,8 +2835,8 @@ if __name__ == '__main__':
                                         window_settings['-Progress-Bar-'].update_bar(counter)
                                         window_settings['-OK-set-'].update(disabled=False)
                                         window_settings['-OK-set-'].update(button_color=button_color_2)
-                                    elif ev_set == '-Макс-аудио-порт-'\
-                                         or ev_set == '-Мин-аудио-порт-':
+                                    elif ev_set == '-Макс-аудио-порт-' \
+                                            or ev_set == '-Мин-аудио-порт-':
                                         if val_set[ev_set].isdigit():
                                             window_settings[ev_set].update(
                                                 background_color=omega_theme['INPUT'])
@@ -2730,8 +2862,8 @@ if __name__ == '__main__':
                                                              'ambientCallDuration': val_set['-таймаут-прослушивания-'],
                                                              'udpPortsRange': val_set['-Мин-аудио-порт-'] + '-' + val_set['-Макс-аудио-порт-']}
                                             res_update_set = requests.post(BASE_URL_SETTINGS,
-                                                                             json=settings_dict,
-                                                                             headers=HEADER_dict)
+                                                                           json=settings_dict,
+                                                                           headers=HEADER_dict)
                                             if res_update_set.status_code == 200:
                                                 logging.info(
                                                     f"Настройки изменены: "
@@ -2746,6 +2878,8 @@ if __name__ == '__main__':
                                                 logging.error(
                                                     f'Ошибка при изменении настроек - {res_update_set.status_code}')
                                                 my_popup("Ошибка при изменении настроек")
+                                            if val_set['-пинг-таймаут-'] != str(ping_timeout):
+                                                ping_timeout = int(val_set['-пинг-таймаут-'])
                                             disable_input(window_settings)
                                             counter = 0
                                             while counter < 11:
@@ -2828,7 +2962,7 @@ if __name__ == '__main__':
                                                 logging.info(f"Пользователь {val_add_user['UserLogin']} добавлен")
                                                 if new_user_type == user_type['dispatcher']:
                                                     logging.info(f"Пользователь {val_add_user['UserLogin']} "
-                                                                         f'стал диспетчером')
+                                                                 f'стал диспетчером')
                                                 elif new_user_type == user_type['box']:
                                                     logging.info(f"Пользователь {val_add_user['UserLogin']} "
                                                                  f'для концентратора К500')
@@ -2857,8 +2991,8 @@ if __name__ == '__main__':
                                                                 f'{res_add_user_en_ind.status_code}')
                                                 if val_add_user['addUserAllowDelChats']:
                                                     res_add_user_en_del_chats = change_role(role.allow_delete_chats,
-                                                                          val_add_user['addUserAllowDelChats'],
-                                                                          res_add_user.text[1:-1])
+                                                                                            val_add_user['addUserAllowDelChats'],
+                                                                                            res_add_user.text[1:-1])
                                                     if res_add_user_en_del_chats.status_code == 200:
                                                         if val_add_user['addUserAllowDelChats']:
                                                             logging.info(f"'Пользователю {val_add_user['UserLogin']} "
@@ -2877,8 +3011,8 @@ if __name__ == '__main__':
                                                                 f'{res_add_user_en_del_chats.status_code}')
                                                 if val_add_user['addUserAllowPartialDrop']:
                                                     res_add_user_en_partial_drop = change_role(role.allow_partial_drop,
-                                                                              val_add_user['addUserAllowPartialDrop'],
-                                                                              res_add_user.text[1:-1])
+                                                                                               val_add_user['addUserAllowPartialDrop'],
+                                                                                               res_add_user.text[1:-1])
                                                     if res_add_user_en_partial_drop.status_code == 200:
                                                         if val_add_user['addUserAllowPartialDrop']:
                                                             logging.info(f"'Пользователю {val_add_user['UserLogin']} "
@@ -2938,18 +3072,20 @@ if __name__ == '__main__':
                                     if del_user['login'] == 'admin':
                                         my_popup("Нельзя удалить пользователя admin")
                                     else:
-                                        window_del_user = make_del_user_window(del_user['name'])
+                                        # window_del_user = make_del_user_window(del_user['name'])
+                                        window_del_user = make_confirm_window('Вы уверены, '
+                                              'что хотите удалить пользователя ' + del_user['login'] + '?')
                                         while True:
                                             ev_del_user, val_del_user = window_del_user.Read()
                                             # print(ev_del_user, val_del_user)
                                             if ev_del_user == sg.WIN_CLOSED or ev_del_user == 'Exit':
                                                 # print('Закрыл окно удаления пользователя')
                                                 break
-                                            if ev_del_user == 'noDel':
+                                            if ev_del_user == 'noExit':
                                                 # print('Закрыл окно удаления пользователя')
                                                 window_del_user.close()
                                                 break
-                                            if ev_del_user == 'okDel':
+                                            if ev_del_user == 'okExit':
                                                 # del_user_id = users_from_db[values['-users-'][0]]['id']
                                                 # del_user_dict = {}
                                                 # del_user_dict['id'] = del_user['id']
@@ -2978,13 +3114,11 @@ if __name__ == '__main__':
                                                         window['-users-'].update(user_list)
                                                     window['-TREE2-'].update(treedata_update_user)
                                                     window_del_user.close()
-                                                    sg.popup("Пользователь удалён!", title='Инфо', icon=ICON_BASE_64,
-                                                             no_titlebar=True, background_color='lightgray')
+                                                    my_popup("Пользователь удалён!")
                                                     break
                                                 else:
                                                     logging.error(f'Пользователь {del_user["name"]} НЕ удалён')
-                                                    sg.popup("Пользователь не удалён!", title='Инфо', icon=ICON_BASE_64,
-                                                             no_titlebar=True, background_color='lightgray')
+                                                    my_popup("Пользователь не удалён!")
                             if event == '-CloneUser-':
                                 if not values['-users-']:
                                     # print(f"Не выбран пользователь")
@@ -3004,49 +3138,43 @@ if __name__ == '__main__':
                                         if ev_clone_user == sg.WIN_CLOSED or ev_clone_user == 'Exit':
                                             # print('Закрыл окно клонирования пользователя')
                                             break
-                                        if ev_clone_user == 'showPasswordCloneUser':
+                                        if ev_clone_user == 'CloneUserPassword':
+                                            window_clone_user['CloneUserShowPassword'].update(
+                                                image_data=ICON_SHOW_BASE_64)
+                                            window_clone_user['CloneUserShowPassword'].update(
+                                                disabled=False)
+                                        if ev_clone_user == 'CloneUserShowPassword':
                                             if password_clear:
                                                 window_clone_user['CloneUserPassword'].update(password_char='*')
-                                                window_clone_user['showClonePasswordText'].update('Показать пароль')
-                                                window_clone_user['showPasswordCloneUser'].update(
+                                                window_clone_user['CloneUserShowPassword'].update(
                                                     image_data=ICON_SHOW_BASE_64)
                                                 password_clear = False
                                             else:
                                                 window_clone_user['CloneUserPassword'].update(password_char='')
-                                                window_clone_user['showClonePasswordText'].update('Скрыть пароль')
-                                                window_clone_user['showPasswordCloneUser'].update(
+                                                window_clone_user['CloneUserShowPassword'].update(
                                                     image_data=ICON_HIDE_BASE_64)
                                                 password_clear = True
                                         if ev_clone_user == 'cloneUserButton':
+                                            validate('clone_user')
                                             clone_user_login, \
                                                 clone_user_name, \
                                                 clone_user_password = val_clone_user.values()
-                                            logging.info(f"Клонируем пользователя {user_clone['login']} с именем "
-                                                         f"{clone_user_login}")
+                                            # logging.info(f"Клонируем пользователя {user_clone['login']} с именем "
+                                            #              f"{clone_user_login}")
                                             clone_user_dict = {'login': clone_user_login,
                                                                'displayName': clone_user_name,
-                                                               'password': clone_user_password}
-                                            # print(clone_user_dict)
-                                            # check_disp(user_clone)
+                                                               'password': clone_user_password,
+                                                               'userType': get_user_type(user_clone),
+                                                               'priority': user_clone['priority']
+                                                               }
+                                            # # print(clone_user_dict)
+                                            # # check_disp(user_clone)
                                             res_clone_user = requests.post(BASE_URL + 'addUser', json=clone_user_dict,
                                                                            headers=HEADER_dict)
-                                            # print(res_clone_user.status_code)
-                                            # print(res_clone_user.text)
+                                            # # print(res_clone_user.status_code)
+                                            # # print(res_clone_user.text)
                                             if res_clone_user.status_code == 200:
-                                                logging.info(f'Новый пользователь {clone_user_login} создан')
-                                                if user_clone['is_dispatcher']:
-                                                    add_to_disp_dict = {'id': res_clone_user.text[1:-1]}
-                                                    res_add_disp = requests.post(BASE_URL + 'addToDispatchers',
-                                                                                 json=add_to_disp_dict,
-                                                                                 headers=HEADER_dict)
-                                                    if res_add_disp.status_code == 200:
-                                                        logging.info(
-                                                            f'Пользователь {clone_user_login} стал диспетчером')
-                                                    else:
-                                                        logging.error(
-                                                            f'Пользователь {clone_user_login} НЕ стал диспетчером - '
-                                                            f'{res_add_disp.status_code}')
-                                                        my_popup("Пользователь не стал диспетчером!")
+                                                logging.info(f'Новый пользователь {clone_user_login} клонирован')
                                                 original_groups = get_groups_for_user_from_db(user_clone['id'])
                                                 original_groups_ids = []
                                                 for or_gr in original_groups:
@@ -3054,20 +3182,21 @@ if __name__ == '__main__':
                                                 user_from_server = res_clone_user.text[1:-1]
                                                 clone_dict = {'UserIds': [user_from_server],
                                                               'addGroupIds': original_groups_ids, 'removeGroupIds': []}
-                                                print(clone_dict)
+                                                # print(clone_dict)
                                                 res_clone_add_group = requests.post(BASE_URL +
                                                                                     'changeUserGroups',
                                                                                     json=clone_dict,
                                                                                     headers=HEADER_dict)
-                                                print(res_clone_add_group.status_code)
+                                                # print(res_clone_add_group.status_code)
                                                 if res_clone_add_group.status_code == 200:
                                                     logging.info(f'Группы для {clone_user_login} добавлены')
-                                                    add_users(get_users_from_server())
-                                                    print(clone_dict)
-                                                    add_del_groups_to_user_after_apply(clone_dict)
-                                                    users_from_db = get_users_from_db()
-                                                    users_from_db.sort(key=lambda i: i['login'])
-                                                    user_list, treedata_update_user = get_user_list(users_from_db)
+                                                    update_users_and_groups()
+                                                    # add_users(get_users_from_server())
+                                                    # # print(clone_dict)
+                                                    # add_del_groups_to_user_after_apply(clone_dict)
+                                                    # users_from_db = get_users_from_db()
+                                                    # users_from_db.sort(key=lambda i: i['login'])
+                                                    # user_list, treedata_update_user = get_user_list(users_from_db)
                                                     if filter_status:
                                                         search_str = values['-filterUser-']
                                                         # print(search_str)
@@ -3077,18 +3206,18 @@ if __name__ == '__main__':
                                                         filtered_users_list = get_filter_user_list(
                                                             filtered_users_list_of_dict)
                                                         window['-users-'].update(filtered_users_list)
-                                                    else:
-                                                        window['-users-'].update(user_list)
-                                                    window['-TREE2-'].update(treedata_update_user)
+                                                    # else:
+                                                    #     window['-users-'].update(user_list)
+                                                    # window['-TREE2-'].update(treedata_update_user)
                                                     # window_clone_user.close()
-                                                    treedata_update_user = sg.TreeData()
-                                                    for user_id, user_login, user_name, is_dispatcher, is_blocked \
-                                                            in user_list:
-                                                        treedata_update_user.insert('', user_id, '',
-                                                                                    values=[user_login, user_name,
-                                                                                            is_dispatcher],
-                                                                                    icon=check[0])
-                                                    window['-TREE2-'].update(treedata_update_user)
+                                                    # treedata_update_user = sg.TreeData()
+                                                    # for user_id, user_login, user_name, is_dispatcher, is_blocked \
+                                                    #         in user_list:
+                                                    #     treedata_update_user.insert('', user_id, '',
+                                                    #                                 values=[user_login, user_name,
+                                                    #                                         is_dispatcher],
+                                                    #                                 icon=check[0])
+                                                    # window['-TREE2-'].update(treedata_update_user)
                                                     window_clone_user.close()
                                                     my_popup("Пользователь клонирован!")
                                                     break
@@ -3342,6 +3471,7 @@ if __name__ == '__main__':
                                                 ['Помощь', 'О программе'], ])
                                             # print('after update GUI')
                                             update_free_space(dict_online_after_start)
+                                            window['online-users'].update(get_online_users(dict_online_after_start['onlineUserIds']))
                                             break
                             if event == '-Stop-':
                                 # print('Останавливаем сервер')
@@ -3391,6 +3521,7 @@ if __name__ == '__main__':
                                         ['Помощь', 'О программе'], ])
                                     server_status['run'] = False
                                     update_free_space({'freeSpace': 0, 'spaceTotal': 1})
+                                    window['online-users'].update('')
                                     # server_status['last_state'] = True
                                     print(server_status)
                             if event == 'Tabs':
@@ -3520,7 +3651,7 @@ if __name__ == '__main__':
                                     # print(ev_exit, val_confirm)
                                     if ev_confirm == 'okExit':
                                         res_drop_db = requests.get(BASE_URL + 'drop',
-                                                                     headers=HEADER_dict)
+                                                                   headers=HEADER_dict)
                                         # print(res_add_user.status_code)
                                         if res_drop_db.status_code == 200:
                                             logging.info('Удаляем всю БД и все данные')
@@ -3544,7 +3675,7 @@ if __name__ == '__main__':
                                     # print(ev_exit, val_confirm)
                                     if ev_confirm == 'okExit':
                                         res_drop_db = requests.get(BASE_URL + 'partiallyDrop',
-                                                                     headers=HEADER_dict)
+                                                                   headers=HEADER_dict)
                                         # print(res_add_user.status_code)
                                         if res_drop_db.status_code == 200:
                                             logging.info('Удаляем всё, кроме абонентов и групп')
