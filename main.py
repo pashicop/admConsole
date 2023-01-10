@@ -3323,18 +3323,20 @@ if __name__ == '__main__':
                                     else:
                                         del_group = groups_from_db[values['-groups2-'][0]]
                                     # del_group_name = groups_from_db[values['-groups2-'][0]]['name']
-                                    window_del_group = make_del_group_window(del_group['name'])
+                                    # window_del_group = make_del_group_window(del_group['name'])
+                                    window_del_group = make_confirm_window('Вы уверены, '
+                                              'что хотите удалить группу ' + del_group['name'] + '?')
                                     while True:
                                         ev_del_group, val_del_group = window_del_group.Read()
                                         # print(ev_del_group, val_del_group)
                                         if ev_del_group == sg.WIN_CLOSED or ev_del_group == 'Exit':
                                             # print('Закрыл окно удаления пользователя')
                                             break
-                                        if ev_del_group == 'noDelGroup':
+                                        if ev_del_group == 'noExit':
                                             # print('Закрыл окно удаления пользователя')
                                             window_del_group.close()
                                             break
-                                        if ev_del_group == 'okDelGroup':
+                                        if ev_del_group == 'okExit':
                                             # del_group_id = groups_from_db[values['-groups2-'][0]]['id']
                                             # del_group_dict = {}
                                             # del_group_dict['id'] = del_group_id
