@@ -428,8 +428,11 @@ def get_user_name_by_id_from_db(id):
     db_query_user_name_by_id = "Select Display_name from Users where id = '" + id + "'"
     # print(db_query_user_name_by_id)
     cur.execute(db_query_user_name_by_id)
-    user_name = cur.fetchone()[0]
-    # print(user_name)
+    data = cur.fetchone()
+    if data is not None:
+        user_name = data[0]
+    else:
+        user_name = None
     con.close()
     return user_name
 
@@ -1170,8 +1173,9 @@ def make_confirm_window(message):
 def get_online_users(users: list):
     usernames = []
     for user in users:
-        usernames.append(get_user_name_by_id_from_db(user))
-
+        username = get_user_name_by_id_from_db(user)
+        if username is not None:
+            usernames.append(username)
     return "\n".join(sorted(usernames))
 
 
