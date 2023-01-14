@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-PA=0
+CR=0
 TP=0
+PA=0
+CONF_D="Y"
 printf '##### Установка сервиса ОМЕГА #####\n'
 printf '\n##### Удаление старой версии #####\n'
 . ~/.bashrc
@@ -18,6 +20,28 @@ sudo rm -rf ~/Omega >> ~/install_log.txt 2>&1
 sudo rm -rf ~/admConsole >> ~/install_log.txt 2>&1
 sed -i.bak '/omega start/,/stop omega/d' ~/.bashrc
 printf '##### ------------OK----------- #####\n'
+echo -e "\033[31mВы хотите обновить репозитории? Y/n|Д/н]:\033[0m"
+while true
+  do
+  read -n 1 CONF_D
+  case $CONF_D in
+    y|Y|yes|Yes|"Д"|"д"|"Да"|"да")
+      printf "\nРепозитории будут обновлены\n"
+      CR=1
+      break;;
+    n|N|no|No|"Н"|"н"|"Нет"|"нет")
+      printf "\nРепозитории не будут обновлены\n"
+      break;;
+    *)
+      printf "\nСимвол $CONF_D не распознан - повторите!\n";;
+  esac
+done
+if [[ $CR -eq 1 ]]
+  then
+  sudo sed -i.bak 's/#deb https/deb https/' /etc/apt/sources.list
+  sudo sed -i.bak 's/deb cdrom/#deb cdrom/' /etc/apt/sources.list
+fi
+
 printf '\n##### Включаем сервис NTP #####\n'
 sudo systemctl start ntp >> ~/install_log.txt 2>&1
 sudo systemctl enable ntp >> ~/install_log.txt 2>&1
@@ -81,21 +105,28 @@ printf '##### ------------OK----------- #####\n'
 printf '\n##### Настройка ОМЕГИ #####\n'
 chmod +x first_run run Api
 echo -e "\033[31mВы хотите заполнить сервер тестовыми данными? Y/n|Д/н]:\033[0m"
-read -n 3 CONF_D
-CONF_D="${CONF_D:-Y}"
-case $CONF_D in
-  y|Y|yes|Yes|"Д"|"д"|"Да"|"да")
-    echo "Данные будут добавлены"
-    TP=1;;
-  n|N|no|No|"Н"|"н"|"Нет"|"нет")
-    echo "Тестовые данные не будут добавлены";;
-esac
+while true
+  do
+  read -n 1 CONF_D
+  case $CONF_D in
+    y|Y|yes|Yes|"Д"|"д"|"Да"|"да")
+      printf "\nДанные будут добавлены\n"
+      TP=1
+      break;;
+    n|N|no|No|"Н"|"н"|"Нет"|"нет")
+      printf "\nТестовые данные не будут добавлены\n"
+      break;;
+    *)
+      printf "\nСимвол $CONF_D не распознан - повторите!\n";;
+  esac
+done
 if [[ $TP -eq 1 ]]
   then
     ./first_run true
   else
     ./first_run
 fi
+#. ~/.bashrc
 printf '##### ------------OK----------- #####\n'
 printf '\n##### Устанавливаем сервис ОМЕГИ #####\n'
 sudo cp ~/Omega/omega.service /lib/systemd/system/ &&
@@ -107,6 +138,7 @@ if [[ $? == 0 ]]
 fi
 printf '\n##### Запускаем ОМЕГУ #####\n'
 ip_host=127.0.0.1
+ADM=$(cat "$HOME"/Omega/admPass.txt)
 sudo systemctl start omega >> ~/install_log.txt
 if [[ $? == 0 ]]
   then export ip_host=$(hostname -I | awk '{print $1}')
@@ -116,35 +148,54 @@ if [[ $? == 0 ]]
     printf '\n##### Время '
     printf "$(date)"
     printf ' ######\n'
+    printf '\n##### Пароль для admin - '
+#    printf "$adminPass"
+    printf "$(<./admPass.txt)"
+    printf ' ######\n'
     unset ip_host
   else printf '\n##### Ошибка при запуске сервера #####\n'
   exit 12
 fi
 
-printf '\n##### Устанавливаем панель администратора #####\n'
-cd ~/admConsole/
-mv ~/admConsole/run.sh ~/admConsole/shortcut.desktop ~/Desktop/
-chmod +x ~/Desktop/run.sh
-printf '##### ------------OK----------- #####\n'
-printf '\n##### Добавляем необходимые права #####\n'
-echo 'omega ALL=(ALL) NOPASSWD: /bin/systemctl * omega' | sudo EDITOR='tee -a' visudo
-printf '##### ------------OK----------- #####\n'
+FILE="$HOME/Omega/admPass.txt"
+#echo "$FILE"
+if [[ -f "$FILE" ]]
+  then
+#    OMEGA_PWD_B=$(python2.7 -c "import sys, binascii, random, string; sys.stdout.write(binascii.hexlify(str('$(<./admPass.txt)').encode('ascii')))")
+    OMEGA_PWD_B=$(python2.7 -c "import sys, binascii, hashlib;  sys.stdout.write(binascii.hexlify(hashlib.pbkdf2_hmac('sha256', bytes('$(<./admPass.txt)'), b'omega', 10000)))")
+#    echo $OMEGA_PWD_B
+    sed -i.bak "s/04533cc2be3af54c7f5c827f07417a14ea8f1ba5ec2b6a2756b101c5446cd0ae/${OMEGA_PWD_B}/" ~/admConsole/main.py
+    rm ~/Omega/admPass.txt
+fi
+
 echo -e "\033[31mВы хотите установить панель администратора? Y/n|Д/н]:\033[0m"
-read -n 3 CONF_D
-CONF_D="${CONF_D:-Y}"
-#echo "$CONF_D"
-case $CONF_D in
-  y|Y|yes|Yes|"Д"|"д"|"Да"|"да")
-    echo "Панель будет установлена"
-    PA=1;;
-  n|N|no|No|"Н"|"н"|"Нет"|"нет")
-    echo "Панель НЕ будет установлена";;
-esac
+while true
+  do
+  read -n 1 CONF_D
+  case $CONF_D in
+    y|Y|yes|Yes|"Д"|"д"|"Да"|"да")
+      printf "\nПанель будет установлена\n"
+      PA=1
+      break;;
+    n|N|no|No|"Н"|"н"|"Нет"|"нет")
+      printf "\nПанель НЕ будет установлена\n"
+      break;;
+    *)
+      printf "\nСимвол $CONF_D не распознан - повторите!\n";;
+  esac
+done
 if [[ $PA -eq 1 ]]
   then
     printf '\n##### Установка панели администратора #####\n'
     sleep 1
-    printf '\n##### Installing packets for admin panel #####\n'
+    cd ~/admConsole/
+    mv ~/admConsole/run.sh ~/admConsole/shortcut.desktop ~/Desktop/
+    chmod +x ~/Desktop/run.sh
+    printf '##### ------------OK----------- #####\n'
+    printf '\n##### Добавляем необходимые права #####\n'
+    echo 'omega ALL=(ALL) NOPASSWD: /bin/systemctl * omega' | sudo EDITOR='tee -a' visudo
+    printf '##### ------------OK----------- #####\n'
+    printf '\n##### Устанавливаем необходимые пакеты #####\n'
     sudo apt-get -y install xorgxrdp xrdp >> ~/install_log.txt
     sudo apt-get -y install curl git >> ~/install_log.txt
     curl https://pyenv.run | bash >> ~/install_log.txt 1>&2
@@ -160,17 +211,17 @@ if [[ $PA -eq 1 ]]
     command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
     eval "$(pyenv virtualenv-init -)"
-    printf '\n##### Restart bash #####\n'
+    printf '\n##### Рестарт bash #####\n'
     #exec "$SHELL"
     . ~/.bashrc
-    printf '\n##### Installing packets for python #####\n'
+    printf '\n##### Устанавливаем дополнительные пакеты  #####\n'
     sudo apt-get -y install make build-essential libssl-dev zlib1g-dev \
-    libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
+    libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libedit-dev\
     libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev >> ~/install_log.txt
-    printf '\n##### All packets have been installed #####\n'
-    printf '\n##### Installing python #####\n'
+    printf '\n##### Все пакеты установлены #####\n'
+#    printf '\n##### Installing python #####\n'
     pyenv install 3.9.10
-    printf '\n##### Python have been installed #####\n'
+#    printf '\n##### Python have been installed #####\n'
     pyenv global 3.9.10
     python --version
     #cd ~
@@ -178,9 +229,10 @@ if [[ $PA -eq 1 ]]
     cd ~/admConsole/
     pip install -r requirements.txt >> ~/install_log.txt
     cd ~
-  else
-    printf '\n##### Установка завершена #####\n'
-    exit 0
 fi
-
-#exit 0
+printf '\n##### Установка завершена #####\n'
+    printf '\n##### Логин по умолчанию - admin, Пароль - '
+    printf "$ADM"
+    printf ' #####\n'
+    printf '\n##### Сохраните пароль в надёжном месте! #####\n'
+exit 0

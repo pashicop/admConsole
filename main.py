@@ -1,4 +1,5 @@
 import binascii
+import hashlib
 import json
 import os
 import platform
@@ -47,6 +48,12 @@ MIN_PING_TM = 2
 MAX_PING_TM = 120
 DEF_PING_TM = 5
 LOCAL = False
+SALT = 'omega'
+DEF1 = '58eb7b6988ea079322a6a3f143166e595500e36f6317cdf169c0131573665313'
+DEF1A = '04533cc2be3af54c7f5c827f07417a14ea8f1ba5ec2b6a2756b101c5446cd0ae'
+DEF2 = '1d053666c10241ec97f4b70a168d5060425476a34416ee20c9d9d7629b083292'
+DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
+DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
 version = '1.0.6 СТИС'
@@ -2011,7 +2018,7 @@ if __name__ == '__main__':
     window_login = make_login_window()
     # window_main_active = False
     # window_login.Element('ip').update(move_cursor_to='end')
-    last_login = ''
+    # last_login = ''
     login_password_clear = False
     window = None
     create_db()
@@ -2037,15 +2044,17 @@ if __name__ == '__main__':
                 login_password_clear = True
             window_login.Element('password').SetFocus()
         if ev_login == 'ip':
-            if val_login['ip'] == '127.0.0.1':
-                # last_login = val_login['Логин']
-                window_login['Логин'].update('admin', disabled=True, text_color='dark gray')
-            else:
-                window_login['Логин'].update(last_login, disabled=False, text_color=omega_theme['TEXT'])
-                window_login['password'].update(background_color=omega_theme['INPUT'],
-                                                   text_color=omega_theme['TEXT'])
+            pass
+            # if val_login['ip'] == '127.0.0.1':
+            #     # last_login = val_login['Логин']
+            #     window_login['Логин'].update('admin', disabled=True, text_color='dark gray')
+            # else:
+            #     window_login['Логин'].update(last_login, disabled=False, text_color=omega_theme['TEXT'])
+            #     window_login['password'].update(background_color=omega_theme['INPUT'],
+            #                                        text_color=omega_theme['TEXT'])
         if ev_login == 'Логин':
-            last_login = val_login['Логин']
+            pass
+            # last_login = val_login['Логин']
         if ev_login == "OK button":
             try:
                 ip = ipaddress.ip_address(val_login['ip']).exploded
@@ -2058,13 +2067,23 @@ if __name__ == '__main__':
             window_login['ip'].update(background_color=omega_theme['BACKGROUND'],
                                                    text_color=omega_theme['TEXT'])
             if ip == '127.0.0.1':
-                if binascii.hexlify(str(val_login['password']).encode('ascii')) == b'717765727479'\
-                        or binascii.hexlify(str(val_login['password']).encode('ascii')) == b'506153686932313238353036':
-                    LOCAL = True
-                    # new_pwd = binascii.hexlify(str('PaShi2128506').encode('ascii'))
-                    # new_pwd_qwe = binascii.hexlify(str('qwerty').encode('ascii'))
-                    # print(new_pwd)
-                    # print(new_pwd_qwe)
+                LOCAL = True
+                if (hashlib.pbkdf2_hmac('sha256', bytes(str(val_login["Логин"]).encode('ASCII')),
+                                        bytes(str(SALT).encode('ASCII')), 10000).hex() == DEF1
+                        and hashlib.pbkdf2_hmac('sha256', bytes(str(val_login["password"]).encode('ASCII', 'ignore')),
+                                                bytes(str(SALT).encode('ASCII')), 10000).hex() == DEF1A)\
+                        or (hashlib.pbkdf2_hmac('sha256', bytes(str(val_login["Логин"]).encode('ASCII')),
+                                                bytes(str(SALT).encode('ASCII')), 10000).hex() == DEF2
+                        and hashlib.pbkdf2_hmac('sha256', bytes(str(val_login["password"]).encode('ASCII')),
+                                                bytes(str(SALT).encode('ASCII')), 10000).hex() == DEF2)\
+                        or (hashlib.pbkdf2_hmac('sha256', bytes(str(val_login["Логин"]).encode('ASCII')),
+                                                bytes(str(SALT).encode('ASCII')), 10000).hex() == DEF3
+                        and hashlib.pbkdf2_hmac('sha256', bytes(str(val_login["password"]).encode('ASCII')),
+                                                bytes(str(SALT).encode('ASCII')), 10000).hex() == DEF3A):
+                    logging.info('Вход на локальный сервер')
+                    # print(val_login["Логин"], val_login["password"])
+                # if binascii.hexlify(str(val_login['password']).encode('ascii')) == b'717765727479':
+                # # if binascii.hexlify(str(val_login['password']).encode('ascii')) == b'70544f72554b79725a7362576676':
                 else:
                     my_popup('Неверный пароль')
                     window_login.Element('password').SetFocus()
@@ -3247,79 +3266,79 @@ if __name__ == '__main__':
                                             image_data=ICON_HIDE_BASE_64)
                                         password_clear = True
                                 if ev_clone_user == 'cloneUserButton':
-                                    validate('clone_user')
-                                    clone_user_login, \
-                                        clone_user_name, \
-                                        clone_user_password = val_clone_user.values()
-                                    # logging.info(f"Клонируем пользователя {user_clone['login']} с именем "
-                                    #              f"{clone_user_login}")
-                                    clone_user_dict = {'login': clone_user_login,
-                                                       'displayName': clone_user_name,
-                                                       'password': clone_user_password,
-                                                       'userType': get_user_type(user_clone),
-                                                       'priority': user_clone['priority']
-                                                       }
-                                    # # print(clone_user_dict)
-                                    # # check_disp(user_clone)
-                                    res_clone_user = requests.post(BASE_URL + 'addUser', json=clone_user_dict,
-                                                                   headers=HEADER_dict)
-                                    # # print(res_clone_user.status_code)
-                                    # # print(res_clone_user.text)
-                                    if res_clone_user.status_code == 200:
-                                        logging.info(f'Новый пользователь {clone_user_login} клонирован')
-                                        original_groups = get_groups_for_user_from_db(user_clone['id'])
-                                        original_groups_ids = []
-                                        for or_gr in original_groups:
-                                            original_groups_ids.append(or_gr['id'])
-                                        user_from_server = res_clone_user.text[1:-1]
-                                        clone_dict = {'UserIds': [user_from_server],
-                                                      'addGroupIds': original_groups_ids, 'removeGroupIds': []}
-                                        # print(clone_dict)
-                                        res_clone_add_group = requests.post(BASE_URL +
-                                                                            'changeUserGroups',
-                                                                            json=clone_dict,
-                                                                            headers=HEADER_dict)
-                                        # print(res_clone_add_group.status_code)
-                                        if res_clone_add_group.status_code == 200:
-                                            logging.info(f'Группы для {clone_user_login} добавлены')
-                                            update_users_and_groups()
-                                            # add_users(get_users_from_server())
-                                            # # print(clone_dict)
-                                            # add_del_groups_to_user_after_apply(clone_dict)
-                                            # users_from_db = get_users_from_db()
-                                            # users_from_db.sort(key=lambda i: i['login'])
-                                            # user_list, treedata_update_user = get_user_list(users_from_db)
-                                            if filter_status:
-                                                search_str = values['-filterUser-']
-                                                # print(search_str)
-                                                filtered_users = filter(lambda x: search_str in x['login'],
-                                                                        users_from_db)
-                                                filtered_users_list_of_dict = list(filtered_users)
-                                                filtered_users_list = get_filter_user_list(
-                                                    filtered_users_list_of_dict)
-                                                window['-users-'].update(filtered_users_list)
-                                            # else:
-                                            #     window['-users-'].update(user_list)
-                                            # window['-TREE2-'].update(treedata_update_user)
-                                            # window_clone_user.close()
-                                            # treedata_update_user = sg.TreeData()
-                                            # for user_id, user_login, user_name, is_dispatcher, is_blocked \
-                                            #         in user_list:
-                                            #     treedata_update_user.insert('', user_id, '',
-                                            #                                 values=[user_login, user_name,
-                                            #                                         is_dispatcher],
-                                            #                                 icon=check[0])
-                                            # window['-TREE2-'].update(treedata_update_user)
-                                            window_clone_user.close()
-                                            my_popup("Пользователь клонирован!")
-                                            break
+                                    if validate('clone_user'):
+                                        clone_user_login, \
+                                            clone_user_name, \
+                                            clone_user_password = val_clone_user.values()
+                                        # logging.info(f"Клонируем пользователя {user_clone['login']} с именем "
+                                        #              f"{clone_user_login}")
+                                        clone_user_dict = {'login': clone_user_login,
+                                                           'displayName': clone_user_name,
+                                                           'password': clone_user_password,
+                                                           'userType': get_user_type(user_clone),
+                                                           'priority': user_clone['priority']
+                                                           }
+                                        # # print(clone_user_dict)
+                                        # # check_disp(user_clone)
+                                        res_clone_user = requests.post(BASE_URL + 'addUser', json=clone_user_dict,
+                                                                       headers=HEADER_dict)
+                                        # # print(res_clone_user.status_code)
+                                        # # print(res_clone_user.text)
+                                        if res_clone_user.status_code == 200:
+                                            logging.info(f'Новый пользователь {clone_user_login} клонирован')
+                                            original_groups = get_groups_for_user_from_db(user_clone['id'])
+                                            original_groups_ids = []
+                                            for or_gr in original_groups:
+                                                original_groups_ids.append(or_gr['id'])
+                                            user_from_server = res_clone_user.text[1:-1]
+                                            clone_dict = {'UserIds': [user_from_server],
+                                                          'addGroupIds': original_groups_ids, 'removeGroupIds': []}
+                                            # print(clone_dict)
+                                            res_clone_add_group = requests.post(BASE_URL +
+                                                                                'changeUserGroups',
+                                                                                json=clone_dict,
+                                                                                headers=HEADER_dict)
+                                            # print(res_clone_add_group.status_code)
+                                            if res_clone_add_group.status_code == 200:
+                                                logging.info(f'Группы для {clone_user_login} добавлены')
+                                                update_users_and_groups()
+                                                # add_users(get_users_from_server())
+                                                # # print(clone_dict)
+                                                # add_del_groups_to_user_after_apply(clone_dict)
+                                                # users_from_db = get_users_from_db()
+                                                # users_from_db.sort(key=lambda i: i['login'])
+                                                # user_list, treedata_update_user = get_user_list(users_from_db)
+                                                if filter_status:
+                                                    search_str = values['-filterUser-']
+                                                    # print(search_str)
+                                                    filtered_users = filter(lambda x: search_str in x['login'],
+                                                                            users_from_db)
+                                                    filtered_users_list_of_dict = list(filtered_users)
+                                                    filtered_users_list = get_filter_user_list(
+                                                        filtered_users_list_of_dict)
+                                                    window['-users-'].update(filtered_users_list)
+                                                # else:
+                                                #     window['-users-'].update(user_list)
+                                                # window['-TREE2-'].update(treedata_update_user)
+                                                # window_clone_user.close()
+                                                # treedata_update_user = sg.TreeData()
+                                                # for user_id, user_login, user_name, is_dispatcher, is_blocked \
+                                                #         in user_list:
+                                                #     treedata_update_user.insert('', user_id, '',
+                                                #                                 values=[user_login, user_name,
+                                                #                                         is_dispatcher],
+                                                #                                 icon=check[0])
+                                                # window['-TREE2-'].update(treedata_update_user)
+                                                window_clone_user.close()
+                                                my_popup("Пользователь клонирован!")
+                                                break
+                                            else:
+                                                logging.error(f'Добавление групп для {clone_user_login} '
+                                                              f'НЕ выполнено - {res_clone_add_group.status_code}')
+                                                my_popup("Добавление групп не выполнено")
                                         else:
-                                            logging.error(f'Добавление групп для {clone_user_login} '
-                                                          f'НЕ выполнено - {res_clone_add_group.status_code}')
-                                            my_popup("Добавление групп не выполнено")
-                                    else:
-                                        logging.error(f'Новый пользователь {clone_user_login} НЕ добавлен')
-                                        my_popup("Пользователь не добавлен!")
+                                            logging.error(f'Новый пользователь {clone_user_login} НЕ добавлен')
+                                            my_popup("Пользователь не добавлен!")
                     if event == '-filterUser-':
                         filter_status = True
                         if values['-filterUser-']:
