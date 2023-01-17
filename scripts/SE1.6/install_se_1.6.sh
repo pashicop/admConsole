@@ -112,12 +112,12 @@ printf '##### ------------OK----------- #####\n'
 #sudo apt-get -y install xorgxrdp xrdp >> ~/install_log.txt
 #sudo apt-get -y install curl git >> ~/install_log.txt
 #curl https://pyenv.run | bash >> ~/install_log.txt 1>&2
-#echo '# omega start' >> ~/.bashrc
-#echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
-#echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
-#echo 'eval "$(pyenv init -)"' >> ~/.bashrc
-#echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
-#echo '# omega end' >> ~/.bashrc
+echo '# omega start' >> ~/.bashrc
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
+echo '# omega end' >> ~/.bashrc
 ##tail -n 10 ~/.bashrc
 #export PYENV_ROOT="$HOME/.pyenv"
 ##echo $PYENV_ROOT
