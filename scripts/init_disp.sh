@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 printf '##### Начинаем установку диспетчера ОМЕГА #####\n\n'
-printf '##### Настриваем NTP #####\n'
+printf '##### Настраиваем NTP #####\n'
 sudo systemctl start ntp > ~/install_disp_log.txt 2>&1
 sudo systemctl enable ntp >> ~/install_disp_log.txt 2>&1
 sudo systemctl status ntp >> ~/install_disp_log.txt 2>&1
@@ -28,7 +28,9 @@ printf '\n Текущая директория: '
 printf "$DIRECTORY"
 printf '\n'
 printf '\n##### Копируем ОМЕГА ######\n'
-mv dispatcher/ ~/dispatcher
+mv dispatcher ~/dispatcher
+cd ~/dispatcher
+#cd ~ && rm -R "$DIRECTORY"
 sudo cp run.sh ~/Desktop/ &&
 sudo chown omega:omega ~/Desktop/run.sh &&
 sudo chmod 777 ~/Desktop/run.sh &&

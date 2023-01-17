@@ -883,7 +883,7 @@ def make_settings():
              ],
             [sg.Frame('Настройки сервера',
                       [
-                          [sg.Push(), sg.Text('Таймаут опроса сервера, сек'),
+                          [sg.Push(), sg.Text('Таймаут опроса сервера (сек)'),
                            sg.Input(size=20, key='-пинг-таймаут-',
                                     default_text=ping_timeout,
                                     enable_events=True)],
@@ -1975,8 +1975,8 @@ def set_buttons_disabled(set=True):
     window['-DelGroup-'].update(disabled=set)
     # window['-filterUser-'].update(disabled=set)
     # window['-filterGroup-'].update(disabled=set)
-    window['Apply'].update(disabled=True)
-    window['Apply2'].update(disabled=True)
+    # window['Apply'].update(disabled=True)
+    # window['Apply2'].update(disabled=True)
     window['-checkAllGroups-'].update(disabled=set)
     window['-checkAllUsers-'].update(disabled=set)
     window['-partially-dropDB-'].update(disabled=set)
