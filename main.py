@@ -46,15 +46,19 @@ MIN_PORTS = 20
 MAX_PORTS = 1000
 MIN_PING_TM = 2
 MAX_PING_TM = 120
+MIN_DEL_DAYS = 10
+MAX_DEL_DAYS = 1095
 DEF_PING_TM = 5
+LICS = ['', '', '']
 LOCAL = False
+COMPANY = 'ООО "АСТРАКОМ"'
 SALT = 'omega'
 DEF1 = '58eb7b6988ea079322a6a3f143166e595500e36f6317cdf169c0131573665313'
 DEF1A = '04533cc2be3af54c7f5c827f07417a14ea8f1ba5ec2b6a2756b101c5446cd0ae'
 DEF2 = '1d053666c10241ec97f4b70a168d5060425476a34416ee20c9d9d7629b083292'
 DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
 DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
-role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop')
+role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
 version = '1.0.6 СТИС'
 
@@ -140,21 +144,22 @@ def add_users(users_list):
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
     for user in users_list:
-        is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, en_del_chats, \
+        is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, enabled_ind_mes, en_del_chats, \
             en_partial_drop, priority = 1 if user["userType"] == 15 or user['previousType'] == 15 else 0, \
             1 if user["userType"] == 30 or user['previousType'] == 30 else 0, \
             1 if user["userType"] == -1 else 0, \
             1 if user["userType"] == 1 or user['previousType'] == 1 else 0, \
             user['previousType'], \
             1 if role.allow_ind_call.value in user["userRoles"] else 0, \
+            1 if role.allow_ind_mes.value in user["userRoles"] else 0, \
             1 if role.allow_delete_chats.value in user['userRoles'] else 0, \
             1 if role.allow_partial_drop.value in user['userRoles'] else 0, \
             user['priority']
         db_insert_user = """insert or replace into Users(id, login, Display_name, 
-        is_dispatcher, is_admin, is_blocked, is_gw, previous_type, en_ind, en_del_chats, en_partial_drop, priority)
-        Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+        is_dispatcher, is_admin, is_blocked, is_gw, previous_type, en_ind, en_ind_mes, en_del_chats, en_partial_drop, priority)
+        Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         user_data = user['id'], user['login'], user['displayName'], \
-            is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, \
+            is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, enabled_ind_mes, \
             en_del_chats, en_partial_drop, priority
         cur.execute(db_insert_user, user_data)
     con.commit()
@@ -337,9 +342,10 @@ def get_users_from_db() -> list[dict]:
                           'is_gw': user[7],
                           'previous_type': user[8],
                           'en_ind': user[9],
-                          'en_del_chats': user[10],
-                          'en_partial_drop': user[11],
-                          'priority': user[12],
+                          'en_ind_mes': user[10],
+                          'en_del_chats': user[11],
+                          'en_partial_drop': user[12],
+                          'priority': user[13],
                           }
         users_for_table.append(user_for_table)
     # print('---')
@@ -615,14 +621,21 @@ def make_main_window(ip):
                                    auto_size_columns=False, col_widths=[0, 10, 20, 5, 5, 5, 5])], ],
                      expand_x=True,
                      expand_y=True,
-                     size=(480, 564)),
+                     size=(480, 300)),
             sg.Frame('Группы', [[sg.Tree(data=treedata,
                                          headings=['Имя', 'Описание'],
                                          col0_width=5,
                                          # col0_heading="",
                                          col_widths=[20, 30],
-                                         num_rows=10, key='-TREE-', row_height=20, metadata=[], auto_size_columns=False,
-                                         show_expanded=False, enable_events=True, justification='left', expand_y=True,
+                                         num_rows=10,
+                                         key='-TREE-',
+                                         # row_height=20,
+                                         metadata=[],
+                                         auto_size_columns=False,
+                                         show_expanded=False,
+                                         enable_events=True,
+                                         justification='left',
+                                         expand_y=True,
                                          select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                                          selected_row_colors='black on lightblue',
                                          )]], expand_y=True,
@@ -646,7 +659,8 @@ def make_main_window(ip):
         [sg.Frame('Группы',
                   [
                       [sg.Table(group_list, headings=['id', 'Имя', 'Описание', 'Э', 'Блок'], justification="left",
-                                num_rows=40, enable_events=True,
+                                # num_rows=40,
+                                enable_events=True,
                                 enable_click_events=True,
                                 right_click_selects=True,
                                 right_click_menu=[1, ['Изменить группу', 'Очистить чат']],
@@ -657,12 +671,17 @@ def make_main_window(ip):
                                 auto_size_columns=False, col_widths=[0, 10, 30, 5, 5])], ],
                   expand_x=True,
                   expand_y=True,
-                  size=(480, 564)),
+                  size=(480, 300)),
          sg.Frame('Пользователи', [[sg.Tree(data=treedata2, headings=['Логин', 'Имя'], col0_width=5,
                                             col_widths=[20, 30],
-                                            num_rows=10, key='-TREE2-', row_height=20, metadata=[],
+                                            num_rows=10,
+                                            key='-TREE2-',
+                                            # row_height=20,
+                                            metadata=[],
                                             auto_size_columns=False,
-                                            show_expanded=False, enable_events=True, justification='left',
+                                            show_expanded=False,
+                                            enable_events=True,
+                                            justification='left',
                                             expand_y=True,
                                             select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                                             selected_row_colors='black on lightblue',
@@ -698,7 +717,7 @@ def make_main_window(ip):
                                                    background_color='lightgray', size=10)],
     ]
     layout = [[sg.Menu([
-        ['Сервер', ['!Установить лицензию...', '!Настройки']],
+        ['Сервер', ['Установить лицензию...', '!Настройки']],
         ['Помощь', 'О программе'], ], key='-Menu-')],
         [sg.Frame('Сервер', [[sg.Push(),
                               sg.Button('Старт', key='-Start-',
@@ -725,7 +744,7 @@ def make_main_window(ip):
             [[sg.Tab('Пользователи', tab1_layout, key="Tab1"),
               sg.Tab('Группы', tab2_layout, key="Tab2"),
               sg.Tab('Журнал', tab3_layout, key="Tab3"),
-              ]], key="Tabs", size=(1000, 790), enable_events=True),
+              ]], key="Tabs", size=(1000, 660), enable_events=True),
         sg.Frame('Онлайн', [[sg.Multiline('',
                                           # expand_x=True,
                                           horizontal_scroll=True,
@@ -789,20 +808,27 @@ def make_login_window():
                     ],
                     [sg.Push(), sg.Checkbox('https', default=False, key='https_on')],
                     [sg.Push(background_color='white'),
-                     sg.Button('Вход', key="OK button", size=10),
+                     sg.Button('Вход', key="OK button", size=10,
+                               bind_return_key=True),
                      sg.Push(background_color='white')]]
-    return sg.Window('Вход на сервер', layout_login, icon=ICON_BASE_64, background_color='white',
+    return sg.Window('Вход на сервер', layout_login,
+                     icon=ICON_BASE_64,
+                     background_color='white',
                      use_ttk_buttons=True,
                      finalize=True)
 
 
 def make_add_lic():
-    layout_lic = [[sg.Combo(sorted(sg.user_settings_get_entry('-filenames-', [])),
-                            default_value=sg.user_settings_get_entry('-last filename-', ''), size=(50, 1),
-                            key='-FILENAME-'), sg.FileBrowse('Найти')],
-                  [sg.Button('Получить id сервера'), sg.Push(), sg.Button('Загрузить', bind_return_key=True)],
+    layout_lic = [[sg.Push(), sg.Combo(sorted(sg.user_settings_get_entry('-filenames-', [])),
+                            default_value=sg.user_settings_get_entry('-last filename-', ''),
+                            size=(50, 1),
+                            disabled=True,
+                            key='-FILENAME-'), sg.FileBrowse('Найти',
+                                                             initial_folder='../',
+                                                             file_types=(("Файл лицензии", "*.lic"),))],
+                  [sg.Button('Получить id сервера',disabled=False if ip == '127.0.0.1' else True), sg.Push(), sg.Button('Загрузить', bind_return_key=True)],
                   [sg.Frame('Лицензия',
-                            [[sg.Table(['', '', ''], headings=['Наименование', 'Количество', 'Дата '],
+                            [[sg.Table(LICS, headings=['Наименование', 'Количество', 'Дата'],
                                        justification="left",
                                        # num_rows=40,
                                        # enable_events=True,
@@ -812,12 +838,13 @@ def make_add_lic():
                                        select_mode=sg.TABLE_SELECT_MODE_NONE,
                                        # selected_row_colors='red on gray',
                                        # visible_column_map=[False, True, True, True],
-                                       # key='-groups2-', expand_y=True, expand_x=True,
-                                       # auto_size_columns=False, col_widths=[0, 10, 30, 2])], ],
+                                       key='-lic-',
+                                       # expand_y=True,
                                        # expand_x=True,
-                                       # size=(480, 564)
+                                       auto_size_columns=False,
+                                       col_widths=[25, 10, 12]
                                        )
-                              ]])],
+                              ]], expand_x=True)],
                   [sg.Push(), sg.Button('Выйти'), sg.Push()]]
     return sg.Window('Лицензия', layout_lic, icon=ICON_BASE_64, background_color='white', finalize=True)
 
@@ -886,6 +913,10 @@ def make_settings():
                           [sg.Push(), sg.Text('Таймаут опроса сервера (сек)'),
                            sg.Input(size=20, key='-пинг-таймаут-',
                                     default_text=ping_timeout,
+                                    enable_events=True)],
+                          [sg.Push(), sg.Text('Удалять данные старше (дней)'),
+                           sg.Input(size=20, key='-auto-del-',
+                                    default_text=settings['autoCleanDays'],
                                     enable_events=True)],
                       ], expand_x=True)
              ],
@@ -961,6 +992,10 @@ def make_add_user_window():
                      default=True,
                      enable_events=True,
                      key='addUserIndCallEn'), sg.Push()],
+            [sg.Checkbox('Разрешить индивидуальные сообщения',
+                         default=True,
+                         enable_events=True,
+                         key='addUserIndMesEn'), sg.Push()],
             [sg.Checkbox('Разрешить удалять переписку в чатах',
                      default=False,
                      disabled=True,
@@ -974,8 +1009,11 @@ def make_add_user_window():
             ],
                   # size=(300, 110),
                   pad=((8, 0), (10, 10)))],
-        [sg.Text('Приоритет'), sg.Input(key='UserPriority', size=(4, 1), enable_events=True,
-                                              tooltip=('От 1 до 15'))],
+        [sg.Text('Приоритет'), sg.Input(default_text='0',
+                                        key='UserPriority',
+                                        size=(4, 1),
+                                        enable_events=True,
+                                        tooltip=('От 0 до 15'))],
         [sg.Push(), sg.Checkbox('Заблокирован',
                      default=False,
                      disabled=False,
@@ -1043,6 +1081,11 @@ def make_modify_user_window(user: dict):
                      enable_events=True,
                      disabled=True if user['is_admin'] else False,
                      key='modifyUserIndCallEn'), sg.Push()],
+            [sg.Checkbox('Разрешить индивидуальные сообщения',
+                         default=False if user['is_admin'] else user['en_ind_mes'],
+                         enable_events=True,
+                         disabled=True if user['is_admin'] else False,
+                         key='modifyUserIndMesEn'), sg.Push()],
             [sg.Checkbox('Разрешить удалять переписку в чатах',
                      default=True if user['is_admin'] else user['en_partial_drop'],
                      disabled=False if user['is_dispatcher'] else True,
@@ -1445,7 +1488,16 @@ def get_id(os):
         system_id = output_list[-1]
         # print(output[-1])
     else:
-        system_id = 'smth Linux'
+        start_command = 'cat /var/lib/dbus/machine-id'
+        process = subprocess.Popen(start_command, shell=True,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE)
+        system_id = process.stdout.read().decode('utf-8').rstrip('\n')
+        # print(type(system_id))
+        print(system_id)
+    with open('system_id', 'w') as f:
+        f.write(system_id)
+        print('Файл c id создан')
     return system_id
 
 
@@ -1567,7 +1619,7 @@ def change_user_type(id, user_type):
 
 
 def my_popup(message):
-    layout = [[sg.Frame('', [[sg.Text(message, background_color=omega_theme['INPUT'])],
+    layout = [[sg.Frame('', [[sg.Text(message, justification='center', background_color=omega_theme['INPUT'])],
               [sg.Push(background_color=omega_theme['INPUT']), sg.Button('OK', pad=((0, 0), (10, 10))),
                sg.Push(background_color=omega_theme['INPUT'])]], background_color=omega_theme['INPUT'],
                         pad=((7, 7), (10, 10)))]]
@@ -1805,6 +1857,16 @@ def validate(window: str):
                 MAX_PING_TM) + " секунд"))
             window_settings.Element('-пинг-таймаут-').SetFocus()
             window_settings['-пинг-таймаут-'].update(background_color=button_color_2,
+                                                               text_color=omega_theme['BACKGROUND'])
+            return False
+        if MIN_DEL_DAYS <= int(val_set['-auto-del-']) <= MAX_DEL_DAYS:
+            window_settings['-auto-del-'].update(background_color=omega_theme['BACKGROUND'],
+                                                 text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Количество дней должно быть не менее " + str(MIN_DEL_DAYS) + " и не более " + str(
+                MAX_DEL_DAYS) + " дней"))
+            window_settings.Element('-auto-del-').SetFocus()
+            window_settings['-auto-del-'].update(background_color=button_color_2,
                                                                text_color=omega_theme['BACKGROUND'])
             return False
     if window == 'clone_user':
@@ -2355,10 +2417,16 @@ if __name__ == '__main__':
                                     window_modify_user['showModifyPassword'].update(disabled=False)
                                     window_modify_user['showModifyPassword'].update(image_data=ICON_SHOW_BASE_64)
                                 if ev_modify_user == 'modifyUserDispatcher' or ev_modify_user == 'modifyUserAdm':
+                                    window_modify_user['modifyUserIndMesEn'].update(disabled=False)
                                     window_modify_user['modifyUserAllowDelChats'].update(disabled=False)
                                     window_modify_user['modifyUserAllowPartialDrop'].update(disabled=False)
-                                if ev_modify_user == 'modifyUserGw' or ev_modify_user == 'modifyUserUser':
+                                if ev_modify_user == 'modifyUserGw':
                                     window_modify_user['modifyUserAllowDelChats'].update(disabled=True)
+                                    window_modify_user['modifyUserIndMesEn'].update(disabled=True)
+                                    window_modify_user['modifyUserAllowPartialDrop'].update(disabled=True)
+                                if ev_modify_user == 'modifyUserUser':
+                                    window_modify_user['modifyUserAllowDelChats'].update(disabled=True)
+                                    window_modify_user['modifyUserIndMesEn'].update(disabled=False)
                                     window_modify_user['modifyUserAllowPartialDrop'].update(disabled=True)
                                 if ev_modify_user == 'UserModifyPriority':
                                     if val_modify_user['UserModifyPriority'] == '':
@@ -2394,6 +2462,7 @@ if __name__ == '__main__':
                                         modify_name = False
                                         modify_password = False
                                         modify_is_en_ind = False
+                                        modify_is_en_ind_mes = False
                                         # modify_is_disp = False
                                         modify_is_blocked = False
                                         modify_en_del_chats = False
@@ -2431,6 +2500,26 @@ if __name__ == '__main__':
                                                     logging.error(
                                                         f'Ошибка при запрещении индивидуальных вызовов - '
                                                         f'{res_modify_user_en_ind.status_code}')
+                                        if val_modify_user['modifyUserIndMesEn'] != user_to_change['en_ind_mes']:
+                                            modify_is_en_ind_mes = True
+                                            res_modify_user_en_ind_mes = change_role(role.allow_ind_mes,
+                                                                                 val_modify_user['modifyUserIndMesEn'], user_to_change['id'])
+                                            if res_modify_user_en_ind_mes.status_code == 200:
+                                                if val_modify_user['modifyUserIndMesEn']:
+                                                    logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
+                                                                 f'разрешено отправлять индивидуальные сообщения')
+                                                else:
+                                                    logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
+                                                                 f'запрещено отправлять индивидуальные сообщения')
+                                            else:
+                                                if val_modify_user['modifyUserIndMesEn']:
+                                                    logging.error(
+                                                        f'Ошибка при разрешении отправления индивидуальных сообщений - '
+                                                        f'{res_modify_user_en_ind_mes.status_code}')
+                                                else:
+                                                    logging.error(
+                                                        f'Ошибка при запрещении отправления индивидуальных сообщений - '
+                                                        f'{res_modify_user_en_ind_mes.status_code}')
                                         if val_modify_user['modifyUserAllowDelChats'] != user_to_change['en_del_chats']:
                                             modify_en_del_chats = True
                                             res_modify_user_en_del_chats = change_role(role.allow_delete_chats,
@@ -2533,6 +2622,7 @@ if __name__ == '__main__':
                                                               f'{res_modify_user.status_code}')
                                         if modify_name or modify_password \
                                                 or modify_is_en_ind \
+                                                or modify_is_en_ind_mes \
                                                 or modify_en_del_chats \
                                                 or modify_en_partial_drop \
                                                 or modify_is_blocked \
@@ -2880,7 +2970,9 @@ if __name__ == '__main__':
                             else:
                                 my_popup('Нет изменений')
                     if event == 'О программе':
-                        my_popup('---------------------Powered by PaShi---------------------')
+                        my_popup('Разработано ' + COMPANY + ',\n'
+                                 '\n'
+                                 '2021-2023')
                     if event == 'Установить лицензию...':
                         window_add_lic = make_add_lic()
                         while True:
@@ -2905,6 +2997,32 @@ if __name__ == '__main__':
                                 # popup_text = 'id сервера - ' + id_serv
                                 # sg.popup(id_serv,
                                 #          title='id сервера', icon=ICON_BASE_64)
+                            if ev_add_lic == 'Загрузить':
+                                # print(start_command)
+                                if check_os() !='Windows':
+                                    start_command = "$HOME/Omega/Licensing validate -l " + val_add_lic['-FILENAME-'] + ' -k $HOME/Omega/keys/pub.pem'
+                                    process = subprocess.Popen(start_command, shell=True,
+                                                               stdout=subprocess.PIPE,
+                                                               stderr=subprocess.PIPE)
+                                    try:
+                                        output = process.stdout.read().decode('utf-8').rstrip('\n')
+                                    except Exception as e:
+                                        my_popup('Неверный файл лицензии!')
+                                        print(f'{e}')
+                                        output = False
+                                    # print(type(output))
+                                    # print(output)
+                                    if output:
+                                        index = output.find('{')
+                                        lics: dict = json.loads(output[index:])
+                                        # print(type(lics))
+                                        # print(lics)
+                                        LICS = [['Количество абонентов', lics['userCount'], lics['expirationDate']],
+                                                ['Количество диспетчеров', lics['dispatcherCount'], lics[
+                                                            'expirationDate']]]
+                                        for feature in lics['features']:
+                                            LICS.append([feature, '+', lics['expirationDate']])
+                                        window_add_lic['-lic-'].update(LICS)
                     if event == 'Настройки':
                         window_settings = make_settings()
                         timeout = 0
@@ -2953,6 +3071,22 @@ if __name__ == '__main__':
                                 window_settings['-Progress-Bar-'].update_bar(counter)
                                 window_settings['-OK-set-'].update(disabled=False)
                                 window_settings['-OK-set-'].update(button_color=button_color_2)
+                            elif ev_set == '-auto-del-':
+                                if val_set[ev_set].isdigit():
+                                    window_settings[ev_set].update(
+                                        background_color=omega_theme['INPUT'])
+                                    if  MIN_DEL_DAYS <= int(val_set[ev_set]) <= MAX_DEL_DAYS:
+                                        window_settings[ev_set].update(
+                                            background_color=omega_theme['INPUT'],
+                                            text_color=omega_theme['TEXT'])
+                                    else:
+                                        window_settings[ev_set].update(background_color=button_color_2)
+                                else:
+                                    window_settings[ev_set].update(background_color=button_color_2)
+                                counter = 0
+                                window_settings['-Progress-Bar-'].update_bar(counter)
+                                window_settings['-OK-set-'].update(disabled=False)
+                                window_settings['-OK-set-'].update(button_color=button_color_2)
                             elif ev_set == '-OK-set-':
                                 # print(val_set.values())
                                 if validate('settings'):
@@ -2961,6 +3095,7 @@ if __name__ == '__main__':
                                                      'finalizeCallTimeout': val_set['-таймаут-окончания-'],
                                                      'finalizeTonalTimeout': val_set['-таймаут-тонового-сигнала-'],
                                                      'ambientCallDuration': val_set['-таймаут-прослушивания-'],
+                                                     'autoCleanDays': val_set['-auto-del-'],
                                                      'udpPortsRange': val_set['-Мин-аудио-порт-'] + '-' + val_set['-Макс-аудио-порт-']}
                                     res_update_set = requests.post(BASE_URL_SETTINGS,
                                                                    json=settings_dict,
@@ -3018,18 +3153,22 @@ if __name__ == '__main__':
                                 window_add_user['showPassword'].update(image_data=ICON_SHOW_BASE_64)
                             elif ev_add_user == 'user':
                                 window_add_user['addUserIndCallEn'].update(True, disabled=False)
+                                window_add_user['addUserIndMesEn'].update(True, disabled=False)
                                 window_add_user['addUserAllowDelChats'].update(False, disabled=True)
                                 window_add_user['addUserAllowPartialDrop'].update(False, disabled=True)
                             elif ev_add_user == 'disp':
                                 window_add_user['addUserIndCallEn'].update(True, disabled=False)
+                                window_add_user['addUserIndMesEn'].update(True, disabled=False)
                                 window_add_user['addUserAllowDelChats'].update(False, disabled=False)
                                 window_add_user['addUserAllowPartialDrop'].update(False, disabled=False)
                             elif ev_add_user == 'gw':
                                 window_add_user['addUserIndCallEn'].update(True, disabled=False)
+                                window_add_user['addUserIndMesEn'].update(False, disabled=True)
                                 window_add_user['addUserAllowDelChats'].update(False, disabled=True)
                                 window_add_user['addUserAllowPartialDrop'].update(False, disabled=True)
                             elif ev_add_user == 'adm':
                                 window_add_user['addUserIndCallEn'].update(False, disabled=True)
+                                window_add_user['addUserIndMesEn'].update(False, disabled=True)
                                 window_add_user['addUserAllowDelChats'].update(True, disabled=False)
                                 window_add_user['addUserAllowPartialDrop'].update(True, disabled=False)
                             elif ev_add_user == 'UserPriority':
@@ -3100,6 +3239,26 @@ if __name__ == '__main__':
                                                     logging.error(
                                                         f'Ошибка при запрещении индивидуальных вызовов - '
                                                         f'{res_add_user_en_ind.status_code}')
+                                        if not val_add_user['addUserIndMesEn']:
+                                            res_add_user_en_ind_mes = change_role(role.allow_ind_mes,
+                                                                              val_add_user['addUserIndMesEn'],
+                                                                              res_add_user.text[1:-1])
+                                            if res_add_user_en_ind_mes.status_code == 200:
+                                                if val_add_user['addUserIndMesEn']:
+                                                    logging.info(f"'Пользователю {val_add_user['UserLogin']} "
+                                                                 f'разрешено отправлять индивидуальные сообщения')
+                                                else:
+                                                    logging.info(f"Пользователю {val_add_user['UserLogin']} "
+                                                                 f'запрещено отправлять индивидуальные сообщения')
+                                            else:
+                                                if val_add_user['addUserIndMesEn']:
+                                                    logging.error(
+                                                        f'Ошибка при разрешении отправления индивидуальных сообщений - '
+                                                        f'{res_add_user_en_ind_mes.status_code}')
+                                                else:
+                                                    logging.error(
+                                                        f'Ошибка при запрещении отправления индивидуальных сообщений - '
+                                                        f'{res_add_user_en_ind_mes.status_code}')
                                         if val_add_user['addUserAllowDelChats']:
                                             res_add_user_en_del_chats = change_role(role.allow_delete_chats,
                                                                                     val_add_user['addUserAllowDelChats'],
@@ -3782,7 +3941,8 @@ if __name__ == '__main__':
                                 window_confirm.close()
                                 break
                     if event == '-partially-dropDB-':
-                        window_confirm = make_confirm_window('Вы уверены, что хотите удалить все данные???')
+                        window_confirm = make_confirm_window('Вы уверены, что хотите удалить '
+                                                             'все данные, кроме абонентов и групп???')
                         while True:
                             ev_confirm, val_confirm = window_confirm.Read()
                             # print(ev_exit, val_confirm)
