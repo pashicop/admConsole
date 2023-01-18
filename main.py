@@ -60,7 +60,7 @@ DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
 DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
-version = '1.0.6 СТИС'
+version = '1.0.7 СТИС'
 
 # folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
 # file_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABU0lEQVQ4y52TzStEURiHn/ecc6XG54JSdlMkNhYWsiILS0lsJaUsLW2Mv8CfIDtr2VtbY4GUEvmIZnKbZsY977Uwt2HcyW1+dTZvt6fn9557BGB+aaNQKBR2ifkbgWR+cX13ubO1svz++niVTA1ArDHDg91UahHFsMxbKWycYsjze4muTsP64vT43v7hSf/A0FgdjQPQWAmco68nB+T+SFSqNUQgcIbN1bn8Z3RwvL22MAvcu8TACFgrpMVZ4aUYcn77BMDkxGgemAGOHIBXxRjBWZMKoCPA2h6qEUSRR2MF6GxUUMUaIUgBCNTnAcm3H2G5YQfgvccYIXAtDH7FoKq/AaqKlbrBj2trFVXfBPAea4SOIIsBeN9kkCwxsNkAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK0xAAAAAElFTkSuQmCC'
@@ -1030,7 +1030,8 @@ def make_add_user_window():
                      use_ttk_buttons=True,
                      finalize=True,
                      # disable_minimize=True,
-                     modal=True)
+                     modal=True
+                     )
 
 
 def make_modify_user_window(user: dict):
@@ -2085,6 +2086,7 @@ if __name__ == '__main__':
     window = None
     create_db()
     thread_started = False
+    current_db = ''
     while True:
         break_flag = False
         break_flag2 = False
@@ -2219,13 +2221,11 @@ if __name__ == '__main__':
                         else:
                             # current_db = server_status['db']
                             dict_online = json.loads(values['-THREAD-'][1])
-                            # print(dict_online)
+                            print(dict_online)
+                            print(current_db)
                             # print(f"server_status[run] = {server_status['run']}")
                             # print(f"server_status[last_state] = {server_status['last_state']}")
                             if dict_online["onlineUsersCount"] != '':
-                                update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
-                                              + ', Версия БД: ' + str(dict_online["databaseVersion"])
-                                window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                 update_free_space(dict_online)
                                 window['-Start-'].update(disabled=True)
                                 window['-Stop-'].update(disabled=False)
@@ -2241,9 +2241,12 @@ if __name__ == '__main__':
                                         window['-Menu-'].update([
                                             ['Сервер', ['Установить лицензию...', 'Настройки']],
                                             ['Помощь', 'О программе'], ])
-                                if current_db != dict_online['databaseVersion']:
+                                if current_db < dict_online['databaseVersion']:
                                     update_users_and_groups()
                                     current_db = dict_online['databaseVersion']
+                                update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
+                                              + ', Версия БД: ' + str(dict_online["databaseVersion"])
+                                window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                 set_buttons_disabled(False)
                                 server_status['run'] = True
                             else:
@@ -2276,7 +2279,7 @@ if __name__ == '__main__':
                                 if server_status['run']:
                                     server_status['run'] = False
                                     window['-Menu-'].update([
-                                        ['Сервер', ['!Установить лицензию...', '!Настройки']],
+                                        ['Сервер', ['Установить лицензию...', '!Настройки']],
                                         ['Помощь', 'О программе'], ])
                             if change_state: #TODO
                                 with open('admin.log', mode='r', encoding='cp1251') as log_f:
@@ -3000,7 +3003,8 @@ if __name__ == '__main__':
                             if ev_add_lic == 'Загрузить':
                                 # print(start_command)
                                 if check_os() !='Windows':
-                                    start_command = "$HOME/Omega/Licensing validate -l " + val_add_lic['-FILENAME-'] + ' -k $HOME/Omega/keys/pub.pem'
+                                    start_command = "$HOME/Omega/Licensing validate -l " + val_add_lic['-FILENAME-'] + \
+                                                    ' -k $HOME/Omega/keys/pub.pem'
                                     process = subprocess.Popen(start_command, shell=True,
                                                                stdout=subprocess.PIPE,
                                                                stderr=subprocess.PIPE)
@@ -3023,6 +3027,16 @@ if __name__ == '__main__':
                                         for feature in lics['features']:
                                             LICS.append([feature, '+', lics['expirationDate']])
                                         window_add_lic['-lic-'].update(LICS)
+                                        start_command = "echo export OMEGA=5 >> ~/.bashrc"
+                                        process = subprocess.Popen(start_command, shell=True,
+                                                                   stdout=subprocess.PIPE,
+                                                                   stderr=subprocess.PIPE)
+                                        start_command = "source ~/.bashrc"
+                                        process = subprocess.Popen(start_command, shell=True,
+                                                                   stdout=subprocess.PIPE,
+                                                                   stderr=subprocess.PIPE)
+                                        # os.environ['OMEGA'] = '1'
+                                        print(f"env OMEGA = {os.getenv('OMEGA')}")
                     if event == 'Настройки':
                         window_settings = make_settings()
                         timeout = 0
@@ -3156,21 +3170,25 @@ if __name__ == '__main__':
                                 window_add_user['addUserIndMesEn'].update(True, disabled=False)
                                 window_add_user['addUserAllowDelChats'].update(False, disabled=True)
                                 window_add_user['addUserAllowPartialDrop'].update(False, disabled=True)
+                                window_add_user['UserPriority'].update('0')
                             elif ev_add_user == 'disp':
                                 window_add_user['addUserIndCallEn'].update(True, disabled=False)
                                 window_add_user['addUserIndMesEn'].update(True, disabled=False)
                                 window_add_user['addUserAllowDelChats'].update(False, disabled=False)
                                 window_add_user['addUserAllowPartialDrop'].update(False, disabled=False)
+                                window_add_user['UserPriority'].update('10')
                             elif ev_add_user == 'gw':
                                 window_add_user['addUserIndCallEn'].update(True, disabled=False)
                                 window_add_user['addUserIndMesEn'].update(False, disabled=True)
                                 window_add_user['addUserAllowDelChats'].update(False, disabled=True)
                                 window_add_user['addUserAllowPartialDrop'].update(False, disabled=True)
+                                window_add_user['UserPriority'].update('5')
                             elif ev_add_user == 'adm':
                                 window_add_user['addUserIndCallEn'].update(False, disabled=True)
                                 window_add_user['addUserIndMesEn'].update(False, disabled=True)
                                 window_add_user['addUserAllowDelChats'].update(True, disabled=False)
                                 window_add_user['addUserAllowPartialDrop'].update(True, disabled=False)
+                                window_add_user['UserPriority'].update('15')
                             elif ev_add_user == 'UserPriority':
                                 if val_add_user['UserPriority'] == '':
                                     window_add_user['UserPriority'].update(background_color=omega_theme['INPUT'],
@@ -3209,6 +3227,7 @@ if __name__ == '__main__':
                                     res_add_user = requests.post(BASE_URL + 'addUser',
                                                                  json=add_user_dict, headers=HEADER_dict)
                                     if res_add_user.status_code == 200:
+                                        current_db += 1
                                         logging.info(f"Пользователь {val_add_user['UserLogin']} добавлен")
                                         if new_user_type == user_type['dispatcher']:
                                             logging.info(f"Пользователь {val_add_user['UserLogin']} "
@@ -3230,6 +3249,7 @@ if __name__ == '__main__':
                                                 else:
                                                     logging.info(f"Пользователю {val_add_user['UserLogin']} "
                                                                  f'запрещено совершать индивидуальные вызовы')
+                                                current_db += 1
                                             else:
                                                 if val_add_user['addUserIndCallEn']:
                                                     logging.error(
@@ -3250,6 +3270,7 @@ if __name__ == '__main__':
                                                 else:
                                                     logging.info(f"Пользователю {val_add_user['UserLogin']} "
                                                                  f'запрещено отправлять индивидуальные сообщения')
+                                                current_db += 1
                                             else:
                                                 if val_add_user['addUserIndMesEn']:
                                                     logging.error(
@@ -3270,6 +3291,7 @@ if __name__ == '__main__':
                                                 else:
                                                     logging.info(f"Пользователю {val_add_user['UserLogin']} "
                                                                  f'запрещено удалять чаты')
+                                                current_db += 1
                                             else:
                                                 if val_add_user['addUserAllowDelChats']:
                                                     logging.error(
@@ -3290,6 +3312,7 @@ if __name__ == '__main__':
                                                 else:
                                                     logging.info(f"Пользователю {val_add_user['UserLogin']} "
                                                                  f'запрещено удалять данные БД')
+                                                current_db += 1
                                             else:
                                                 if val_add_user['addUserAllowPartialDrop']:
                                                     logging.error(
@@ -3311,6 +3334,7 @@ if __name__ == '__main__':
                                                     logging.info(f"Пользователь "
                                                                  f"{val_add_user['UserLogin']}"
                                                                  f' разблокирован')
+                                                current_db += 1
                                             else:
                                                 if val_add_user['addUserBlock']:
                                                     logging.error(
@@ -3322,6 +3346,9 @@ if __name__ == '__main__':
                                                         f'{res_block.status_code}')
                                         update_users()
                                         window_add_user.close()
+                                        # update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
+                                        #               + ', Версия БД: ' + str(current_db)
+                                        # window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                         my_popup("Пользователь добавлен!")
                                     else:
                                         logging.error(f"Пользователь {val_add_user['UserLogin']} НЕ добавлен - "
@@ -3661,9 +3688,9 @@ if __name__ == '__main__':
                                         my_popup("Группа не удалена!")
                     if event == '-Start-':
                         print('Стартуем сервер')
-                        sg.popup('Запускаем сервер, ждите..', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
-                                 background_color='lightgray', non_blocking=True, auto_close=True,
-                                 auto_close_duration=5)
+                        # sg.popup('Запускаем сервер, ждите..', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
+                        #          background_color='lightgray', non_blocking=True, auto_close=True,
+                        #          auto_close_duration=5)
                         # path_home_server = Path(Path.home(), 'Omega')
                         # print(path_home_server)
                         # start_command = 'cd ' + str(path_home_server) + ' && ./run'
@@ -3761,12 +3788,10 @@ if __name__ == '__main__':
                         if res_ping != '':
                             print('Сервер НЕ остановлен')
                             logging.warning(f'Сервер НЕ остановлен администратором')
-                            sg.popup('Сервер НЕ остановлен', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
-                                     non_blocking=True, background_color='lightgray')
+                            my_popup('Сервер НЕ остановлен')
                         else:
                             logging.warning(f'Сервер остановлен администратором')
-                            sg.popup('Сервер остановлен', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
-                                     non_blocking=True, background_color='lightgray')
+                            my_popup('Сервер остановлен')
                             window['-StatusBar-'].update('Сервер не запущен', background_color=button_color_2)
                             window['-Start-'].update(disabled=False)
                             window['-Stop-'].update(disabled=True)
