@@ -2488,6 +2488,7 @@ if __name__ == '__main__':
                                             res_modify_user_en_ind = change_role(role.allow_ind_call,
                                                                                  val_modify_user['modifyUserIndCallEn'], user_to_change['id'])
                                             if res_modify_user_en_ind.status_code == 200:
+                                                current_db += 1
                                                 if val_modify_user['modifyUserIndCallEn']:
                                                     logging.info(f"'Пользователю {val_modify_user['UserModifyLogin']} "
                                                                  f'разрешено совершать индивидуальные вызовы')
@@ -2508,6 +2509,7 @@ if __name__ == '__main__':
                                             res_modify_user_en_ind_mes = change_role(role.allow_ind_mes,
                                                                                  val_modify_user['modifyUserIndMesEn'], user_to_change['id'])
                                             if res_modify_user_en_ind_mes.status_code == 200:
+                                                current_db += 1
                                                 if val_modify_user['modifyUserIndMesEn']:
                                                     logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
                                                                  f'разрешено отправлять индивидуальные сообщения')
@@ -2529,6 +2531,7 @@ if __name__ == '__main__':
                                                                                        val_modify_user['modifyUserAllowDelChats'],
                                                                                        user_to_change['id'])
                                             if res_modify_user_en_del_chats.status_code == 200:
+                                                current_db += 1
                                                 if val_modify_user['modifyUserAllowDelChats']:
                                                     logging.info(f"Пользователю "
                                                                  f"{val_modify_user['UserModifyLogin']}"
@@ -2552,6 +2555,7 @@ if __name__ == '__main__':
                                                                                           val_modify_user['modifyUserAllowPartialDrop'],
                                                                                           user_to_change['id'])
                                             if res_modify_user_en_partial_drop.status_code == 200:
+                                                current_db += 1
                                                 if val_modify_user['modifyUserAllowPartialDrop']:
                                                     logging.info(f"Пользователю "
                                                                  f"{val_modify_user['UserModifyLogin']}"
@@ -2574,6 +2578,7 @@ if __name__ == '__main__':
                                             res_block = block_user(val_modify_user['modifyUserBlock'],
                                                                    user_to_change['id'])
                                             if res_block.status_code == 200:
+                                                current_db += 1
                                                 if val_modify_user['modifyUserBlock']:
                                                     logging.info(f"Пользователь "
                                                                  f"{val_modify_user['UserModifyLogin']}"
@@ -2599,6 +2604,7 @@ if __name__ == '__main__':
                                                                                  json=modify_user_type_dict,
                                                                                  headers=HEADER_dict)
                                             if res_modify_user_type.status_code == 200:
+                                                current_db += 1
                                                 logging.info(
                                                     f"Пользователю {val_modify_user['UserModifyLogin']} "
                                                     f'изменили тип на {list(user_type.keys())[list(user_type.values()).index(modify_user_type)]}')
@@ -2612,6 +2618,7 @@ if __name__ == '__main__':
                                                                             headers=HEADER_dict)
                                             # sg.cprint(f'Изменяем пользователя - {res_modify_user.status_code}')
                                             if res_modify_user.status_code == 200:
+                                                current_db += 1
                                                 if modify_name:
                                                     logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} изменили имя")
                                                 if modify_password:
@@ -2667,6 +2674,7 @@ if __name__ == '__main__':
                                             headers=HEADER_dict)
                                         # print(res_modify_group.status_code)
                                         if res_modify_group_del_chat.status_code == 200:
+                                            current_db += 1
                                             logging.info(f"Группу {group_to_change['name']} почистили")
                                             my_popup("Группа почищена!")
                                             window_confirm.close()
@@ -2708,6 +2716,7 @@ if __name__ == '__main__':
                                                                          headers=HEADER_dict)
                                         # print(res_modify_group.status_code)
                                         if res_modify_group.status_code == 200:
+                                            current_db += 1
                                             logging.info(f'Группу {modify_group_name} изменили')
                                             # break
                                         else:
@@ -2720,6 +2729,7 @@ if __name__ == '__main__':
                                                                                          json=modify_group_dict,
                                                                                          headers=HEADER_dict)
                                             if res_modify_group_is_disabled.status_code == 200:
+                                                current_db += 1
                                                 logging.info(f'Группа {modify_group_name} заблокирована')
                                             elif res_modify_group_is_disabled.status_code == 400:
                                                 logging.info(f'Группа {modify_group_name} уже была заблокирована')
@@ -2731,6 +2741,7 @@ if __name__ == '__main__':
                                                                                          json=modify_group_dict,
                                                                                          headers=HEADER_dict)
                                             if res_modify_group_is_disabled.status_code == 200:
+                                                current_db += 1
                                                 logging.info(f'Группа {modify_group_name} раблокирована')
                                             elif res_modify_group_is_disabled.status_code == 400:
                                                 logging.info(f'Группа {modify_group_name} уже была разблокирована')
@@ -2759,6 +2770,7 @@ if __name__ == '__main__':
                                                                           headers=HEADER_dict)
                                 # print(res_modify_group.status_code)
                                 if res_modify_group_del_chat.status_code == 200:
+                                    current_db += 1
                                     logging.info(f"Группу {group_to_change['name']} почистили")
                                     my_popup("Группа почищена!")
                                 else:
@@ -2842,6 +2854,7 @@ if __name__ == '__main__':
                                                             headers=HEADER_dict)
                                 print(res_add_del.status_code)
                                 if res_add_del.status_code == 200:
+                                    current_db += 1
                                     logging.info(f'Добавление и удаление групп выполнено для '
                                                  f'{chosen_login["name"]}')
                                     add_del_groups_to_user_after_apply(add_del_dict)
@@ -2854,6 +2867,7 @@ if __name__ == '__main__':
                                                         json=add_del_dict, headers=HEADER_dict)
                                 print(res_add.status_code)
                                 if res_add.status_code == 200:
+                                    current_db += 1
                                     logging.info(f'Добавление групп выполнено для {chosen_login["name"]}')
                                     add_del_groups_to_user_after_apply(add_del_dict)
                                 else:
@@ -2865,6 +2879,7 @@ if __name__ == '__main__':
                                                         headers=HEADER_dict)
                                 print(res_del.status_code)
                                 if res_del.status_code == 200:
+                                    current_db += 1
                                     logging.info(f'Удаление групп выполнено для {chosen_login["name"]}')
                                     add_del_groups_to_user_after_apply(add_del_dict)
                                 else:
@@ -2929,6 +2944,7 @@ if __name__ == '__main__':
                                                             headers=HEADER_dict)
                                 print(res_add_del.status_code)
                                 if res_add_del.status_code == 200:
+                                    current_db += 1
                                     logging.info(
                                         f'Изменение пользователей выполнено для {chosen_group["name"]}')
                                     # window['-users2-'].update(get_users_for_group(chosen_group[1]))
@@ -2943,6 +2959,7 @@ if __name__ == '__main__':
                                                         headers=HEADER_dict)
                                 # print(res_add.status_code)
                                 if res_add.status_code == 200:
+                                    current_db += 1
                                     logging.info(f'Добавление пользователей выполнено для '
                                                  f'{chosen_group["name"]}')
                                     # window['-users2-'].update(get_users_for_group(chosen_group[1]))
@@ -2957,6 +2974,7 @@ if __name__ == '__main__':
                                                         headers=HEADER_dict)
                                 # print(res_del.status_code)
                                 if res_del.status_code == 200:
+                                    current_db += 1
                                     logging.info(
                                         f'Удаление пользователей выполнено для {chosen_group["name"]}')
                                     add_del_users_to_group_after_apply(add_del_dict)
@@ -3115,6 +3133,7 @@ if __name__ == '__main__':
                                                                    json=settings_dict,
                                                                    headers=HEADER_dict)
                                     if res_update_set.status_code == 200:
+                                        current_db += 1
                                         logging.info(
                                             f"Настройки изменены: "
                                             f"Инд. вызов - {settings_dict['privateCallTimeout']}, "
@@ -3122,6 +3141,7 @@ if __name__ == '__main__':
                                             f"Таймаут окончания вызова - {settings_dict['finalizeCallTimeout']}, "
                                             f"Тональный вызов - {settings_dict['finalizeTonalTimeout']}, "
                                             f"Скрытое прослушивание - {settings_dict['ambientCallDuration']}, "
+                                            f"Аудио порты - {settings_dict['udpPortsRange']}, "
                                             f"Аудио порты - {settings_dict['udpPortsRange']}, "
                                         )
                                     else:
@@ -3243,13 +3263,13 @@ if __name__ == '__main__':
                                                                               val_add_user['addUserIndCallEn'],
                                                                               res_add_user.text[1:-1])
                                             if res_add_user_en_ind.status_code == 200:
+                                                current_db += 1
                                                 if val_add_user['addUserIndCallEn']:
                                                     logging.info(f"'Пользователю {val_add_user['UserLogin']} "
                                                                  f'разрешено совершать индивидуальные вызовы')
                                                 else:
                                                     logging.info(f"Пользователю {val_add_user['UserLogin']} "
                                                                  f'запрещено совершать индивидуальные вызовы')
-                                                current_db += 1
                                             else:
                                                 if val_add_user['addUserIndCallEn']:
                                                     logging.error(
@@ -3264,13 +3284,13 @@ if __name__ == '__main__':
                                                                               val_add_user['addUserIndMesEn'],
                                                                               res_add_user.text[1:-1])
                                             if res_add_user_en_ind_mes.status_code == 200:
+                                                current_db += 1
                                                 if val_add_user['addUserIndMesEn']:
                                                     logging.info(f"'Пользователю {val_add_user['UserLogin']} "
                                                                  f'разрешено отправлять индивидуальные сообщения')
                                                 else:
                                                     logging.info(f"Пользователю {val_add_user['UserLogin']} "
                                                                  f'запрещено отправлять индивидуальные сообщения')
-                                                current_db += 1
                                             else:
                                                 if val_add_user['addUserIndMesEn']:
                                                     logging.error(
@@ -3285,13 +3305,13 @@ if __name__ == '__main__':
                                                                                     val_add_user['addUserAllowDelChats'],
                                                                                     res_add_user.text[1:-1])
                                             if res_add_user_en_del_chats.status_code == 200:
+                                                current_db += 1
                                                 if val_add_user['addUserAllowDelChats']:
                                                     logging.info(f"'Пользователю {val_add_user['UserLogin']} "
                                                                  f'разрешено удалять чаты')
                                                 else:
                                                     logging.info(f"Пользователю {val_add_user['UserLogin']} "
                                                                  f'запрещено удалять чаты')
-                                                current_db += 1
                                             else:
                                                 if val_add_user['addUserAllowDelChats']:
                                                     logging.error(
@@ -3306,13 +3326,13 @@ if __name__ == '__main__':
                                                                                        val_add_user['addUserAllowPartialDrop'],
                                                                                        res_add_user.text[1:-1])
                                             if res_add_user_en_partial_drop.status_code == 200:
+                                                current_db += 1
                                                 if val_add_user['addUserAllowPartialDrop']:
                                                     logging.info(f"'Пользователю {val_add_user['UserLogin']} "
                                                                  f'разрешено удалять данные БД')
                                                 else:
                                                     logging.info(f"Пользователю {val_add_user['UserLogin']} "
                                                                  f'запрещено удалять данные БД')
-                                                current_db += 1
                                             else:
                                                 if val_add_user['addUserAllowPartialDrop']:
                                                     logging.error(
@@ -3326,6 +3346,7 @@ if __name__ == '__main__':
                                             res_block = block_user(val_add_user['addUserBlock'],
                                                                    res_add_user.text[1:-1])
                                             if res_block.status_code == 200:
+                                                current_db += 1
                                                 if val_add_user['addUserBlock']:
                                                     logging.info(f"Пользователь "
                                                                  f"{val_add_user['UserLogin']}"
@@ -3334,7 +3355,6 @@ if __name__ == '__main__':
                                                     logging.info(f"Пользователь "
                                                                  f"{val_add_user['UserLogin']}"
                                                                  f' разблокирован')
-                                                current_db += 1
                                             else:
                                                 if val_add_user['addUserBlock']:
                                                     logging.error(
@@ -3391,6 +3411,7 @@ if __name__ == '__main__':
                                                                      json=del_user, headers=HEADER_dict)
                                         # print(res_del_user.status_code)
                                         if res_del_user.status_code == 200:
+                                            current_db += 1
                                             logging.info(f'Пользователь {del_user["name"]} удалён')
                                             drop_db('users')
                                             add_users(get_users_from_server())
@@ -3471,6 +3492,7 @@ if __name__ == '__main__':
                                         # # print(res_clone_user.status_code)
                                         # # print(res_clone_user.text)
                                         if res_clone_user.status_code == 200:
+                                            current_db += 1
                                             logging.info(f'Новый пользователь {clone_user_login} клонирован')
                                             original_groups = get_groups_for_user_from_db(user_clone['id'])
                                             original_groups_ids = []
@@ -3486,6 +3508,7 @@ if __name__ == '__main__':
                                                                                 headers=HEADER_dict)
                                             # print(res_clone_add_group.status_code)
                                             if res_clone_add_group.status_code == 200:
+                                                current_db += 1
                                                 logging.info(f'Группы для {clone_user_login} добавлены')
                                                 update_users_and_groups()
                                                 # add_users(get_users_from_server())
@@ -3596,6 +3619,7 @@ if __name__ == '__main__':
                                                                  json=add_group_dict, headers=HEADER_dict)
                                     # print(res_add_user.status_code)
                                     if res_add_user.status_code == 200:
+                                        current_db += 1
                                         logging.info(f'Группа {new_group_name} добавлена')
                                         if val_add_group['addGroupBlock']:
                                             block_group(new_group_blocked, res_add_user.text[1:-1])
@@ -3642,6 +3666,7 @@ if __name__ == '__main__':
                                                                   json=del_group, headers=HEADER_dict)
                                     # print(res_del_group.status_code)
                                     if res_del_group.status_code == 200:
+                                        current_db += 1
                                         logging.info(f'Группа {del_group["name"]} удалена')
                                         drop_db('groups')
                                         add_groups(get_groups_from_server())
@@ -3976,6 +4001,7 @@ if __name__ == '__main__':
                                                            headers=HEADER_dict)
                                 # print(res_add_user.status_code)
                                 if res_drop_db.status_code == 200:
+                                    current_db += 1
                                     logging.info('Удаляем всё, кроме абонентов и групп')
                                     logging.info('Стоп лога')
                                     my_popup('БД частично удалена')
