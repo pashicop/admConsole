@@ -1,4 +1,4 @@
-import binascii
+# import binascii
 import hashlib
 import json
 import os
@@ -17,7 +17,6 @@ import ipaddress
 import logging
 import sys
 from enum import Enum
-
 
 ICON_BASE_64 = b'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'
 ICON_BLANK_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZSURBVDhPY/hPIhjVQAwY1UAMGHQa/v8HAK+t/R8kTA7nAAAAAElFTkSuQmCC'
@@ -61,6 +60,7 @@ DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
 version = '1.0.7 СТИС'
+
 
 # folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
 # file_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABU0lEQVQ4y52TzStEURiHn/ecc6XG54JSdlMkNhYWsiILS0lsJaUsLW2Mv8CfIDtr2VtbY4GUEvmIZnKbZsY977Uwt2HcyW1+dTZvt6fn9557BGB+aaNQKBR2ifkbgWR+cX13ubO1svz++niVTA1ArDHDg91UahHFsMxbKWycYsjze4muTsP64vT43v7hSf/A0FgdjQPQWAmco68nB+T+SFSqNUQgcIbN1bn8Z3RwvL22MAvcu8TACFgrpMVZ4aUYcn77BMDkxGgemAGOHIBXxRjBWZMKoCPA2h6qEUSRR2MF6GxUUMUaIUgBCNTnAcm3H2G5YQfgvccYIXAtDH7FoKq/AaqKlbrBj2trFVXfBPAea4SOIIsBeN9kkCwxsNkAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK0xAAAAAElFTkSuQmCC'
@@ -155,9 +155,9 @@ def add_users(users_list):
             1 if role.allow_delete_chats.value in user['userRoles'] else 0, \
             1 if role.allow_partial_drop.value in user['userRoles'] else 0, \
             user['priority']
-        db_insert_user = """insert or replace into Users(id, login, Display_name, 
-        is_dispatcher, is_admin, is_blocked, is_gw, previous_type, en_ind, en_ind_mes, en_del_chats, en_partial_drop, priority)
-        Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+        db_insert_user = """insert or replace into Users(id, login, Display_name, is_dispatcher, is_admin, 
+        is_blocked, is_gw, previous_type, en_ind, en_ind_mes, en_del_chats, en_partial_drop, priority) Values (?, ?, 
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         user_data = user['id'], user['login'], user['displayName'], \
             is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, enabled_ind_mes, \
             en_del_chats, en_partial_drop, priority
@@ -522,8 +522,9 @@ def get_user_list(users):
             user_list[index].append('')
         if users != [{}]:
             user_treedata.insert('', user_from_db['id'], '', values=[user_from_db['login'], user_from_db['name']],
-                          icon=check[0])
+                                 icon=check[0])
     return user_list, user_treedata
+
 
 def get_group_list(groups):
     """Get groups from DB and return groups[] in list and in sg.Treedata for Tabs Users and Groups
@@ -546,7 +547,7 @@ def get_group_list(groups):
             gr_list[index].append('')
         if groups != [{}]:
             group_treedata.insert('', gr_from_db['id'], '', values=[gr_from_db['name'], gr_from_db['desc']],
-                      icon=check[0])
+                                  icon=check[0])
     return gr_list, group_treedata
 
 
@@ -560,6 +561,7 @@ def get_filter_user_list(filter_users_from_db):
             user_list.append([user_from_db['id'], user_from_db['login'],
                               user_from_db['name'], ''])
     return user_list
+
 
 # def get_groups_in_treedata(groups):
 #     td = sg.TreeData()
@@ -606,7 +608,8 @@ def make_main_window(ip):
         [
             sg.Frame('Пользователи',
                      [
-                         [sg.Table(user_list, headings=['id', 'Логин', 'Имя', 'Дисп', 'Адм', 'К500', 'Блок'], justification="left",
+                         [sg.Table(user_list, headings=['id', 'Логин', 'Имя', 'Дисп', 'Адм', 'К500', 'Блок'],
+                                   justification="left",
                                    # num_rows=20,
                                    key='-users-', expand_y=True, expand_x=True,
                                    enable_click_events=True,
@@ -639,11 +642,11 @@ def make_main_window(ip):
                                          select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                                          selected_row_colors='black on lightblue',
                                          )]], expand_y=True,
-                                         # expand_x=True
+                     # expand_x=True
                      ),
             # sg.Multiline('', expand_x=True, expand_y=True, key='online-users', )
         ],
-        [         sg.Push(),
+        [sg.Push(),
          sg.Checkbox('Выбрать все группы', enable_events=True, key='-checkAllGroups-', default=False,
                      pad=[30, 0],
                      disabled=True),
@@ -729,33 +732,33 @@ def make_main_window(ip):
                                         size=8,
                                         pad=((10, 20), (5, 10))),
                               sg.Push()]], size=(200, 80), ),
-        sg.Frame('Место на сервере', [[sg.Graph(canvas_size=(110, 12), graph_bottom_left=(1, 1),
-                                      graph_top_right=(108, 10),
-                                       k='-free-space-',
-                                       pad=((20, 10), (0, 0), )),
-                              sg.Text('', size=50, key='-free-space-perc-'),
-                              sg.Button('Очистить частично', key='-partially-dropDB-', disabled=False,
-                                       disabled_button_color='gray', pad=((0, 10), (5, 10))),
-                              sg.Button('Очистить', key='-dropDB-', disabled=False,
-                                       disabled_button_color='gray', pad=((0, 10), (5, 10))),]],
-                 size=(790, 80)),
+         sg.Frame('Место на сервере', [[sg.Graph(canvas_size=(110, 12), graph_bottom_left=(1, 1),
+                                                 graph_top_right=(108, 10),
+                                                 k='-free-space-',
+                                                 pad=((20, 10), (0, 0),)),
+                                        sg.Text('', size=50, key='-free-space-perc-'),
+                                        sg.Button('Очистить частично', key='-partially-dropDB-', disabled=False,
+                                                  disabled_button_color='gray', pad=((0, 10), (5, 10))),
+                                        sg.Button('Очистить', key='-dropDB-', disabled=False,
+                                                  disabled_button_color='gray', pad=((0, 10), (5, 10))), ]],
+                  size=(790, 80)),
          ],
         [sg.TabGroup(
             [[sg.Tab('Пользователи', tab1_layout, key="Tab1"),
               sg.Tab('Группы', tab2_layout, key="Tab2"),
               sg.Tab('Журнал', tab3_layout, key="Tab3"),
               ]], key="Tabs", size=(1000, 660), enable_events=True),
-        sg.Frame('Онлайн', [[sg.Multiline('',
-                                          # expand_x=True,
-                                          horizontal_scroll=True,
-                                          size=(20, 1),
-                                          expand_y=True,
-                                          key='online-users',
-                                          write_only=True,
-                                          disabled=True,
-                                          auto_refresh=True, )]],
-                 expand_x=True, expand_y=True,
-                 pad=((0, 5), (18, 2)))
+            sg.Frame('Онлайн', [[sg.Multiline('',
+                                              # expand_x=True,
+                                              horizontal_scroll=True,
+                                              size=(20, 1),
+                                              expand_y=True,
+                                              key='online-users',
+                                              write_only=True,
+                                              disabled=True,
+                                              auto_refresh=True, )]],
+                     expand_x=True, expand_y=True,
+                     pad=((0, 5), (18, 2)))
         ],
         [sg.StatusBar(users_online_text, key='-StatusBar-', size=(100, 1))]]
     return sg.Window(label_text, layout, icon=ICON_BASE_64, use_ttk_buttons=True,
@@ -805,7 +808,7 @@ def make_login_window():
                                button_color='#ffffff',
                                image_data=ICON_BLANK_BASE_64,
                                disabled=True)
-                    ],
+                     ],
                     [sg.Push(), sg.Checkbox('https', default=False, key='https_on')],
                     [sg.Push(background_color='white'),
                      sg.Button('Вход', key="OK button", size=10,
@@ -820,13 +823,14 @@ def make_login_window():
 
 def make_add_lic():
     layout_lic = [[sg.Push(), sg.Combo(sorted(sg.user_settings_get_entry('-filenames-', [])),
-                            default_value=sg.user_settings_get_entry('-last filename-', ''),
-                            size=(50, 1),
-                            disabled=True,
-                            key='-FILENAME-'), sg.FileBrowse('Найти',
-                                                             initial_folder='../',
-                                                             file_types=(("Файл лицензии", "*.lic"),))],
-                  [sg.Button('Получить id сервера',disabled=False if ip == '127.0.0.1' else True), sg.Push(), sg.Button('Загрузить', bind_return_key=True)],
+                                       default_value=sg.user_settings_get_entry('-last filename-', ''),
+                                       size=(50, 1),
+                                       disabled=True,
+                                       key='-FILENAME-'), sg.FileBrowse('Найти',
+                                                                        initial_folder='../',
+                                                                        file_types=(("Файл лицензии", "*.lic"),))],
+                  [sg.Button('Получить id сервера', disabled=False if ip == '127.0.0.1' else True), sg.Push(),
+                   sg.Button('Загрузить', bind_return_key=True)],
                   [sg.Frame('Лицензия',
                             [[sg.Table(LICS, headings=['Наименование', 'Количество', 'Дата'],
                                        justification="left",
@@ -854,12 +858,12 @@ def make_settings():
     if settings:
         layout_settings = [
             # [
-                # sg.Frame('Общие настройки',
-                #       [
-                #           [sg.Push(), sg.Checkbox('Запрет индивидуальных вызовов', default=False, enable_events=True,
-                #                                   key='-запрет-инд-')]
-                #       ], expand_x=True)
-             # ],
+            # sg.Frame('Общие настройки',
+            #       [
+            #           [sg.Push(), sg.Checkbox('Запрет индивидуальных вызовов', default=False, enable_events=True,
+            #                                   key='-запрет-инд-')]
+            #       ], expand_x=True)
+            # ],
             [sg.Frame('Таймауты',
                       [
                           [sg.Push(), sg.Text('Индивидуальный вызов (сек)'),
@@ -869,9 +873,9 @@ def make_settings():
                                     enable_events=True)],
                           [sg.Push(), sg.Text('Групповой вызов (сек)'),
                            sg.Input(default_text=settings['groupCallTimeout'],
-                                                 size=20,
-                                                 key='-Групповой-таймаут-',
-                                                 enable_events=True)],
+                                    size=20,
+                                    key='-Групповой-таймаут-',
+                                    enable_events=True)],
                           [sg.Push(), sg.Text('Таймаут окончания вызова (сек)'),
                            sg.Input(default_text=settings['finalizeCallTimeout'],
                                     size=20,
@@ -899,13 +903,14 @@ def make_settings():
                           #  sg.Input(size=20, key='-порт-подкл-', enable_events=True)],
                           [sg.Push(), sg.Text('Минимальный порт аудио (UDP)'),
                            sg.Input(size=20, key='-Мин-аудио-порт-',
-                                    default_text=(settings['udpPortsRange'].rpartition('-')[0] \
-                                    if 6 < len(settings['udpPortsRange']) < 12 else 0),
+                                    default_text=(settings['udpPortsRange'].rpartition('-')[0]
+                                                  if 6 < len(settings['udpPortsRange']) < 12 else 0),
                                     enable_events=True)],
                           [sg.Push(), sg.Text('Максимальный порт аудио (UDP)'),
                            sg.Input(size=20, key='-Макс-аудио-порт-',
-                                    default_text=(settings['udpPortsRange'].rpartition('-')[2] \
-                                    if 6 < len(settings['udpPortsRange']) < 12 else 0), enable_events=True)]
+                                    default_text=(settings['udpPortsRange'].rpartition('-')[2]
+                                                  if 6 < len(settings['udpPortsRange']) < 12 else 0),
+                                    enable_events=True)]
                       ], expand_x=True)
              ],
             [sg.Frame('Настройки сервера',
@@ -931,7 +936,7 @@ def make_settings():
             [sg.Push(), sg.Button('OK', disabled=True, key='-OK-set-'), sg.Button('Выйти', key='-Exit-set-'), sg.Push()]
         ]
     else:
-        layout_settings =[
+        layout_settings = [
             [sg.Push(), sg.Text('Настройки недоступны', justification='center', size=60), sg.Push()],
             [sg.Push(), sg.Button('Выйти', key='-Exit-set-'), sg.Push()]
         ]
@@ -976,37 +981,37 @@ def make_add_user_window():
         #                                                                           button_color='#ffffff',
         #                                                                           image_data=ICON_SHOW_BASE_64)],
         [sg.Frame('Тип', [
-                          [sg.Radio('Пользователь',
-                                    default=True,
-                                    key='user',
-                                    group_id='u_type',
-                                    enable_events=True)],
-                          [sg.Radio('Диспетчер', key='disp', group_id='u_type', enable_events=True)],
-                          [sg.Radio('Концентратор К500', key='gw', group_id='u_type', enable_events=True)],
-                          [sg.Radio('Администратор', key='adm', group_id='u_type', enable_events=True)]],
+            [sg.Radio('Пользователь',
+                      default=True,
+                      key='user',
+                      group_id='u_type',
+                      enable_events=True)],
+            [sg.Radio('Диспетчер', key='disp', group_id='u_type', enable_events=True)],
+            [sg.Radio('Концентратор К500', key='gw', group_id='u_type', enable_events=True)],
+            [sg.Radio('Администратор', key='adm', group_id='u_type', enable_events=True)]],
                   # size=(300, 140),
                   # expand_y=True,
                   pad=((8, 0), (10, 10)))],
         [sg.Frame('Дополнительные разрешения', [
             [sg.Checkbox('Разрешить индивидуальные вызовы',
-                     default=True,
-                     enable_events=True,
-                     key='addUserIndCallEn'), sg.Push()],
+                         default=True,
+                         enable_events=True,
+                         key='addUserIndCallEn'), sg.Push()],
             [sg.Checkbox('Разрешить индивидуальные сообщения',
                          default=True,
                          enable_events=True,
                          key='addUserIndMesEn'), sg.Push()],
             [sg.Checkbox('Разрешить удалять переписку в чатах',
-                     default=False,
-                     disabled=True,
-                     enable_events=True,
-                     key='addUserAllowDelChats'), sg.Push()],
+                         default=False,
+                         disabled=True,
+                         enable_events=True,
+                         key='addUserAllowDelChats'), sg.Push()],
             [sg.Checkbox('Разрешить удалять данные БД',
-                     default=False,
-                     disabled=True,
-                     enable_events=True,
-                     key='addUserAllowPartialDrop'), sg.Push()]
-            ],
+                         default=False,
+                         disabled=True,
+                         enable_events=True,
+                         key='addUserAllowPartialDrop'), sg.Push()]
+        ],
                   # size=(300, 110),
                   pad=((8, 0), (10, 10)))],
         [sg.Text('Приоритет'), sg.Input(default_text='0',
@@ -1015,11 +1020,11 @@ def make_add_user_window():
                                         enable_events=True,
                                         tooltip=('От 0 до 15'))],
         [sg.Push(), sg.Checkbox('Заблокирован',
-                     default=False,
-                     disabled=False,
-                     text_color='red',
-                     enable_events=True,
-                     key='addUserBlock')],
+                                default=False,
+                                disabled=False,
+                                text_color='red',
+                                enable_events=True,
+                                key='addUserBlock')],
         # [sg.Checkbox('Диспетчер', default=False, key='addUserDispatcher'), sg.Push()],
         [sg.Push(), sg.Button(button_text='Создать', key='addUserButton',
                               disabled=True,
@@ -1050,55 +1055,55 @@ def make_modify_user_window(user: dict):
                    image_data=ICON_BLANK_BASE_64,
                    disabled=True)],
         [sg.Frame('Тип', [
-                  [sg.Radio('Пользователь',
-                            default=True,
-                            key='modifyUserUser',
-                            group_id='u_type',
-                            disabled=True if user['is_blocked'] or user['is_admin'] else False,
-                            enable_events=True)],
-                  [sg.Radio('Диспетчер',
-                            default=user['is_dispatcher'],
-                            key='modifyUserDispatcher',
-                            group_id='u_type',
-                            disabled=True if user['is_blocked'] or user['is_admin'] else False,
-                            enable_events=True)],
-                  [sg.Radio('Концентратор К500',
-                            default=user['is_gw'],
-                            key='modifyUserGw',
-                            group_id='u_type',
-                            disabled=True if user['is_blocked'] or user['is_admin'] else False,
-                            enable_events=True)],
-                  [sg.Radio('Администратор',
-                            default=user['is_admin'],
-                            key='modifyUserAdm',
-                            group_id='u_type',
-                            disabled=True,
-                            enable_events=True)]],
-         # size=(300, 140),
+            [sg.Radio('Пользователь',
+                      default=True,
+                      key='modifyUserUser',
+                      group_id='u_type',
+                      disabled=True if user['is_blocked'] or user['is_admin'] else False,
+                      enable_events=True)],
+            [sg.Radio('Диспетчер',
+                      default=user['is_dispatcher'],
+                      key='modifyUserDispatcher',
+                      group_id='u_type',
+                      disabled=True if user['is_blocked'] or user['is_admin'] else False,
+                      enable_events=True)],
+            [sg.Radio('Концентратор К500',
+                      default=user['is_gw'],
+                      key='modifyUserGw',
+                      group_id='u_type',
+                      disabled=True if user['is_blocked'] or user['is_admin'] else False,
+                      enable_events=True)],
+            [sg.Radio('Администратор',
+                      default=user['is_admin'],
+                      key='modifyUserAdm',
+                      group_id='u_type',
+                      disabled=True,
+                      enable_events=True)]],
+                  # size=(300, 140),
                   pad=((8, 0), (10, 10)))],
         [sg.Frame('Дополнительные разрешения', [
             [sg.Checkbox('Разрешить индивидуальные вызовы',
-                     default=False if user['is_admin'] else user['en_ind'],
-                     enable_events=True,
-                     disabled=True if user['is_admin'] else False,
-                     key='modifyUserIndCallEn'), sg.Push()],
+                         default=False if user['is_admin'] else user['en_ind'],
+                         enable_events=True,
+                         disabled=True if user['is_admin'] else False,
+                         key='modifyUserIndCallEn'), sg.Push()],
             [sg.Checkbox('Разрешить индивидуальные сообщения',
                          default=False if user['is_admin'] else user['en_ind_mes'],
                          enable_events=True,
                          disabled=True if user['is_admin'] else False,
                          key='modifyUserIndMesEn'), sg.Push()],
             [sg.Checkbox('Разрешить удалять переписку в чатах',
-                     default=True if user['is_admin'] else user['en_partial_drop'],
-                     disabled=False if user['is_dispatcher'] else True,
-                     enable_events=True,
-                     key='modifyUserAllowDelChats'), sg.Push()],
+                         default=True if user['is_admin'] else user['en_partial_drop'],
+                         disabled=False if user['is_dispatcher'] else True,
+                         enable_events=True,
+                         key='modifyUserAllowDelChats'), sg.Push()],
             [sg.Checkbox('Разрешить удалять данные БД',
-                     default=True if user['is_admin'] else user['en_partial_drop'],
-                     disabled=False if user['is_dispatcher'] else True,
-                     enable_events=True,
-                     key='modifyUserAllowPartialDrop'), sg.Push()]
-            ],
-         # size=(300, 110),
+                         default=True if user['is_admin'] else user['en_partial_drop'],
+                         disabled=False if user['is_dispatcher'] else True,
+                         enable_events=True,
+                         key='modifyUserAllowPartialDrop'), sg.Push()]
+        ],
+                  # size=(300, 110),
                   pad=((8, 0), (10, 10)))],
         [sg.Text('Приоритет'), sg.Input(key='UserModifyPriority',
                                         default_text=user['priority'],
@@ -1107,22 +1112,22 @@ def make_modify_user_window(user: dict):
                                         enable_events=True,
                                         tooltip=('От 1 до 15'))],
         [sg.Push(), sg.Checkbox('Заблокирован',
-                     default=user['is_blocked'],
-                     disabled=True if user['is_admin'] else False,
-                     text_color='red',
-                     enable_events=True,
-                     key='modifyUserBlock')],
+                                default=user['is_blocked'],
+                                disabled=True if user['is_admin'] else False,
+                                text_color='red',
+                                enable_events=True,
+                                key='modifyUserBlock')],
         # [sg.Text('Таймаут (сек)', size=(13)), sg.Input(size=(10), enable_events=True, key='userTimeout')],
         [sg.Push(), sg.Button(button_text='Изменить', key='modifyUserButton',
-                          disabled=True,
-                          disabled_button_color='gray')]
+                              disabled=True,
+                              disabled_button_color='gray')]
     ]
     return sg.Window('Изменить пользователя', layout_modify_user,
-                    icon=ICON_BASE_64,
-                    use_ttk_buttons=True,
-                    finalize=True,
-                    # disable_minimize=True,
-                    modal=True)
+                     icon=ICON_BASE_64,
+                     use_ttk_buttons=True,
+                     finalize=True,
+                     # disable_minimize=True,
+                     modal=True)
 
 
 def make_modify_group_window(group: dict):
@@ -1146,9 +1151,9 @@ def make_modify_group_window(group: dict):
                                 default=group['is_disabled'],
                                 key='GroupModifyBlocked')],
         [sg.Push(), sg.Button(button_text='Изменить',
-                          disabled=True,
-                          disabled_button_color='gray',
-                          key='modifyGroupButton')]
+                              disabled=True,
+                              disabled_button_color='gray',
+                              key='modifyGroupButton')]
     ]
     win = sg.Window('Изменить группу', layout_modify_group, icon=ICON_BASE_64,
                     use_ttk_buttons=True,
@@ -1206,7 +1211,7 @@ def make_add_group_window():
                                 enable_events=True,
                                 key='addGroupBlock')],
         [sg.Push(), sg.Button(button_text='Создать', disabled=True, key='addGroupButton',
-                          disabled_button_color='gray')]
+                              disabled_button_color='gray')]
     ]
     return sg.Window('Добавить группу', layout_add_group, icon=ICON_BASE_64, use_ttk_buttons=True,
                      finalize=True,
@@ -1236,6 +1241,7 @@ def make_exit_window():
                      use_ttk_buttons=True,
                      finalize=True, modal=True)
 
+
 def make_confirm_window(message):
     layout_exit = [
         [sg.Text(message)],
@@ -1257,13 +1263,12 @@ def get_online_users(users: list):
     return "\n".join(sorted(usernames))
 
 
-
 def set_window_running_server():
     bar_text = 'Пользователей онлайн: ' + str(server_status['online']) + ', Версия БД: ' + str(server_status['db'])
     window['-StatusBar-'].update(bar_text, background_color=status_bar_color)
     window['-Menu-'].update([
-                        ['Сервер', ['Установить лицензию...', 'Настройки']],
-                        ['Помощь', 'О программе'], ])
+        ['Сервер', ['Установить лицензию...', 'Настройки']],
+        ['Помощь', 'О программе'], ])
     update_free_space(server_status)
     window['online-users'].update(get_online_users(server_status['onlineUserIds']))
 
@@ -1331,13 +1336,13 @@ def the_thread(ip):
 
 def check_server(url_ping):
     status = {
-              # 'last_state': False,
-              'run': False,
-              'online': '',
-              'db': '',
-              'freeSpace': 0,
-              'spaceTotal': 1,
-              'onlineUserIds': []}
+        # 'last_state': False,
+        'run': False,
+        'online': '',
+        'db': '',
+        'freeSpace': 0,
+        'spaceTotal': 1,
+        'onlineUserIds': []}
     res_ping = ''
     try:
         res_ping = requests.get(url_ping, timeout=3)
@@ -1417,6 +1422,7 @@ def get_settings(url):
         else:
             print(f'Некорректный ответ {res.status_code} от сервера {url}')
     return res_dict
+
 
 def filter_journal(journal: list):
     if filter_journal_info:
@@ -1542,35 +1548,34 @@ def show_app(icon):
 #     print('hide')
 
 
-def block_user(set, id):
+def block_user(set_flag, id):
     user_dict = {'id': id}
-    if set:
+    if set_flag:
         res = requests.post(BASE_URL +
-                                     'disableUser',
-                                     json=user_dict,
-                                     headers=HEADER_dict)
+                            'disableUser',
+                            json=user_dict,
+                            headers=HEADER_dict)
     else:
         res = requests.post(BASE_URL +
-                                     'enableUser',
-                                     json=user_dict,
-                                     headers=HEADER_dict)
+                            'enableUser',
+                            json=user_dict,
+                            headers=HEADER_dict)
     return res
 
 
-def block_group(set, id):
+def block_group(set_flag, id):
     group_dict = {'id': id}
-    if set:
+    if set_flag:
         res = requests.post(BASE_URL +
-                                     'disableGroup',
-                                     json=group_dict,
-                                     headers=HEADER_dict)
+                            'disableGroup',
+                            json=group_dict,
+                            headers=HEADER_dict)
     else:
         res = requests.post(BASE_URL +
-                                     'enableGroup',
-                                     json=group_dict,
-                                     headers=HEADER_dict)
+                            'enableGroup',
+                            json=group_dict,
+                            headers=HEADER_dict)
     return res
-
 
 
 def disable_input(win):
@@ -1595,47 +1600,47 @@ def enable_input(win):
     win.DisableClose = False
 
 
-def change_role(role: Enum, set: int, id):
+def change_role(role: Enum, set_flag, id):
     user_dict = {'userIds': [id], 'roles': [role.value]}
-    if set:
+    if set_flag:
         res_modify_user_role = requests.post(BASE_URL +
-                                               'addToRole',
-                                               json=user_dict,
-                                               headers=HEADER_dict)
+                                             'addToRole',
+                                             json=user_dict,
+                                             headers=HEADER_dict)
     else:
         res_modify_user_role = requests.post(BASE_URL +
-                                               'removeFromRole',
-                                               json=user_dict,
-                                               headers=HEADER_dict)
+                                             'removeFromRole',
+                                             json=user_dict,
+                                             headers=HEADER_dict)
     return res_modify_user_role
 
 
 def change_user_type(id, user_type):
     user_dict = {'userId': id, 'userType': int(user_type)}
     res = requests.post(BASE_URL +
-                                                'changeUserType',
-                                                json=user_dict,
-                                                headers=HEADER_dict)
+                        'changeUserType',
+                        json=user_dict,
+                        headers=HEADER_dict)
     return res
 
 
 def my_popup(message):
     layout = [[sg.Frame('', [[sg.Text(message, justification='center', background_color=omega_theme['INPUT'])],
-              [sg.Push(background_color=omega_theme['INPUT']), sg.Button('OK', pad=((0, 0), (10, 10))),
-               sg.Push(background_color=omega_theme['INPUT'])]], background_color=omega_theme['INPUT'],
+                             [sg.Push(background_color=omega_theme['INPUT']), sg.Button('OK', pad=((0, 0), (10, 10))),
+                              sg.Push(background_color=omega_theme['INPUT'])]], background_color=omega_theme['INPUT'],
                         pad=((7, 7), (10, 10)))]]
     win = sg.Window('Инфо', layout,
-              icon=ICON_BASE_64,
-              use_ttk_buttons=True,
-              no_titlebar=True,
-              border_depth=5,
-              grab_anywhere=True,
-              background_color=omega_theme['INPUT'],
-              # # background_color='dark gray',
-              finalize=True,
-              # # use_default_focus=False,
-              # disable_minimize=True,
-              modal=True).read(close=True)
+                    icon=ICON_BASE_64,
+                    use_ttk_buttons=True,
+                    no_titlebar=True,
+                    border_depth=5,
+                    grab_anywhere=True,
+                    background_color=omega_theme['INPUT'],
+                    # # background_color='dark gray',
+                    finalize=True,
+                    # # use_default_focus=False,
+                    # disable_minimize=True,
+                    modal=True).read(close=True)
 
 
 def validate(window: str):
@@ -1692,152 +1697,155 @@ def validate(window: str):
         print(val_modify_user)
         if 0 < len(str(val_modify_user['UserModifyName'])) <= MAX_LEN_USERNAME:
             window_modify_user['UserModifyName'].update(background_color=omega_theme['BACKGROUND'],
-                                               text_color=omega_theme['TEXT'])
+                                                        text_color=omega_theme['TEXT'])
         else:
             my_popup(("Имя должно быть не более " + str(MAX_LEN_USERNAME) + " символов"))
             window_modify_user.Element('UserModifyName').SetFocus()
             window_modify_user['UserModifyName'].update(background_color=button_color_2,
-                                               text_color=omega_theme['BACKGROUND'])
+                                                        text_color=omega_theme['BACKGROUND'])
             return False
         if not val_modify_user['userModifyPassword'] == '':
             if MIN_LEN_PASSWORD <= len(str(val_modify_user['userModifyPassword'])) <= MAX_LEN_PASSWORD:
                 window_modify_user['userModifyPassword'].update(background_color=omega_theme['BACKGROUND'],
-                                                       text_color=omega_theme['TEXT'])
+                                                                text_color=omega_theme['TEXT'])
             else:
                 my_popup(("Пароль должен быть не менее " + str(MIN_LEN_PASSWORD) + " и не более "
                           + str(MAX_LEN_PASSWORD) + " символов"))
                 window_modify_user.Element('userModifyPassword').SetFocus()
                 window_modify_user['userModifyPassword'].update(background_color=button_color_2,
-                                                       text_color=omega_theme['BACKGROUND'])
+                                                                text_color=omega_theme['BACKGROUND'])
                 return False
         if val_modify_user['UserModifyPriority'] == '':
             result = True
         elif val_modify_user['UserModifyPriority'].isdigit() or val_modify_user['UserModifyPriority'] == '':
             if 0 <= int((val_modify_user['UserModifyPriority'])) <= 15:
                 window_modify_user['UserModifyPriority'].update(background_color=omega_theme['BACKGROUND'],
-                                                       text_color=omega_theme['TEXT'])
+                                                                text_color=omega_theme['TEXT'])
             else:
                 my_popup(("Приоритет должен быть от 0 до 15"))
                 window_modify_user.Element('UserModifyPriority').SetFocus()
                 window_modify_user['UserModifyPriority'].update(background_color=button_color_2,
-                                                       text_color=omega_theme['BACKGROUND'])
+                                                                text_color=omega_theme['BACKGROUND'])
                 return False
         else:
             my_popup(("Приоритет должен быть числом от 0 до 15"))
             window_modify_user.Element('UserModifyPriority').SetFocus()
             window_modify_user['UserModifyPriority'].update(background_color=button_color_2,
-                                                   text_color=omega_theme['BACKGROUND'])
+                                                            text_color=omega_theme['BACKGROUND'])
             return False
-    if window =='add_group':
+    if window == 'add_group':
         print(val_add_group)
         if 0 < len(str(val_add_group['GroupName'])) <= MAX_LEN_GROUPNAME:
             window_add_group['GroupName'].update(background_color=omega_theme['BACKGROUND'],
-                                               text_color=omega_theme['TEXT'])
+                                                 text_color=omega_theme['TEXT'])
         else:
             my_popup(("Имя должно быть не более " + str(MAX_LEN_GROUPNAME) + " символов"))
             window_add_group.Element('GroupName').SetFocus()
             window_add_group['GroupName'].update(background_color=button_color_2,
-                                               text_color=omega_theme['BACKGROUND'])
+                                                 text_color=omega_theme['BACKGROUND'])
             return False
         if 0 <= len(str(val_add_group['description'])) <= MAX_LEN_GROUPDESC:
             window_add_group['description'].update(background_color=omega_theme['BACKGROUND'],
-                                               text_color=omega_theme['TEXT'])
+                                                   text_color=omega_theme['TEXT'])
         else:
             my_popup(("Имя должно быть не более " + str(MAX_LEN_GROUPDESC) + " символов"))
             window_add_group.Element('description').SetFocus()
             window_add_group['description'].update(background_color=button_color_2,
-                                               text_color=omega_theme['BACKGROUND'])
+                                                   text_color=omega_theme['BACKGROUND'])
             return False
     if window == 'modify_group':
         print(val_modify_group)
         if 0 < len(str(val_modify_group['GroupModifyName'])) <= MAX_LEN_GROUPNAME:
             window_modify_group['GroupModifyName'].update(background_color=omega_theme['BACKGROUND'],
-                                                 text_color=omega_theme['TEXT'])
+                                                          text_color=omega_theme['TEXT'])
         else:
             my_popup(("Имя должно быть не более " + str(MAX_LEN_GROUPNAME) + " символов"))
             window_modify_group.Element('GroupModifyName').SetFocus()
             window_modify_group['GroupModifyName'].update(background_color=button_color_2,
-                                                 text_color=omega_theme['BACKGROUND'])
+                                                          text_color=omega_theme['BACKGROUND'])
             return False
         if 0 <= len(str(val_modify_group['GroupModifyDesc'])) <= MAX_LEN_GROUPDESC:
             window_modify_group['GroupModifyDesc'].update(background_color=omega_theme['BACKGROUND'],
-                                                   text_color=omega_theme['TEXT'])
+                                                          text_color=omega_theme['TEXT'])
         else:
             my_popup(("Имя должно быть не более " + str(MAX_LEN_GROUPDESC) + " символов"))
             window_modify_group.Element('GroupModifyDesc').SetFocus()
             window_modify_group['GroupModifyDesc'].update(background_color=button_color_2,
-                                                   text_color=omega_theme['BACKGROUND'])
+                                                          text_color=omega_theme['BACKGROUND'])
             return False
     if window == 'settings':
         print(val_set)
         if MIN_CALL_TM <= int(val_set['-Индивидуальный-таймаут-']) <= MAX_CALL_TM:
             window_settings['-Индивидуальный-таймаут-'].update(background_color=omega_theme['BACKGROUND'],
-                                                 text_color=omega_theme['TEXT'])
+                                                               text_color=omega_theme['TEXT'])
         else:
-            my_popup(("Длительность индивидуального вызова должна быть не менее " + str(MIN_CALL_TM) + " и не более " + str(MAX_CALL_TM) + " секунд"))
+            my_popup(("Длительность индивидуального вызова должна быть не менее " + str(
+                MIN_CALL_TM) + " и не более " + str(MAX_CALL_TM) + " секунд"))
             window_settings.Element('-Индивидуальный-таймаут-').SetFocus()
             window_settings['-Индивидуальный-таймаут-'].update(background_color=button_color_2,
-                                                 text_color=omega_theme['BACKGROUND'])
+                                                               text_color=omega_theme['BACKGROUND'])
             return False
         if 10 <= int(val_set['-Групповой-таймаут-']) <= 120:
             window_settings['-Групповой-таймаут-'].update(background_color=omega_theme['BACKGROUND'],
-                                                 text_color=omega_theme['TEXT'])
+                                                          text_color=omega_theme['TEXT'])
         else:
             my_popup(("Длительность группового вызова должна быть не менее " + str(MIN_CALL_TM) + " и не более " + str(
                 MAX_CALL_TM) + " секунд"))
             window_settings.Element('-Групповой-таймаут-').SetFocus()
             window_settings['-Групповой-таймаут-'].update(background_color=button_color_2,
-                                                               text_color=omega_theme['BACKGROUND'])
+                                                          text_color=omega_theme['BACKGROUND'])
             return False
         if MIN_CALL_END_TM <= int(val_set['-таймаут-окончания-']) <= MAX_CALL_END_TM:
             window_settings['-таймаут-окончания-'].update(background_color=omega_theme['BACKGROUND'],
-                                                 text_color=omega_theme['TEXT'])
+                                                          text_color=omega_theme['TEXT'])
         else:
             my_popup(("Таймаут окончания вызова должен быть не менее " + str(MIN_CALL_END_TM) + " и не более " + str(
                 MAX_CALL_END_TM) + " секунд"))
             window_settings.Element('-таймаут-окончания-').SetFocus()
             window_settings['-таймаут-окончания-'].update(background_color=button_color_2,
-                                                               text_color=omega_theme['BACKGROUND'])
+                                                          text_color=omega_theme['BACKGROUND'])
             return False
         if MIN_TONAL_CALL_END_TM <= int(val_set['-таймаут-тонового-сигнала-']) <= MAX_TONAL_CALL_END_TM:
             window_settings['-таймаут-тонового-сигнала-'].update(background_color=omega_theme['BACKGROUND'],
-                                                 text_color=omega_theme['TEXT'])
+                                                                 text_color=omega_theme['TEXT'])
         else:
-            my_popup(("Длительность тонального вызова должна быть не менее " + str(MIN_TONAL_CALL_END_TM) + " и не более " + str(
+            my_popup(("Длительность тонального вызова должна быть не менее " + str(
+                MIN_TONAL_CALL_END_TM) + " и не более " + str(
                 MAX_TONAL_CALL_END_TM) + " секунд"))
             window_settings.Element('-таймаут-тонового-сигнала-').SetFocus()
             window_settings['-таймаут-тонового-сигнала-'].update(background_color=button_color_2,
-                                                               text_color=omega_theme['BACKGROUND'])
+                                                                 text_color=omega_theme['BACKGROUND'])
             return False
         if MIN_AMB_LIST_TM <= int(val_set['-таймаут-прослушивания-']) <= MAX_AMB_LIST_TM:
             window_settings['-таймаут-прослушивания-'].update(background_color=omega_theme['BACKGROUND'],
-                                                 text_color=omega_theme['TEXT'])
+                                                              text_color=omega_theme['TEXT'])
         else:
-            my_popup(("Длительность скрытого прослушивания должна быть не менее " + str(MIN_AMB_LIST_TM) + " и не более " + str(
+            my_popup(("Длительность скрытого прослушивания должна быть не менее " + str(
+                MIN_AMB_LIST_TM) + " и не более " + str(
                 MAX_AMB_LIST_TM) + " секунд"))
             window_settings.Element('-таймаут-прослушивания-').SetFocus()
             window_settings['-таймаут-прослушивания-'].update(background_color=button_color_2,
-                                                               text_color=omega_theme['BACKGROUND'])
+                                                              text_color=omega_theme['BACKGROUND'])
             return False
         if MIN_AUDIO_PORT <= int(val_set['-Мин-аудио-порт-']) <= MAX_AUDIO_PORT:
             window_settings['-Мин-аудио-порт-'].update(background_color=omega_theme['BACKGROUND'],
-                                                 text_color=omega_theme['TEXT'])
+                                                       text_color=omega_theme['TEXT'])
         else:
             my_popup(("Порт должен быть не менее " + str(MIN_AUDIO_PORT) + " и не более " + str(
                 MAX_AUDIO_PORT) + " секунд"))
             window_settings.Element('-Мин-аудио-порт-').SetFocus()
             window_settings['-Мин-аудио-порт-'].update(background_color=button_color_2,
-                                                               text_color=omega_theme['BACKGROUND'])
+                                                       text_color=omega_theme['BACKGROUND'])
             return False
         if MIN_AUDIO_PORT <= int(val_set['-Макс-аудио-порт-']) <= MAX_AUDIO_PORT:
             window_settings['-Макс-аудио-порт-'].update(background_color=omega_theme['BACKGROUND'],
-                                                 text_color=omega_theme['TEXT'])
+                                                        text_color=omega_theme['TEXT'])
         else:
             my_popup(("Порт должен быть не менее " + str(MIN_AUDIO_PORT) + " и не более " + str(
                 MAX_AUDIO_PORT) + " секунд"))
             window_settings.Element('-Макс-аудио-порт-').SetFocus()
             window_settings['-Макс-аудио-порт-'].update(background_color=button_color_2,
-                                                               text_color=omega_theme['BACKGROUND'])
+                                                        text_color=omega_theme['BACKGROUND'])
             return False
         if MIN_PORTS <= int(val_set['-Макс-аудио-порт-']) - int(val_set['-Мин-аудио-порт-']) <= MAX_PORTS:
             pass
@@ -1852,13 +1860,13 @@ def validate(window: str):
             return False
         if MIN_PING_TM <= int(val_set['-пинг-таймаут-']) <= MAX_PING_TM:
             window_settings['-пинг-таймаут-'].update(background_color=omega_theme['BACKGROUND'],
-                                                 text_color=omega_theme['TEXT'])
+                                                     text_color=omega_theme['TEXT'])
         else:
             my_popup(("Интервал пинга должен быть не менее " + str(MIN_PING_TM) + " и не более " + str(
                 MAX_PING_TM) + " секунд"))
             window_settings.Element('-пинг-таймаут-').SetFocus()
             window_settings['-пинг-таймаут-'].update(background_color=button_color_2,
-                                                               text_color=omega_theme['BACKGROUND'])
+                                                     text_color=omega_theme['BACKGROUND'])
             return False
         if MIN_DEL_DAYS <= int(val_set['-auto-del-']) <= MAX_DEL_DAYS:
             window_settings['-auto-del-'].update(background_color=omega_theme['BACKGROUND'],
@@ -1868,37 +1876,37 @@ def validate(window: str):
                 MAX_DEL_DAYS) + " дней"))
             window_settings.Element('-auto-del-').SetFocus()
             window_settings['-auto-del-'].update(background_color=button_color_2,
-                                                               text_color=omega_theme['BACKGROUND'])
+                                                 text_color=omega_theme['BACKGROUND'])
             return False
     if window == 'clone_user':
         print(val_clone_user)
         if 0 < len(str(val_clone_user['CloneUserLogin'])) <= MAX_LEN_LOGIN:
             window_clone_user['CloneUserLogin'].update(background_color=omega_theme['BACKGROUND'],
-                                                text_color=omega_theme['TEXT'])
+                                                       text_color=omega_theme['TEXT'])
         else:
             my_popup(("Логин должен быть не более " + str(MAX_LEN_LOGIN) + " символов"))
             window_clone_user.Element('CloneUserLogin').SetFocus()
             window_clone_user['CloneUserLogin'].update(background_color=button_color_2,
-                                                text_color=omega_theme['BACKGROUND'])
+                                                       text_color=omega_theme['BACKGROUND'])
             return False
         if 0 < len(str(val_clone_user['CloneUserName'])) <= MAX_LEN_USERNAME:
             window_clone_user['CloneUserName'].update(background_color=omega_theme['BACKGROUND'],
-                                               text_color=omega_theme['TEXT'])
+                                                      text_color=omega_theme['TEXT'])
         else:
             my_popup(("Имя должно быть не более " + str(MAX_LEN_USERNAME) + " символов"))
             window_clone_user.Element('CloneUserName').SetFocus()
             window_clone_user['CloneUserName'].update(background_color=button_color_2,
-                                               text_color=omega_theme['BACKGROUND'])
+                                                      text_color=omega_theme['BACKGROUND'])
             return False
         if MIN_LEN_PASSWORD <= len(str(val_clone_user['CloneUserPassword'])) <= MAX_LEN_PASSWORD:
             window_clone_user['CloneUserPassword'].update(background_color=omega_theme['BACKGROUND'],
-                                                   text_color=omega_theme['TEXT'])
+                                                          text_color=omega_theme['TEXT'])
         else:
             my_popup(("Пароль должен быть не менее " + str(MIN_LEN_PASSWORD) + " и не более "
                       + str(MAX_LEN_PASSWORD) + " символов"))
             window_clone_user.Element('CloneUserPassword').SetFocus()
             window_clone_user['CloneUserPassword'].update(background_color=button_color_2,
-                                                   text_color=omega_theme['BACKGROUND'])
+                                                          text_color=omega_theme['BACKGROUND'])
             return False
     return result
 
@@ -2008,7 +2016,6 @@ def update_users_and_groups():
     window['-TREE2-'].update(treedata_update_user)
     window['-groups2-'].update(group_list)
     window['-TREE-'].update(treedata_update_group)
-
 
 
 def update_free_space(status):
@@ -2129,21 +2136,21 @@ if __name__ == '__main__':
                                           text_color=omega_theme['BACKGROUND'])
                 continue
             window_login['ip'].update(background_color=omega_theme['BACKGROUND'],
-                                                   text_color=omega_theme['TEXT'])
+                                      text_color=omega_theme['TEXT'])
             if ip == '127.0.0.1':
                 LOCAL = True
                 if (hashlib.pbkdf2_hmac('sha256', bytes(str(val_login["Логин"]).encode('ASCII')),
                                         bytes(str(SALT).encode('ASCII')), 10000).hex() == DEF1
-                        and hashlib.pbkdf2_hmac('sha256', bytes(str(val_login["password"]).encode('ASCII', 'ignore')),
-                                                bytes(str(SALT).encode('ASCII')), 10000).hex() == DEF1A)\
+                    and hashlib.pbkdf2_hmac('sha256', bytes(str(val_login["password"]).encode('ASCII', 'ignore')),
+                                            bytes(str(SALT).encode('ASCII')), 10000).hex() == DEF1A) \
                         or (hashlib.pbkdf2_hmac('sha256', bytes(str(val_login["Логин"]).encode('ASCII')),
                                                 bytes(str(SALT).encode('ASCII')), 10000).hex() == DEF2
-                        and hashlib.pbkdf2_hmac('sha256', bytes(str(val_login["password"]).encode('ASCII')),
-                                                bytes(str(SALT).encode('ASCII')), 10000).hex() == DEF2)\
+                            and hashlib.pbkdf2_hmac('sha256', bytes(str(val_login["password"]).encode('ASCII')),
+                                                    bytes(str(SALT).encode('ASCII')), 10000).hex() == DEF2) \
                         or (hashlib.pbkdf2_hmac('sha256', bytes(str(val_login["Логин"]).encode('ASCII')),
                                                 bytes(str(SALT).encode('ASCII')), 10000).hex() == DEF3
-                        and hashlib.pbkdf2_hmac('sha256', bytes(str(val_login["password"]).encode('ASCII')),
-                                                bytes(str(SALT).encode('ASCII')), 10000).hex() == DEF3A):
+                            and hashlib.pbkdf2_hmac('sha256', bytes(str(val_login["password"]).encode('ASCII')),
+                                                    bytes(str(SALT).encode('ASCII')), 10000).hex() == DEF3A):
                     logging.info('Вход на локальный сервер')
                     # print(val_login["Логин"], val_login["password"])
                 # if binascii.hexlify(str(val_login['password']).encode('ascii')) == b'717765727479':
@@ -2204,7 +2211,7 @@ if __name__ == '__main__':
                 while True:
                     if break_flag2:
                         break
-                    if server_status['run']: #TODO
+                    if server_status['run']:  # TODO
                         window['-Start-'].update(disabled=True)
                     else:
                         window['-Stop-'].update(disabled=True)
@@ -2281,7 +2288,7 @@ if __name__ == '__main__':
                                     window['-Menu-'].update([
                                         ['Сервер', ['Установить лицензию...', '!Настройки']],
                                         ['Помощь', 'О программе'], ])
-                            if change_state: #TODO
+                            if change_state:  # TODO
                                 with open('admin.log', mode='r', encoding='cp1251') as log_f:
                                     s = log_f.read()
                                     s = s.rstrip('\n')
@@ -2436,7 +2443,8 @@ if __name__ == '__main__':
                                         window_modify_user['UserModifyPriority'].update(
                                             background_color=omega_theme['INPUT'])
                                     elif len(val_modify_user['UserModifyPriority']) > 2:
-                                        window_modify_user['UserModifyPriority'].update(val_modify_user['UserModifyPriority'][:2])
+                                        window_modify_user['UserModifyPriority'].update(
+                                            val_modify_user['UserModifyPriority'][:2])
                                     elif val_modify_user['UserModifyPriority'].isdigit():
                                         window_modify_user['UserModifyPriority'].update(
                                             background_color=omega_theme['INPUT'])
@@ -2486,7 +2494,8 @@ if __name__ == '__main__':
                                         if val_modify_user['modifyUserIndCallEn'] != user_to_change['en_ind']:
                                             modify_is_en_ind = True
                                             res_modify_user_en_ind = change_role(role.allow_ind_call,
-                                                                                 val_modify_user['modifyUserIndCallEn'], user_to_change['id'])
+                                                                                 val_modify_user['modifyUserIndCallEn'],
+                                                                                 user_to_change['id'])
                                             if res_modify_user_en_ind.status_code == 200:
                                                 current_db += 1
                                                 if val_modify_user['modifyUserIndCallEn']:
@@ -2507,7 +2516,9 @@ if __name__ == '__main__':
                                         if val_modify_user['modifyUserIndMesEn'] != user_to_change['en_ind_mes']:
                                             modify_is_en_ind_mes = True
                                             res_modify_user_en_ind_mes = change_role(role.allow_ind_mes,
-                                                                                 val_modify_user['modifyUserIndMesEn'], user_to_change['id'])
+                                                                                     val_modify_user[
+                                                                                         'modifyUserIndMesEn'],
+                                                                                     user_to_change['id'])
                                             if res_modify_user_en_ind_mes.status_code == 200:
                                                 current_db += 1
                                                 if val_modify_user['modifyUserIndMesEn']:
@@ -2528,7 +2539,8 @@ if __name__ == '__main__':
                                         if val_modify_user['modifyUserAllowDelChats'] != user_to_change['en_del_chats']:
                                             modify_en_del_chats = True
                                             res_modify_user_en_del_chats = change_role(role.allow_delete_chats,
-                                                                                       val_modify_user['modifyUserAllowDelChats'],
+                                                                                       val_modify_user[
+                                                                                           'modifyUserAllowDelChats'],
                                                                                        user_to_change['id'])
                                             if res_modify_user_en_del_chats.status_code == 200:
                                                 current_db += 1
@@ -2549,10 +2561,12 @@ if __name__ == '__main__':
                                                     logging.error(
                                                         f'Ошибка при запрещении удаления чатов групп - '
                                                         f'{res_modify_user_en_del_chats.status_code}')
-                                        if val_modify_user['modifyUserAllowPartialDrop'] != user_to_change['en_partial_drop']:
+                                        if val_modify_user['modifyUserAllowPartialDrop'] != user_to_change[
+                                            'en_partial_drop']:
                                             modify_en_partial_drop = True
                                             res_modify_user_en_partial_drop = change_role(role.allow_partial_drop,
-                                                                                          val_modify_user['modifyUserAllowPartialDrop'],
+                                                                                          val_modify_user[
+                                                                                              'modifyUserAllowPartialDrop'],
                                                                                           user_to_change['id'])
                                             if res_modify_user_en_partial_drop.status_code == 200:
                                                 current_db += 1
@@ -2620,7 +2634,8 @@ if __name__ == '__main__':
                                             if res_modify_user.status_code == 200:
                                                 current_db += 1
                                                 if modify_name:
-                                                    logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} изменили имя")
+                                                    logging.info(
+                                                        f"Пользователю {val_modify_user['UserModifyLogin']} изменили имя")
                                                 if modify_password:
                                                     logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
                                                                  f'изменили пароль')
@@ -2992,8 +3007,8 @@ if __name__ == '__main__':
                                 my_popup('Нет изменений')
                     if event == 'О программе':
                         my_popup('Разработано ' + COMPANY + ',\n'
-                                 '\n'
-                                 '2021-2023')
+                                                            '\n'
+                                                            '2021-2023')
                     if event == 'Установить лицензию...':
                         window_add_lic = make_add_lic()
                         while True:
@@ -3020,7 +3035,7 @@ if __name__ == '__main__':
                                 #          title='id сервера', icon=ICON_BASE_64)
                             if ev_add_lic == 'Загрузить':
                                 # print(start_command)
-                                if check_os() !='Windows':
+                                if check_os() != 'Windows':
                                     start_command = "$HOME/Omega/Licensing validate -l " + val_add_lic['-FILENAME-'] + \
                                                     ' -k $HOME/Omega/keys/pub.pem'
                                     process = subprocess.Popen(start_command, shell=True,
@@ -3041,18 +3056,26 @@ if __name__ == '__main__':
                                         # print(lics)
                                         LICS = [['Количество абонентов', lics['userCount'], lics['expirationDate']],
                                                 ['Количество диспетчеров', lics['dispatcherCount'], lics[
-                                                            'expirationDate']]]
+                                                    'expirationDate']]]
                                         for feature in lics['features']:
                                             LICS.append([feature, '+', lics['expirationDate']])
                                         window_add_lic['-lic-'].update(LICS)
-                                        start_command = "echo export OMEGA=5 >> ~/.bashrc"
+                                        print(f"env OMEGA = {os.getenv('OMEGA')} before")
+                                        start_command = '''. ~/.bashrc; [ -z ${OMEGA} ] && (echo export OMEGA=5 >> ~/.bashrc; source ~/.bashrc; echo OMEGA_to_bashrc) || (sed -i.bak "/OMEGA=/s/[[:digit:]]/5/" ~/.bashrc; echo changing_OMEGA)'''
+                                        process = subprocess.Popen(start_command,
+                                                                   shell=True,
+                                                                   stdout=subprocess.PIPE,
+                                                                   stderr=subprocess.PIPE)
+                                        print(process.stdout.read().decode('utf-8').rstrip('\n'))
+                                        start_command = ". ~/.bashrc; echo $OMEGA"
                                         process = subprocess.Popen(start_command, shell=True,
                                                                    stdout=subprocess.PIPE,
                                                                    stderr=subprocess.PIPE)
-                                        start_command = "source ~/.bashrc"
-                                        process = subprocess.Popen(start_command, shell=True,
-                                                                   stdout=subprocess.PIPE,
-                                                                   stderr=subprocess.PIPE)
+                                        print(process.stdout.read().decode('utf-8').rstrip('\n'))
+                                        # start_command = "source ~/.bashrc"
+                                        # process = subprocess.Popen(start_command, shell=True,
+                                        #                            stdout=subprocess.PIPE,
+                                        #                            stderr=subprocess.PIPE)
                                         # os.environ['OMEGA'] = '1'
                                         print(f"env OMEGA = {os.getenv('OMEGA')}")
                     if event == 'Настройки':
@@ -3107,7 +3130,7 @@ if __name__ == '__main__':
                                 if val_set[ev_set].isdigit():
                                     window_settings[ev_set].update(
                                         background_color=omega_theme['INPUT'])
-                                    if  MIN_DEL_DAYS <= int(val_set[ev_set]) <= MAX_DEL_DAYS:
+                                    if MIN_DEL_DAYS <= int(val_set[ev_set]) <= MAX_DEL_DAYS:
                                         window_settings[ev_set].update(
                                             background_color=omega_theme['INPUT'],
                                             text_color=omega_theme['TEXT'])
@@ -3128,7 +3151,8 @@ if __name__ == '__main__':
                                                      'finalizeTonalTimeout': val_set['-таймаут-тонового-сигнала-'],
                                                      'ambientCallDuration': val_set['-таймаут-прослушивания-'],
                                                      'autoCleanDays': val_set['-auto-del-'],
-                                                     'udpPortsRange': val_set['-Мин-аудио-порт-'] + '-' + val_set['-Макс-аудио-порт-']}
+                                                     'udpPortsRange': val_set['-Мин-аудио-порт-'] + '-' + val_set[
+                                                         '-Макс-аудио-порт-']}
                                     res_update_set = requests.post(BASE_URL_SETTINGS,
                                                                    json=settings_dict,
                                                                    headers=HEADER_dict)
@@ -3281,8 +3305,8 @@ if __name__ == '__main__':
                                                         f'{res_add_user_en_ind.status_code}')
                                         if not val_add_user['addUserIndMesEn']:
                                             res_add_user_en_ind_mes = change_role(role.allow_ind_mes,
-                                                                              val_add_user['addUserIndMesEn'],
-                                                                              res_add_user.text[1:-1])
+                                                                                  val_add_user['addUserIndMesEn'],
+                                                                                  res_add_user.text[1:-1])
                                             if res_add_user_en_ind_mes.status_code == 200:
                                                 current_db += 1
                                                 if val_add_user['addUserIndMesEn']:
@@ -3302,7 +3326,8 @@ if __name__ == '__main__':
                                                         f'{res_add_user_en_ind_mes.status_code}')
                                         if val_add_user['addUserAllowDelChats']:
                                             res_add_user_en_del_chats = change_role(role.allow_delete_chats,
-                                                                                    val_add_user['addUserAllowDelChats'],
+                                                                                    val_add_user[
+                                                                                        'addUserAllowDelChats'],
                                                                                     res_add_user.text[1:-1])
                                             if res_add_user_en_del_chats.status_code == 200:
                                                 current_db += 1
@@ -3323,7 +3348,8 @@ if __name__ == '__main__':
                                                         f'{res_add_user_en_del_chats.status_code}')
                                         if val_add_user['addUserAllowPartialDrop']:
                                             res_add_user_en_partial_drop = change_role(role.allow_partial_drop,
-                                                                                       val_add_user['addUserAllowPartialDrop'],
+                                                                                       val_add_user[
+                                                                                           'addUserAllowPartialDrop'],
                                                                                        res_add_user.text[1:-1])
                                             if res_add_user_en_partial_drop.status_code == 200:
                                                 current_db += 1
@@ -3391,7 +3417,8 @@ if __name__ == '__main__':
                             else:
                                 # window_del_user = make_del_user_window(del_user['name'])
                                 window_del_user = make_confirm_window('Вы уверены, '
-                                      'что хотите удалить пользователя ' + del_user['login'] + '?')
+                                                                      'что хотите удалить пользователя ' + del_user[
+                                                                          'login'] + '?')
                                 while True:
                                     ev_del_user, val_del_user = window_del_user.Read()
                                     # print(ev_del_user, val_del_user)
@@ -3646,7 +3673,8 @@ if __name__ == '__main__':
                             # del_group_name = groups_from_db[values['-groups2-'][0]]['name']
                             # window_del_group = make_del_group_window(del_group['name'])
                             window_del_group = make_confirm_window('Вы уверены, '
-                                      'что хотите удалить группу ' + del_group['name'] + '?')
+                                                                   'что хотите удалить группу ' + del_group[
+                                                                       'name'] + '?')
                             while True:
                                 ev_del_group, val_del_group = window_del_group.Read()
                                 # print(ev_del_group, val_del_group)
@@ -3795,15 +3823,16 @@ if __name__ == '__main__':
                                         ['Помощь', 'О программе'], ])
                                     # print('after update GUI')
                                     update_free_space(dict_online_after_start)
-                                    window['online-users'].update(get_online_users(dict_online_after_start['onlineUserIds']))
+                                    window['online-users'].update(
+                                        get_online_users(dict_online_after_start['onlineUserIds']))
                                     break
                     if event == '-Stop-':
                         # print('Останавливаем сервер')
-                        # res = requests.get(BASE_URL + 'stopServer', headers=HEADER_dict)
-                        stop_command = 'sudo systemctl stop omega'
-                        process = subprocess.Popen(stop_command, shell=True,
-                                                   stdout=subprocess.PIPE,
-                                                   stderr=subprocess.PIPE)
+                        res = requests.get(BASE_URL + 'stopServer', headers=HEADER_dict)
+                        # stop_command = 'sudo systemctl stop omega'
+                        # process = subprocess.Popen(stop_command, shell=True,
+                        #                            stdout=subprocess.PIPE,
+                        #                            stderr=subprocess.PIPE)
                         sleep(1)
                         res_ping = ''
                         try:

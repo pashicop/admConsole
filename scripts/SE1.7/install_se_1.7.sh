@@ -103,7 +103,7 @@ psql -d omega_db -U omega_user -f create_script >> ~/install_log.txt &&
 unset PGPASSWORD
 printf '##### ------------OK----------- #####\n'
 printf '\n##### Настройка ОМЕГИ #####\n'
-chmod +x first_run run Api
+chmod +x first_run run Api Licensing
 echo -e "\033[31mВы хотите заполнить сервер тестовыми данными? Y/n|Д/н]:\033[0m"
 while true
   do
@@ -139,6 +139,7 @@ fi
 printf '\n##### Запускаем ОМЕГУ #####\n'
 ip_host=127.0.0.1
 ADM=$(cat "$HOME"/Omega/admPass.txt)
+echo $ADM
 sudo systemctl start omega >> ~/install_log.txt
 if [[ $? == 0 ]]
   then export ip_host=$(hostname -I | awk '{print $1}')
@@ -189,8 +190,8 @@ if [[ $PA -eq 1 ]]
     printf '\n##### Установка панели администратора #####\n'
     sleep 1
     cd ~/admConsole/
-    mv ~/admConsole/run.sh ~/admConsole/shortcut.desktop ~/Desktop/
-    chmod +x ~/Desktop/run.sh
+    mv ~/admConsole/shortcut.desktop ~/Desktop/
+    chmod +x ~/admConsole/run.sh
     printf '##### ------------OK----------- #####\n'
     printf '\n##### Добавляем необходимые права #####\n'
     echo 'omega ALL=(ALL) NOPASSWD: /bin/systemctl * omega' | sudo EDITOR='tee -a' visudo
@@ -204,6 +205,7 @@ if [[ $PA -eq 1 ]]
     echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
     echo 'eval "$(pyenv init -)"' >> ~/.bashrc
     echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
+    echo 'export OMEGA=0' >> ~/.bashrc
     echo '# omega end' >> ~/.bashrc
     #tail -n 10 ~/.bashrc
     export PYENV_ROOT="$HOME/.pyenv"
