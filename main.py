@@ -2248,7 +2248,7 @@ if __name__ == '__main__':
                                         window['-Menu-'].update([
                                             ['Сервер', ['Установить лицензию...', 'Настройки']],
                                             ['Помощь', 'О программе'], ])
-                                if current_db < dict_online['databaseVersion']:
+                                if current_db < dict_online['databaseVersion'] and dict_online['databaseVersion'] != '' : #TODO
                                     update_users_and_groups()
                                     current_db = dict_online['databaseVersion']
                                 update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
@@ -3010,7 +3010,29 @@ if __name__ == '__main__':
                                                             '\n'
                                                             '2021-2023')
                     if event == 'Установить лицензию...':
+                        res_get_lic = ''
+                        try:
+                            res_get_lic = requests.get(BASE_URL + 'getLicenseInfo', headers=HEADER_dict)
+                        except Exception as e:
+                            print(f"Запрос лицензии прошёл неудачно {e}")
+                            logging.warning("Запрос лицензии прошёл неудачно")
+                        if res_get_lic != '' and res_get_lic.status_code == 200:
+                            lic_from_server = res_get_lic.json()
+                            print(lic_from_server)
+                        else:
+                            lic_from_server = dict()
                         window_add_lic = make_add_lic()
+                        if lic_from_server:
+                            LICS = [['Количество абонентов', lic_from_server['UserCount'], lic_from_server['ExpirationDate']],
+                                    ['Количество диспетчеров', lic_from_server['DispatcherCount'], lic_from_server[
+                                        'ExpirationDate']]]
+                            for feature in lic_from_server['Features']:
+                                feature_name = "Удалённое прослушивание" if feature == "AmbientListening"\
+                                    else "Геопозиционирование" if feature == "GeoData"\
+                                    else "Динамические группы" if feature == "DGNA"\
+                                    else "Удалённое управление терминалами" if feature == "OTAP" else "?"
+                                LICS.append([feature_name, '+', lic_from_server['ExpirationDate']])
+                            window_add_lic['-lic-'].update(LICS)
                         while True:
                             ev_add_lic, val_add_lic = window_add_lic.Read()
                             print(f'{ev_add_lic}, {val_add_lic}')
@@ -3036,8 +3058,9 @@ if __name__ == '__main__':
                             if ev_add_lic == 'Загрузить':
                                 # print(start_command)
                                 if check_os() != 'Windows':
-                                    start_command = "$HOME/Omega/Licensing validate -l " + val_add_lic['-FILENAME-'] + \
-                                                    ' -k $HOME/Omega/keys/pub.pem'
+                                    start_command = "$HOME/Omega/Licensing/ValidateCli validate --license " + \
+                                                    val_add_lic['-FILENAME-'] + \
+                                                    ' --public $HOME/Omega/keys/pub.pem'
                                     process = subprocess.Popen(start_command, shell=True,
                                                                stdout=subprocess.PIPE,
                                                                stderr=subprocess.PIPE)
@@ -3054,30 +3077,33 @@ if __name__ == '__main__':
                                         lics: dict = json.loads(output[index:])
                                         # print(type(lics))
                                         # print(lics)
-                                        LICS = [['Количество абонентов', lics['userCount'], lics['expirationDate']],
-                                                ['Количество диспетчеров', lics['dispatcherCount'], lics[
-                                                    'expirationDate']]]
-                                        for feature in lics['features']:
-                                            LICS.append([feature, '+', lics['expirationDate']])
+                                        LICS = [['Количество абонентов', lics['UserCount'], lics['ExpirationDate']],
+                                                ['Количество диспетчеров', lics['DispatcherCount'], lics[
+                                                    'ExpirationDate']]]
+                                        for feature in lics['Features']:
+                                            LICS.append([feature, '+', lics['ExpirationDate']])
                                         window_add_lic['-lic-'].update(LICS)
-                                        print(f"env OMEGA = {os.getenv('OMEGA')} before")
-                                        start_command = '''. ~/.bashrc; [ -z ${OMEGA} ] && (echo export OMEGA=5 >> ~/.bashrc; source ~/.bashrc; echo OMEGA_to_bashrc) || (sed -i.bak "/OMEGA=/s/[[:digit:]]/5/" ~/.bashrc; echo changing_OMEGA)'''
-                                        process = subprocess.Popen(start_command,
-                                                                   shell=True,
-                                                                   stdout=subprocess.PIPE,
-                                                                   stderr=subprocess.PIPE)
-                                        print(process.stdout.read().decode('utf-8').rstrip('\n'))
-                                        start_command = ". ~/.bashrc; echo $OMEGA"
-                                        process = subprocess.Popen(start_command, shell=True,
-                                                                   stdout=subprocess.PIPE,
-                                                                   stderr=subprocess.PIPE)
-                                        print(process.stdout.read().decode('utf-8').rstrip('\n'))
-                                        # start_command = "source ~/.bashrc"
+                                        with open("/home/omega/Omega/.licenseState", mode='w') as f_lic_st:
+                                            f_lic_st.write("5")
+                                            print("файл записан")
+                                        # print(f"env OMEGA = {os.getenv('OMEGA')} before")
+                                        # start_command = '''. ~/.bashrc; [ -z ${OMEGA} ] && (echo export OMEGA=5 >> ~/.bashrc; source ~/.bashrc; echo OMEGA_to_bashrc) || (sed -i.bak "/OMEGA=/s/[[:digit:]]/5/" ~/.bashrc; echo changing_OMEGA)'''
+                                        # process = subprocess.Popen(start_command,
+                                        #                            shell=True,
+                                        #                            stdout=subprocess.PIPE,
+                                        #                            stderr=subprocess.PIPE)
+                                        # print(process.stdout.read().decode('utf-8').rstrip('\n'))
+                                        # start_command = ". ~/.bashrc; echo $OMEGA"
                                         # process = subprocess.Popen(start_command, shell=True,
                                         #                            stdout=subprocess.PIPE,
                                         #                            stderr=subprocess.PIPE)
-                                        # os.environ['OMEGA'] = '1'
-                                        print(f"env OMEGA = {os.getenv('OMEGA')}")
+                                        # print(process.stdout.read().decode('utf-8').rstrip('\n'))
+                                        # # start_command = "source ~/.bashrc"
+                                        # # process = subprocess.Popen(start_command, shell=True,
+                                        # #                            stdout=subprocess.PIPE,
+                                        # #                            stderr=subprocess.PIPE)
+                                        # # os.environ['OMEGA'] = '1'
+                                        # print(f"env OMEGA = {os.getenv('OMEGA')}")
                     if event == 'Настройки':
                         window_settings = make_settings()
                         timeout = 0
@@ -3828,13 +3854,23 @@ if __name__ == '__main__':
                                     break
                     if event == '-Stop-':
                         # print('Останавливаем сервер')
-                        res = requests.get(BASE_URL + 'stopServer', headers=HEADER_dict)
+                        try:
+                            res = requests.get(BASE_URL + 'stopServer', headers=HEADER_dict)
+                        except Exception as e:
+                            print("Сервер недоступен")
+                            logging.warning(f"Сервер не отвечает на запрос выключения")
+                        if res.status_code == 200:
+                            print("Сервер выключается")
+                            logging.warning(f"Сервер выключается администратором - {res.status_code}")
+                        else:
+                            print(f"Сервер не може выключиться - {res.status_code}")
+                            logging.warning(f"Сервер не может выключиться - {res.status_code}")
                         # stop_command = 'sudo systemctl stop omega'
                         # process = subprocess.Popen(stop_command, shell=True,
                         #                            stdout=subprocess.PIPE,
                         #                            stderr=subprocess.PIPE)
-                        sleep(1)
-                        res_ping = ''
+                        sleep(4)
+                        res_ping = '' #TODO
                         try:
                             res_ping = requests.get(BASE_URL_PING, timeout=1)
                         except Exception as e:

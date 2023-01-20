@@ -103,7 +103,7 @@ psql -d omega_db -U omega_user -f create_script >> ~/install_log.txt &&
 unset PGPASSWORD
 printf '##### ------------OK----------- #####\n'
 printf '\n##### Настройка ОМЕГИ #####\n'
-chmod +x first_run run Api Licensing
+chmod +x first_run run Api Licensing/ValidateCli Licensing
 echo -e "\033[31mВы хотите заполнить сервер тестовыми данными? Y/n|Д/н]:\033[0m"
 while true
   do
@@ -195,6 +195,7 @@ if [[ $PA -eq 1 ]]
     printf '##### ------------OK----------- #####\n'
     printf '\n##### Добавляем необходимые права #####\n'
     echo 'omega ALL=(ALL) NOPASSWD: /bin/systemctl * omega' | sudo EDITOR='tee -a' visudo
+    echo 'omega ALL=(ALL) NOPASSWD: /usr/bin/crontab *' | sudo EDITOR='tee -a' visudo
     printf '##### ------------OK----------- #####\n'
     printf '\n##### Устанавливаем необходимые пакеты #####\n'
     sudo apt-get -y install xorgxrdp xrdp >> ~/install_log.txt

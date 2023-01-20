@@ -1,6 +1,6 @@
 {
-  "userCount": 50,
-  "dispatcherCount": 3,
-  "expirationDate": "31-12-2023",
-  "features": ["ambientListening", "GeoData", "DGNA", "OTAP"]
+  "UserCount": 50,
+  "DispatcherCount": 3,
+  "ExpirationDate": "31/12/2023",
+  "Features": ["AmbientListening", "GeoData", "DGNA", "OTAP"]
 }
