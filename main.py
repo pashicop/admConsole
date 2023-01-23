@@ -854,7 +854,7 @@ def make_add_lic():
                                        )
                               ]], expand_x=True)],
                   [sg.Push(), sg.Button('Выйти'), sg.Push()]]
-    return sg.Window('Лицензия', layout_lic, icon=ICON_BASE_64, background_color='white', finalize=True)
+    return sg.Window('Лицензия', layout_lic, icon=ICON_BASE_64, background_color='white', modal=True, finalize=True)
 
 
 def make_settings():
