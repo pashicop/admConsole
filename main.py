@@ -59,7 +59,7 @@ DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
 DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
-version = '1.0.7 СТИС'
+version = '1.0.8 СТИС'
 
 
 # folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
@@ -826,11 +826,15 @@ def make_add_lic():
                                        default_value=sg.user_settings_get_entry('-last filename-', ''),
                                        size=(50, 1),
                                        disabled=True,
+                                       enable_events=True,
                                        key='-FILENAME-'), sg.FileBrowse('Найти',
+                                                                        disabled=False if ip == '127.0.0.1' else True,
                                                                         initial_folder='../',
                                                                         file_types=(("Файл лицензии", "*.lic"),))],
                   [sg.Button('Получить id сервера', disabled=False if ip == '127.0.0.1' else True), sg.Push(),
-                   sg.Button('Загрузить', bind_return_key=True)],
+                   sg.Button('Загрузить',
+                             disabled=True,
+                             bind_return_key=True)],
                   [sg.Frame('Лицензия',
                             [[sg.Table(LICS, headings=['Наименование', 'Количество', 'Дата'],
                                        justification="left",
@@ -3034,6 +3038,8 @@ if __name__ == '__main__':
                                 # print(f'{ev_add_lic}, {val_add_lic}')
                                 window_add_lic.close()
                                 break
+                            if ev_add_lic == '-FILENAME-':
+                                window_add_lic['Загрузить'].update(disabled=False)
                             if ev_add_lic == 'Получить id сервера':
                                 # id_serv = 'ajfhlkjdhflkja lakjhga'
                                 id_serv = get_id(check_os())
@@ -3051,6 +3057,7 @@ if __name__ == '__main__':
                                 #          title='id сервера', icon=ICON_BASE_64)
                             if ev_add_lic == 'Загрузить':
                                 # print(start_command)
+                                output = False
                                 if check_os() != 'Windows':
                                     start_command = "$HOME/Omega/Licensing/ValidateCli validate --license " + \
                                                     val_add_lic['-FILENAME-'] + \
@@ -3063,10 +3070,10 @@ if __name__ == '__main__':
                                     except Exception as e:
                                         my_popup('Неверный файл лицензии!')
                                         print(f'{e}')
-                                        output = False
                                     # print(type(output))
                                     # print(output)
-                                    if output:
+                                    # print(output == True)
+                                    if output.find('USAGE') == -1 and output:
                                         index = output.find('{')
                                         lics: dict = json.loads(output[index:])
                                         # print(type(lics))
@@ -3080,24 +3087,9 @@ if __name__ == '__main__':
                                         with open("/home/omega/Omega/.licenseState", mode='w') as f_lic_st:
                                             f_lic_st.write("5")
                                             print("файл записан")
-                                        # print(f"env OMEGA = {os.getenv('OMEGA')} before")
-                                        # start_command = '''. ~/.bashrc; [ -z ${OMEGA} ] && (echo export OMEGA=5 >> ~/.bashrc; source ~/.bashrc; echo OMEGA_to_bashrc) || (sed -i.bak "/OMEGA=/s/[[:digit:]]/5/" ~/.bashrc; echo changing_OMEGA)'''
-                                        # process = subprocess.Popen(start_command,
-                                        #                            shell=True,
-                                        #                            stdout=subprocess.PIPE,
-                                        #                            stderr=subprocess.PIPE)
-                                        # print(process.stdout.read().decode('utf-8').rstrip('\n'))
-                                        # start_command = ". ~/.bashrc; echo $OMEGA"
-                                        # process = subprocess.Popen(start_command, shell=True,
-                                        #                            stdout=subprocess.PIPE,
-                                        #                            stderr=subprocess.PIPE)
-                                        # print(process.stdout.read().decode('utf-8').rstrip('\n'))
-                                        # # start_command = "source ~/.bashrc"
-                                        # # process = subprocess.Popen(start_command, shell=True,
-                                        # #                            stdout=subprocess.PIPE,
-                                        # #                            stderr=subprocess.PIPE)
-                                        # # os.environ['OMEGA'] = '1'
-                                        # print(f"env OMEGA = {os.getenv('OMEGA')}")
+                                    else:
+                                        my_popup("Проблема с загрузкой лицензии")
+                                        logging.error(f"Проблема с загрузкой лицензии")
                         additional_window = False
                     if event == 'Настройки':
                         additional_window = True
@@ -3853,93 +3845,71 @@ if __name__ == '__main__':
                                         my_popup("Группа не удалена!")
                         additional_window = False
                     if event == '-Start-':
+                        additional_window = True
                         print('Стартуем сервер')
-                        # sg.popup('Запускаем сервер, ждите..', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
-                        #          background_color='lightgray', non_blocking=True, auto_close=True,
-                        #          auto_close_duration=5)
-                        # path_home_server = Path(Path.home(), 'Omega')
-                        # print(path_home_server)
-                        # start_command = 'cd ' + str(path_home_server) + ' && ./run'
-                        start_command = 'sudo systemctl restart omega'
-                        process = subprocess.Popen(start_command, shell=True,
-                                                   stdout=subprocess.PIPE,
-                                                   stderr=subprocess.PIPE)
-                        # process = subprocess.Popen("ssh pashi@10.1.4.156"
-                        #                            " 'bash ./run > /dev/null'", shell=True,
-                        #                                stdout=subprocess.PIPE,
-                        #                                stderr=subprocess.PIPE,
-                        #                                executable=r'C:\Program Files\PowerShell\7\pwsh.exe')
-                        for i in range(3):
-                            sleep(1)
-                            res_ping = ''
-                            try:
-                                res_ping = requests.get(BASE_URL_PING, timeout=1)
-                            except Exception as e:
-                                print(f"Сервер не отвечает, {e}")
-                            if res_ping == '':
-                                print('Нет ответа сервера')
-                                if i == 2:
-                                    logging.critical(f'Сервер не отвечает - {res_ping}')
-                                    my_popup("Сервер не отвечает")
-                            else:
-                                if res_ping.status_code == 200:
-                                    logging.info(f'Сервер запущен администратором')
-                                    print(f'{res_ping.text}')
-                                    dict_online_after_start = json.loads(res_ping.text)
-                                    # print(dict_online_after_start)
-                                    update_text = 'Пользователей онлайн: обновление...' + ', Версия БД: ' \
-                                                  + str(dict_online_after_start["databaseVersion"])
-                                    server_status['online'] = dict_online_after_start["onlineUsersCount"]
-                                    server_status['db'] = dict_online_after_start["databaseVersion"]
-                                    window['-StatusBar-'].update(update_text, background_color=status_bar_color)
-                                    window['-Start-'].update(disabled=True)
-                                    window['-Stop-'].update(disabled=False)
-                                    TOKEN = get_token(BASE_URL_AUTH)
-                                    HEADER_dict = {"Authorization": "Bearer " + TOKEN}
-                                    server_status['run'] = True
-                                    print(server_status)
-                                    init_db()
-                                    users_from_db = get_users_from_db()
-                                    groups_from_db = get_groups_from_db()
-                                    users_from_db.sort(key=lambda i: i['login'])
-                                    groups_from_db.sort(key=lambda i: i['name'])
-                                    treedata_update_group = sg.TreeData()
-                                    group_list = list()
-                                    user_list, treedata_update_user = get_user_list(users_from_db)
-                                    if users_from_db != [[]] and groups_from_db != [[]]:
-                                        for group_from_db in groups_from_db:
-                                            group_list.append([group_from_db['id'], group_from_db['name'],
-                                                               group_from_db['desc']])
-                                    for group in groups_from_db:
-                                        treedata_update_group.insert('', group['id'], '',
-                                                                     values=[group['name'], group['desc']],
-                                                                     icon=check[0])
-                                    window['-users-'].update(user_list)
-                                    window['-TREE2-'].update(treedata_update_user)
-                                    window['-groups2-'].update(group_list)
-                                    window['-TREE-'].update(treedata_update_group)
-                                    window['-AddUser-'].update(disabled=False)
-                                    window['-DelUser-'].update(disabled=False)
-                                    window['-CloneUser-'].update(disabled=False)
-                                    window['-AddGroup-'].update(disabled=False)
-                                    window['-DelGroup-'].update(disabled=False)
-                                    # window['-filterUser-'].update(disabled=False)
-                                    # window['-filterGroup-'].update(disabled=False)
-                                    window['Apply'].update(disabled=False)
-                                    window['Apply2'].update(disabled=False)
-                                    window['-checkAllGroups-'].update(disabled=False)
-                                    window['-checkAllUsers-'].update(disabled=False)
-                                    window['-partially-dropDB-'].update(disabled=False)
-                                    window['-dropDB-'].update(disabled=False)
-                                    window['-Menu-'].update([
-                                        ['Сервер', ['Установить лицензию...', 'Настройки']],
-                                        ['Помощь', 'О программе'], ])
-                                    # print('after update GUI')
-                                    update_free_space(dict_online_after_start)
-                                    window['online-users'].update(
-                                        get_online_users(dict_online_after_start['onlineUserIds']))
-                                    break
+                        if ip != "127.0.0.1":
+                            my_popup("Запустить сервер можно только \nс локальной панели администратора")
+                        else:
+                            # sg.popup('Запускаем сервер, ждите..', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
+                            #          background_color='lightgray', non_blocking=True, auto_close=True,
+                            #          auto_close_duration=5)
+                            # path_home_server = Path(Path.home(), 'Omega')
+                            # print(path_home_server)
+                            # start_command = 'cd ' + str(path_home_server) + ' && ./run'
+                            start_command = 'sudo systemctl restart omega'
+                            process = subprocess.Popen(start_command, shell=True,
+                                                       stdout=subprocess.PIPE,
+                                                       stderr=subprocess.PIPE)
+                            # process = subprocess.Popen("ssh pashi@10.1.4.156"
+                            #                            " 'bash ./run > /dev/null'", shell=True,
+                            #                                stdout=subprocess.PIPE,
+                            #                                stderr=subprocess.PIPE,
+                            #                                executable=r'C:\Program Files\PowerShell\7\pwsh.exe')
+                            for i in range(3):
+                                sleep(1)
+                                res_ping = ''
+                                try:
+                                    res_ping = requests.get(BASE_URL_PING, timeout=1)
+                                except Exception as e:
+                                    print(f"Сервер не отвечает, {e}")
+                                if res_ping == '':
+                                    print('Нет ответа сервера')
+                                    if i == 2:
+                                        logging.critical(f'Сервер не отвечает - {res_ping}')
+                                        my_popup("Сервер не отвечает")
+                                else:
+                                    if res_ping.status_code == 200:
+                                        logging.info(f'Сервер запущен администратором')
+                                        print(f'{res_ping.text}')
+                                        dict_online_after_start = json.loads(res_ping.text)
+                                        # print(dict_online_after_start)
+                                        update_text = 'Пользователей онлайн: обновление...' + ', Версия БД: ' \
+                                                      + str(dict_online_after_start["databaseVersion"])
+                                        server_status['online'] = dict_online_after_start["onlineUsersCount"]
+                                        server_status['db'] = dict_online_after_start["databaseVersion"]
+                                        window['-StatusBar-'].update(update_text, background_color=status_bar_color)
+                                        window['-Start-'].update(disabled=True)
+                                        window['-Stop-'].update(disabled=False)
+                                        TOKEN = get_token(BASE_URL_AUTH)
+                                        HEADER_dict = {"Authorization": "Bearer " + TOKEN}
+                                        server_status['run'] = True
+                                        print(server_status)
+                                        update_users_and_groups()
+                                        window['-Menu-'].update([
+                                            ['Сервер', ['Установить лицензию...', 'Настройки']],
+                                            ['Помощь', 'О программе'], ])
+                                        update_text = 'Пользователей онлайн: ' + str(server_status["online"]) \
+                                                      + ', Версия БД: ' + str(server_status["db"])
+                                        window['-StatusBar-'].update(update_text, background_color=status_bar_color)
+                                        set_buttons_disabled(False)
+                                        server_status['run'] = True
+                                        update_free_space(dict_online_after_start)
+                                        window['online-users'].update(
+                                            get_online_users(dict_online_after_start['onlineUserIds']))
+                                        break
+                        additional_window = False
                     if event == '-Stop-':
+                        additional_window = True
                         # print('Останавливаем сервер')
                         try:
                             res = requests.get(BASE_URL + 'stopServer', headers=HEADER_dict)
@@ -3991,13 +3961,14 @@ if __name__ == '__main__':
                             window['-partially-dropDB-'].update(disabled=True)
                             window['-dropDB-'].update(disabled=True)
                             window['-Menu-'].update([
-                                ['Сервер', ['!Установить лицензию...', '!Настройки']],
+                                ['Сервер', ['Установить лицензию...', '!Настройки']],
                                 ['Помощь', 'О программе'], ])
                             server_status['run'] = False
                             update_free_space({'freeSpace': 0, 'spaceTotal': 1})
                             window['online-users'].update('')
                             # server_status['last_state'] = True
                             print(server_status)
+                        additional_window = False
                     if event == 'Tabs':
                         if values['Tabs'] == 'Tab3':
                             with open('admin.log', mode='r', encoding='cp1251') as log_f:
