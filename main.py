@@ -1,4 +1,3 @@
-# import binascii
 import hashlib
 import json
 import os
@@ -1561,31 +1560,48 @@ def show_app(icon):
 
 def block_user(set_flag, id):
     user_dict = {'id': id}
+    res = False
     if set_flag:
-        res = requests.post(BASE_URL +
+        try:
+            res = requests.post(BASE_URL +
                             'disableUser',
                             json=user_dict,
                             headers=HEADER_dict)
+        except Exception as e:
+            print(f'Не удалось заблокировать абонента - {e}')
+            logging.error("Не удалось заблокировать абонента")
     else:
-        res = requests.post(BASE_URL +
+        try:
+            res = requests.post(BASE_URL +
                             'enableUser',
                             json=user_dict,
                             headers=HEADER_dict)
+        except Exception as e:
+            print(f'Не удалось разблокировать абонента - {e}')
+            logging.error("Не удалось разблокировать абонента")
     return res
 
 
 def block_group(set_flag, id):
     group_dict = {'id': id}
     if set_flag:
-        res = requests.post(BASE_URL +
+        try:
+            res = requests.post(BASE_URL +
                             'disableGroup',
                             json=group_dict,
                             headers=HEADER_dict)
+        except Exception as e:
+            print(f'Не удалось заблокировать группу - {e}')
+            logging.error("Не удалось заблокировать группу")
     else:
-        res = requests.post(BASE_URL +
+        try:
+            res = requests.post(BASE_URL +
                             'enableGroup',
                             json=group_dict,
                             headers=HEADER_dict)
+        except Exception as e:
+            print(f'Не удалось разблокировать группу - {e}')
+            logging.error("Не удалось разблокировать группу")
     return res
 
 
@@ -1613,25 +1629,38 @@ def enable_input(win):
 
 def change_role(role: Enum, set_flag, id):
     user_dict = {'userIds': [id], 'roles': [role.value]}
+    res_modify_user_role = False
     if set_flag:
-        res_modify_user_role = requests.post(BASE_URL +
+        try:
+            res_modify_user_role = requests.post(BASE_URL +
                                              'addToRole',
                                              json=user_dict,
                                              headers=HEADER_dict)
+        except Exception as e:
+            print(f'Не удалось добавить роль - {e}')
+            logging.error("Не удалось добавить роль")
     else:
-        res_modify_user_role = requests.post(BASE_URL +
+        try:
+            res_modify_user_role = requests.post(BASE_URL +
                                              'removeFromRole',
                                              json=user_dict,
                                              headers=HEADER_dict)
+        except Exception as e:
+            print(f'Не удалось удалить роль - {e}')
+            logging.error("Не удалось удалить роль")
     return res_modify_user_role
 
 
 def change_user_type(id, user_type):
     user_dict = {'userId': id, 'userType': int(user_type)}
-    res = requests.post(BASE_URL +
+    try:
+        res = requests.post(BASE_URL +
                         'changeUserType',
                         json=user_dict,
                         headers=HEADER_dict)
+    except Exception as e:
+        print(f'Не удалось поменять тип абонента - {e}')
+        logging.error("Не удалось поменять тип абонента")
     return res
 
 
@@ -2542,71 +2571,74 @@ if __name__ == '__main__':
                                             res_modify_user_en_ind = change_role(role.allow_ind_call,
                                                                                  val_modify_user['modifyUserIndCallEn'],
                                                                                  user_to_change['id'])
-                                            if res_modify_user_en_ind.status_code == 200:
-                                                current_db += 1
-                                                if val_modify_user['modifyUserIndCallEn']:
-                                                    logging.info(f"'Пользователю {val_modify_user['UserModifyLogin']} "
-                                                                 f'разрешено совершать индивидуальные вызовы')
+                                            if res_modify_user_en_ind:
+                                                if res_modify_user_en_ind.status_code == 200:
+                                                    current_db += 1
+                                                    if val_modify_user['modifyUserIndCallEn']:
+                                                        logging.info(f"'Пользователю {val_modify_user['UserModifyLogin']} "
+                                                                     f'разрешено совершать индивидуальные вызовы')
+                                                    else:
+                                                        logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
+                                                                     f'запрещено совершать индивидуальные вызовы')
                                                 else:
-                                                    logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
-                                                                 f'запрещено совершать индивидуальные вызовы')
-                                            else:
-                                                if val_modify_user['modifyUserIndCallEn']:
-                                                    logging.error(
-                                                        f'Ошибка при разрешении индивидуальных вызовов - '
-                                                        f'{res_modify_user_en_ind.status_code}')
-                                                else:
-                                                    logging.error(
-                                                        f'Ошибка при запрещении индивидуальных вызовов - '
-                                                        f'{res_modify_user_en_ind.status_code}')
+                                                    if val_modify_user['modifyUserIndCallEn']:
+                                                        logging.error(
+                                                            f'Ошибка при разрешении индивидуальных вызовов - '
+                                                            f'{res_modify_user_en_ind.status_code}')
+                                                    else:
+                                                        logging.error(
+                                                            f'Ошибка при запрещении индивидуальных вызовов - '
+                                                            f'{res_modify_user_en_ind.status_code}')
                                         if val_modify_user['modifyUserIndMesEn'] != user_to_change['en_ind_mes']:
                                             modify_is_en_ind_mes = True
                                             res_modify_user_en_ind_mes = change_role(role.allow_ind_mes,
                                                                                      val_modify_user[
                                                                                          'modifyUserIndMesEn'],
                                                                                      user_to_change['id'])
-                                            if res_modify_user_en_ind_mes.status_code == 200:
-                                                current_db += 1
-                                                if val_modify_user['modifyUserIndMesEn']:
-                                                    logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
-                                                                 f'разрешено отправлять индивидуальные сообщения')
+                                            if res_modify_user_en_ind_mes:
+                                                if res_modify_user_en_ind_mes.status_code == 200:
+                                                    current_db += 1
+                                                    if val_modify_user['modifyUserIndMesEn']:
+                                                        logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
+                                                                     f'разрешено отправлять индивидуальные сообщения')
+                                                    else:
+                                                        logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
+                                                                     f'запрещено отправлять индивидуальные сообщения')
                                                 else:
-                                                    logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
-                                                                 f'запрещено отправлять индивидуальные сообщения')
-                                            else:
-                                                if val_modify_user['modifyUserIndMesEn']:
-                                                    logging.error(
-                                                        f'Ошибка при разрешении отправления индивидуальных сообщений - '
-                                                        f'{res_modify_user_en_ind_mes.status_code}')
-                                                else:
-                                                    logging.error(
-                                                        f'Ошибка при запрещении отправления индивидуальных сообщений - '
-                                                        f'{res_modify_user_en_ind_mes.status_code}')
+                                                    if val_modify_user['modifyUserIndMesEn']:
+                                                        logging.error(
+                                                            f'Ошибка при разрешении отправления индивидуальных сообщений - '
+                                                            f'{res_modify_user_en_ind_mes.status_code}')
+                                                    else:
+                                                        logging.error(
+                                                            f'Ошибка при запрещении отправления индивидуальных сообщений - '
+                                                            f'{res_modify_user_en_ind_mes.status_code}')
                                         if val_modify_user['modifyUserAllowDelChats'] != user_to_change['en_del_chats']:
                                             modify_en_del_chats = True
                                             res_modify_user_en_del_chats = change_role(role.allow_delete_chats,
                                                                                        val_modify_user[
                                                                                            'modifyUserAllowDelChats'],
                                                                                        user_to_change['id'])
-                                            if res_modify_user_en_del_chats.status_code == 200:
-                                                current_db += 1
-                                                if val_modify_user['modifyUserAllowDelChats']:
-                                                    logging.info(f"Пользователю "
-                                                                 f"{val_modify_user['UserModifyLogin']}"
-                                                                 f' разрешено удалять чаты групп')
+                                            if res_modify_user_en_del_chats:
+                                                if res_modify_user_en_del_chats.status_code == 200:
+                                                    current_db += 1
+                                                    if val_modify_user['modifyUserAllowDelChats']:
+                                                        logging.info(f"Пользователю "
+                                                                     f"{val_modify_user['UserModifyLogin']}"
+                                                                     f' разрешено удалять чаты групп')
+                                                    else:
+                                                        logging.info(f"Пользователю "
+                                                                     f"{val_modify_user['UserModifyLogin']}"
+                                                                     f' запрещено удалять чаты групп')
                                                 else:
-                                                    logging.info(f"Пользователю "
-                                                                 f"{val_modify_user['UserModifyLogin']}"
-                                                                 f' запрещено удалять чаты групп')
-                                            else:
-                                                if val_modify_user['modifyUserAllowDelChats']:
-                                                    logging.error(
-                                                        f'Ошибка при разрешении удаления чатов групп - '
-                                                        f'{res_modify_user_en_del_chats.status_code}')
-                                                else:
-                                                    logging.error(
-                                                        f'Ошибка при запрещении удаления чатов групп - '
-                                                        f'{res_modify_user_en_del_chats.status_code}')
+                                                    if val_modify_user['modifyUserAllowDelChats']:
+                                                        logging.error(
+                                                            f'Ошибка при разрешении удаления чатов групп - '
+                                                            f'{res_modify_user_en_del_chats.status_code}')
+                                                    else:
+                                                        logging.error(
+                                                            f'Ошибка при запрещении удаления чатов групп - '
+                                                            f'{res_modify_user_en_del_chats.status_code}')
                                         if val_modify_user['modifyUserAllowPartialDrop'] != user_to_change[
                                             'en_partial_drop']:
                                             modify_en_partial_drop = True
@@ -2614,83 +2646,93 @@ if __name__ == '__main__':
                                                                                           val_modify_user[
                                                                                               'modifyUserAllowPartialDrop'],
                                                                                           user_to_change['id'])
-                                            if res_modify_user_en_partial_drop.status_code == 200:
-                                                current_db += 1
-                                                if val_modify_user['modifyUserAllowPartialDrop']:
-                                                    logging.info(f"Пользователю "
-                                                                 f"{val_modify_user['UserModifyLogin']}"
-                                                                 f' разрешено удалять данные БД')
+                                            if res_modify_user_en_partial_drop:
+                                                if res_modify_user_en_partial_drop.status_code == 200:
+                                                    current_db += 1
+                                                    if val_modify_user['modifyUserAllowPartialDrop']:
+                                                        logging.info(f"Пользователю "
+                                                                     f"{val_modify_user['UserModifyLogin']}"
+                                                                     f' разрешено удалять данные БД')
+                                                    else:
+                                                        logging.info(f"Пользователю "
+                                                                     f"{val_modify_user['UserModifyLogin']}"
+                                                                     f' запрещено удалять данные БД')
                                                 else:
-                                                    logging.info(f"Пользователю "
-                                                                 f"{val_modify_user['UserModifyLogin']}"
-                                                                 f' запрещено удалять данные БД')
-                                            else:
-                                                if val_modify_user['modifyUserAllowDelChats']:
-                                                    logging.error(
-                                                        f'Ошибка при разрешении удаления данных БД - '
-                                                        f'{res_modify_user_en_partial_drop.status_code}')
-                                                else:
-                                                    logging.error(
-                                                        f'Ошибка при запрещении удаления данных БД - '
-                                                        f'{res_modify_user_en_partial_drop.status_code}')
+                                                    if val_modify_user['modifyUserAllowDelChats']:
+                                                        logging.error(
+                                                            f'Ошибка при разрешении удаления данных БД - '
+                                                            f'{res_modify_user_en_partial_drop.status_code}')
+                                                    else:
+                                                        logging.error(
+                                                            f'Ошибка при запрещении удаления данных БД - '
+                                                            f'{res_modify_user_en_partial_drop.status_code}')
                                         if val_modify_user['modifyUserBlock'] != user_to_change['is_blocked']:
                                             modify_is_blocked = True
                                             res_block = block_user(val_modify_user['modifyUserBlock'],
                                                                    user_to_change['id'])
-                                            if res_block.status_code == 200:
-                                                current_db += 1
-                                                if val_modify_user['modifyUserBlock']:
-                                                    logging.info(f"Пользователь "
-                                                                 f"{val_modify_user['UserModifyLogin']}"
-                                                                 f' заблокирован')
+                                            if res_block:
+                                                if res_block.status_code == 200:
+                                                    current_db += 1
+                                                    if val_modify_user['modifyUserBlock']:
+                                                        logging.info(f"Пользователь "
+                                                                     f"{val_modify_user['UserModifyLogin']}"
+                                                                     f' заблокирован')
+                                                    else:
+                                                        logging.info(f"Пользователь "
+                                                                     f"{val_modify_user['UserModifyLogin']}"
+                                                                     f' разблокирован')
                                                 else:
-                                                    logging.info(f"Пользователь "
-                                                                 f"{val_modify_user['UserModifyLogin']}"
-                                                                 f' разблокирован')
-                                            else:
-                                                if val_modify_user['modifyUserBlock']:
-                                                    logging.error(
-                                                        f'Ошибка при блокировании пользователя - '
-                                                        f'{res_block.status_code}')
-                                                else:
-                                                    logging.error(
-                                                        f'Ошибка при разблокировании пользователя - '
-                                                        f'{res_block.status_code}')
+                                                    if val_modify_user['modifyUserBlock']:
+                                                        logging.error(
+                                                            f'Ошибка при блокировании пользователя - '
+                                                            f'{res_block.status_code}')
+                                                    else:
+                                                        logging.error(
+                                                            f'Ошибка при разблокировании пользователя - '
+                                                            f'{res_block.status_code}')
                                         if get_user_type(user_to_change) != modify_user_type:
                                             modify_u_t = True
                                             modify_user_type_dict = {'userType': modify_user_type}
                                             modify_user_type_dict['userId'] = user_to_change['id']
-                                            res_modify_user_type = requests.post(BASE_URL + 'changeUserType',
+                                            try:
+                                                res_modify_user_type = requests.post(BASE_URL + 'changeUserType',
                                                                                  json=modify_user_type_dict,
                                                                                  headers=HEADER_dict)
-                                            if res_modify_user_type.status_code == 200:
-                                                current_db += 1
-                                                logging.info(
-                                                    f"Пользователю {val_modify_user['UserModifyLogin']} "
-                                                    f'изменили тип на {list(user_type.keys())[list(user_type.values()).index(modify_user_type)]}')
-                                            else:
-                                                logging.error(f'Ошибка изменения типа '
-                                                              f'пользователя - '
-                                                              f'{res_modify_user_type.status_code}')
+                                                if res_modify_user_type.status_code == 200:
+                                                    current_db += 1
+                                                    logging.info(
+                                                        f"Пользователю {val_modify_user['UserModifyLogin']} "
+                                                        f'изменили тип на {list(user_type.keys())[list(user_type.values()).index(modify_user_type)]}')
+                                                else:
+                                                    logging.error(f'Ошибка изменения типа '
+                                                                  f'пользователя - '
+                                                                  f'{res_modify_user_type.status_code}')
+                                            except Exception as e:
+                                                print(f'Не удалось поменять тип абонента - {e}')
+                                                logging.error("Не удалось поменять тип абонента")
                                         if modify_name or modify_password or modify_priority:
-                                            res_modify_user = requests.post(BASE_URL + 'updateUser',
+                                            try:
+                                                res_modify_user = requests.post(BASE_URL + 'updateUser',
                                                                             json=modify_user_dict,
                                                                             headers=HEADER_dict)
-                                            # sg.cprint(f'Изменяем пользователя - {res_modify_user.status_code}')
-                                            if res_modify_user.status_code == 200:
-                                                current_db += 1
-                                                if modify_name:
-                                                    logging.info(
-                                                        f"Пользователю {val_modify_user['UserModifyLogin']} изменили имя")
-                                                if modify_password:
-                                                    logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
-                                                                 f'изменили пароль')
-                                                if modify_priority:
-                                                    logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
-                                                                 f'изменили приоритет')
-                                            else:
-                                                logging.error(f'Ошибка изменения пользователя - '
-                                                              f'{res_modify_user.status_code}')
+                                                # sg.cprint(f'Изменяем пользователя - {res_modify_user.status_code}')
+                                                if res_modify_user.status_code == 200:
+                                                    current_db += 1
+                                                    if modify_name:
+                                                        logging.info(
+                                                            f"Пользователю {val_modify_user['UserModifyLogin']} изменили имя")
+                                                    if modify_password:
+                                                        logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
+                                                                     f'изменили пароль')
+                                                    if modify_priority:
+                                                        logging.info(f"Пользователю {val_modify_user['UserModifyLogin']} "
+                                                                     f'изменили приоритет')
+                                                else:
+                                                    logging.error(f'Ошибка изменения пользователя - '
+                                                                  f'{res_modify_user.status_code}')
+                                            except Exception as e:
+                                                print(f'Не удалось обновить данные абонента - {e}')
+                                                logging.error("Не удалось обновить данные абонента")
                                         if modify_name or modify_password \
                                                 or modify_is_en_ind \
                                                 or modify_is_en_ind_mes \
@@ -2731,21 +2773,25 @@ if __name__ == '__main__':
                                     if ev_confirm == 'okExit':
                                         modify_group_del_chat_dict = {}
                                         modify_group_del_chat_dict['GroupId'] = group_to_change['id']
-                                        res_modify_group_del_chat = requests.post(
+                                        try:
+                                            res_modify_group_del_chat = requests.post(
                                             BASE_URL + 'clearGroupMessages',
                                             json=modify_group_del_chat_dict,
                                             headers=HEADER_dict)
                                         # print(res_modify_group.status_code)
-                                        if res_modify_group_del_chat.status_code == 200:
-                                            current_db += 1
-                                            logging.info(f"Группу {group_to_change['name']} почистили")
-                                            my_popup("Группа почищена!")
-                                            window_confirm.close()
-                                        else:
-                                            logging.error(f'ошибка очищения группы - '
-                                                          f'{res_modify_group_del_chat.status_code}')
-                                            my_popup("Ошибка при очистке групп!")
-                                            window_confirm.close()
+                                            if res_modify_group_del_chat.status_code == 200:
+                                                current_db += 1
+                                                logging.info(f"Группу {group_to_change['name']} почистили")
+                                                my_popup("Группа почищена!")
+                                                window_confirm.close()
+                                            else:
+                                                logging.error(f'ошибка очищения группы - '
+                                                              f'{res_modify_group_del_chat.status_code}')
+                                                my_popup("Ошибка при очистке групп!")
+                                        except Exception as e:
+                                            print(f'Не удалось очистить чат - {e}')
+                                            logging.error("Не удалось очистить чат")
+                                        window_confirm.close()
                                     if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
                                         break
                                     if ev_confirm == 'noExit':
@@ -2774,43 +2820,55 @@ if __name__ == '__main__':
                                         modify_group_dict['groupType'] = group_to_change['is_emergency']
                                     if modify_group:
                                         # print(modify_group_dict)
-                                        res_modify_group = requests.post(BASE_URL + 'updateGroup',
+                                        try:
+                                            res_modify_group = requests.post(BASE_URL + 'updateGroup',
                                                                          json=modify_group_dict,
                                                                          headers=HEADER_dict)
-                                        # print(res_modify_group.status_code)
-                                        if res_modify_group.status_code == 200:
-                                            current_db += 1
-                                            logging.info(f'Группу {modify_group_name} изменили')
-                                            # break
-                                        else:
-                                            logging.error(f'ошибка изменения группы - '
-                                                          f'{res_modify_group.status_code}')
+                                            # print(res_modify_group.status_code)
+                                            if res_modify_group.status_code == 200:
+                                                current_db += 1
+                                                logging.info(f'Группу {modify_group_name} изменили')
+                                                # break
+                                            else:
+                                                logging.error(f'ошибка изменения группы - '
+                                                              f'{res_modify_group.status_code}')
+                                        except Exception as e:
+                                            print(f'Не удалось обновить данные группы - {e}')
+                                            logging.error("Не удалось обновить данные группы")
                                     if modify_group_blocked != group_to_change['is_disabled']:
                                         modify_group_is_blocked = True
                                         if modify_group_blocked:
-                                            res_modify_group_is_disabled = requests.post(BASE_URL + 'disableGroup',
+                                            try:
+                                                res_modify_group_is_disabled = requests.post(BASE_URL + 'disableGroup',
                                                                                          json=modify_group_dict,
                                                                                          headers=HEADER_dict)
-                                            if res_modify_group_is_disabled.status_code == 200:
-                                                current_db += 1
-                                                logging.info(f'Группа {modify_group_name} заблокирована')
-                                            elif res_modify_group_is_disabled.status_code == 400:
-                                                logging.info(f'Группа {modify_group_name} уже была заблокирована')
-                                            else:
-                                                logging.info(f'Группа {modify_group_name} не заблокирована, '
-                                                             f'ошибка - {res_modify_group_is_disabled.status_code}')
+                                                if res_modify_group_is_disabled.status_code == 200:
+                                                    current_db += 1
+                                                    logging.info(f'Группа {modify_group_name} заблокирована')
+                                                elif res_modify_group_is_disabled.status_code == 400:
+                                                    logging.info(f'Группа {modify_group_name} уже была заблокирована')
+                                                else:
+                                                    logging.info(f'Группа {modify_group_name} не заблокирована, '
+                                                                 f'ошибка - {res_modify_group_is_disabled.status_code}')
+                                            except Exception as e:
+                                                print(f'Не удалось заблокировать группу - {e}')
+                                                logging.error("Не удалось заблокировать группу")
                                         else:
-                                            res_modify_group_is_disabled = requests.post(BASE_URL + 'enableGroup',
+                                            try:
+                                                res_modify_group_is_disabled = requests.post(BASE_URL + 'enableGroup',
                                                                                          json=modify_group_dict,
                                                                                          headers=HEADER_dict)
-                                            if res_modify_group_is_disabled.status_code == 200:
-                                                current_db += 1
-                                                logging.info(f'Группа {modify_group_name} раблокирована')
-                                            elif res_modify_group_is_disabled.status_code == 400:
-                                                logging.info(f'Группа {modify_group_name} уже была разблокирована')
-                                            else:
-                                                logging.info(f'Группа {modify_group_name} не разблокирована, '
-                                                             f'ошибка - {res_modify_group_is_disabled.status_code}')
+                                                if res_modify_group_is_disabled.status_code == 200:
+                                                    current_db += 1
+                                                    logging.info(f'Группа {modify_group_name} разблокирована')
+                                                elif res_modify_group_is_disabled.status_code == 400:
+                                                    logging.info(f'Группа {modify_group_name} уже была разблокирована')
+                                                else:
+                                                    logging.info(f'Группа {modify_group_name} не разблокирована, '
+                                                                 f'ошибка - {res_modify_group_is_disabled.status_code}')
+                                            except Exception as e:
+                                                print(f'Не удалось разблокировать абонента - {e}')
+                                                logging.error("Не удалось разблокироватьбонента")
                                     if modify_group or modify_group_is_blocked:
                                         update_groups()
                                         window_modify_group.close()
@@ -2830,18 +2888,22 @@ if __name__ == '__main__':
                             if ev_confirm == 'okExit':
                                 group_to_change = groups_from_db[values['-groups2-'][0]]
                                 modify_group_del_chat_dict = {'GroupId': group_to_change['id']}
-                                res_modify_group_del_chat = requests.post(BASE_URL + 'clearGroupMessages',
+                                try:
+                                    res_modify_group_del_chat = requests.post(BASE_URL + 'clearGroupMessages',
                                                                           json=modify_group_del_chat_dict,
                                                                           headers=HEADER_dict)
-                                # print(res_modify_group.status_code)
-                                if res_modify_group_del_chat.status_code == 200:
-                                    current_db += 1
-                                    logging.info(f"Группу {group_to_change['name']} почистили")
-                                    my_popup("Группа почищена!")
-                                else:
-                                    logging.error(f'ошибка очищения группы - '
-                                                  f'{res_modify_group_del_chat.status_code}')
-                                    my_popup("Ошибка при очистке групп!")
+                                    # print(res_modify_group.status_code)
+                                    if res_modify_group_del_chat.status_code == 200:
+                                        current_db += 1
+                                        logging.info(f"Группу {group_to_change['name']} почистили")
+                                        my_popup("Группа почищена!")
+                                    else:
+                                        logging.error(f'ошибка очищения группы - '
+                                                      f'{res_modify_group_del_chat.status_code}')
+                                        my_popup("Ошибка при очистке групп!")
+                                except Exception as e:
+                                    print(f'Не удалось очистить чат - {e}')
+                                    logging.error("Не удалось очистить чат")
                                 window_confirm.close()
                             if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
                                 break
@@ -2929,7 +2991,7 @@ if __name__ == '__main__':
                                         my_popup("Добавление не выполнено")
                                 except Exception as e:
                                     print(f"Запрос вызвал ошибку! {e}")
-                                    logging.warning(f"Запрос вызвал ошибку! - {e}")
+                                    logging.warning(f"Запрос вызвал ошибку!")
                             else:
                                 my_popup('Нет изменений')
                                 window["Apply"].update(disabled=True)
@@ -2978,23 +3040,27 @@ if __name__ == '__main__':
                                     add_del_dict['removeUserIds'] += [us_id]
                                     del_user = True
                             if add_user or del_user:
-                                res_add_del = requests.post(BASE_URL + 'changeGroupUsers', json=add_del_dict,
+                                try:
+                                    res_add_del = requests.post(BASE_URL + 'changeGroupUsers', json=add_del_dict,
                                                             headers=HEADER_dict)
-                                if res_add_del.status_code == 200:
-                                    current_db += 1
-                                    logging.info(
-                                        f'Изменение пользователей выполнено для {chosen_group["name"]}')
-                                    # window['-users2-'].update(get_users_for_group(chosen_group[1]))
-                                    add_del_users_to_group_after_apply(add_del_dict)
-                                    add_del_text = 'Изменение пользователей для ' + \
-                                                   chosen_group['name'] + ' выполнено'
-                                    my_popup(add_del_text)
-                                    window['Apply2'].update(disabled=True)
-                                else:
-                                    logging.error(
-                                        f'Изменение пользователей НЕ выполнено для {chosen_group["name"]} - '
-                                        f'{res_add_del.status_code}')
-                                    my_popup("Добавление не выполнено")
+                                    if res_add_del.status_code == 200:
+                                        current_db += 1
+                                        logging.info(
+                                            f'Изменение пользователей выполнено для {chosen_group["name"]}')
+                                        # window['-users2-'].update(get_users_for_group(chosen_group[1]))
+                                        add_del_users_to_group_after_apply(add_del_dict)
+                                        add_del_text = 'Изменение пользователей для ' + \
+                                                       chosen_group['name'] + ' выполнено'
+                                        my_popup(add_del_text)
+                                        window['Apply2'].update(disabled=True)
+                                    else:
+                                        logging.error(
+                                            f'Изменение пользователей НЕ выполнено для {chosen_group["name"]} - '
+                                            f'{res_add_del.status_code}')
+                                        my_popup("Добавление не выполнено")
+                                except Exception as e:
+                                    print(f'Не удалось обновить абонентуов группе - {e}')
+                                    logging.error("Не удалось обновить абонентов группе ")
                             else:
                                 my_popup('Нет изменений')
                                 window["Apply2"].update(disabled=True)
@@ -3167,25 +3233,29 @@ if __name__ == '__main__':
                                                      'autoCleanDays': val_set['-auto-del-'],
                                                      'udpPortsRange': val_set['-Мин-аудио-порт-'] + '-' + val_set[
                                                          '-Макс-аудио-порт-']}
-                                    res_update_set = requests.post(BASE_URL_SETTINGS,
+                                    try:
+                                        res_update_set = requests.post(BASE_URL_SETTINGS,
                                                                    json=settings_dict,
                                                                    headers=HEADER_dict)
-                                    if res_update_set.status_code == 200:
-                                        current_db += 1
-                                        logging.info(
-                                            f"Настройки изменены: "
-                                            f"Инд. вызов - {settings_dict['privateCallTimeout']}, "
-                                            f"Гр. вызов - {settings_dict['groupCallTimeout']}, "
-                                            f"Таймаут окончания вызова - {settings_dict['finalizeCallTimeout']}, "
-                                            f"Тональный вызов - {settings_dict['finalizeTonalTimeout']}, "
-                                            f"Скрытое прослушивание - {settings_dict['ambientCallDuration']}, "
-                                            f"Аудио порты - {settings_dict['udpPortsRange']}, "
-                                            f"Аудио порты - {settings_dict['udpPortsRange']}, "
-                                        )
-                                    else:
-                                        logging.error(
-                                            f'Ошибка при изменении настроек - {res_update_set.status_code}')
-                                        my_popup("Ошибка при изменении настроек")
+                                        if res_update_set.status_code == 200:
+                                            current_db += 1
+                                            logging.info(
+                                                f"Настройки изменены: "
+                                                f"Инд. вызов - {settings_dict['privateCallTimeout']}, "
+                                                f"Гр. вызов - {settings_dict['groupCallTimeout']}, "
+                                                f"Таймаут окончания вызова - {settings_dict['finalizeCallTimeout']}, "
+                                                f"Тональный вызов - {settings_dict['finalizeTonalTimeout']}, "
+                                                f"Скрытое прослушивание - {settings_dict['ambientCallDuration']}, "
+                                                f"Аудио порты - {settings_dict['udpPortsRange']}, "
+                                                f"Аудио порты - {settings_dict['udpPortsRange']}, "
+                                            )
+                                        else:
+                                            logging.error(
+                                                f'Ошибка при изменении настроек - {res_update_set.status_code}')
+                                            my_popup("Ошибка при изменении настроек")
+                                    except Exception as e:
+                                        print(f'Не удалось обновить настройки - {e}')
+                                        logging.error("Не удалось обновить настройки")
                                     if val_set['-пинг-таймаут-'] != str(ping_timeout):
                                         ping_timeout = int(val_set['-пинг-таймаут-'])
                                     disable_input(window_settings)
@@ -3284,138 +3354,147 @@ if __name__ == '__main__':
                                                      'userType': new_user_type,
                                                      'priority': val_add_user['UserPriority'] \
                                                          if val_add_user['UserPriority'] else 1}
-                                    res_add_user = requests.post(BASE_URL + 'addUser',
+                                    try:
+                                        res_add_user = requests.post(BASE_URL + 'addUser',
                                                                  json=add_user_dict, headers=HEADER_dict)
-                                    if res_add_user.status_code == 200:
-                                        current_db += 1
-                                        logging.info(f"Пользователь {val_add_user['UserLogin']} добавлен")
-                                        if new_user_type == user_type['dispatcher']:
-                                            logging.info(f"Пользователь {val_add_user['UserLogin']} "
-                                                         f'стал диспетчером')
-                                        elif new_user_type == user_type['box']:
-                                            logging.info(f"Пользователь {val_add_user['UserLogin']} "
-                                                         f'для концентратора К500')
-                                        elif new_user_type == user_type['admin']:
-                                            logging.info(f"Пользователь {val_add_user['UserLogin']} "
-                                                         f'стал администратором')
-                                        if not val_add_user['addUserIndCallEn']:
-                                            res_add_user_en_ind = change_role(role.allow_ind_call,
-                                                                              val_add_user['addUserIndCallEn'],
-                                                                              res_add_user.text[1:-1])
-                                            if res_add_user_en_ind.status_code == 200:
-                                                current_db += 1
-                                                if val_add_user['addUserIndCallEn']:
-                                                    logging.info(f"'Пользователю {val_add_user['UserLogin']} "
-                                                                 f'разрешено совершать индивидуальные вызовы')
-                                                else:
-                                                    logging.info(f"Пользователю {val_add_user['UserLogin']} "
-                                                                 f'запрещено совершать индивидуальные вызовы')
-                                            else:
-                                                if val_add_user['addUserIndCallEn']:
-                                                    logging.error(
-                                                        f'Ошибка при разрешении индивидуальных вызовов - '
-                                                        f'{res_add_user_en_ind.status_code}')
-                                                else:
-                                                    logging.error(
-                                                        f'Ошибка при запрещении индивидуальных вызовов - '
-                                                        f'{res_add_user_en_ind.status_code}')
-                                        if not val_add_user['addUserIndMesEn']:
-                                            res_add_user_en_ind_mes = change_role(role.allow_ind_mes,
-                                                                                  val_add_user['addUserIndMesEn'],
+                                        if res_add_user.status_code == 200:
+                                            current_db += 1
+                                            logging.info(f"Пользователь {val_add_user['UserLogin']} добавлен")
+                                            if new_user_type == user_type['dispatcher']:
+                                                logging.info(f"Пользователь {val_add_user['UserLogin']} "
+                                                             f'стал диспетчером')
+                                            elif new_user_type == user_type['box']:
+                                                logging.info(f"Пользователь {val_add_user['UserLogin']} "
+                                                             f'для концентратора К500')
+                                            elif new_user_type == user_type['admin']:
+                                                logging.info(f"Пользователь {val_add_user['UserLogin']} "
+                                                             f'стал администратором')
+                                            if not val_add_user['addUserIndCallEn']:
+                                                res_add_user_en_ind = change_role(role.allow_ind_call,
+                                                                                  val_add_user['addUserIndCallEn'],
                                                                                   res_add_user.text[1:-1])
-                                            if res_add_user_en_ind_mes.status_code == 200:
-                                                current_db += 1
-                                                if val_add_user['addUserIndMesEn']:
-                                                    logging.info(f"'Пользователю {val_add_user['UserLogin']} "
-                                                                 f'разрешено отправлять индивидуальные сообщения')
-                                                else:
-                                                    logging.info(f"Пользователю {val_add_user['UserLogin']} "
-                                                                 f'запрещено отправлять индивидуальные сообщения')
-                                            else:
-                                                if val_add_user['addUserIndMesEn']:
-                                                    logging.error(
-                                                        f'Ошибка при разрешении отправления индивидуальных сообщений - '
-                                                        f'{res_add_user_en_ind_mes.status_code}')
-                                                else:
-                                                    logging.error(
-                                                        f'Ошибка при запрещении отправления индивидуальных сообщений - '
-                                                        f'{res_add_user_en_ind_mes.status_code}')
-                                        if val_add_user['addUserAllowDelChats']:
-                                            res_add_user_en_del_chats = change_role(role.allow_delete_chats,
-                                                                                    val_add_user[
-                                                                                        'addUserAllowDelChats'],
-                                                                                    res_add_user.text[1:-1])
-                                            if res_add_user_en_del_chats.status_code == 200:
-                                                current_db += 1
-                                                if val_add_user['addUserAllowDelChats']:
-                                                    logging.info(f"'Пользователю {val_add_user['UserLogin']} "
-                                                                 f'разрешено удалять чаты')
-                                                else:
-                                                    logging.info(f"Пользователю {val_add_user['UserLogin']} "
-                                                                 f'запрещено удалять чаты')
-                                            else:
-                                                if val_add_user['addUserAllowDelChats']:
-                                                    logging.error(
-                                                        f'Ошибка при разрешении удаления чатов - '
-                                                        f'{res_add_user_en_del_chats.status_code}')
-                                                else:
-                                                    logging.error(
-                                                        f'Ошибка при запрещении удаления чатов - '
-                                                        f'{res_add_user_en_del_chats.status_code}')
-                                        if val_add_user['addUserAllowPartialDrop']:
-                                            res_add_user_en_partial_drop = change_role(role.allow_partial_drop,
-                                                                                       val_add_user[
-                                                                                           'addUserAllowPartialDrop'],
-                                                                                       res_add_user.text[1:-1])
-                                            if res_add_user_en_partial_drop.status_code == 200:
-                                                current_db += 1
-                                                if val_add_user['addUserAllowPartialDrop']:
-                                                    logging.info(f"'Пользователю {val_add_user['UserLogin']} "
-                                                                 f'разрешено удалять данные БД')
-                                                else:
-                                                    logging.info(f"Пользователю {val_add_user['UserLogin']} "
-                                                                 f'запрещено удалять данные БД')
-                                            else:
-                                                if val_add_user['addUserAllowPartialDrop']:
-                                                    logging.error(
-                                                        f'Ошибка при разрешении удаления данных БД - '
-                                                        f'{res_add_user_en_partial_drop.status_code}')
-                                                else:
-                                                    logging.error(
-                                                        f'Ошибка при запрещении удаления данных БД - '
-                                                        f'{res_add_user_en_partial_drop.status_code}')
-                                        if val_add_user['addUserBlock']:
-                                            res_block = block_user(val_add_user['addUserBlock'],
-                                                                   res_add_user.text[1:-1])
-                                            if res_block.status_code == 200:
-                                                current_db += 1
-                                                if val_add_user['addUserBlock']:
-                                                    logging.info(f"Пользователь "
-                                                                 f"{val_add_user['UserLogin']}"
-                                                                 f' заблокирован')
-                                                else:
-                                                    logging.info(f"Пользователь "
-                                                                 f"{val_add_user['UserLogin']}"
-                                                                 f' разблокирован')
-                                            else:
-                                                if val_add_user['addUserBlock']:
-                                                    logging.error(
-                                                        f'Ошибка при блокировании пользователя - '
-                                                        f'{res_block.status_code}')
-                                                else:
-                                                    logging.error(
-                                                        f'Ошибка при разблокировании пользователя - '
-                                                        f'{res_block.status_code}')
-                                        update_users()
-                                        window_add_user.close()
-                                        # update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
-                                        #               + ', Версия БД: ' + str(current_db)
-                                        # window['-StatusBar-'].update(update_text, background_color=status_bar_color)
-                                        my_popup("Пользователь добавлен!")
-                                    else:
-                                        logging.error(f"Пользователь {val_add_user['UserLogin']} НЕ добавлен - "
-                                                      f'{res_add_user.status_code}')
-                                        my_popup("Пользователь не добавлен!")
+                                                if res_add_user_en_ind:
+                                                    if res_add_user_en_ind.status_code == 200:
+                                                        current_db += 1
+                                                        if val_add_user['addUserIndCallEn']:
+                                                            logging.info(f"'Пользователю {val_add_user['UserLogin']} "
+                                                                         f'разрешено совершать индивидуальные вызовы')
+                                                        else:
+                                                            logging.info(f"Пользователю {val_add_user['UserLogin']} "
+                                                                         f'запрещено совершать индивидуальные вызовы')
+                                                    else:
+                                                        if val_add_user['addUserIndCallEn']:
+                                                            logging.error(
+                                                                f'Ошибка при разрешении индивидуальных вызовов - '
+                                                                f'{res_add_user_en_ind.status_code}')
+                                                        else:
+                                                            logging.error(
+                                                                f'Ошибка при запрещении индивидуальных вызовов - '
+                                                                f'{res_add_user_en_ind.status_code}')
+                                            if not val_add_user['addUserIndMesEn']:
+                                                res_add_user_en_ind_mes = change_role(role.allow_ind_mes,
+                                                                                      val_add_user['addUserIndMesEn'],
+                                                                                      res_add_user.text[1:-1])
+                                                if res_add_user_en_ind_mes:
+                                                    if res_add_user_en_ind_mes.status_code == 200:
+                                                        current_db += 1
+                                                        if val_add_user['addUserIndMesEn']:
+                                                            logging.info(f"'Пользователю {val_add_user['UserLogin']} "
+                                                                         f'разрешено отправлять индивидуальные сообщения')
+                                                        else:
+                                                            logging.info(f"Пользователю {val_add_user['UserLogin']} "
+                                                                         f'запрещено отправлять индивидуальные сообщения')
+                                                    else:
+                                                        if val_add_user['addUserIndMesEn']:
+                                                            logging.error(
+                                                                f'Ошибка при разрешении отправления индивидуальных сообщений - '
+                                                                f'{res_add_user_en_ind_mes.status_code}')
+                                                        else:
+                                                            logging.error(
+                                                                f'Ошибка при запрещении отправления индивидуальных сообщений - '
+                                                                f'{res_add_user_en_ind_mes.status_code}')
+                                            if val_add_user['addUserAllowDelChats']:
+                                                res_add_user_en_del_chats = change_role(role.allow_delete_chats,
+                                                                                        val_add_user[
+                                                                                            'addUserAllowDelChats'],
+                                                                                        res_add_user.text[1:-1])
+                                                if res_add_user_en_del_chats:
+                                                    if res_add_user_en_del_chats.status_code == 200:
+                                                        current_db += 1
+                                                        if val_add_user['addUserAllowDelChats']:
+                                                            logging.info(f"'Пользователю {val_add_user['UserLogin']} "
+                                                                         f'разрешено удалять чаты')
+                                                        else:
+                                                            logging.info(f"Пользователю {val_add_user['UserLogin']} "
+                                                                         f'запрещено удалять чаты')
+                                                    else:
+                                                        if val_add_user['addUserAllowDelChats']:
+                                                            logging.error(
+                                                                f'Ошибка при разрешении удаления чатов - '
+                                                                f'{res_add_user_en_del_chats.status_code}')
+                                                        else:
+                                                            logging.error(
+                                                                f'Ошибка при запрещении удаления чатов - '
+                                                                f'{res_add_user_en_del_chats.status_code}')
+                                            if val_add_user['addUserAllowPartialDrop']:
+                                                res_add_user_en_partial_drop = change_role(role.allow_partial_drop,
+                                                                                           val_add_user[
+                                                                                               'addUserAllowPartialDrop'],
+                                                                                           res_add_user.text[1:-1])
+                                                if res_add_user_en_partial_drop:
+                                                    if res_add_user_en_partial_drop.status_code == 200:
+                                                        current_db += 1
+                                                        if val_add_user['addUserAllowPartialDrop']:
+                                                            logging.info(f"'Пользователю {val_add_user['UserLogin']} "
+                                                                         f'разрешено удалять данные БД')
+                                                        else:
+                                                            logging.info(f"Пользователю {val_add_user['UserLogin']} "
+                                                                         f'запрещено удалять данные БД')
+                                                    else:
+                                                        if val_add_user['addUserAllowPartialDrop']:
+                                                            logging.error(
+                                                                f'Ошибка при разрешении удаления данных БД - '
+                                                                f'{res_add_user_en_partial_drop.status_code}')
+                                                        else:
+                                                            logging.error(
+                                                                f'Ошибка при запрещении удаления данных БД - '
+                                                                f'{res_add_user_en_partial_drop.status_code}')
+                                            if val_add_user['addUserBlock']:
+                                                res_block = block_user(val_add_user['addUserBlock'],
+                                                                       res_add_user.text[1:-1])
+                                                if res_block:
+                                                    if res_block.status_code == 200:
+                                                        current_db += 1
+                                                        if val_add_user['addUserBlock']:
+                                                            logging.info(f"Пользователь "
+                                                                         f"{val_add_user['UserLogin']}"
+                                                                         f' заблокирован')
+                                                        else:
+                                                            logging.info(f"Пользователь "
+                                                                         f"{val_add_user['UserLogin']}"
+                                                                         f' разблокирован')
+                                                    else:
+                                                        if val_add_user['addUserBlock']:
+                                                            logging.error(
+                                                                f'Ошибка при блокировании пользователя - '
+                                                                f'{res_block.status_code}')
+                                                        else:
+                                                            logging.error(
+                                                                f'Ошибка при разблокировании пользователя - '
+                                                                f'{res_block.status_code}')
+                                            update_users()
+                                            window_add_user.close()
+                                            # update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
+                                            #               + ', Версия БД: ' + str(current_db)
+                                            # window['-StatusBar-'].update(update_text, background_color=status_bar_color)
+                                            my_popup("Пользователь добавлен!")
+                                        else:
+                                            logging.error(f"Пользователь {val_add_user['UserLogin']} НЕ добавлен - "
+                                                          f'{res_add_user.status_code}')
+                                            my_popup("Пользователь не добавлен!")
+                                    except Exception as e:
+                                        print(f'Не удалось добавить абонента - {e}')
+                                        logging.error("Не удалось добавить абонента")
                             else:
                                 window_add_user['addUserButton'].update(disabled=False)
                                 window_add_user['addUserButton'].update(button_color=button_color_2)
@@ -3452,36 +3531,40 @@ if __name__ == '__main__':
                                         # del_user_dict = {}
                                         # del_user_dict['id'] = del_user['id']
                                         # print(del_user['id'])
-                                        res_del_user = requests.post(BASE_URL + 'deleteUser',
+                                        try:
+                                            res_del_user = requests.post(BASE_URL + 'deleteUser',
                                                                      json=del_user, headers=HEADER_dict)
-                                        # print(res_del_user.status_code)
-                                        if res_del_user.status_code == 200:
-                                            current_db += 1
-                                            logging.info(f'Пользователь {del_user["name"]} удалён')
-                                            drop_db('users')
-                                            add_users(get_users_from_server())
-                                            users_from_db = get_users_from_db()
-                                            users_from_db.sort(key=lambda i: i['login'])
-                                            user_list, treedata_update_user = get_user_list(users_from_db)
-                                            del_users_in_groups_after_delete_user(del_user['id'])
-                                            if filter_status:
-                                                search_str = values['-filterUser-']
-                                                # print(search_str)
-                                                filtered_users = filter(lambda x: search_str in x['login'],
-                                                                        users_from_db)
-                                                filtered_users_list_of_dict = list(filtered_users)
-                                                filtered_users_list = get_filter_user_list(
-                                                    filtered_users_list_of_dict)
-                                                window['-users-'].update(filtered_users_list)
+                                            # print(res_del_user.status_code)
+                                            if res_del_user.status_code == 200:
+                                                current_db += 1
+                                                logging.info(f'Пользователь {del_user["name"]} удалён')
+                                                drop_db('users')
+                                                add_users(get_users_from_server())
+                                                users_from_db = get_users_from_db()
+                                                users_from_db.sort(key=lambda i: i['login'])
+                                                user_list, treedata_update_user = get_user_list(users_from_db)
+                                                del_users_in_groups_after_delete_user(del_user['id'])
+                                                if filter_status:
+                                                    search_str = values['-filterUser-']
+                                                    # print(search_str)
+                                                    filtered_users = filter(lambda x: search_str in x['login'],
+                                                                            users_from_db)
+                                                    filtered_users_list_of_dict = list(filtered_users)
+                                                    filtered_users_list = get_filter_user_list(
+                                                        filtered_users_list_of_dict)
+                                                    window['-users-'].update(filtered_users_list)
+                                                else:
+                                                    window['-users-'].update(user_list)
+                                                window['-TREE2-'].update(treedata_update_user)
+                                                window_del_user.close()
+                                                my_popup("Пользователь удалён!")
+                                                break
                                             else:
-                                                window['-users-'].update(user_list)
-                                            window['-TREE2-'].update(treedata_update_user)
-                                            window_del_user.close()
-                                            my_popup("Пользователь удалён!")
-                                            break
-                                        else:
-                                            logging.error(f'Пользователь {del_user["name"]} НЕ удалён')
-                                            my_popup("Пользователь не удалён!")
+                                                logging.error(f'Пользователь {del_user["name"]} НЕ удалён')
+                                                my_popup("Пользователь не удалён!")
+                                        except Exception as e:
+                                            print(f'Не удалось удалить абонента - {e}')
+                                            logging.error("Не удалось удалить абонента")
                         additional_window = False
                     if event == '-CloneUser-':
                         additional_window = True
@@ -3524,6 +3607,7 @@ if __name__ == '__main__':
                                         clone_user_login, \
                                             clone_user_name, \
                                             clone_user_password = val_clone_user.values()
+                                        clone_res = True
                                         # logging.info(f"Клонируем пользователя {user_clone['login']} с именем "
                                         #              f"{clone_user_login}")
                                         clone_user_dict = {'login': clone_user_login,
@@ -3534,147 +3618,139 @@ if __name__ == '__main__':
                                                            }
                                         # # print(clone_user_dict)
                                         # # check_disp(user_clone)
-                                        res_clone_user = requests.post(BASE_URL + 'addUser', json=clone_user_dict,
+                                        try:
+                                            res_clone_user = requests.post(BASE_URL + 'addUser', json=clone_user_dict,
                                                                        headers=HEADER_dict)
-                                        # # print(res_clone_user.status_code)
-                                        # # print(res_clone_user.text)
-                                        if res_clone_user.status_code == 200:
-                                            current_db += 1
-                                            logging.info(f'Новый пользователь {clone_user_login} клонирован')
-                                            original_groups = get_groups_for_user_from_db(user_clone['id'])
-                                            original_groups_ids = []
-                                            for or_gr in original_groups:
-                                                original_groups_ids.append(or_gr['id'])
-                                            user_from_server = res_clone_user.text[1:-1]
-                                            clone_dict = {'UserIds': [user_from_server],
-                                                          'addGroupIds': original_groups_ids, 'removeGroupIds': []}
-                                            # print(clone_dict)
-                                            res_clone_add_group = requests.post(BASE_URL +
-                                                                                'changeUserGroups',
-                                                                                json=clone_dict,
-                                                                                headers=HEADER_dict)
-                                            # print(res_clone_add_group.status_code)
-                                            if res_clone_add_group.status_code == 200:
+                                            # # print(res_clone_user.status_code)
+                                            # # print(res_clone_user.text)
+                                            if res_clone_user.status_code == 200:
                                                 current_db += 1
-                                                logging.info(f'Группы для {clone_user_login} добавлены')
-                                                res_clone_user_en_ind = change_role(role.allow_ind_call,
-                                                                                    user_clone['en_ind'],
-                                                                                    user_from_server)
-                                                if res_clone_user_en_ind.status_code == 200:
-                                                    current_db += 1
-                                                    if user_clone['en_ind']:
-                                                        logging.info(f"'Пользователю {clone_user_login} "
-                                                                     f'разрешено совершать индивидуальные вызовы')
+                                                logging.info(f'Новый пользователь {clone_user_login} клонирован')
+                                                original_groups = get_groups_for_user_from_db(user_clone['id'])
+                                                original_groups_ids = []
+                                                for or_gr in original_groups:
+                                                    original_groups_ids.append(or_gr['id'])
+                                                user_from_server = res_clone_user.text[1:-1]
+                                                clone_dict = {'UserIds': [user_from_server],
+                                                              'addGroupIds': original_groups_ids, 'removeGroupIds': []}
+                                                # print(clone_dict)
+                                                try:
+                                                    res_clone_add_group = requests.post(BASE_URL +
+                                                                                    'changeUserGroups',
+                                                                                    json=clone_dict,
+                                                                                    headers=HEADER_dict)
+                                                    # print(res_clone_add_group.status_code)
+                                                    if res_clone_add_group.status_code == 200:
+                                                        current_db += 1
+                                                        logging.info(f'Группы для {clone_user_login} добавлены')
+                                                        res_clone_user_en_ind = change_role(role.allow_ind_call,
+                                                                                            user_clone['en_ind'],
+                                                                                            user_from_server)
+                                                        if res_clone_user_en_ind:
+                                                            if res_clone_user_en_ind.status_code == 200:
+                                                                current_db += 1
+                                                                if user_clone['en_ind']:
+                                                                    logging.info(f"'Пользователю {clone_user_login} "
+                                                                                 f'разрешено совершать индивидуальные вызовы')
+                                                                else:
+                                                                    logging.info(f"Пользователю {clone_user_login} "
+                                                                                 f'запрещено совершать индивидуальные вызовы')
+                                                            else:
+                                                                if user_clone['en_ind']:
+                                                                    logging.error(
+                                                                        f'Ошибка при разрешении индивидуальных вызовов - '
+                                                                        f'{res_clone_user_en_ind.status_code}')
+                                                                else:
+                                                                    logging.error(
+                                                                        f'Ошибка при запрещении индивидуальных вызовов - '
+                                                                        f'{res_clone_user_en_ind.status_code}')
+                                                                clone_res = False
+                                                        res_clone_user_en_ind_mes = change_role(role.allow_ind_mes,
+                                                                                            user_clone['en_ind_mes'],
+                                                                                            user_from_server)
+                                                        if res_clone_user_en_ind_mes:
+                                                            if res_clone_user_en_ind_mes.status_code == 200:
+                                                                current_db += 1
+                                                                if user_clone['en_ind_mes']:
+                                                                    logging.info(f"'Пользователю {clone_user_login} "
+                                                                                 f'разрешено отправлять индивидуальные сообщения')
+                                                                else:
+                                                                    logging.info(f"Пользователю {clone_user_login} "
+                                                                                 f'запрещено отправлять индивидуальные сообщения')
+                                                            else:
+                                                                if user_clone['en_ind_mes']:
+                                                                    logging.error(
+                                                                        f'Ошибка при разрешении отправления индивидуальных сообщений - '
+                                                                        f'{res_clone_user_en_ind_mes.status_code}')
+                                                                else:
+                                                                    logging.error(
+                                                                        f'Ошибка при запрещении отправления индивидуальных сообщений - '
+                                                                        f'{res_clone_user_en_ind_mes.status_code}')
+                                                                clone_res = False
+                                                        res_clone_user_en_del_chats = change_role(role.allow_delete_chats,
+                                                                                            user_clone['en_del_chats'],
+                                                                                            user_from_server)
+                                                        if res_clone_user_en_del_chats:
+                                                            if res_clone_user_en_del_chats.status_code == 200:
+                                                                current_db += 1
+                                                                if user_clone['en_del_chats']:
+                                                                    logging.info(f"'Пользователю {clone_user_login} "
+                                                                                 f'разрешено удалять чаты')
+                                                                else:
+                                                                    logging.info(f"Пользователю {clone_user_login} "
+                                                                                 f'запрещено удалять чаты')
+                                                            else:
+                                                                if user_clone['en_del_chats']:
+                                                                    logging.error(
+                                                                        f'Ошибка при разрешении удаления чатов - '
+                                                                        f'{res_clone_user_en_del_chats.status_code}')
+                                                                else:
+                                                                    logging.error(
+                                                                        f'Ошибка при запрещении удаления чатов - '
+                                                                        f'{res_clone_user_en_del_chats.status_code}')
+                                                                clone_res = False
+                                                        res_clone_user_en_partial_drop = change_role(role.allow_partial_drop,
+                                                                                            user_clone['en_partial_drop'],
+                                                                                            user_from_server)
+                                                        if res_clone_user_en_partial_drop:
+                                                            if res_clone_user_en_partial_drop.status_code == 200:
+                                                                current_db += 1
+                                                                if user_clone['en_partial_drop']:
+                                                                    logging.info(f"'Пользователю {clone_user_login} "
+                                                                                 f'разрешено удалять данные БД')
+                                                                else:
+                                                                    logging.info(f"Пользователю {clone_user_login} "
+                                                                                 f'запрещено удалять данные БД')
+                                                            else:
+                                                                if user_clone['en_partial_drop']:
+                                                                    logging.error(
+                                                                        f'Ошибка при разрешении удаления данных БД - '
+                                                                        f'{res_clone_user_en_partial_drop.status_code}')
+                                                                else:
+                                                                    logging.error(
+                                                                        f'Ошибка при запрещении удаления данных БД - '
+                                                                        f'{res_clone_user_en_partial_drop.status_code}')
+                                                                clone_res = False
+                                                        update_users_and_groups()
+                                                        window_clone_user.close()
+                                                        if clone_res:
+                                                            my_popup("Пользователь клонирован!")
+                                                        else:
+                                                            my_popup("Пользователь клонирован с ошибками!")
+                                                        break
                                                     else:
-                                                        logging.info(f"Пользователю {clone_user_login} "
-                                                                     f'запрещено совершать индивидуальные вызовы')
-                                                else:
-                                                    if user_clone['en_ind']:
-                                                        logging.error(
-                                                            f'Ошибка при разрешении индивидуальных вызовов - '
-                                                            f'{res_clone_user_en_ind.status_code}')
-                                                    else:
-                                                        logging.error(
-                                                            f'Ошибка при запрещении индивидуальных вызовов - '
-                                                            f'{res_clone_user_en_ind.status_code}')
-                                                res_clone_user_en_ind_mes = change_role(role.allow_ind_mes,
-                                                                                    user_clone['en_ind_mes'],
-                                                                                    user_from_server)
-                                                if res_clone_user_en_ind_mes.status_code == 200:
-                                                    current_db += 1
-                                                    if user_clone['en_ind_mes']:
-                                                        logging.info(f"'Пользователю {clone_user_login} "
-                                                                     f'разрешено отправлять индивидуальные сообщения')
-                                                    else:
-                                                        logging.info(f"Пользователю {clone_user_login} "
-                                                                     f'запрещено отправлять индивидуальные сообщения')
-                                                else:
-                                                    if user_clone['en_ind_mes']:
-                                                        logging.error(
-                                                            f'Ошибка при разрешении отправления индивидуальных сообщений - '
-                                                            f'{res_clone_user_en_ind_mes.status_code}')
-                                                    else:
-                                                        logging.error(
-                                                            f'Ошибка при запрещении отправления индивидуальных сообщений - '
-                                                            f'{res_clone_user_en_ind_mes.status_code}')
-                                                res_clone_user_en_del_chats = change_role(role.allow_delete_chats,
-                                                                                    user_clone['en_del_chats'],
-                                                                                    user_from_server)
-                                                if res_clone_user_en_del_chats.status_code == 200:
-                                                    current_db += 1
-                                                    if user_clone['en_del_chats']:
-                                                        logging.info(f"'Пользователю {clone_user_login} "
-                                                                     f'разрешено удалять чаты')
-                                                    else:
-                                                        logging.info(f"Пользователю {clone_user_login} "
-                                                                     f'запрещено удалять чаты')
-                                                else:
-                                                    if user_clone['en_del_chats']:
-                                                        logging.error(
-                                                            f'Ошибка при разрешении удаления чатов - '
-                                                            f'{res_clone_user_en_del_chats.status_code}')
-                                                    else:
-                                                        logging.error(
-                                                            f'Ошибка при запрещении удаления чатов - '
-                                                            f'{res_clone_user_en_del_chats.status_code}')
-                                                res_clone_user_en_partial_drop = change_role(role.allow_partial_drop,
-                                                                                    user_clone['en_partial_drop'],
-                                                                                    user_from_server)
-                                                if res_clone_user_en_partial_drop.status_code == 200:
-                                                    current_db += 1
-                                                    if user_clone['en_partial_drop']:
-                                                        logging.info(f"'Пользователю {clone_user_login} "
-                                                                     f'разрешено удалять данные БД')
-                                                    else:
-                                                        logging.info(f"Пользователю {clone_user_login} "
-                                                                     f'запрещено удалять данные БД')
-                                                else:
-                                                    if user_clone['en_partial_drop']:
-                                                        logging.error(
-                                                            f'Ошибка при разрешении удаления данных БД - '
-                                                            f'{res_clone_user_en_partial_drop.status_code}')
-                                                    else:
-                                                        logging.error(
-                                                            f'Ошибка при запрещении удаления данных БД - '
-                                                            f'{res_clone_user_en_partial_drop.status_code}')
-                                                update_users_and_groups()
-                                                # add_users(get_users_from_server())
-                                                # # print(clone_dict)
-                                                # add_del_groups_to_user_after_apply(clone_dict)
-                                                # users_from_db = get_users_from_db()
-                                                # users_from_db.sort(key=lambda i: i['login'])
-                                                # user_list, treedata_update_user = get_user_list(users_from_db)
-                                                # if filter_status:
-                                                #     search_str = values['-filterUser-']
-                                                #     # print(search_str)
-                                                #     filtered_users = filter(lambda x: search_str in x['login'],
-                                                #                             users_from_db)
-                                                #     filtered_users_list_of_dict = list(filtered_users)
-                                                #     filtered_users_list = get_filter_user_list(
-                                                #         filtered_users_list_of_dict)
-                                                #     window['-users-'].update(filtered_users_list)
-                                                # else:
-                                                #     window['-users-'].update(user_list)
-                                                # window['-TREE2-'].update(treedata_update_user)
-                                                # window_clone_user.close()
-                                                # treedata_update_user = sg.TreeData()
-                                                # for user_id, user_login, user_name, is_dispatcher, is_blocked \
-                                                #         in user_list:
-                                                #     treedata_update_user.insert('', user_id, '',
-                                                #                                 values=[user_login, user_name,
-                                                #                                         is_dispatcher],
-                                                #                                 icon=check[0])
-                                                # window['-TREE2-'].update(treedata_update_user)
-                                                window_clone_user.close()
-                                                my_popup("Пользователь клонирован!")
-                                                break
+                                                        logging.error(f'Добавление групп для {clone_user_login} '
+                                                                      f'НЕ выполнено - {res_clone_add_group.status_code}')
+                                                        my_popup("Добавление групп не выполнено")
+                                                except Exception as e:
+                                                    print(f'Не удалось добавить группы абоненту - {e}')
+                                                    logging.error("Не удалось добавить группы абоненту")
                                             else:
-                                                logging.error(f'Добавление групп для {clone_user_login} '
-                                                              f'НЕ выполнено - {res_clone_add_group.status_code}')
-                                                my_popup("Добавление групп не выполнено")
-                                        else:
-                                            logging.error(f'Новый пользователь {clone_user_login} НЕ добавлен')
-                                            my_popup("Пользователь не добавлен!")
+                                                logging.error(f'Новый пользователь {clone_user_login} НЕ добавлен')
+                                                my_popup("Пользователь не добавлен!")
+                                        except Exception as e:
+                                            print(f'Не удалось создать абонента - {e}')
+                                            logging.error("Не удалось создать абонента")
                         additional_window = False
                     if event == '-filterUser-':
                         filter_status = True
@@ -3744,22 +3820,26 @@ if __name__ == '__main__':
                                                       'description': new_group_desc,
                                                       'groupType': new_group_is_emergency}
                                     # print(add_group_dict)
-                                    res_add_user = requests.post(BASE_URL + 'addGroup',
+                                    try:
+                                        res_add_user = requests.post(BASE_URL + 'addGroup',
                                                                  json=add_group_dict, headers=HEADER_dict)
-                                    # print(res_add_user.status_code)
-                                    if res_add_user.status_code == 200:
-                                        current_db += 1
-                                        logging.info(f'Группа {new_group_name} добавлена')
-                                        if val_add_group['addGroupBlock']:
-                                            block_group(new_group_blocked, res_add_user.text[1:-1])
-                                        update_groups()
-                                        window_add_group.close()
-                                        my_popup("Группа добавлена!")
-                                        break
-                                    else:
-                                        logging.error(f'Группа {new_group_name} НЕ добавлена')
-                                        my_popup("Группа не добавлена!")
-                                        window_add_group.Element('GroupName').SetFocus()
+                                        # print(res_add_user.status_code)
+                                        if res_add_user.status_code == 200:
+                                            current_db += 1
+                                            logging.info(f'Группа {new_group_name} добавлена')
+                                            if val_add_group['addGroupBlock']:
+                                                block_group(new_group_blocked, res_add_user.text[1:-1])
+                                            update_groups()
+                                            window_add_group.close()
+                                            my_popup("Группа добавлена!")
+                                            break
+                                        else:
+                                            logging.error(f'Группа {new_group_name} НЕ добавлена')
+                                            my_popup("Группа не добавлена!")
+                                            window_add_group.Element('GroupName').SetFocus()
+                                    except Exception as e:
+                                        print(f'Не удалось добавить группу - {e}')
+                                        logging.error("Не удалось добавить группу")
                             else:
                                 window_add_group['addGroupButton'].update(disabled=False)
                                 window_add_group['addGroupButton'].update(button_color=button_color_2)
@@ -3794,55 +3874,59 @@ if __name__ == '__main__':
                                     # del_group_dict = {}
                                     # del_group_dict['id'] = del_group_id
                                     # print(del_group['id'])
-                                    res_del_group = requests.post(BASE_URL + 'deleteGroup',
+                                    try:
+                                        res_del_group = requests.post(BASE_URL + 'deleteGroup',
                                                                   json=del_group, headers=HEADER_dict)
-                                    # print(res_del_group.status_code)
-                                    if res_del_group.status_code == 200:
-                                        current_db += 1
-                                        logging.info(f'Группа {del_group["name"]} удалена')
-                                        drop_db('groups')
-                                        add_groups(get_groups_from_server())
-                                        groups_from_db = get_groups_from_db()
-                                        groups_from_db.sort(key=lambda i: i['name'])
-                                        treedata_update_group = sg.TreeData()
-                                        group_list = list()
-                                        for group_from_db in groups_from_db:
-                                            group_list.append([group_from_db['id'], group_from_db['name'],
-                                                               group_from_db['desc']])
-                                            treedata_update_group.insert('', group_from_db['id'], '',
-                                                                         values=[group_from_db['name'],
-                                                                                 group_from_db['desc']],
-                                                                         icon=check[0])
-                                        del_users_in_groups_after_delete_group(del_group['id'])
-                                        if filter_status_group:
-                                            search_str = values['-filterGroup-']
-                                            # print(search_str)
-                                            filtered_groups = filter(lambda x: search_str in x['name'],
-                                                                     groups_from_db)
-                                            filtered_groups_list_of_dict = list(filtered_groups)
-                                            # print(filtered_groups_list_of_dict)
-                                            # print(len(filtered_groups_list_of_dict))
-                                            filtered_groups_list = list()
-                                            # users_from_db = filtered_users_list_of_dict
-                                            for filtered_group_list_of_dict in filtered_groups_list_of_dict:
-                                                filtered_groups_list.append([filtered_group_list_of_dict['id'],
-                                                                             filtered_group_list_of_dict[
-                                                                                 'name'],
-                                                                             filtered_group_list_of_dict[
-                                                                                 'desc']])
-                                            window['-groups2-'].update(filtered_groups_list)
+                                        # print(res_del_group.status_code)
+                                        if res_del_group.status_code == 200:
+                                            current_db += 1
+                                            logging.info(f'Группа {del_group["name"]} удалена')
+                                            drop_db('groups')
+                                            add_groups(get_groups_from_server())
+                                            groups_from_db = get_groups_from_db()
+                                            groups_from_db.sort(key=lambda i: i['name'])
+                                            treedata_update_group = sg.TreeData()
+                                            group_list = list()
+                                            for group_from_db in groups_from_db:
+                                                group_list.append([group_from_db['id'], group_from_db['name'],
+                                                                   group_from_db['desc']])
+                                                treedata_update_group.insert('', group_from_db['id'], '',
+                                                                             values=[group_from_db['name'],
+                                                                                     group_from_db['desc']],
+                                                                             icon=check[0])
+                                            del_users_in_groups_after_delete_group(del_group['id'])
+                                            if filter_status_group:
+                                                search_str = values['-filterGroup-']
+                                                # print(search_str)
+                                                filtered_groups = filter(lambda x: search_str in x['name'],
+                                                                         groups_from_db)
+                                                filtered_groups_list_of_dict = list(filtered_groups)
+                                                # print(filtered_groups_list_of_dict)
+                                                # print(len(filtered_groups_list_of_dict))
+                                                filtered_groups_list = list()
+                                                # users_from_db = filtered_users_list_of_dict
+                                                for filtered_group_list_of_dict in filtered_groups_list_of_dict:
+                                                    filtered_groups_list.append([filtered_group_list_of_dict['id'],
+                                                                                 filtered_group_list_of_dict[
+                                                                                     'name'],
+                                                                                 filtered_group_list_of_dict[
+                                                                                     'desc']])
+                                                window['-groups2-'].update(filtered_groups_list)
+                                            else:
+                                                window['-groups2-'].update(group_list)
+                                            # del_users_in_groups_after_delete_group(del_group_id)
+                                            # window['-groups2-'].update(group_list)
+                                            window['-TREE-'].update(treedata_update_group)
+                                            window_del_group.close()
+                                            my_popup("Группа удалена!")
+                                            break
                                         else:
-                                            window['-groups2-'].update(group_list)
-                                        # del_users_in_groups_after_delete_group(del_group_id)
-                                        # window['-groups2-'].update(group_list)
-                                        window['-TREE-'].update(treedata_update_group)
-                                        window_del_group.close()
-                                        my_popup("Группа удалена!")
-                                        break
-                                    else:
-                                        logging.error(f'Группа {del_group["name"]} НЕ удалена - '
-                                                      f'{res_del_group.status_code}')
-                                        my_popup("Группа не удалена!")
+                                            logging.error(f'Группа {del_group["name"]} НЕ удалена - '
+                                                          f'{res_del_group.status_code}')
+                                            my_popup("Группа не удалена!")
+                                    except Exception as e:
+                                        print(f'Не удалось удалить группу - {e}')
+                                        logging.error("Не удалось удалить группу")
                         additional_window = False
                     if event == '-Start-':
                         additional_window = True
@@ -4096,17 +4180,21 @@ if __name__ == '__main__':
                             ev_confirm, val_confirm = window_confirm.Read()
                             # print(ev_exit, val_confirm)
                             if ev_confirm == 'okExit':
-                                res_drop_db = requests.get(BASE_URL + 'drop',
+                                try:
+                                    res_drop_db = requests.get(BASE_URL + 'drop',
                                                            headers=HEADER_dict)
-                                # print(res_add_user.status_code)
-                                if res_drop_db.status_code == 200:
-                                    logging.info('Удаляем всю БД и все данные')
-                                    logging.info('Стоп лога')
-                                else:
-                                    logging.info('Проблема с удалением БД!')
+                                    # print(res_add_user.status_code)
+                                    if res_drop_db.status_code == 200:
+                                        logging.info('Удаляем всю БД и все данные')
+                                        logging.info('Стоп лога')
+                                    else:
+                                        logging.info('Проблема с удалением БД!')
+                                    # icon.stop()
+                                    # global break_flag2
+                                except Exception as e:
+                                    print(f'Не удалось удалить данные - {e}')
+                                    logging.error("Не удалось удалить данные")
                                 window_confirm.close()
-                                # icon.stop()
-                                # global break_flag2
                             if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
                                 print('Закрыл окно выхода')
                                 break
@@ -4123,16 +4211,20 @@ if __name__ == '__main__':
                             ev_confirm, val_confirm = window_confirm.Read()
                             # print(ev_exit, val_confirm)
                             if ev_confirm == 'okExit':
-                                res_drop_db = requests.get(BASE_URL + 'partiallyDrop',
+                                try:
+                                    res_drop_db = requests.get(BASE_URL + 'partiallyDrop',
                                                            headers=HEADER_dict)
-                                # print(res_add_user.status_code)
-                                if res_drop_db.status_code == 200:
-                                    current_db += 1
-                                    logging.info('Удаляем всё, кроме абонентов и групп')
-                                    logging.info('Стоп лога')
-                                    my_popup('БД частично удалена')
-                                else:
-                                    logging.info('Проблема с удалением всего, кроме абонентов и групп!')
+                                    # print(res_add_user.status_code)
+                                    if res_drop_db.status_code == 200:
+                                        current_db += 1
+                                        logging.info('Удаляем всё, кроме абонентов и групп')
+                                        logging.info('Стоп лога')
+                                        my_popup('БД частично удалена')
+                                    else:
+                                        logging.info('Проблема с удалением всего, кроме абонентов и групп!')
+                                except Exception as e:
+                                    print(f'Не удалось очистить БД - {e}')
+                                    logging.error("Не удалось очистить БД")
                                 window_confirm.close()
                             if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
                                 print('Закрыл окно выхода')
