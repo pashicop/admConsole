@@ -206,7 +206,7 @@ if [[ $PA -eq 1 ]]
     echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
     echo 'eval "$(pyenv init -)"' >> ~/.bashrc
     echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
-    echo 'export OMEGA=0' >> ~/.bashrc
+#    echo 'export OMEGA=0' >> ~/.bashrc
     echo '# omega end' >> ~/.bashrc
     #tail -n 10 ~/.bashrc
     export PYENV_ROOT="$HOME/.pyenv"

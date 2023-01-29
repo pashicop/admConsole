@@ -44,7 +44,7 @@ MIN_PORTS = 20
 MAX_PORTS = 1000
 MIN_PING_TM = 2
 MAX_PING_TM = 120
-MIN_DEL_DAYS = 10
+MIN_DEL_DAYS = 1
 MAX_DEL_DAYS = 1095
 DEF_PING_TM = 5
 LICS = ['', '', '']
@@ -58,7 +58,7 @@ DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
 DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
-version = '1.0.8 СТИС'
+version = '1.0.9 СТИС'
 
 
 # folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
@@ -887,7 +887,8 @@ def make_settings():
                           [sg.Push(), sg.Text('Длительность тонального вызова (сек)'),
                            sg.Input(default_text=settings['tonalTimeout'],
                                     size=20,
-                                    disabled=True, disabled_readonly_background_color=disabled_input,
+                                    # disabled=True,
+                                    # disabled_readonly_background_color=disabled_input,
                                     key='-таймаут-тонового-сигнала-',
                                     enable_events=True)],
                           [sg.Push(), sg.Text('Длительность скрытого прослушивания (сек)'),
@@ -3147,8 +3148,12 @@ if __name__ == '__main__':
                                         LICS = [['Количество абонентов', lics['UserCount'], lics['ExpirationDate']],
                                                 ['Количество диспетчеров', lics['DispatcherCount'], lics[
                                                     'ExpirationDate']]]
-                                        for feature in lics['Features']:
-                                            LICS.append([feature, '+', lics['ExpirationDate']])
+                                        for feature in lic_from_server['Features']:
+                                            feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
+                                                else "Геопозиционирование" if feature == "GeoData" \
+                                                else "Динамические группы" if feature == "DGNA" \
+                                                else "Удалённое управление терминалами" if feature == "OTAP" else "?"
+                                            LICS.append([feature_name, '+', lic_from_server['ExpirationDate']])
                                         window_add_lic['-lic-'].update(LICS)
                                         with open("/home/omega/Omega/.licenseState", mode='w') as f_lic_st:
                                             f_lic_st.write("5")
@@ -3246,8 +3251,8 @@ if __name__ == '__main__':
                                                 f"Таймаут окончания вызова - {settings_dict['finalizeCallTimeout']}, "
                                                 f"Тональный вызов - {settings_dict['finalizeTonalTimeout']}, "
                                                 f"Скрытое прослушивание - {settings_dict['ambientCallDuration']}, "
-                                                f"Аудио порты - {settings_dict['udpPortsRange']}, "
-                                                f"Аудио порты - {settings_dict['udpPortsRange']}, "
+                                                # f"Аудио порты - {settings_dict['udpPortsRange']}, "
+                                                f"Аудио порты - {settings_dict['udpPortsRange']}. "
                                             )
                                         else:
                                             logging.error(
@@ -4011,12 +4016,12 @@ if __name__ == '__main__':
                         #                            stdout=subprocess.PIPE,
                         #                            stderr=subprocess.PIPE)
                         sleep(4)
-                        res_ping = ''  # TODO
+                        res_ping = False
                         try:
                             res_ping = requests.get(BASE_URL_PING, timeout=1)
                         except Exception as e:
                             print(f"Сервер не отвечает, {e}")
-                        if res_ping != '':
+                        if not res_ping:
                             print('Сервер НЕ остановлен')
                             logging.warning(f'Сервер НЕ остановлен администратором')
                             my_popup('Сервер НЕ остановлен')
