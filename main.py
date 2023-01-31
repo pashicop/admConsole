@@ -35,7 +35,7 @@ MAX_CALL_TM = 120
 MIN_CALL_END_TM = 1
 MAX_CALL_END_TM = 10
 MIN_TONAL_CALL_END_TM = 3
-MAX_TONAL_CALL_END_TM = 10
+MAX_TONAL_CALL_END_TM = 60
 MIN_AMB_LIST_TM = 3
 MAX_AMB_LIST_TM = 30
 MIN_AUDIO_PORT = 1025
@@ -44,7 +44,7 @@ MIN_PORTS = 20
 MAX_PORTS = 1000
 MIN_PING_TM = 2
 MAX_PING_TM = 120
-MIN_DEL_DAYS = 1
+MIN_DEL_DAYS = 10
 MAX_DEL_DAYS = 1095
 DEF_PING_TM = 5
 LICS = ['', '', '']
@@ -58,7 +58,7 @@ DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
 DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
-version = '1.0.9 СТИС'
+version = '1.0'
 
 
 # folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
@@ -849,7 +849,7 @@ def make_add_lic():
                                        # expand_y=True,
                                        # expand_x=True,
                                        auto_size_columns=False,
-                                       col_widths=[25, 10, 12]
+                                       col_widths=[27, 9, 10]
                                        )
                               ]], expand_x=True)],
                   [sg.Push(), sg.Button('Выйти'), sg.Push()]]
@@ -885,7 +885,7 @@ def make_settings():
                                     key='-таймаут-окончания-',
                                     enable_events=True)],
                           [sg.Push(), sg.Text('Длительность тонального вызова (сек)'),
-                           sg.Input(default_text=settings['tonalTimeout'],
+                           sg.Input(default_text=settings['finalizeTonalTimeout'],
                                     size=20,
                                     # disabled=True,
                                     # disabled_readonly_background_color=disabled_input,
@@ -1614,6 +1614,10 @@ def disable_input(win):
     win['-таймаут-окончания-'].update(disabled=True)
     win['-таймаут-тонового-сигнала-'].update(disabled=True)
     win['-таймаут-прослушивания-'].update(disabled=True)
+    win['-Мин-аудио-порт-'].update(disabled=True)
+    win['-Макс-аудио-порт-'].update(disabled=True)
+    win['-пинг-таймаут-'].update(disabled=True)
+    win['-auto-del-'].update(disabled=True)
     win.DisableClose = True
 
 
@@ -1623,8 +1627,12 @@ def enable_input(win):
     win['-Индивидуальный-таймаут-'].update(disabled=False)
     win['-Групповой-таймаут-'].update(disabled=False)
     win['-таймаут-окончания-'].update(disabled=False)
-    # win['-таймаут-тонового-сигнала-'].update(disabled=False)
+    win['-таймаут-тонового-сигнала-'].update(disabled=False)
     win['-таймаут-прослушивания-'].update(disabled=False)
+    win['-Мин-аудио-порт-'].update(disabled=False)
+    win['-Макс-аудио-порт-'].update(disabled=False)
+    win['-пинг-таймаут-'].update(disabled=False)
+    win['-auto-del-'].update(disabled=False)
     win.DisableClose = False
 
 
@@ -1826,7 +1834,7 @@ def validate(window: str):
             window_settings['-Индивидуальный-таймаут-'].update(background_color=button_color_2,
                                                                text_color=omega_theme['BACKGROUND'])
             return False
-        if 10 <= int(val_set['-Групповой-таймаут-']) <= 120:
+        if MIN_CALL_TM <= int(val_set['-Групповой-таймаут-']) <= MAX_CALL_TM:
             window_settings['-Групповой-таймаут-'].update(background_color=omega_theme['BACKGROUND'],
                                                           text_color=omega_theme['TEXT'])
         else:
@@ -3148,12 +3156,15 @@ if __name__ == '__main__':
                                         LICS = [['Количество абонентов', lics['UserCount'], lics['ExpirationDate']],
                                                 ['Количество диспетчеров', lics['DispatcherCount'], lics[
                                                     'ExpirationDate']]]
+                                        print(lics['ExpirationDate'])
                                         for feature in lic_from_server['Features']:
                                             feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
                                                 else "Геопозиционирование" if feature == "GeoData" \
                                                 else "Динамические группы" if feature == "DGNA" \
-                                                else "Удалённое управление терминалами" if feature == "OTAP" else "?"
-                                            LICS.append([feature_name, '+', lic_from_server['ExpirationDate']])
+                                                else "Удалённое управление терминалами" if feature == "OTAP" \
+                                                else feature
+                                            print(feature_name, '+', lics['ExpirationDate'])
+                                            LICS.append([feature_name, '+', lics['ExpirationDate']])
                                         window_add_lic['-lic-'].update(LICS)
                                         with open("/home/omega/Omega/.licenseState", mode='w') as f_lic_st:
                                             f_lic_st.write("5")
@@ -4021,7 +4032,7 @@ if __name__ == '__main__':
                             res_ping = requests.get(BASE_URL_PING, timeout=1)
                         except Exception as e:
                             print(f"Сервер не отвечает, {e}")
-                        if not res_ping:
+                        if res_ping:
                             print('Сервер НЕ остановлен')
                             logging.warning(f'Сервер НЕ остановлен администратором')
                             my_popup('Сервер НЕ остановлен')
