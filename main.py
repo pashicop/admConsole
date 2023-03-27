@@ -3157,7 +3157,7 @@ if __name__ == '__main__':
                                                 ['Количество диспетчеров', lics['DispatcherCount'], lics[
                                                     'ExpirationDate']]]
                                         print(lics['ExpirationDate'])
-                                        for feature in lic_from_server['Features']:
+                                        for feature in lics['Features']:
                                             feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
                                                 else "Геопозиционирование" if feature == "GeoData" \
                                                 else "Динамические группы" if feature == "DGNA" \
