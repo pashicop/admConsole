@@ -6,6 +6,8 @@ import socket
 import subprocess
 import threading
 from time import sleep
+from base64 import decodebytes
+import paramiko
 import requests
 from pathlib import Path
 import sqlite3
@@ -3945,69 +3947,18 @@ if __name__ == '__main__':
                                         logging.error("Не удалось удалить группу")
                         additional_window = False
                     if event == '-Start-':
-                        additional_window = True
-                        print('Стартуем сервер')
-                        if ip != "127.0.0.1":
-                            my_popup("Запустить сервер можно только \nс локальной панели администратора")
-                        else:
-                            # sg.popup('Запускаем сервер, ждите..', title='Инфо', icon=ICON_BASE_64, no_titlebar=True,
-                            #          background_color='lightgray', non_blocking=True, auto_close=True,
-                            #          auto_close_duration=5)
-                            # path_home_server = Path(Path.home(), 'Omega')
-                            # print(path_home_server)
-                            # start_command = 'cd ' + str(path_home_server) + ' && ./run'
-                            start_command = 'sudo systemctl restart omega'
-                            process = subprocess.Popen(start_command, shell=True,
-                                                       stdout=subprocess.PIPE,
-                                                       stderr=subprocess.PIPE)
-                            # process = subprocess.Popen("ssh pashi@10.1.4.156"
-                            #                            " 'bash ./run > /dev/null'", shell=True,
-                            #                                stdout=subprocess.PIPE,
-                            #                                stderr=subprocess.PIPE,
-                            #                                executable=r'C:\Program Files\PowerShell\7\pwsh.exe')
-                            for i in range(3):
-                                sleep(2)
-                                res_ping = ''
-                                try:
-                                    res_ping = requests.get(BASE_URL_PING, timeout=1)
-                                except Exception as e:
-                                    print(f"Сервер не отвечает, {e}")
-                                if res_ping == '':
-                                    print('Нет ответа сервера')
-                                    if i == 2:
-                                        logging.critical(f'Сервер не отвечает - {res_ping}')
-                                        my_popup("Сервер не отвечает")
-                                else:
-                                    if res_ping.status_code == 200:
-                                        logging.info(f'Сервер запущен администратором')
-                                        print(f'{res_ping.text}')
-                                        dict_online_after_start = json.loads(res_ping.text)
-                                        # print(dict_online_after_start)
-                                        update_text = 'Пользователей онлайн: обновление...' + ', Версия БД: ' \
-                                                      + str(dict_online_after_start["databaseVersion"])
-                                        server_status['online'] = dict_online_after_start["onlineUsersCount"]
-                                        server_status['db'] = dict_online_after_start["databaseVersion"]
-                                        window['-StatusBar-'].update(update_text, background_color=status_bar_color)
-                                        window['-Start-'].update(disabled=True)
-                                        window['-Stop-'].update(disabled=False)
-                                        TOKEN = get_token(BASE_URL_AUTH)
-                                        HEADER_dict = {"Authorization": "Bearer " + TOKEN}
-                                        server_status['run'] = True
-                                        print(server_status)
-                                        update_users_and_groups()
-                                        window['-Menu-'].update([
-                                            ['Сервер', ['Установить лицензию...', 'Настройки']],
-                                            ['Помощь', 'О программе'], ])
-                                        update_text = 'Пользователей онлайн: ' + str(server_status["online"]) \
-                                                      + ', Версия БД: ' + str(server_status["db"])
-                                        window['-StatusBar-'].update(update_text, background_color=status_bar_color)
-                                        set_buttons_disabled(False)
-                                        server_status['run'] = True
-                                        update_free_space(dict_online_after_start)
-                                        window['online-users'].update(
-                                            get_online_users(dict_online_after_start['onlineUserIds']))
-                                        break
-                        additional_window = False
+                        keydata = b"""AAAAB3NzaC1yc2EAAAADAQABAAABAQCx5YPc1NuawBdtVGZES7OUpswdsegIcQaoIKT3unyWSHZPFlx8LT6Y2xd/gegzH7Y8iHPYblZbCj3QEXBQY34cw10QmLMuPsOh6UvO0og65HaXCyCOxn77A0uTiUWkYPUw+1+T2IyTzhSsHkhXHOAP4jUbII2oP3Za0mdqVsL2oomWU/CPnfBKlXQ5blLP89MJi6c7eW0u9Kjj+zo2ybiC4HEbAd9M/wf06xQjGk1wzfbjKUSUwYaoZUOfN7UzmvWmkZXYN2TmknM013dOtmuZE80/QrKc91Om9REbd/RFdGR44Vt31rhYVeHgzD58CDiWG3mog/NcCivhELHVE55H"""
+                        key = paramiko.RSAKey(data=decodebytes(keydata))
+                        ssh = paramiko.SSHClient()
+                        ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
+                        ssh.connect(hostname='10.1.4.173', port=22, username='omega', password='omega12345')
+                        stdin, stdout, stderr = ssh.exec_command('sudo systemctl start omega')
+                        stdout = stdout.readlines()
+                        ssh.close()
+                        output = ''
+                        for line in stdout:
+                            output = output + line
+                        print(output)
                     if event == '-Stop-':
                         additional_window = True
                         # print('Останавливаем сервер')
