@@ -38,8 +38,12 @@ while true
 done
 if [[ $CR -eq 1 ]]
   then
-  sudo sed -i.bak 's/#deb https/deb https/' /etc/apt/sources.list
-  sudo sed -i.bak 's/deb cdrom/#deb cdrom/' /etc/apt/sources.list
+    echo -e "deb https://dl.astralinux.ru/astra/stable/1.6_x86-64/repository smolensk main contrib non-free" | sudo tee -a /etc/apt/sources.list
+    echo -e "deb https://dl.astralinux.ru/astra/stable/1.6_x86-64/repository-update/ smolensk main contrib non-free" | sudo tee -a /etc/apt/sources.list
+    echo -e "deb https://dl.astralinux.ru/astra/stable/1.6_x86-64/repository-dev/ smolensk main contrib non-free" | sudo tee -a /etc/apt/sources.list
+    echo -e "deb https://dl.astralinux.ru/astra/stable/1.6_x86-64/repository-dev-update/ smolensk main contrib non-free" | sudo tee -a /etc/apt/sources.list
+    sudo sed -i.bak 's/#deb https/deb https/' /etc/apt/sources.list
+    sudo sed -i.bak 's/deb cdrom/#deb cdrom/' /etc/apt/sources.list
 fi
 
 printf '\n##### Включаем сервис NTP #####\n'
@@ -139,7 +143,7 @@ fi
 printf '\n##### Запускаем ОМЕГУ #####\n'
 ip_host=127.0.0.1
 ADM=$(cat "$HOME"/Omega/admPass.txt)
-echo $ADM
+#echo $ADM
 sudo systemctl start omega >> ~/install_log.txt
 if [[ $? == 0 ]]
   then export ip_host=$(hostname -I | awk '{print $1}')
@@ -149,10 +153,10 @@ if [[ $? == 0 ]]
     printf '\n##### Время '
     printf "$(date)"
     printf ' ######\n'
-    printf '\n##### Пароль для admin - '
-#    printf "$adminPass"
-    printf "$(<./admPass.txt)"
-    printf ' ######\n'
+#    printf '\n##### Пароль для admin - '
+##    printf "$adminPass"
+#    printf "$(<./admPass.txt)"
+#    printf ' ######\n'
     unset ip_host
   else printf '\n##### Ошибка при запуске сервера #####\n'
   exit 12
@@ -214,7 +218,7 @@ if [[ $PA -eq 1 ]]
     command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
     eval "$(pyenv virtualenv-init -)"
-    printf '\n##### Рестарт bash #####\n'
+    printf '\n##### Перезапускаем оболочку #####\n'
     #exec "$SHELL"
     . ~/.bashrc
     printf '\n##### Устанавливаем дополнительные пакеты  #####\n'
@@ -227,8 +231,8 @@ if [[ $PA -eq 1 ]]
 #    printf '\n##### Python have been installed #####\n'
     pyenv global 3.9.10
     python --version
-    #cd ~
-    #unzip ~/admConsole-tray.zip >> ~/install_log.txt
+    cd ~
+    unzip ~/admConsole-tray.zip >> ~/install_log.txt
     cd ~/admConsole/
     pip install -r requirements.txt >> ~/install_log.txt
     cd ~

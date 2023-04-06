@@ -1,0 +1,6 @@
+{
+  "UserCount": 50,
+  "DispatcherCount": 3,
+  "ExpirationDate": "31/12/2023",
+  "Features": ["AmbientListening", "GeoData", "DGNA", "OTAP"]
+}
