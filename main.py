@@ -1030,7 +1030,7 @@ def make_add_user_window():
                                 enable_events=True,
                                 key='addUserBlock')],
         # [sg.Checkbox('Диспетчер', default=False, key='addUserDispatcher'), sg.Push()],
-        [sg.Push(), sg.Button(button_text='Создать', key='addUserButton',
+        [sg.Push(), sg.Button(button_text='Добавить', key='addUserButton',
                               disabled=True,
                               disabled_button_color='gray')]
     ]
