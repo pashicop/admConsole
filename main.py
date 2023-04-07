@@ -62,10 +62,21 @@ role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
 version = '1.1.0'
 
-
-# folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
-# file_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABU0lEQVQ4y52TzStEURiHn/ecc6XG54JSdlMkNhYWsiILS0lsJaUsLW2Mv8CfIDtr2VtbY4GUEvmIZnKbZsY977Uwt2HcyW1+dTZvt6fn9557BGB+aaNQKBR2ifkbgWR+cX13ubO1svz++niVTA1ArDHDg91UahHFsMxbKWycYsjze4muTsP64vT43v7hSf/A0FgdjQPQWAmco68nB+T+SFSqNUQgcIbN1bn8Z3RwvL22MAvcu8TACFgrpMVZ4aUYcn77BMDkxGgemAGOHIBXxRjBWZMKoCPA2h6qEUSRR2MF6GxUUMUaIUgBCNTnAcm3H2G5YQfgvccYIXAtDH7FoKq/AaqKlbrBj2trFVXfBPAea4SOIIsBeN9kkCwxsNkAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK0xAAAAAElFTkSuQmCC'
-
+def get_branch():
+    get_branch_com = "git rev-parse --symbolic --abbrev-ref HEAD"
+    branch = subprocess.Popen(get_branch_com, shell=True,
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE)
+    err = branch.stderr.read().decode('utf-8').rstrip('\n')
+    if not err:
+        try:
+            output = branch.stdout.read().decode('utf-8').rstrip('\n')
+        except Exception as e:
+            print(f'{e}')
+            return 'Неизвестно'
+    else:
+        return 'Неизвестно'
+    return output[:10]
 
 def icon(check):
     box = (12, 12)
@@ -592,6 +603,9 @@ def make_main_window(ip):
     treedata = sg.TreeData()
     treedata2 = sg.TreeData()
     label_text = 'Панель администратора ОМЕГА К100 ' + ip + ' Версия ' + version + ', ' + val_login['Логин']
+    branch_name = get_branch()
+    if branch_name != 'Неизвестно':
+        label_text += ' Ветка: ' + branch_name
     if https_on:
         label_text += ' https: ' + str(https_on)
     if users_from_db != [{}] and groups_from_db != [{}]:
@@ -3947,21 +3961,76 @@ if __name__ == '__main__':
                                         logging.error("Не удалось удалить группу")
                         additional_window = False
                     if event == '-Start-':
-                        keydata = b"""AAAAB3NzaC1yc2EAAAADAQABAAABAQCx5YPc1NuawBdtVGZES7OUpswdsegIcQaoIKT3unyWSHZPFlx8LT6Y2xd/gegzH7Y8iHPYblZbCj3QEXBQY34cw10QmLMuPsOh6UvO0og65HaXCyCOxn77A0uTiUWkYPUw+1+T2IyTzhSsHkhXHOAP4jUbII2oP3Za0mdqVsL2oomWU/CPnfBKlXQ5blLP89MJi6c7eW0u9Kjj+zo2ybiC4HEbAd9M/wf06xQjGk1wzfbjKUSUwYaoZUOfN7UzmvWmkZXYN2TmknM013dOtmuZE80/QrKc91Om9REbd/RFdGR44Vt31rhYVeHgzD58CDiWG3mog/NcCivhELHVE55H"""
-                        key = paramiko.RSAKey(data=decodebytes(keydata))
+                        # keydata = b"""AAAAB3NzaC1yc2EAAAADAQABAAABAQCx5YPc1NuawBdtVGZES7OUpswdsegIcQaoIKT3unyWSHZPFlx8LT6Y2xd/gegzH7Y8iHPYblZbCj3QEXBQY34cw10QmLMuPsOh6UvO0og65HaXCyCOxn77A0uTiUWkYPUw+1+T2IyTzhSsHkhXHOAP4jUbII2oP3Za0mdqVsL2oomWU/CPnfBKlXQ5blLP89MJi6c7eW0u9Kjj+zo2ybiC4HEbAd9M/wf06xQjGk1wzfbjKUSUwYaoZUOfN7UzmvWmkZXYN2TmknM013dOtmuZE80/QrKc91Om9REbd/RFdGR44Vt31rhYVeHgzD58CDiWG3mog/NcCivhELHVE55H"""
+                        # key = paramiko.RSAKey(data=decodebytes(keydata))
+                        additional_window = True
                         ssh = paramiko.SSHClient()
-                        ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
-                        ssh.connect(hostname='10.1.4.173', port=22, username='omega', password='omega12345')
-                        stdin, stdout, stderr = ssh.exec_command('sudo systemctl start omega')
-                        stdout = stdout.readlines()
-                        ssh.close()
-                        output = ''
-                        for line in stdout:
-                            output = output + line
-                        print(output)
+                        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                        # ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
+                        start_command = 'sudo systemctl restart omega'
+                        if ip != '127.0.0.1':
+                            ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+                            stdin, stdout, stderr = ssh.exec_command(start_command)
+                            stdout = stdout.readlines()
+                            ssh.close()
+                            output = ''
+                            for line in stdout:
+                                output = output + line
+                            print(output)
+                        else:
+                            process = subprocess.Popen(start_command, shell=True,
+                                                       stdout=subprocess.PIPE,
+                                                       stderr=subprocess.PIPE)
+                        for i in range(3):
+                            sleep(2)
+                            res_ping = ''
+                            try:
+                                res_ping = requests.get(BASE_URL_PING, timeout=1)
+                            except Exception as e:
+                                print(f"Сервер не отвечает, {e}")
+                            if res_ping == '':
+                                print('Нет ответа сервера')
+                                if i == 2:
+                                    logging.critical(f'Сервер не отвечает - {res_ping}')
+                                    my_popup("Сервер не отвечает")
+                            else:
+                                if res_ping.status_code == 200:
+                                    logging.info(f'Сервер запущен администратором')
+                                    print(f'{res_ping.text}')
+                                    dict_online_after_start = json.loads(res_ping.text)
+                                    # print(dict_online_after_start)
+                                    update_text = 'Пользователей онлайн: обновление...' + ', Версия БД: ' \
+                                                  + str(dict_online_after_start["databaseVersion"])
+                                    server_status['online'] = dict_online_after_start["onlineUsersCount"]
+                                    server_status['db'] = dict_online_after_start["databaseVersion"]
+                                    window['-StatusBar-'].update(update_text, background_color=status_bar_color)
+                                    window['-Start-'].update(disabled=True)
+                                    window['-Stop-'].update(disabled=False)
+                                    TOKEN = get_token(BASE_URL_AUTH)
+                                    HEADER_dict = {"Authorization": "Bearer " + TOKEN}
+                                    if TOKEN:
+                                        server_status['run'] = True
+                                        print(server_status)
+                                        update_users_and_groups()
+                                        window['-Menu-'].update([
+                                            ['Сервер', ['Установить лицензию...', 'Настройки']],
+                                            ['Помощь', 'О программе'], ])
+                                        update_text = 'Пользователей онлайн: ' + str(server_status["online"]) \
+                                                      + ', Версия БД: ' + str(server_status["db"])
+                                        window['-StatusBar-'].update(update_text, background_color=status_bar_color)
+                                        set_buttons_disabled(False)
+                                        server_status['run'] = True
+                                        update_free_space(dict_online_after_start)
+                                        window['online-users'].update(
+                                            get_online_users(dict_online_after_start['onlineUserIds']))
+                                        break
+                                    else:
+                                        break_flag2 = True
+                                        break_flag = True
+                                        break
+                        additional_window = False
                     if event == '-Stop-':
                         additional_window = True
-                        # print('Останавливаем сервер')
                         try:
                             res = requests.get(BASE_URL + 'stopServer', headers=HEADER_dict)
                         except Exception as e:
@@ -3971,54 +4040,82 @@ if __name__ == '__main__':
                             print("Сервер выключается")
                             logging.warning(f"Сервер выключается администратором - {res.status_code}")
                         else:
-                            print(f"Сервер не може выключиться - {res.status_code}")
+                            print(f"Сервер не может выключиться - {res.status_code}")
                             logging.warning(f"Сервер не может выключиться - {res.status_code}")
-                        # stop_command = 'sudo systemctl stop omega'
-                        # process = subprocess.Popen(stop_command, shell=True,
-                        #                            stdout=subprocess.PIPE,
-                        #                            stderr=subprocess.PIPE)
-                        sleep(4)
-                        res_ping = False
-                        try:
-                            res_ping = requests.get(BASE_URL_PING, timeout=1)
-                        except Exception as e:
-                            print(f"Сервер не отвечает, {e}")
-                        if res_ping:
-                            print('Сервер НЕ остановлен')
-                            logging.warning(f'Сервер НЕ остановлен администратором')
-                            my_popup('Сервер НЕ остановлен')
-                        else:
-                            logging.warning(f'Сервер остановлен администратором')
-                            my_popup('Сервер остановлен')
-                            window['-StatusBar-'].update('Сервер не запущен', background_color=button_color_2)
-                            window['-Start-'].update(disabled=False)
-                            window['-Stop-'].update(disabled=True)
-                            window['-users-'].update([[]])
-                            window['-groups2-'].update([[]])
-                            clear_treedata = sg.TreeData()
-                            window['-TREE-'].update(clear_treedata)
-                            window['-TREE2-'].update(clear_treedata)
-                            window['-AddUser-'].update(disabled=True)
-                            window['-DelUser-'].update(disabled=True)
-                            window['-CloneUser-'].update(disabled=True)
-                            window['-AddGroup-'].update(disabled=True)
-                            window['-DelGroup-'].update(disabled=True)
-                            window['-filterUser-'].update(disabled=True)
-                            window['-filterGroup-'].update(disabled=True)
-                            window['Apply'].update(disabled=True)
-                            window['Apply2'].update(disabled=True)
-                            window['-checkAllGroups-'].update(disabled=True)
-                            window['-checkAllUsers-'].update(disabled=True)
-                            window['-partially-dropDB-'].update(disabled=True)
-                            window['-dropDB-'].update(disabled=True)
-                            window['-Menu-'].update([
-                                ['Сервер', ['Установить лицензию...', '!Настройки']],
-                                ['Помощь', 'О программе'], ])
-                            server_status['run'] = False
-                            update_free_space({'freeSpace': 0, 'spaceTotal': 1})
-                            window['online-users'].update('')
-                            # server_status['last_state'] = True
-                            print(server_status)
+                        num = 0
+                        hard_stop = False
+                        f_br = False
+                        while True:
+                            sleep(1)
+                            res_ping = False
+                            try:
+                                res_ping = requests.get(BASE_URL_PING, timeout=1)
+                            except Exception as e:
+                                print(f"Сервер не отвечает, {e}")
+                            if res_ping:
+                                print('Сервер НЕ остановлен')
+                                logging.warning(f'Сервер НЕ остановлен администратором')
+                                if num == 10:
+                                    my_popup('Сервер НЕ остановлен') #TODO
+                                    if ip == '127.0.0.1' and not hard_stop:
+                                        window_confirm = make_confirm_window('Хотите попробовать остановить сервис?')
+                                        while True:
+                                            ev_confirm, val_confirm = window_confirm.Read()
+                                            # print(ev_exit, val_confirm)
+                                            if ev_confirm == 'okExit':
+                                                stop_command = 'sudo systemctl stop omega'
+                                                process = subprocess.Popen(stop_command, shell=True,
+                                                                           stdout=subprocess.PIPE,
+                                                                           stderr=subprocess.PIPE)
+                                                num = 0
+                                                window_confirm.close()
+                                                hard_stop = True
+                                                break
+                                            if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
+                                                f_br = True
+                                                break
+                                            if ev_confirm == 'noExit':
+                                                window_confirm.close()
+                                                f_br = True
+                                                break
+                                    else:
+                                        break
+                                if f_br:
+                                    break
+                                num += 1
+                            else:
+                                logging.warning(f'Сервер остановлен администратором')
+                                my_popup('Сервер остановлен')
+                                window['-StatusBar-'].update('Сервер не запущен', background_color=button_color_2)
+                                window['-Start-'].update(disabled=False)
+                                window['-Stop-'].update(disabled=True)
+                                window['-users-'].update([[]])
+                                window['-groups2-'].update([[]])
+                                clear_treedata = sg.TreeData()
+                                window['-TREE-'].update(clear_treedata)
+                                window['-TREE2-'].update(clear_treedata)
+                                window['-AddUser-'].update(disabled=True)
+                                window['-DelUser-'].update(disabled=True)
+                                window['-CloneUser-'].update(disabled=True)
+                                window['-AddGroup-'].update(disabled=True)
+                                window['-DelGroup-'].update(disabled=True)
+                                window['-filterUser-'].update(disabled=True)
+                                window['-filterGroup-'].update(disabled=True)
+                                window['Apply'].update(disabled=True)
+                                window['Apply2'].update(disabled=True)
+                                window['-checkAllGroups-'].update(disabled=True)
+                                window['-checkAllUsers-'].update(disabled=True)
+                                window['-partially-dropDB-'].update(disabled=True)
+                                window['-dropDB-'].update(disabled=True)
+                                window['-Menu-'].update([
+                                    ['Сервер', ['Установить лицензию...', '!Настройки']],
+                                    ['Помощь', 'О программе'], ])
+                                server_status['run'] = False
+                                update_free_space({'freeSpace': 0, 'spaceTotal': 1})
+                                window['online-users'].update('')
+                                # server_status['last_state'] = True
+                                # print(server_status)
+                                break
                         additional_window = False
                     if event == 'Tabs':
                         if values['Tabs'] == 'Tab3':
