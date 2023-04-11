@@ -843,10 +843,10 @@ def make_add_lic():
                                        disabled=True,
                                        enable_events=True,
                                        key='-FILENAME-'), sg.FileBrowse('Найти',
-                                                                        disabled=False if ip == '127.0.0.1' else True,
+                                                                        disabled=False,
                                                                         initial_folder='../',
                                                                         file_types=(("Файл лицензии", "*.lic"),))],
-                  [sg.Button('Получить id сервера', disabled=False if ip == '127.0.0.1' else True), sg.Push(),
+                  [sg.Button('Получить id сервера', disabled=False), sg.Push(),
                    sg.Button('Загрузить',
                              disabled=True,
                              bind_return_key=True)],
@@ -868,7 +868,7 @@ def make_add_lic():
                                        col_widths=[27, 9, 10]
                                        )
                               ]], expand_x=True)],
-                  [sg.Push(), sg.Button('Выйти'), sg.Push()]]
+                  [sg.Push(), sg.Button('Перезагрузить', disabled=True, key='restart'), sg.Button('Выйти'), sg.Push()]]
     return sg.Window('Лицензия', layout_lic, icon=ICON_BASE_64, background_color='white', modal=True, finalize=True)
 
 
@@ -1512,23 +1512,36 @@ def check_os():
 
 
 def get_id(os):
-    if os == 'Windows':
-        command = 'reg query HKLM\Software\Microsoft\Cryptography /v MachineGuid'
-        # command = 'DIR'
-        # proc = subprocess.Popen(command,
-        #                         shell=True,
-        #                         stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        output_list = str(subprocess.getoutput(command)).split()
-        system_id = output_list[-1]
-        # print(output[-1])
+    start_command = 'cat /var/lib/dbus/machine-id'
+    if ip != '127.0.0.1':
+        try:
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+            stdin, stdout, stderr = ssh.exec_command(start_command)
+            stdout = stdout.readlines()
+            ssh.close()
+            output = ''
+            for line in stdout:
+                output = output + line
+            print(output)
+            system_id = output.rstrip('\n')
+        except Exception as e:
+            print(f'{e}')
+            logging.error('Не удалось соединиться с сервером')
+            my_popup("Не удалось соединиться с сервером")
+            return ''
     else:
-        start_command = 'cat /var/lib/dbus/machine-id'
-        process = subprocess.Popen(start_command, shell=True,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
-        system_id = process.stdout.read().decode('utf-8').rstrip('\n')
-        # print(type(system_id))
-        print(system_id)
+        if os == 'Windows':
+            command = 'reg query HKLM\Software\Microsoft\Cryptography /v MachineGuid'
+            output_list = str(subprocess.getoutput(command)).split()
+            system_id = output_list[-1]
+        else:
+            process = subprocess.Popen(start_command, shell=True,
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE)
+            system_id = process.stdout.read().decode('utf-8').rstrip('\n')
+            print(system_id)
     with open('system_id', 'w') as f:
         f.write(system_id)
         print('Файл c id создан')
@@ -1707,6 +1720,24 @@ def my_popup(message):
                     # disable_minimize=True,
                     modal=True).read(close=True)
 
+
+def my_popup2(message):
+    layout = [[sg.Frame('', [[sg.Text(message, justification='center', background_color=omega_theme['INPUT'])],
+                             [sg.Push(background_color=omega_theme['INPUT']), sg.Button('OK', pad=((0, 0), (10, 10))),
+                              sg.Push(background_color=omega_theme['INPUT'])]], background_color=omega_theme['INPUT'],
+                        pad=((7, 7), (10, 10)))]]
+    win = sg.Window('Инфо', layout,
+                    icon=ICON_BASE_64,
+                    use_ttk_buttons=True,
+                    no_titlebar=True,
+                    border_depth=5,
+                    grab_anywhere=True,
+                    background_color=omega_theme['INPUT'],
+                    # # background_color='dark gray',
+                    finalize=True,
+                    # # use_default_focus=False,
+                    # disable_minimize=True,
+                    modal=True).read(close=True)
 
 def validate(window: str):
     result = True
@@ -3132,62 +3163,192 @@ if __name__ == '__main__':
                             if ev_add_lic == '-FILENAME-':
                                 window_add_lic['Загрузить'].update(disabled=False)
                             if ev_add_lic == 'Получить id сервера':
-                                # id_serv = 'ajfhlkjdhflkja lakjhga'
                                 id_serv = get_id(check_os())
-                                window_get_id = make_get_id(id_serv)
-                                while True:
-                                    ev_get_id, val_get_id = window_get_id.Read()
-                                    print(f'{ev_get_id}, {val_get_id}')
-                                    if ev_get_id == sg.WIN_CLOSED or ev_get_id == 'OK':
-                                        window_get_id.close()
-                                        break
-                                    if ev_get_id == '-Скопировать-':
-                                        sg.clipboard_set(val_get_id['-id-'])
-                                # popup_text = 'id сервера - ' + id_serv
-                                # sg.popup(id_serv,
-                                #          title='id сервера', icon=ICON_BASE_64)
+                                if id_serv:
+                                    window_get_id = make_get_id(id_serv)
+                                    while True:
+                                        ev_get_id, val_get_id = window_get_id.Read()
+                                        print(f'{ev_get_id}, {val_get_id}')
+                                        if ev_get_id == sg.WIN_CLOSED or ev_get_id == 'OK':
+                                            window_get_id.close()
+                                            break
+                                        if ev_get_id == '-Скопировать-':
+                                            sg.clipboard_set(val_get_id['-id-'])
                             if ev_add_lic == 'Загрузить':
-                                # print(start_command)
-                                output = False
-                                if check_os() != 'Windows':
-                                    start_command = "$HOME/Omega/Licensing/ValidateCli validate --license " + \
-                                                    val_add_lic['-FILENAME-'] + \
-                                                    ' --public $HOME/Omega/keys/pub.pem'
-                                    process = subprocess.Popen(start_command, shell=True,
-                                                               stdout=subprocess.PIPE,
-                                                               stderr=subprocess.PIPE)
+                                machine_id = get_id('Linux')
+                                start_command = "$HOME/Omega/Licensing/ValidateCli validate --license $HOME/Omega/generated.lic" + \
+                                                ' --public $HOME/Omega/keys/pub.pem --machine-id ' + \
+                                                machine_id
+                                if ip != '127.0.0.1':
                                     try:
-                                        output = process.stdout.read().decode('utf-8').rstrip('\n')
+                                        ssh = paramiko.SSHClient()
+                                        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                                        ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+                                        ftp_client = ssh.open_sftp()
+                                        ftp_client.put(val_add_lic['-FILENAME-'], '/home/omega/Omega/generated.lic')
+                                        ftp_client.close()
+                                        stdin, stdout, stderr = ssh.exec_command(start_command)
+                                        stdout = stdout.readlines()
+                                        # ssh.close()
+                                        output = ''
+                                        for line in stdout:
+                                            output = output + line
+                                        print(output)
+                                        window_add_lic['restart'].update(disabled=False)
+                                        # system_id = output.rstrip('\n')
                                     except Exception as e:
-                                        my_popup('Неверный файл лицензии!')
                                         print(f'{e}')
-                                    # print(type(output))
-                                    # print(output)
-                                    # print(output == True)
-                                    if output.find('USAGE') == -1 and output:
-                                        index = output.find('{')
-                                        lics: dict = json.loads(output[index:])
-                                        # print(type(lics))
-                                        # print(lics)
-                                        LICS = [['Количество абонентов', lics['UserCount'], lics['ExpirationDate']],
-                                                ['Количество диспетчеров', lics['DispatcherCount'], lics[
-                                                    'ExpirationDate']]]
-                                        print(lics['ExpirationDate'])
-                                        for feature in lics['Features']:
-                                            feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
-                                                else "Геопозиционирование" if feature == "GeoData" \
-                                                else "Динамические группы" if feature == "DGNA" \
-                                                else "Удалённое управление терминалами" if feature == "OTAP" \
-                                                else feature
-                                            print(feature_name, '+', lics['ExpirationDate'])
-                                            LICS.append([feature_name, '+', lics['ExpirationDate']])
-                                        window_add_lic['-lic-'].update(LICS)
+                                        logging.error('Не удалось установить лицензию!')
+                                        my_popup("Не удалось установить лицензию!")
+                                else:
+                                    output = False
+                                    if check_os() != 'Windows':
+                                        start_command = "$HOME/Omega/Licensing/ValidateCli validate --license " + \
+                                                        val_add_lic['-FILENAME-'] + \
+                                                        ' --public $HOME/Omega/keys/pub.pem'
+                                        process = subprocess.Popen(start_command, shell=True,
+                                                                   stdout=subprocess.PIPE,
+                                                                   stderr=subprocess.PIPE)
+                                        try:
+                                            output = process.stdout.read().decode('utf-8').rstrip('\n')
+                                        except Exception as e:
+                                            my_popup('Неверный файл лицензии!')
+                                            print(f'{e}')
+                                        copy_command = 'cp ' + val_add_lic['-FILENAME-'] + " $HOME/Omega/generated.lic"
+                                        print(copy_command)
+                                        process = subprocess.Popen(copy_command, shell=True,
+                                                                   stdout=subprocess.PIPE,
+                                                                   stderr=subprocess.PIPE)
+                                        try:
+                                            output_copy = process.stdout.read().decode('utf-8').rstrip('\n')
+                                            print(f'Копирование файла лицензии - {output_copy}')
+                                        except Exception as e:
+                                            my_popup('Файл лицензии не скопирован!')
+                                            print(f'{e}')
+                                        window_add_lic['restart'].update(disabled=False)
+                                        # print(type(output))
+                                        # print(output)
+                                        # print(output == True)
+                                if output.find('USAGE') == -1 and output:
+                                    index = output.find('{')
+                                    lics: dict = json.loads(output[index:])
+                                    # print(type(lics))
+                                    # print(lics)
+                                    LICS = [['Количество абонентов', lics['UserCount'], lics['ExpirationDate']],
+                                            ['Количество диспетчеров', lics['DispatcherCount'], lics[
+                                                'ExpirationDate']]]
+                                    print(lics['ExpirationDate'])
+                                    for feature in lics['Features']:
+                                        feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
+                                            else "Геопозиционирование" if feature == "GeoData" \
+                                            else "Динамические группы" if feature == "DGNA" \
+                                            else "Удалённое управление терминалами" if feature == "OTAP" \
+                                            else feature
+                                        print(feature_name, '+', lics['ExpirationDate'])
+                                        LICS.append([feature_name, '+', lics['ExpirationDate']])
+                                    window_add_lic['-lic-'].update(LICS)
+                                    if ip != '127.0.0.1':
+                                        change_state_command = 'echo -n 5 > /home/omega/Omega/.licenseState'
+                                        stdin, stdout, stderr = ssh.exec_command(change_state_command)
+                                        stdout = stdout.readlines()
+                                        ssh.close()
+                                        output = ''
+                                        for line in stdout:
+                                            output = output + line
+                                        print(output)
+                                    else:
                                         with open("/home/omega/Omega/.licenseState", mode='w') as f_lic_st:
                                             f_lic_st.write("5")
                                             print("файл записан")
+                                else:
+                                    my_popup("Проблема с загрузкой лицензии")
+                                    logging.error(f"Проблема с загрузкой лицензии")
+                                    ssh.close()
+                            if ev_add_lic == 'restart':
+                                print('Перезагружаем сервер')
+                                try:
+                                    window_add_lic.close()
+                                    set_window_not_running_server()
+                                    window['-users-'].update([[]])
+                                    window['-groups2-'].update([[]])
+                                    clear_treedata = sg.TreeData()
+                                    window['-TREE-'].update(clear_treedata)
+                                    window['-TREE2-'].update(clear_treedata)
+                                    window.refresh()
+                                    # set_buttons_disabled(False)
+                                    # my_popup2('Сервер перезагружается')
+                                    ssh = paramiko.SSHClient()
+                                    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                                    # ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
+                                    start_command = 'sudo systemctl restart omega'
+                                    if ip != '127.0.0.1':
+                                        ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+                                        stdin, stdout, stderr = ssh.exec_command(start_command)
+                                        stdout = stdout.readlines()
+                                        ssh.close()
+                                        output = ''
+                                        for line in stdout:
+                                            output = output + line
+                                        print(output)
                                     else:
-                                        my_popup("Проблема с загрузкой лицензии")
-                                        logging.error(f"Проблема с загрузкой лицензии")
+                                        process = subprocess.Popen(start_command, shell=True,
+                                                                   stdout=subprocess.PIPE,
+                                                                   stderr=subprocess.PIPE)
+                                    for i in range(3):
+                                        sleep(2)
+                                        res_ping = ''
+                                        try:
+                                            res_ping = requests.get(BASE_URL_PING, timeout=1)
+                                        except Exception as e:
+                                            print(f"Сервер не отвечает, {e}")
+                                        if res_ping == '':
+                                            print('Нет ответа сервера')
+                                            if i == 2:
+                                                logging.critical(f'Сервер не отвечает - {res_ping}')
+                                                my_popup("Сервер не отвечает")
+                                        else:
+                                            if res_ping.status_code == 200:
+                                                logging.info(f'Сервер запущен администратором')
+                                                print(f'{res_ping.text}')
+                                                dict_online_after_start = json.loads(res_ping.text)
+                                                # print(dict_online_after_start)
+                                                update_text = 'Пользователей онлайн: обновление...' + ', Версия БД: ' \
+                                                              + str(dict_online_after_start["databaseVersion"])
+                                                server_status['online'] = dict_online_after_start["onlineUsersCount"]
+                                                server_status['db'] = dict_online_after_start["databaseVersion"]
+                                                window['-StatusBar-'].update(update_text,
+                                                                             background_color=status_bar_color)
+                                                window['-Start-'].update(disabled=True)
+                                                window['-Stop-'].update(disabled=False)
+                                                TOKEN = get_token(BASE_URL_AUTH)
+                                                HEADER_dict = {"Authorization": "Bearer " + TOKEN}
+                                                if TOKEN:
+                                                    server_status['run'] = True
+                                                    print(server_status)
+                                                    update_users_and_groups()
+                                                    window['-Menu-'].update([
+                                                        ['Сервер', ['Установить лицензию...', 'Настройки']],
+                                                        ['Помощь', 'О программе'], ])
+                                                    update_text = 'Пользователей онлайн: ' + str(
+                                                        server_status["online"]) \
+                                                                  + ', Версия БД: ' + str(server_status["db"])
+                                                    window['-StatusBar-'].update(update_text,
+                                                                                 background_color=status_bar_color)
+                                                    set_buttons_disabled(False)
+                                                    server_status['run'] = True
+                                                    update_free_space(dict_online_after_start)
+                                                    window['online-users'].update(
+                                                        get_online_users(dict_online_after_start['onlineUserIds']))
+                                                    my_popup('Сервер перезагружен')
+                                                    break
+                                                else:
+                                                    break_flag2 = True
+                                                    break_flag = True
+                                                    break
+                                except Exception as e:
+                                    print(f'{e}')
+                                    logging.error('Не удалось перезапустить сервер')
+                                    my_popup('Не удалось перезапустить сервер')
                         additional_window = False
                     if event == 'Настройки':
                         additional_window = True
@@ -3964,70 +4125,75 @@ if __name__ == '__main__':
                         # keydata = b"""AAAAB3NzaC1yc2EAAAADAQABAAABAQCx5YPc1NuawBdtVGZES7OUpswdsegIcQaoIKT3unyWSHZPFlx8LT6Y2xd/gegzH7Y8iHPYblZbCj3QEXBQY34cw10QmLMuPsOh6UvO0og65HaXCyCOxn77A0uTiUWkYPUw+1+T2IyTzhSsHkhXHOAP4jUbII2oP3Za0mdqVsL2oomWU/CPnfBKlXQ5blLP89MJi6c7eW0u9Kjj+zo2ybiC4HEbAd9M/wf06xQjGk1wzfbjKUSUwYaoZUOfN7UzmvWmkZXYN2TmknM013dOtmuZE80/QrKc91Om9REbd/RFdGR44Vt31rhYVeHgzD58CDiWG3mog/NcCivhELHVE55H"""
                         # key = paramiko.RSAKey(data=decodebytes(keydata))
                         additional_window = True
-                        ssh = paramiko.SSHClient()
-                        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                        # ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
-                        start_command = 'sudo systemctl restart omega'
-                        if ip != '127.0.0.1':
-                            ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
-                            stdin, stdout, stderr = ssh.exec_command(start_command)
-                            stdout = stdout.readlines()
-                            ssh.close()
-                            output = ''
-                            for line in stdout:
-                                output = output + line
-                            print(output)
-                        else:
-                            process = subprocess.Popen(start_command, shell=True,
-                                                       stdout=subprocess.PIPE,
-                                                       stderr=subprocess.PIPE)
-                        for i in range(3):
-                            sleep(2)
-                            res_ping = ''
-                            try:
-                                res_ping = requests.get(BASE_URL_PING, timeout=1)
-                            except Exception as e:
-                                print(f"Сервер не отвечает, {e}")
-                            if res_ping == '':
-                                print('Нет ответа сервера')
-                                if i == 2:
-                                    logging.critical(f'Сервер не отвечает - {res_ping}')
-                                    my_popup("Сервер не отвечает")
+                        try:
+                            ssh = paramiko.SSHClient()
+                            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                            # ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
+                            start_command = 'sudo systemctl restart omega'
+                            if ip != '127.0.0.1':
+                                ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+                                stdin, stdout, stderr = ssh.exec_command(start_command)
+                                stdout = stdout.readlines()
+                                ssh.close()
+                                output = ''
+                                for line in stdout:
+                                    output = output + line
+                                print(output)
                             else:
-                                if res_ping.status_code == 200:
-                                    logging.info(f'Сервер запущен администратором')
-                                    print(f'{res_ping.text}')
-                                    dict_online_after_start = json.loads(res_ping.text)
-                                    # print(dict_online_after_start)
-                                    update_text = 'Пользователей онлайн: обновление...' + ', Версия БД: ' \
-                                                  + str(dict_online_after_start["databaseVersion"])
-                                    server_status['online'] = dict_online_after_start["onlineUsersCount"]
-                                    server_status['db'] = dict_online_after_start["databaseVersion"]
-                                    window['-StatusBar-'].update(update_text, background_color=status_bar_color)
-                                    window['-Start-'].update(disabled=True)
-                                    window['-Stop-'].update(disabled=False)
-                                    TOKEN = get_token(BASE_URL_AUTH)
-                                    HEADER_dict = {"Authorization": "Bearer " + TOKEN}
-                                    if TOKEN:
-                                        server_status['run'] = True
-                                        print(server_status)
-                                        update_users_and_groups()
-                                        window['-Menu-'].update([
-                                            ['Сервер', ['Установить лицензию...', 'Настройки']],
-                                            ['Помощь', 'О программе'], ])
-                                        update_text = 'Пользователей онлайн: ' + str(server_status["online"]) \
-                                                      + ', Версия БД: ' + str(server_status["db"])
+                                process = subprocess.Popen(start_command, shell=True,
+                                                           stdout=subprocess.PIPE,
+                                                           stderr=subprocess.PIPE)
+                            for i in range(3):
+                                sleep(2)
+                                res_ping = ''
+                                try:
+                                    res_ping = requests.get(BASE_URL_PING, timeout=1)
+                                except Exception as e:
+                                    print(f"Сервер не отвечает, {e}")
+                                if res_ping == '':
+                                    print('Нет ответа сервера')
+                                    if i == 2:
+                                        logging.critical(f'Сервер не отвечает - {res_ping}')
+                                        my_popup("Сервер не отвечает")
+                                else:
+                                    if res_ping.status_code == 200:
+                                        logging.info(f'Сервер запущен администратором')
+                                        print(f'{res_ping.text}')
+                                        dict_online_after_start = json.loads(res_ping.text)
+                                        # print(dict_online_after_start)
+                                        update_text = 'Пользователей онлайн: обновление...' + ', Версия БД: ' \
+                                                      + str(dict_online_after_start["databaseVersion"])
+                                        server_status['online'] = dict_online_after_start["onlineUsersCount"]
+                                        server_status['db'] = dict_online_after_start["databaseVersion"]
                                         window['-StatusBar-'].update(update_text, background_color=status_bar_color)
-                                        set_buttons_disabled(False)
-                                        server_status['run'] = True
-                                        update_free_space(dict_online_after_start)
-                                        window['online-users'].update(
-                                            get_online_users(dict_online_after_start['onlineUserIds']))
-                                        break
-                                    else:
-                                        break_flag2 = True
-                                        break_flag = True
-                                        break
+                                        window['-Start-'].update(disabled=True)
+                                        window['-Stop-'].update(disabled=False)
+                                        TOKEN = get_token(BASE_URL_AUTH)
+                                        HEADER_dict = {"Authorization": "Bearer " + TOKEN}
+                                        if TOKEN:
+                                            server_status['run'] = True
+                                            print(server_status)
+                                            update_users_and_groups()
+                                            window['-Menu-'].update([
+                                                ['Сервер', ['Установить лицензию...', 'Настройки']],
+                                                ['Помощь', 'О программе'], ])
+                                            update_text = 'Пользователей онлайн: ' + str(server_status["online"]) \
+                                                          + ', Версия БД: ' + str(server_status["db"])
+                                            window['-StatusBar-'].update(update_text, background_color=status_bar_color)
+                                            set_buttons_disabled(False)
+                                            server_status['run'] = True
+                                            update_free_space(dict_online_after_start)
+                                            window['online-users'].update(
+                                                get_online_users(dict_online_after_start['onlineUserIds']))
+                                            break
+                                        else:
+                                            break_flag2 = True
+                                            break_flag = True
+                                            break
+                        except Exception as e:
+                            print(f'{e}')
+                            logging.error('Не удалось запустить сервер')
+                            my_popup('Не удалось запустить сервер')
                         additional_window = False
                     if event == '-Stop-':
                         additional_window = True
