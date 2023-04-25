@@ -60,7 +60,7 @@ DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
 DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
-version = '1.1.0'
+version = '1.1.1'
 
 def get_branch():
     get_branch_com = "git rev-parse --symbolic --abbrev-ref HEAD"
@@ -837,19 +837,38 @@ def make_login_window():
 
 
 def make_add_lic():
-    layout_lic = [[sg.Push(), sg.Combo(sorted(sg.user_settings_get_entry('-filenames-', [])),
-                                       default_value=sg.user_settings_get_entry('-last filename-', ''),
-                                       size=(50, 1),
-                                       disabled=True,
-                                       enable_events=True,
-                                       key='-FILENAME-'), sg.FileBrowse('Найти',
-                                                                        disabled=False,
-                                                                        initial_folder='../',
-                                                                        file_types=(("Файл лицензии", "*.lic"),))],
+    layout_lic = [[
+                   # sg.Combo(sorted(sg.user_settings_get_entry('-filenames-', [])), #TODO
+                   #                     default_value=sg.user_settings_get_entry('-last filename-', ''),
+                   #                     size=(50, 1),
+                   #                     disabled=True,
+                   #                     enable_events=True,
+                   #                     # tooltip=sg.user_settings_get_entry('-last filename-', ''),
+                   #                     key='-FILENAME-'),
+                   sg.Frame('Загрузка лицензии',[
+                       [
+                   sg.Input(
+                            # size=(60),
+                            default_text='Выберите файл лицензии -->',
+                            disabled=True,
+                            text_color='gray',
+                            enable_events=True,
+                            expand_x=True,
+                            key='-FILENAME-'),
+                   sg.Push(),
+                   sg.FileBrowse('Выбрать',
+                                 target='-FILENAME-',
+                                 disabled=False,
+                                 initial_folder='../',
+                                 file_types=(("Файл лицензии", "*.lic"),))],
                   [sg.Button('Получить id сервера', disabled=False), sg.Push(),
+                   sg.Button('Текущая лицензия',
+                             disabled=True,
+                             key='show_cur_lic'
+                             ),
                    sg.Button('Загрузить',
                              disabled=True,
-                             bind_return_key=True)],
+                             bind_return_key=True)]], expand_x=True)],
                   [sg.Frame('Лицензия',
                             [[sg.Table(LICS, headings=['Наименование', 'Количество', 'Дата'],
                                        justification="left",
@@ -868,6 +887,31 @@ def make_add_lic():
                                        col_widths=[27, 9, 10]
                                        )
                               ]], expand_x=True)],
+                  [sg.Frame('Загрузка ключа сервера',[
+                        [sg.Input(
+                            # size=(60),
+                            default_text='Выберите файл ключа -->',
+                            disabled=True,
+                            text_color='gray',
+                            enable_events=True,
+                            expand_x=True,
+                            key='-KEYNAME-'),
+                            sg.Push(),
+                            sg.FileBrowse('Выбрать',
+                                          target='-KEYNAME-',
+                                          disabled=False,
+                                          initial_folder='../',
+                                          file_types=(("Файл ключа сервера", "*.pem"),))],
+                        [sg.Text('*Загружайте только при необходимости!')],
+                  [sg.Push(),
+                   sg.Button('Вернуть ключ',
+                             # disabled=True,
+                             key='restore-key'),
+                   sg.Button('Загрузить ключ',
+                             disabled=True,
+                             key='install-key')
+                   ]
+                  ], expand_x=True)],
                   [sg.Push(), sg.Button('Перезагрузить', disabled=True, key='restart'), sg.Button('Выйти'), sg.Push()]]
     return sg.Window('Лицензия', layout_lic, icon=ICON_BASE_64, background_color='white', modal=True, finalize=True)
 
@@ -2179,6 +2223,35 @@ def set_buttons_disabled(set=True):
     # window['-filterUser-'].update('')
 
 
+def get_current_lic():
+    res_get_lic = ''
+    try:
+        res_get_lic = requests.get(BASE_URL + 'getLicenseInfo', headers=HEADER_dict)
+    except Exception as e:
+        print(f"Запрос лицензии прошёл неудачно {e}")
+        logging.warning("Запрос лицензии прошёл неудачно")
+    if res_get_lic != '' and res_get_lic.status_code == 200:
+        lic = res_get_lic.json()
+        print(lic)
+    else:
+        lic = dict()
+    return lic
+
+
+def parse_cur_lic(lic):
+    LICS = [['Количество абонентов', lic['UserCount'],
+             lic['ExpirationDate']],
+            ['Количество диспетчеров', lic['DispatcherCount'], lic[
+                'ExpirationDate']]]
+    for feature in lic['Features']:
+        feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
+            else "Геопозиционирование" if feature == "GeoData" \
+            else "Динамические группы" if feature == "DGNA" \
+            else "Удалённое управление терминалами" if feature == "OTAP" else "?"
+        LICS.append([feature_name, '+', lic['ExpirationDate']])
+    return LICS
+
+
 if __name__ == '__main__':
     # print(sg.theme_global())
     # print(sg.theme_list())
@@ -3129,29 +3202,12 @@ if __name__ == '__main__':
                         additional_window = False
                     if event == 'Установить лицензию...':
                         additional_window = True
-                        res_get_lic = ''
-                        try:
-                            res_get_lic = requests.get(BASE_URL + 'getLicenseInfo', headers=HEADER_dict)
-                        except Exception as e:
-                            print(f"Запрос лицензии прошёл неудачно {e}")
-                            logging.warning("Запрос лицензии прошёл неудачно")
-                        if res_get_lic != '' and res_get_lic.status_code == 200:
-                            lic_from_server = res_get_lic.json()
-                            print(lic_from_server)
-                        else:
-                            lic_from_server = dict()
+                        new_lic_installed = False
+                        f_new = False
+                        lic_from_server = get_current_lic()
                         window_add_lic = make_add_lic()
                         if lic_from_server:
-                            LICS = [['Количество абонентов', lic_from_server['UserCount'],
-                                     lic_from_server['ExpirationDate']],
-                                    ['Количество диспетчеров', lic_from_server['DispatcherCount'], lic_from_server[
-                                        'ExpirationDate']]]
-                            for feature in lic_from_server['Features']:
-                                feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
-                                    else "Геопозиционирование" if feature == "GeoData" \
-                                    else "Динамические группы" if feature == "DGNA" \
-                                    else "Удалённое управление терминалами" if feature == "OTAP" else "?"
-                                LICS.append([feature_name, '+', lic_from_server['ExpirationDate']])
+                            LICS = parse_cur_lic(lic_from_server)
                             window_add_lic['-lic-'].update(LICS)
                         while True:
                             ev_add_lic, val_add_lic = window_add_lic.Read()
@@ -3162,6 +3218,98 @@ if __name__ == '__main__':
                                 break
                             if ev_add_lic == '-FILENAME-':
                                 window_add_lic['Загрузить'].update(disabled=False)
+                                window_add_lic['show_cur_lic'].update(disabled=False)
+                                machine_id = get_id('Linux')  # TODO
+                                start_command = "$HOME/Omega/Licensing/ValidateCli validate --license $HOME/Omega/new.lic" + \
+                                                ' --public $HOME/Omega/keys/pub.pem --machine-id ' + \
+                                                machine_id
+                                output = ''
+                                if ip != '127.0.0.1':
+                                    try:
+                                        ssh = paramiko.SSHClient()
+                                        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                                        ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+                                        ftp_client = ssh.open_sftp()
+                                        ftp_client.put(val_add_lic['-FILENAME-'], '/home/omega/Omega/new.lic')
+                                        ftp_client.close()
+                                        stdin, stdout, stderr = ssh.exec_command(start_command)
+                                        stdout = stdout.readlines()
+                                        ssh.close()
+                                        # output = ''
+                                        for line in stdout:
+                                            output = output + line
+                                        print(output)
+                                        # window_add_lic['restart'].update(disabled=False)
+                                        # system_id = output.rstrip('\n')
+                                    except Exception as e:
+                                        print(f'{e}')
+                                        logging.error('Не удалось проверить лицензию!')
+                                        my_popup("Не удалось проверить лицензию!")
+                                else:
+                                    # output = False
+                                    if check_os() != 'Windows':
+                                        start_command = "$HOME/Omega/Licensing/ValidateCli validate --license " + \
+                                                        val_add_lic['-FILENAME-'] + \
+                                                        ' --public $HOME/Omega/keys/pub.pem'
+                                        process = subprocess.Popen(start_command, shell=True,
+                                                                   stdout=subprocess.PIPE,
+                                                                   stderr=subprocess.PIPE)
+                                        try:
+                                            output = process.stdout.read().decode('utf-8').rstrip('\n')
+                                        except Exception as e:
+                                            my_popup('Неверный файл лицензии!')
+                                            print(f'{e}')
+                                        # copy_command = 'cp ' + val_add_lic['-FILENAME-'] + " $HOME/Omega/generated.lic"
+                                        # # print(copy_command)
+                                        # process = subprocess.Popen(copy_command, shell=True,
+                                        #                            stdout=subprocess.PIPE,
+                                        #                            stderr=subprocess.PIPE)
+                                        # try:
+                                        #     output_copy = process.stdout.read().decode('utf-8').rstrip('\n')
+                                        #     print(f'Копирование файла лицензии - {output_copy}')
+                                        # except Exception as e:
+                                        #     my_popup('Файл лицензии не скопирован!')
+                                        #     print(f'{e}')
+                                        # window_add_lic['restart'].update(disabled=False)
+                                        # print(type(output))
+                                        # print(output)
+                                        # print(output == True)
+                                if output:
+                                    if output.find('USAGE') == -1:
+                                        index = output.find('{')
+                                        lics: dict = json.loads(output[index:])
+                                        # print(type(lics))
+                                        # print(lics)
+                                        LICS = [['Количество абонентов', lics['UserCount'], lics['ExpirationDate']],
+                                                ['Количество диспетчеров', lics['DispatcherCount'], lics[
+                                                    'ExpirationDate']]]
+                                        print(lics['ExpirationDate'])
+                                        for feature in lics['Features']:
+                                            feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
+                                                else "Геопозиционирование" if feature == "GeoData" \
+                                                else "Динамические группы" if feature == "DGNA" \
+                                                else "Удалённое управление терминалами" if feature == "OTAP" \
+                                                else feature
+                                            print(feature_name, '+', lics['ExpirationDate'])
+                                            LICS.append([feature_name, '+', lics['ExpirationDate']])
+                                        window_add_lic['-lic-'].update(LICS)
+                                        # if ip != '127.0.0.1':
+                                        #     change_state_command = 'echo -n 5 > /home/omega/Omega/.licenseState'
+                                        #     stdin, stdout, stderr = ssh.exec_command(change_state_command)
+                                        #     stdout = stdout.readlines()
+                                        #     ssh.close()
+                                        #     output = ''
+                                        #     for line in stdout:
+                                        #         output = output + line
+                                        #     print(output)
+                                        # else:
+                                        #     with open("/home/omega/Omega/.licenseState", mode='w') as f_lic_st:
+                                        #         f_lic_st.write("5")
+                                        #         print("файл записан")
+                                else:
+                                    my_popup("Проблема с лицензией")
+                                    logging.error(f"Проблема с лицензией")
+                                    # ssh.close()
                             if ev_add_lic == 'Получить id сервера':
                                 id_serv = get_id(check_os())
                                 if id_serv:
@@ -3174,8 +3322,24 @@ if __name__ == '__main__':
                                             break
                                         if ev_get_id == '-Скопировать-':
                                             sg.clipboard_set(val_get_id['-id-'])
+                            if ev_add_lic == 'show_cur_lic':
+                                if f_new:
+                                    window_add_lic['-lic-'].update(LICS)
+                                    window_add_lic['show_cur_lic'].update('Текущая лицензия')
+                                    f_new = False
+                                else:
+                                    lic_from_server = get_current_lic()
+                                    if lic_from_server:
+                                        cur_lics = parse_cur_lic(lic_from_server)
+                                        window_add_lic['-lic-'].update(cur_lics)
+                                    window_add_lic['Загрузить'].update(disabled=True)
+                                    if new_lic_installed:
+                                        window_add_lic['show_cur_lic'].update('Новая лицензия')
+                                        f_new = True
+                                        # window_add_lic['-lic-'].update(LICS)
+                                        # window_add_lic['show_cur_lic'].update('Текущая лицензия')
                             if ev_add_lic == 'Загрузить':
-                                machine_id = get_id('Linux')
+                                machine_id = get_id('Linux') #TODO
                                 start_command = "$HOME/Omega/Licensing/ValidateCli validate --license $HOME/Omega/generated.lic" + \
                                                 ' --public $HOME/Omega/keys/pub.pem --machine-id ' + \
                                                 machine_id
@@ -3194,7 +3358,7 @@ if __name__ == '__main__':
                                         for line in stdout:
                                             output = output + line
                                         print(output)
-                                        window_add_lic['restart'].update(disabled=False)
+                                        # window_add_lic['restart'].update(disabled=False)
                                         # system_id = output.rstrip('\n')
                                     except Exception as e:
                                         print(f'{e}')
@@ -3225,7 +3389,7 @@ if __name__ == '__main__':
                                         except Exception as e:
                                             my_popup('Файл лицензии не скопирован!')
                                             print(f'{e}')
-                                        window_add_lic['restart'].update(disabled=False)
+                                        # window_add_lic['restart'].update(disabled=False)
                                         # print(type(output))
                                         # print(output)
                                         # print(output == True)
@@ -3260,6 +3424,11 @@ if __name__ == '__main__':
                                         with open("/home/omega/Omega/.licenseState", mode='w') as f_lic_st:
                                             f_lic_st.write("5")
                                             print("файл записан")
+                                    logging.error(f"Новая лицензия загружена! Необходимо перезапустить сервер!")
+                                    my_popup("Новая лицензия загружена! Необходимо перезапустить сервер!")
+                                    # window_add_lic['restart'].update(disabled=False)
+                                    window_add_lic['restart'].update(disabled=False, button_color=button_color_2)
+                                    new_lic_installed = True
                                 else:
                                     my_popup("Проблема с загрузкой лицензии")
                                     logging.error(f"Проблема с загрузкой лицензии")
@@ -3275,8 +3444,6 @@ if __name__ == '__main__':
                                     window['-TREE-'].update(clear_treedata)
                                     window['-TREE2-'].update(clear_treedata)
                                     window.refresh()
-                                    # set_buttons_disabled(False)
-                                    # my_popup2('Сервер перезагружается')
                                     ssh = paramiko.SSHClient()
                                     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                                     # ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
@@ -3349,6 +3516,132 @@ if __name__ == '__main__':
                                     print(f'{e}')
                                     logging.error('Не удалось перезапустить сервер')
                                     my_popup('Не удалось перезапустить сервер')
+                            if ev_add_lic == '-KEYNAME-':
+                                # print('key selected')
+                                window_add_lic['install-key'].update(disabled=False)
+                            if ev_add_lic == 'install-key':
+                                window_install_key = make_confirm_window('Вы уверены, что хотите установить новый ключ сервера?')
+                                while True:
+                                    ev_install_key, val_install_key = window_install_key.Read()
+                                    # print(ev_del_user, val_del_user)
+                                    if ev_install_key == sg.WIN_CLOSED or ev_install_key == 'Exit':
+                                        # print('Закрыл окно удаления пользователя')
+                                        break
+                                    if ev_install_key == 'noExit':
+                                        # print('Закрыл окно удаления пользователя')
+                                        window_install_key.close()
+                                        break
+                                    if ev_install_key == 'okExit':
+                                        try:
+                                            ssh = paramiko.SSHClient()
+                                            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                                            # ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
+                                            backup_command = 'cp $HOME/Omega/keys/pub.pem $HOME/Omega/keys/pub.pem.bak'
+                                            if ip != '127.0.0.1':
+                                                ssh.connect(hostname=ip, port=22, username='omega',
+                                                            password='omega12345')
+                                                stdin, stdout, stderr = ssh.exec_command(backup_command)
+                                                stdout = stdout.readlines()
+                                                output = ''
+                                                for line in stdout:
+                                                    output = output + line
+                                                print(output)
+                                                ftp_client = ssh.open_sftp()
+                                                ftp_client.put(val_add_lic['-KEYNAME-'], '/home/omega/Omega/keys/pub.pem')
+                                                ftp_client.close()
+                                                change_state_command = 'echo -n 5 > /home/omega/Omega/.licenseState'
+                                                stdin, stdout, stderr = ssh.exec_command(change_state_command)
+                                                stdout = stdout.readlines()
+                                                ssh.close()
+                                                output = ''
+                                                for line in stdout:
+                                                    output = output + line
+                                                print(output)
+                                            else:
+                                                if check_os() != 'Windows':
+                                                    process = subprocess.Popen(backup_command, shell=True,
+                                                                               stdout=subprocess.PIPE,
+                                                                               stderr=subprocess.PIPE)
+                                                    try:
+                                                        output = process.stdout.read().decode('utf-8').rstrip('\n')
+                                                    except Exception as e:
+                                                        # my_popup('Неверный файл лицензии!')
+                                                        print(f'{e}')
+                                                    copy_command = 'cp ' + val_add_lic['-KEYNAME-'] + " $HOME/Omega/keys/pub.pem"
+                                                    print(copy_command)
+                                                    process = subprocess.Popen(copy_command, shell=True,
+                                                                               stdout=subprocess.PIPE,
+                                                                               stderr=subprocess.PIPE)
+                                                    try:
+                                                        output_copy = process.stdout.read().decode('utf-8').rstrip('\n')
+                                                        print(f'Копирование ключа сервера - {output_copy}')
+                                                    except Exception as e:
+                                                        my_popup('Файл ключа не скопирован!')
+                                                        print(f'{e}')
+                                                with open("/home/omega/Omega/.licenseState", mode='w') as f_lic_st:
+                                                    f_lic_st.write("5")
+                                                    print("файл записан") #TODO
+                                            my_popup('Ключ установлен!')
+                                            window_install_key.close()
+                                            window_add_lic['restart'].update(disabled=False,
+                                                                             button_color=button_color_2)
+                                            break
+                                        except Exception as e:
+                                            print(f'{e}')
+                            if ev_add_lic == 'restore-key':
+                                window_restore_key = make_confirm_window('Вы уверены, что хотите установить ключ сервера'
+                                                                         ' по умолчанию?')
+                                while True:
+                                    ev_restore_key, val_restore_key = window_restore_key.Read()
+                                    if ev_restore_key == sg.WIN_CLOSED or ev_restore_key == 'Exit':
+                                        break
+                                    if ev_restore_key == 'noExit':
+                                        window_restore_key.close()
+                                        break
+                                    if ev_restore_key == 'okExit':
+                                        try:
+                                            restore_command = 'cp $HOME/Omega/keys/.pub.default $HOME/Omega/keys/pub.pem'
+                                            if ip != '127.0.0.1':
+                                                ssh = paramiko.SSHClient()
+                                                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                                                ssh.connect(hostname=ip, port=22, username='omega',
+                                                            password='omega12345')
+                                                stdin, stdout, stderr = ssh.exec_command(restore_command)
+                                                stdout = stdout.readlines()
+                                                output = ''
+                                                for line in stdout:
+                                                    output = output + line
+                                                print(output)
+                                                change_state_command = 'echo -n 5 > /home/omega/Omega/.licenseState'
+                                                stdin, stdout, stderr = ssh.exec_command(change_state_command)
+                                                stdout = stdout.readlines()
+                                                ssh.close()
+                                                output = ''
+                                                for line in stdout:
+                                                    output = output + line
+                                                print(output)
+                                                ssh.close()
+                                            else:
+                                                if check_os() != 'Windows':
+                                                    process = subprocess.Popen(restore_command, shell=True,
+                                                                               stdout=subprocess.PIPE,
+                                                                               stderr=subprocess.PIPE)
+                                                    try:
+                                                        output_copy = process.stdout.read().decode('utf-8').rstrip('\n')
+                                                        print(f'Восстановление ключа сервера по умолчанию - {output_copy}')
+                                                    except Exception as e:
+                                                        my_popup('Файл ключа не восстановлен!')
+                                                        print(f'{e}')
+                                                with open("/home/omega/Omega/.licenseState", mode='w') as f_lic_st:
+                                                    f_lic_st.write("5")
+                                                    print("файл записан")  # TODO
+                                            my_popup('Ключ восстановлен!')
+                                            window_restore_key.close()
+                                            window_add_lic['restart'].update(disabled=False,
+                                                                             button_color=button_color_2)
+                                            break
+                                        except Exception as e:
+                                            print(f'{e}')
                         additional_window = False
                     if event == 'Настройки':
                         additional_window = True
