@@ -1543,7 +1543,7 @@ def filter_journal(journal: list):
     elif filter_journal_critical:
         return list(filter(lambda x: 'CRITICAL' in x, journal))
     else:
-        return journal
+        return []
 
 
 # def get_icon():
@@ -1924,7 +1924,7 @@ def validate(window: str):
                 window_add_group['GroupName'].update(background_color=omega_theme['BACKGROUND'],
                                                      text_color=omega_theme['TEXT'])
             else:
-                my_popup('Имя группы содержит недопустимые символы\n'
+                my_popup('Описание группы содержит недопустимые символы\n'
                          'Используйте только буквы, цифры и символы: "-" и "_" и пробел')
                 window_add_group.Element('GroupName').SetFocus()
                 window_add_group['GroupName'].update(background_color=button_color_2,
@@ -1956,8 +1956,16 @@ def validate(window: str):
     if window == 'modify_group':
         print(val_modify_group)
         if 0 < len(str(val_modify_group['GroupModifyName'])) <= MAX_LEN_GROUPNAME:
-            window_modify_group['GroupModifyName'].update(background_color=omega_theme['BACKGROUND'],
-                                                          text_color=omega_theme['TEXT'])
+            if not validate_input(str(val_modify_group['GroupModifyName']), 2):
+                window_modify_group['GroupModifyName'].update(background_color=omega_theme['BACKGROUND'],
+                                                              text_color=omega_theme['TEXT'])
+            else:
+                my_popup('Имя группы содержит недопустимые символы\n'
+                         'Используйте только буквы, цифры и символы: "-" и "_" и пробел')
+                window_modify_group.Element('GroupModifyName').SetFocus()
+                window_modify_group['GroupModifyName'].update(background_color=button_color_2,
+                                                    text_color=omega_theme['BACKGROUND'])
+                return False
         else:
             my_popup(("Имя должно быть не более " + str(MAX_LEN_GROUPNAME) + " символов"))
             window_modify_group.Element('GroupModifyName').SetFocus()
@@ -1965,8 +1973,17 @@ def validate(window: str):
                                                           text_color=omega_theme['BACKGROUND'])
             return False
         if 0 <= len(str(val_modify_group['GroupModifyDesc'])) <= MAX_LEN_GROUPDESC:
-            window_modify_group['GroupModifyDesc'].update(background_color=omega_theme['BACKGROUND'],
-                                                          text_color=omega_theme['TEXT'])
+            if not validate_input(str(val_modify_group['GroupModifyDesc']), 2):
+                window_modify_group['GroupModifyDesc'].update(background_color=omega_theme['BACKGROUND'],
+                                                              text_color=omega_theme['TEXT'])
+            else:
+                my_popup('Описание группы содержит недопустимые символы\n'
+                         'Используйте только буквы, цифры и символы: "-" и "_" и пробел')
+                window_modify_group.Element('GroupModifyDesc').SetFocus()
+                window_modify_group['GroupModifyDesc'].update(background_color=button_color_2,
+                                                    text_color=omega_theme['BACKGROUND'])
+                return False
+
         else:
             my_popup(("Имя должно быть не более " + str(MAX_LEN_GROUPDESC) + " символов"))
             window_modify_group.Element('GroupModifyDesc').SetFocus()
@@ -2692,8 +2709,7 @@ if __name__ == '__main__':
                         """
                         additional_window = True
                         if not values['-users-']:
-                            sg.popup('Не выбран пользователь', title='Инфо', icon=ICON_BASE_64,
-                                     no_titlebar=True, background_color='lightgray')
+                            my_popup('Не выбран пользователь')
                         else:
                             users_from_db = get_users_from_db()
                             if filter_status:
@@ -2966,163 +2982,169 @@ if __name__ == '__main__':
                     if event == 'Изменить группу':
                         """обновляем group_from_db вконце"""
                         additional_window = True
-                        # print('Изменяем группу')
-                        # groups_from_db = get_groups_from_db()
-                        group_to_change = groups_from_db[values['-groups2-'][0]]
-                        # print(group_to_change)
-                        window_modify_group = make_modify_group_window(group_to_change)
-                        window_modify_group.Element('GroupModifyName').SetFocus()
-                        while True:
-                            ev_modify_group, val_modify_group = window_modify_group.Read()
-                            # print(ev_modify_group, val_modify_group)
-                            if ev_modify_group == sg.WIN_CLOSED or ev_modify_group == 'Exit':
-                                # print('Закрыл окно изменения группы')
-                                break
-                            elif ev_modify_group == 'modifyGroupDelChat':
-                                window_confirm = make_confirm_window('Вы уверены, что хотите очистить чат?')
-                                while True:
-                                    ev_confirm, val_confirm = window_confirm.Read()
-                                    # print(ev_exit, val_confirm)
-                                    if ev_confirm == 'okExit':
-                                        modify_group_del_chat_dict = {}
-                                        modify_group_del_chat_dict['GroupId'] = group_to_change['id']
-                                        try:
-                                            res_modify_group_del_chat = requests.post(
-                                            BASE_URL + 'clearGroupMessages',
-                                            json=modify_group_del_chat_dict,
-                                            headers=HEADER_dict)
-                                        # print(res_modify_group.status_code)
-                                            if res_modify_group_del_chat.status_code == 200:
-                                                current_db += 1
-                                                logging.info(f"Группу {group_to_change['name']} почистили")
-                                                my_popup("Чат группы очищен")
-                                                window_confirm.close()
-                                            else:
-                                                logging.error(f'ошибка очищения группы - '
-                                                              f'{res_modify_group_del_chat.status_code}')
-                                                my_popup("Ошибка при очистке групп!")
-                                        except Exception as e:
-                                            print(f'Не удалось очистить чат - {e}')
-                                            logging.error("Не удалось очистить чат")
-                                        window_confirm.close()
-                                    if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
-                                        break
-                                    if ev_confirm == 'noExit':
-                                        window_confirm.close()
-                                        break
-                            elif ev_modify_group == 'modifyGroupButton':
-                                if validate('modify_group'):
-                                    modify_group_name = val_modify_group['GroupModifyName']
-                                    modify_group_desc = val_modify_group['GroupModifyDesc']
-                                    modify_group_emergency = int(val_modify_group['GroupModifyEmergency'])
-                                    modify_group_blocked = int(val_modify_group['GroupModifyBlocked'])
-                                    modify_group_dict = {}
-                                    modify_group = False
-                                    modify_group_is_blocked = False
-                                    modify_group_dict['id'] = group_to_change['id']
-                                    if modify_group_name != group_to_change['name']:
-                                        modify_group_dict['name'] = modify_group_name
-                                        modify_group = True
-                                    if modify_group_desc != group_to_change['desc']:
-                                        modify_group_dict['description'] = modify_group_desc
-                                        modify_group = True
-                                    if modify_group_emergency != group_to_change['is_emergency']:
-                                        modify_group_dict['groupType'] = modify_group_emergency
-                                        modify_group = True
-                                    else:
-                                        modify_group_dict['groupType'] = group_to_change['is_emergency']
-                                    if modify_group:
-                                        # print(modify_group_dict)
-                                        try:
-                                            res_modify_group = requests.post(BASE_URL + 'updateGroup',
-                                                                         json=modify_group_dict,
-                                                                         headers=HEADER_dict)
+                        if not values['-groups2-']:
+                            my_popup('Не выбрана группа')
+                        else:
+                            # print('Изменяем группу')
+                            # groups_from_db = get_groups_from_db()
+                            group_to_change = groups_from_db[values['-groups2-'][0]]
+                            # print(group_to_change)
+                            window_modify_group = make_modify_group_window(group_to_change)
+                            window_modify_group.Element('GroupModifyName').SetFocus()
+                            while True:
+                                ev_modify_group, val_modify_group = window_modify_group.Read()
+                                # print(ev_modify_group, val_modify_group)
+                                if ev_modify_group == sg.WIN_CLOSED or ev_modify_group == 'Exit':
+                                    # print('Закрыл окно изменения группы')
+                                    break
+                                elif ev_modify_group == 'modifyGroupDelChat':
+                                    window_confirm = make_confirm_window('Вы уверены, что хотите очистить чат?')
+                                    while True:
+                                        ev_confirm, val_confirm = window_confirm.Read()
+                                        # print(ev_exit, val_confirm)
+                                        if ev_confirm == 'okExit':
+                                            modify_group_del_chat_dict = {}
+                                            modify_group_del_chat_dict['GroupId'] = group_to_change['id']
+                                            try:
+                                                res_modify_group_del_chat = requests.post(
+                                                BASE_URL + 'clearGroupMessages',
+                                                json=modify_group_del_chat_dict,
+                                                headers=HEADER_dict)
                                             # print(res_modify_group.status_code)
-                                            if res_modify_group.status_code == 200:
-                                                current_db += 1
-                                                logging.info(f'Группу {modify_group_name} изменили')
-                                                # break
-                                            else:
-                                                logging.error(f'ошибка изменения группы - '
-                                                              f'{res_modify_group.status_code}')
-                                        except Exception as e:
-                                            print(f'Не удалось обновить данные группы - {e}')
-                                            logging.error("Не удалось обновить данные группы")
-                                    if modify_group_blocked != group_to_change['is_disabled']:
-                                        modify_group_is_blocked = True
-                                        if modify_group_blocked:
-                                            try:
-                                                res_modify_group_is_disabled = requests.post(BASE_URL + 'disableGroup',
-                                                                                         json=modify_group_dict,
-                                                                                         headers=HEADER_dict)
-                                                if res_modify_group_is_disabled.status_code == 200:
+                                                if res_modify_group_del_chat.status_code == 200:
                                                     current_db += 1
-                                                    logging.info(f'Группа {modify_group_name} заблокирована')
-                                                elif res_modify_group_is_disabled.status_code == 400:
-                                                    logging.info(f'Группа {modify_group_name} уже была заблокирована')
+                                                    logging.info(f"Группу {group_to_change['name']} почистили")
+                                                    my_popup("Чат группы очищен")
+                                                    window_confirm.close()
                                                 else:
-                                                    logging.info(f'Группа {modify_group_name} не заблокирована, '
-                                                                 f'ошибка - {res_modify_group_is_disabled.status_code}')
+                                                    logging.error(f'ошибка очищения группы - '
+                                                                  f'{res_modify_group_del_chat.status_code}')
+                                                    my_popup("Ошибка при очистке групп!")
                                             except Exception as e:
-                                                print(f'Не удалось заблокировать группу - {e}')
-                                                logging.error("Не удалось заблокировать группу")
+                                                print(f'Не удалось очистить чат - {e}')
+                                                logging.error("Не удалось очистить чат")
+                                            window_confirm.close()
+                                        if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
+                                            break
+                                        if ev_confirm == 'noExit':
+                                            window_confirm.close()
+                                            break
+                                elif ev_modify_group == 'modifyGroupButton':
+                                    if validate('modify_group'):
+                                        modify_group_name = val_modify_group['GroupModifyName']
+                                        modify_group_desc = val_modify_group['GroupModifyDesc']
+                                        modify_group_emergency = int(val_modify_group['GroupModifyEmergency'])
+                                        modify_group_blocked = int(val_modify_group['GroupModifyBlocked'])
+                                        modify_group_dict = {}
+                                        modify_group = False
+                                        modify_group_is_blocked = False
+                                        modify_group_dict['id'] = group_to_change['id']
+                                        if modify_group_name != group_to_change['name']:
+                                            modify_group_dict['name'] = modify_group_name
+                                            modify_group = True
+                                        if modify_group_desc != group_to_change['desc']:
+                                            modify_group_dict['description'] = modify_group_desc
+                                            modify_group = True
+                                        if modify_group_emergency != group_to_change['is_emergency']:
+                                            modify_group_dict['groupType'] = modify_group_emergency
+                                            modify_group = True
                                         else:
+                                            modify_group_dict['groupType'] = group_to_change['is_emergency']
+                                        if modify_group:
+                                            # print(modify_group_dict)
                                             try:
-                                                res_modify_group_is_disabled = requests.post(BASE_URL + 'enableGroup',
-                                                                                         json=modify_group_dict,
-                                                                                         headers=HEADER_dict)
-                                                if res_modify_group_is_disabled.status_code == 200:
+                                                res_modify_group = requests.post(BASE_URL + 'updateGroup',
+                                                                             json=modify_group_dict,
+                                                                             headers=HEADER_dict)
+                                                # print(res_modify_group.status_code)
+                                                if res_modify_group.status_code == 200:
                                                     current_db += 1
-                                                    logging.info(f'Группа {modify_group_name} разблокирована')
-                                                elif res_modify_group_is_disabled.status_code == 400:
-                                                    logging.info(f'Группа {modify_group_name} уже была разблокирована')
+                                                    logging.info(f'Группу {modify_group_name} изменили')
+                                                    # break
                                                 else:
-                                                    logging.info(f'Группа {modify_group_name} не разблокирована, '
-                                                                 f'ошибка - {res_modify_group_is_disabled.status_code}')
+                                                    logging.error(f'ошибка изменения группы - '
+                                                                  f'{res_modify_group.status_code}')
                                             except Exception as e:
-                                                print(f'Не удалось разблокировать абонента - {e}')
-                                                logging.error("Не удалось разблокироватьбонента")
-                                    if modify_group or modify_group_is_blocked:
-                                        update_groups()
-                                        window_modify_group.close()
-                                        my_popup("Группа изменена!")
-                                    else:
-                                        my_popup("Нет изменений")
-                            else:
-                                window_modify_group['modifyGroupButton'].update(disabled=False)
-                                window_modify_group['modifyGroupButton'].update(button_color=button_color_2)
+                                                print(f'Не удалось обновить данные группы - {e}')
+                                                logging.error("Не удалось обновить данные группы")
+                                        if modify_group_blocked != group_to_change['is_disabled']:
+                                            modify_group_is_blocked = True
+                                            if modify_group_blocked:
+                                                try:
+                                                    res_modify_group_is_disabled = requests.post(BASE_URL + 'disableGroup',
+                                                                                             json=modify_group_dict,
+                                                                                             headers=HEADER_dict)
+                                                    if res_modify_group_is_disabled.status_code == 200:
+                                                        current_db += 1
+                                                        logging.info(f'Группа {modify_group_name} заблокирована')
+                                                    elif res_modify_group_is_disabled.status_code == 400:
+                                                        logging.info(f'Группа {modify_group_name} уже была заблокирована')
+                                                    else:
+                                                        logging.info(f'Группа {modify_group_name} не заблокирована, '
+                                                                     f'ошибка - {res_modify_group_is_disabled.status_code}')
+                                                except Exception as e:
+                                                    print(f'Не удалось заблокировать группу - {e}')
+                                                    logging.error("Не удалось заблокировать группу")
+                                            else:
+                                                try:
+                                                    res_modify_group_is_disabled = requests.post(BASE_URL + 'enableGroup',
+                                                                                             json=modify_group_dict,
+                                                                                             headers=HEADER_dict)
+                                                    if res_modify_group_is_disabled.status_code == 200:
+                                                        current_db += 1
+                                                        logging.info(f'Группа {modify_group_name} разблокирована')
+                                                    elif res_modify_group_is_disabled.status_code == 400:
+                                                        logging.info(f'Группа {modify_group_name} уже была разблокирована')
+                                                    else:
+                                                        logging.info(f'Группа {modify_group_name} не разблокирована, '
+                                                                     f'ошибка - {res_modify_group_is_disabled.status_code}')
+                                                except Exception as e:
+                                                    print(f'Не удалось разблокировать абонента - {e}')
+                                                    logging.error("Не удалось разблокироватьбонента")
+                                        if modify_group or modify_group_is_blocked:
+                                            update_groups()
+                                            window_modify_group.close()
+                                            my_popup("Группа изменена!")
+                                        else:
+                                            my_popup("Нет изменений")
+                                else:
+                                    window_modify_group['modifyGroupButton'].update(disabled=False)
+                                    window_modify_group['modifyGroupButton'].update(button_color=button_color_2)
                         additional_window = False
                     if event == 'Очистить чат':
                         additional_window = True
-                        window_confirm = make_confirm_window('Вы уверены, что хотите очистить чат?')
-                        while True:
-                            ev_confirm, val_confirm = window_confirm.Read()
-                            # print(ev_exit, val_confirm)
-                            if ev_confirm == 'okExit':
-                                group_to_change = groups_from_db[values['-groups2-'][0]]
-                                modify_group_del_chat_dict = {'GroupId': group_to_change['id']}
-                                try:
-                                    res_modify_group_del_chat = requests.post(BASE_URL + 'clearGroupMessages',
-                                                                          json=modify_group_del_chat_dict,
-                                                                          headers=HEADER_dict)
-                                    # print(res_modify_group.status_code)
-                                    if res_modify_group_del_chat.status_code == 200:
-                                        current_db += 1
-                                        logging.info(f"Группу {group_to_change['name']} почистили")
-                                        my_popup("Чат группы очищен")
-                                    else:
-                                        logging.error(f'ошибка очищения группы - '
-                                                      f'{res_modify_group_del_chat.status_code}')
-                                        my_popup("Ошибка при очистке групп!")
-                                except Exception as e:
-                                    print(f'Не удалось очистить чат - {e}')
-                                    logging.error("Не удалось очистить чат")
-                                window_confirm.close()
-                            if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
-                                break
-                            if ev_confirm == 'noExit':
-                                window_confirm.close()
-                                break
+                        if not values['-groups2-']:
+                            my_popup('Не выбрана группа')
+                        else:
+                            window_confirm = make_confirm_window('Вы уверены, что хотите очистить чат?')
+                            while True:
+                                ev_confirm, val_confirm = window_confirm.Read()
+                                # print(ev_exit, val_confirm)
+                                if ev_confirm == 'okExit':
+                                    group_to_change = groups_from_db[values['-groups2-'][0]]
+                                    modify_group_del_chat_dict = {'GroupId': group_to_change['id']}
+                                    try:
+                                        res_modify_group_del_chat = requests.post(BASE_URL + 'clearGroupMessages',
+                                                                              json=modify_group_del_chat_dict,
+                                                                              headers=HEADER_dict)
+                                        # print(res_modify_group.status_code)
+                                        if res_modify_group_del_chat.status_code == 200:
+                                            current_db += 1
+                                            logging.info(f"Группу {group_to_change['name']} почистили")
+                                            my_popup("Чат группы очищен")
+                                        else:
+                                            logging.error(f'ошибка очищения группы - '
+                                                          f'{res_modify_group_del_chat.status_code}')
+                                            my_popup("Ошибка при очистке групп!")
+                                    except Exception as e:
+                                        print(f'Не удалось очистить чат - {e}')
+                                        logging.error("Не удалось очистить чат")
+                                    window_confirm.close()
+                                if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
+                                    break
+                                if ev_confirm == 'noExit':
+                                    window_confirm.close()
+                                    break
                         additional_window = False
                     if event == '-TREE-' and values['-TREE-'] != []:
                         group_id = values['-TREE-'][0]
