@@ -18,6 +18,7 @@ import ipaddress
 import logging
 import sys
 from enum import Enum
+import re
 
 ICON_BASE_64 = b'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'
 ICON_BLANK_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZSURBVDhPY/hPIhjVQAwY1UAMGHQa/v8HAK+t/R8kTA7nAAAAAElFTkSuQmCC'
@@ -60,7 +61,7 @@ DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
 DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
-version = '1.1.1'
+version = '1.1.2'
 
 def get_branch():
     get_branch_com = "git rev-parse --symbolic --abbrev-ref HEAD"
@@ -870,7 +871,7 @@ def make_add_lic():
                              disabled=True,
                              bind_return_key=True)]], expand_x=True)],
                   [sg.Frame('Лицензия',
-                            [[sg.Table(LICS, headings=['Наименование', 'Количество', 'Дата'],
+                            [[sg.Table([], headings=['Наименование', 'Количество', 'Дата'],
                                        justification="left",
                                        # num_rows=40,
                                        # enable_events=True,
@@ -1174,7 +1175,7 @@ def make_modify_user_window(user: dict):
                                         size=(4, 1),
                                         disabled=True if user['is_admin'] else False,
                                         enable_events=True,
-                                        tooltip=('От 1 до 15'))],
+                                        tooltip=('От 0 до 15'))],
         [sg.Push(), sg.Checkbox('Заблокирован',
                                 default=user['is_blocked'],
                                 disabled=True if user['is_admin'] else False,
@@ -1783,13 +1784,32 @@ def my_popup2(message):
                     # disable_minimize=True,
                     modal=True).read(close=True)
 
+
+def validate_input(field:str, type:int=1):
+    if type == 1:
+        if re.search('[^\w-]', field):
+            return True
+    elif type == 2:
+        if re.search("[^\w\s-]", field):
+            return True
+        return False
+
+
 def validate(window: str):
     result = True
     if window == 'add_user':
         print(val_add_user)
         if 0 < len(str(val_add_user['UserLogin'])) <= MAX_LEN_LOGIN:
-            window_add_user['UserLogin'].update(background_color=omega_theme['BACKGROUND'],
+            if not validate_input(str(val_add_user['UserLogin'])):
+                window_add_user['UserLogin'].update(background_color=omega_theme['BACKGROUND'],
                                                 text_color=omega_theme['TEXT'])
+            else:
+                my_popup('Логин содержит недопустимые символы\n'
+                         'Используйте только буквы, цифры и символы - и _')
+                window_add_user.Element('UserLogin').SetFocus()
+                window_add_user['UserLogin'].update(background_color=button_color_2,
+                                                    text_color=omega_theme['BACKGROUND'])
+                return False
         else:
             my_popup(("Логин должен быть не более " + str(MAX_LEN_LOGIN) + " символов"))
             window_add_user.Element('UserLogin').SetFocus()
@@ -1797,8 +1817,16 @@ def validate(window: str):
                                                 text_color=omega_theme['BACKGROUND'])
             return False
         if 0 < len(str(val_add_user['UserName'])) <= MAX_LEN_USERNAME:
-            window_add_user['UserName'].update(background_color=omega_theme['BACKGROUND'],
-                                               text_color=omega_theme['TEXT'])
+            if not validate_input(str(val_add_user['UserName']), 2):
+                window_add_user['UserName'].update(background_color=omega_theme['BACKGROUND'],
+                                                   text_color=omega_theme['TEXT'])
+            else:
+                my_popup('Имя пользователя содержит недопустимые символы\n'
+                         'Используйте только буквы, цифры и символы -, _ и пробел')
+                window_add_user.Element('UserName').SetFocus()
+                window_add_user['UserName'].update(background_color=button_color_2,
+                                                    text_color=omega_theme['BACKGROUND'])
+                return False
         else:
             my_popup(("Имя должно быть не более " + str(MAX_LEN_USERNAME) + " символов"))
             window_add_user.Element('UserName').SetFocus()
@@ -1836,8 +1864,16 @@ def validate(window: str):
     elif window == 'modify_user':
         print(val_modify_user)
         if 0 < len(str(val_modify_user['UserModifyName'])) <= MAX_LEN_USERNAME:
-            window_modify_user['UserModifyName'].update(background_color=omega_theme['BACKGROUND'],
-                                                        text_color=omega_theme['TEXT'])
+            if not validate_input(str(val_modify_user['UserModifyName']), 2):
+                window_modify_user['UserModifyName'].update(background_color=omega_theme['BACKGROUND'],
+                                                            text_color=omega_theme['TEXT'])
+            else:
+                my_popup('Имя пользователя содержит недопустимые символы\n'
+                         'Используйте только буквы, цифры и символы -, _ и пробел')
+                window_modify_user.Element('UserModifyName').SetFocus()
+                window_modify_user['UserModifyName'].update(background_color=button_color_2,
+                                                    text_color=omega_theme['BACKGROUND'])
+                return False
         else:
             my_popup(("Имя должно быть не более " + str(MAX_LEN_USERNAME) + " символов"))
             window_modify_user.Element('UserModifyName').SetFocus()
@@ -1876,8 +1912,16 @@ def validate(window: str):
     if window == 'add_group':
         print(val_add_group)
         if 0 < len(str(val_add_group['GroupName'])) <= MAX_LEN_GROUPNAME:
-            window_add_group['GroupName'].update(background_color=omega_theme['BACKGROUND'],
-                                                 text_color=omega_theme['TEXT'])
+            if not validate_input(str(val_add_group['GroupName']), 2):
+                window_add_group['GroupName'].update(background_color=omega_theme['BACKGROUND'],
+                                                     text_color=omega_theme['TEXT'])
+            else:
+                my_popup('Имя группы содержит недопустимые символы\n'
+                         'Используйте только буквы, цифры и символы -, _ и пробел')
+                window_add_group.Element('GroupName').SetFocus()
+                window_add_group['GroupName'].update(background_color=button_color_2,
+                                                    text_color=omega_theme['BACKGROUND'])
+                return False
         else:
             my_popup(("Имя должно быть не более " + str(MAX_LEN_GROUPNAME) + " символов"))
             window_add_group.Element('GroupName').SetFocus()
@@ -1885,8 +1929,16 @@ def validate(window: str):
                                                  text_color=omega_theme['BACKGROUND'])
             return False
         if 0 <= len(str(val_add_group['description'])) <= MAX_LEN_GROUPDESC:
-            window_add_group['description'].update(background_color=omega_theme['BACKGROUND'],
-                                                   text_color=omega_theme['TEXT'])
+            if not validate_input(str(val_add_group['description']), 2):
+                window_add_group['description'].update(background_color=omega_theme['BACKGROUND'],
+                                                       text_color=omega_theme['TEXT'])
+            else:
+                my_popup('Описание группы содержит недопустимые символы\n'
+                         'Используйте только буквы, цифры и символы -, _ и пробел')
+                window_add_group.Element('description').SetFocus()
+                window_add_group['description'].update(background_color=button_color_2,
+                                                    text_color=omega_theme['BACKGROUND'])
+                return False
         else:
             my_popup(("Имя должно быть не более " + str(MAX_LEN_GROUPDESC) + " символов"))
             window_add_group.Element('description').SetFocus()
@@ -2021,8 +2073,16 @@ def validate(window: str):
     if window == 'clone_user':
         print(val_clone_user)
         if 0 < len(str(val_clone_user['CloneUserLogin'])) <= MAX_LEN_LOGIN:
-            window_clone_user['CloneUserLogin'].update(background_color=omega_theme['BACKGROUND'],
-                                                       text_color=omega_theme['TEXT'])
+            if not validate_input(str(val_clone_user['CloneUserLogin'])):
+                window_clone_user['CloneUserLogin'].update(background_color=omega_theme['BACKGROUND'],
+                                                           text_color=omega_theme['TEXT'])
+            else:
+                my_popup('Логин пользователя содержит недопустимые символы\n'
+                         'Используйте только буквы, цифры и символы - и _')
+                window_clone_user.Element('CloneUserLogin').SetFocus()
+                window_clone_user['CloneUserLogin'].update(background_color=button_color_2,
+                                                    text_color=omega_theme['BACKGROUND'])
+                return False
         else:
             my_popup(("Логин должен быть не более " + str(MAX_LEN_LOGIN) + " символов"))
             window_clone_user.Element('CloneUserLogin').SetFocus()
@@ -2030,8 +2090,16 @@ def validate(window: str):
                                                        text_color=omega_theme['BACKGROUND'])
             return False
         if 0 < len(str(val_clone_user['CloneUserName'])) <= MAX_LEN_USERNAME:
-            window_clone_user['CloneUserName'].update(background_color=omega_theme['BACKGROUND'],
-                                                      text_color=omega_theme['TEXT'])
+            if not validate_input(str(val_clone_user['CloneUserName']), 2):
+                window_clone_user['CloneUserName'].update(background_color=omega_theme['BACKGROUND'],
+                                                          text_color=omega_theme['TEXT'])
+            else:
+                my_popup('Имя пользователя содержит недопустимые символы\n'
+                         'Используйте только буквы, цифры и символы -, _ и пробел')
+                window_clone_user.Element('CloneUserName').SetFocus()
+                window_clone_user['CloneUserName'].update(background_color=button_color_2,
+                                                    text_color=omega_theme['BACKGROUND'])
+                return False
         else:
             my_popup(("Имя должно быть не более " + str(MAX_LEN_USERNAME) + " символов"))
             window_clone_user.Element('CloneUserName').SetFocus()
@@ -2645,7 +2713,8 @@ if __name__ == '__main__':
                                 if ev_modify_user == 'UserModifyPriority':
                                     if val_modify_user['UserModifyPriority'] == '':
                                         window_modify_user['UserModifyPriority'].update(
-                                            background_color=omega_theme['INPUT'])
+                                            background_color=omega_theme['INPUT'],
+                                            text_color=omega_theme['TEXT'])
                                     elif len(val_modify_user['UserModifyPriority']) > 2:
                                         window_modify_user['UserModifyPriority'].update(
                                             val_modify_user['UserModifyPriority'][:2])
@@ -2653,7 +2722,9 @@ if __name__ == '__main__':
                                         window_modify_user['UserModifyPriority'].update(
                                             background_color=omega_theme['INPUT'])
                                         if 0 <= int(val_modify_user['UserModifyPriority'][:2]) <= 15:
-                                            pass
+                                            window_modify_user['UserModifyPriority'].update(
+                                                background_color=omega_theme['INPUT'],
+                                                text_color=omega_theme['TEXT'])
                                         else:
                                             window_modify_user['UserModifyPriority'].update(
                                                 background_color=button_color_2)
@@ -2895,7 +2966,7 @@ if __name__ == '__main__':
                                 # print('Закрыл окно изменения группы')
                                 break
                             elif ev_modify_group == 'modifyGroupDelChat':
-                                window_confirm = make_confirm_window('Вы уверены, что хотите очистить чат????')
+                                window_confirm = make_confirm_window('Вы уверены, что хотите очистить чат?')
                                 while True:
                                     ev_confirm, val_confirm = window_confirm.Read()
                                     # print(ev_exit, val_confirm)
@@ -2911,7 +2982,7 @@ if __name__ == '__main__':
                                             if res_modify_group_del_chat.status_code == 200:
                                                 current_db += 1
                                                 logging.info(f"Группу {group_to_change['name']} почистили")
-                                                my_popup("Группа почищена!")
+                                                my_popup("Чат группы очищен")
                                                 window_confirm.close()
                                             else:
                                                 logging.error(f'ошибка очищения группы - '
@@ -3010,7 +3081,7 @@ if __name__ == '__main__':
                         additional_window = False
                     if event == 'Очистить чат':
                         additional_window = True
-                        window_confirm = make_confirm_window('Вы уверены, что хотите очистить чат????')
+                        window_confirm = make_confirm_window('Вы уверены, что хотите очистить чат?')
                         while True:
                             ev_confirm, val_confirm = window_confirm.Read()
                             # print(ev_exit, val_confirm)
@@ -3025,7 +3096,7 @@ if __name__ == '__main__':
                                     if res_modify_group_del_chat.status_code == 200:
                                         current_db += 1
                                         logging.info(f"Группу {group_to_change['name']} почистили")
-                                        my_popup("Группа почищена!")
+                                        my_popup("Чат группы очищен")
                                     else:
                                         logging.error(f'ошибка очищения группы - '
                                                       f'{res_modify_group_del_chat.status_code}')
@@ -3220,9 +3291,10 @@ if __name__ == '__main__':
                                 window_add_lic['Загрузить'].update(disabled=False)
                                 window_add_lic['show_cur_lic'].update(disabled=False)
                                 machine_id = get_id('Linux')  # TODO
-                                start_command = "$HOME/Omega/Licensing/ValidateCli validate --license $HOME/Omega/new.lic" + \
+                                check_remote_command = "$HOME/Omega/Licensing/ValidateCli validate --license $HOME/Omega/new.lic" + \
                                                 ' --public $HOME/Omega/keys/pub.pem --machine-id ' + \
                                                 machine_id
+                                print(check_remote_command)
                                 output = ''
                                 if ip != '127.0.0.1':
                                     try:
@@ -3232,7 +3304,7 @@ if __name__ == '__main__':
                                         ftp_client = ssh.open_sftp()
                                         ftp_client.put(val_add_lic['-FILENAME-'], '/home/omega/Omega/new.lic')
                                         ftp_client.close()
-                                        stdin, stdout, stderr = ssh.exec_command(start_command)
+                                        stdin, stdout, stderr = ssh.exec_command(check_remote_command)
                                         stdout = stdout.readlines()
                                         ssh.close()
                                         # output = ''
@@ -3251,6 +3323,7 @@ if __name__ == '__main__':
                                         start_command = "$HOME/Omega/Licensing/ValidateCli validate --license " + \
                                                         val_add_lic['-FILENAME-'] + \
                                                         ' --public $HOME/Omega/keys/pub.pem'
+                                        print(start_command)
                                         process = subprocess.Popen(start_command, shell=True,
                                                                    stdout=subprocess.PIPE,
                                                                    stderr=subprocess.PIPE)
@@ -3271,11 +3344,11 @@ if __name__ == '__main__':
                                         #     my_popup('Файл лицензии не скопирован!')
                                         #     print(f'{e}')
                                         # window_add_lic['restart'].update(disabled=False)
-                                        # print(type(output))
-                                        # print(output)
+                                        print(type(output))
+                                        print(output)
                                         # print(output == True)
                                 if output:
-                                    if output.find('USAGE') == -1:
+                                    if output.find('USAGE') == -1 and output.rstrip('\n') != 'Validation Failed':
                                         index = output.find('{')
                                         lics: dict = json.loads(output[index:])
                                         # print(type(lics))
@@ -3293,19 +3366,9 @@ if __name__ == '__main__':
                                             print(feature_name, '+', lics['ExpirationDate'])
                                             LICS.append([feature_name, '+', lics['ExpirationDate']])
                                         window_add_lic['-lic-'].update(LICS)
-                                        # if ip != '127.0.0.1':
-                                        #     change_state_command = 'echo -n 5 > /home/omega/Omega/.licenseState'
-                                        #     stdin, stdout, stderr = ssh.exec_command(change_state_command)
-                                        #     stdout = stdout.readlines()
-                                        #     ssh.close()
-                                        #     output = ''
-                                        #     for line in stdout:
-                                        #         output = output + line
-                                        #     print(output)
-                                        # else:
-                                        #     with open("/home/omega/Omega/.licenseState", mode='w') as f_lic_st:
-                                        #         f_lic_st.write("5")
-                                        #         print("файл записан")
+                                    else:
+                                        my_popup("Проблема с лицензией")
+                                        logging.error(f"Проблема с лицензией")
                                 else:
                                     my_popup("Проблема с лицензией")
                                     logging.error(f"Проблема с лицензией")
