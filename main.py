@@ -637,7 +637,9 @@ def make_main_window(ip):
                                    right_click_menu=[1, 'Изменить пользователя'],
                                    select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                                    selected_row_colors='black on lightblue',
-                                   auto_size_columns=False, col_widths=[0, 10, 20, 5, 5, 5, 5])], ],
+                                   auto_size_columns=False,
+                                   col_widths=[0, 10, 20, 5, 5, 5, 5],
+                                   )], ],
                      expand_x=True,
                      expand_y=True,
                      size=(480, 300)),
@@ -686,8 +688,12 @@ def make_main_window(ip):
                                 select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                                 selected_row_colors='black on lightblue',
                                 visible_column_map=[False, True, True, True, True],
-                                key='-groups2-', expand_y=True, expand_x=True,
-                                auto_size_columns=False, col_widths=[0, 10, 30, 5, 5])], ],
+                                key='-groups2-',
+                                expand_y=True,
+                                expand_x=True,
+                                auto_size_columns=False,
+                                col_widths=[0, 10, 30, 5, 5],
+                                )], ],
                   expand_x=True,
                   expand_y=True,
                   size=(480, 300)),
@@ -704,7 +710,9 @@ def make_main_window(ip):
                                             expand_y=True,
                                             select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                                             selected_row_colors='black on lightblue',
-                                            ), ]], expand_y=True, expand_x=True),
+                                            ), ]],
+                  expand_y=True,
+                  expand_x=True),
          ],
         [sg.Push(),
          sg.Checkbox('Выбрать всех пользователей', enable_events=True, key='-checkAllUsers-', default=False,
@@ -2288,6 +2296,10 @@ def set_buttons_disabled(set=True):
     window['-checkAllUsers-'].update(disabled=set)
     window['-partially-dropDB-'].update(disabled=set)
     window['-dropDB-'].update(disabled=set)
+    window['-users-'].update(visible=not set)
+    window['-groups2-'].update(visible=not set)
+    window['-TREE-'].update(visible=not set)
+    window['-TREE2-'].update(visible=not set)
     # window['-filterUser-'].update('')
 
 
@@ -2466,8 +2478,9 @@ if __name__ == '__main__':
                 if server_status['run']:
                     set_window_running_server()
                 else:
-                    set_window_not_running_server()
-
+                    # set_window_not_running_server()
+                    set_buttons_disabled()
+                    window.Element('-Start-').SetFocus()
                 filter_status = False
                 filter_status_group = False
                 filter_status_journal = False
@@ -3500,7 +3513,9 @@ if __name__ == '__main__':
                                 print('Перезагружаем сервер')
                                 try:
                                     window_add_lic.close()
-                                    set_window_not_running_server()
+                                    # set_window_not_running_server()
+                                    set_buttons_disabled()
+                                    window.Element('-Start-').SetFocus()
                                     window['-users-'].update([[]])
                                     window['-groups2-'].update([[]])
                                     clear_treedata = sg.TreeData()
@@ -4616,25 +4631,30 @@ if __name__ == '__main__':
                                 clear_treedata = sg.TreeData()
                                 window['-TREE-'].update(clear_treedata)
                                 window['-TREE2-'].update(clear_treedata)
-                                window['-AddUser-'].update(disabled=True)
-                                window['-DelUser-'].update(disabled=True)
-                                window['-CloneUser-'].update(disabled=True)
-                                window['-AddGroup-'].update(disabled=True)
-                                window['-DelGroup-'].update(disabled=True)
-                                window['-filterUser-'].update(disabled=True)
-                                window['-filterGroup-'].update(disabled=True)
+                                set_buttons_disabled()
+                                # window['-AddUser-'].update(disabled=True)
+                                # window['-DelUser-'].update(disabled=True)
+                                # window['-CloneUser-'].update(disabled=True)
+                                # window['-AddGroup-'].update(disabled=True)
+                                # window['-DelGroup-'].update(disabled=True)
+                                # window['-filterUser-'].update(disabled=True)
+                                # window['-filterGroup-'].update(disabled=True)
                                 window['Apply'].update(disabled=True)
                                 window['Apply2'].update(disabled=True)
-                                window['-checkAllGroups-'].update(disabled=True)
-                                window['-checkAllUsers-'].update(disabled=True)
-                                window['-partially-dropDB-'].update(disabled=True)
-                                window['-dropDB-'].update(disabled=True)
+                                # window['-checkAllGroups-'].update(disabled=True)
+                                # window['-checkAllUsers-'].update(disabled=True)
+                                # window['-partially-dropDB-'].update(disabled=True)
+                                # window['-dropDB-'].update(disabled=True)
                                 window['-Menu-'].update([
                                     ['Сервер', ['Установить лицензию...', '!Настройки']],
                                     ['Помощь', 'О программе'], ])
                                 server_status['run'] = False
                                 update_free_space({'freeSpace': 0, 'spaceTotal': 1})
                                 window['online-users'].update('')
+                                # window['-users-'].update(visible=False)
+                                # window['-groups2-'].update(visible=False)
+                                # window['-TREE-'].update(visible=False)
+                                # window['-TREE2-'].update(visible=False)
                                 # server_status['last_state'] = True
                                 # print(server_status)
                                 break
