@@ -61,7 +61,7 @@ DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
 DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
-version = '1.1.2'
+version = '1.1.3'
 
 def get_branch():
     get_branch_com = "git rev-parse --symbolic --abbrev-ref HEAD"
@@ -1303,7 +1303,7 @@ def make_del_group_window(group):
 
 
 def make_exit_window():
-    exit_text = 'Вы уверены, что хотите выйти???'
+    exit_text = 'Вы уверены, что хотите выйти?'
     layout_exit = [
         [sg.Text(exit_text)],
         [sg.Push(), sg.Button('Да', key="okExit", pad=((0, 10), (10, 10)), size=10),
@@ -1813,7 +1813,7 @@ def validate(window: str):
                                                 text_color=omega_theme['TEXT'])
             else:
                 my_popup('Логин содержит недопустимые символы\n'
-                         'Используйте только буквы, цифры и символы - и _')
+                         'Используйте только буквы, цифры и символы: "-" и "_"')
                 window_add_user.Element('UserLogin').SetFocus()
                 window_add_user['UserLogin'].update(background_color=button_color_2,
                                                     text_color=omega_theme['BACKGROUND'])
@@ -1830,7 +1830,7 @@ def validate(window: str):
                                                    text_color=omega_theme['TEXT'])
             else:
                 my_popup('Имя пользователя содержит недопустимые символы\n'
-                         'Используйте только буквы, цифры и символы -, _ и пробел')
+                         'Используйте только буквы, цифры и символы: "-" и "_" и пробел')
                 window_add_user.Element('UserName').SetFocus()
                 window_add_user['UserName'].update(background_color=button_color_2,
                                                     text_color=omega_theme['BACKGROUND'])
@@ -1877,7 +1877,7 @@ def validate(window: str):
                                                             text_color=omega_theme['TEXT'])
             else:
                 my_popup('Имя пользователя содержит недопустимые символы\n'
-                         'Используйте только буквы, цифры и символы -, _ и пробел')
+                         'Используйте только буквы, цифры и символы: "-" и "_" и пробел')
                 window_modify_user.Element('UserModifyName').SetFocus()
                 window_modify_user['UserModifyName'].update(background_color=button_color_2,
                                                     text_color=omega_theme['BACKGROUND'])
@@ -1925,7 +1925,7 @@ def validate(window: str):
                                                      text_color=omega_theme['TEXT'])
             else:
                 my_popup('Имя группы содержит недопустимые символы\n'
-                         'Используйте только буквы, цифры и символы -, _ и пробел')
+                         'Используйте только буквы, цифры и символы: "-" и "_" и пробел')
                 window_add_group.Element('GroupName').SetFocus()
                 window_add_group['GroupName'].update(background_color=button_color_2,
                                                     text_color=omega_theme['BACKGROUND'])
@@ -1942,7 +1942,7 @@ def validate(window: str):
                                                        text_color=omega_theme['TEXT'])
             else:
                 my_popup('Описание группы содержит недопустимые символы\n'
-                         'Используйте только буквы, цифры и символы -, _ и пробел')
+                         'Используйте только буквы, цифры и символы: "-" и "_" и пробел')
                 window_add_group.Element('description').SetFocus()
                 window_add_group['description'].update(background_color=button_color_2,
                                                     text_color=omega_theme['BACKGROUND'])
@@ -2086,7 +2086,7 @@ def validate(window: str):
                                                            text_color=omega_theme['TEXT'])
             else:
                 my_popup('Логин пользователя содержит недопустимые символы\n'
-                         'Используйте только буквы, цифры и символы - и _')
+                         'Используйте только буквы, цифры и символы: "-" и "_"')
                 window_clone_user.Element('CloneUserLogin').SetFocus()
                 window_clone_user['CloneUserLogin'].update(background_color=button_color_2,
                                                     text_color=omega_theme['BACKGROUND'])
@@ -2103,7 +2103,7 @@ def validate(window: str):
                                                           text_color=omega_theme['TEXT'])
             else:
                 my_popup('Имя пользователя содержит недопустимые символы\n'
-                         'Используйте только буквы, цифры и символы -, _ и пробел')
+                         'Используйте только буквы, цифры и символы: "-" и "_" и пробел')
                 window_clone_user.Element('CloneUserName').SetFocus()
                 window_clone_user['CloneUserName'].update(background_color=button_color_2,
                                                     text_color=omega_theme['BACKGROUND'])
@@ -4781,7 +4781,7 @@ if __name__ == '__main__':
                             window['Apply2'].update(disabled=False)
                     if event == '-dropDB-':
                         additional_window = True
-                        window_confirm = make_confirm_window('Вы уверены, что хотите удалить всю БД и все файлы???')
+                        window_confirm = make_confirm_window('Вы уверены, что хотите удалить всю БД и все файлы?')
                         while True:
                             ev_confirm, val_confirm = window_confirm.Read()
                             # print(ev_exit, val_confirm)
@@ -4812,7 +4812,7 @@ if __name__ == '__main__':
                     if event == '-partially-dropDB-':
                         additional_window = True
                         window_confirm = make_confirm_window('Вы уверены, что хотите удалить '
-                                                             'все данные, кроме абонентов и групп???')
+                                                             'все данные, кроме абонентов и групп?')
                         while True:
                             ev_confirm, val_confirm = window_confirm.Read()
                             # print(ev_exit, val_confirm)
