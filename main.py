@@ -27,6 +27,10 @@ ICON_SHOW_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs
 # ICON_HIDE_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAzlJREFUWEfFllmojVEYhp9jOGYns2RMpmQqZShliAuJ3IgSDsmUDJFkynBBUrhAISK5UDJcKIkonFA4JENcmDMmMxl69S2ts1p7n/8/e9vem73/tb7hXeubVhH/GUUF8t8buBbzVQgCm4F5wAOgY0jiXxOoCXwzpyKyoNAELgN9gV9AtXyGQDfXCGhuRl8Ab82R89MaeGQfY4EjuRIoBjYCswBdbQzfgd121c+BEuA90DBTsifJgRrAWWBgFSumHfCwqgSmAHsCZWXzKuAE8M72dMIRwBqgkyev0uuTjXi2GzgHDPKU9wLTgJ+V3ITCtMhkalkV1Ac+pMmBJ0ArU1ByKaE+BQaqA/0tHy4CXwGFS3kgbAPm2P/HgMg0S1KGz4CWJngMGBNhfhAYH6yft1IbEJRdN+CWyb4Bmvh6YQiuAmqbwhZgfsT5UWB0JWEYBxzyZNYCy+37DtDV7fkE1gNLbEPxLo04USxVVkKZ5Yhy4jgw0tY/ApILsRWYa4vbgdn67wgoc+/a5g2gZ4YTrgRWRzrbcOCk6ajfq1JiEOl+ttELKHcElEBqNEILQJ0tBp10FKCkauMJ/LD43wR6ZNDVssrVla6StdgRkFK5KV7yWIa2FEfFUxBhGVkHLLO12lYNmTicBobYppK1zM8BlY3arKB4aYSGkFPdlqABo7xZat+7gOlZTu8TPQBMlGxYBcrQzmZEXU0dL8QMYEdkPVtTU2NSgxLUltWe/yCmpFrVpBP2A5MizkRSdd/U9nQanSoGZfxM21A3bOALZWL9GmhsgmpM7b2HhdN/aQQ+A3UjntUV7wNtbU/lq+mo0P1FtmvTIFGpOGwCFpuBwcAZ2+jilbCT9eOttQrNJykByS0E5NjHdSs1vXBuA2q1wlBgg72AfPkVVinR+CR5D6i0rgDdIxbqAF+AepFpd8/aejjEKphJQsApyMlOYIIt7AMm2391vg42qg8DU72WHT25W0xDQDqngGGm7HT1q3H9FFBHTIU0BDRGX5l1DSoNrJyRhoAemZoTirlinxckJaC+fcE8KhndAyNnEkkJ6AGih4gy27XqnJ3LQFICktWbzg2ivDhPSyBvTn1DvwGQ9JMh9I2ufAAAAABJRU5ErkJggg=='
 ICON_HIDE_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAU9JREFUOE+V088rp2EUBfCPYSZJmcgsSGOhzExpsrCwMMWfYGMnyU7ZKAsLNJtpasrGYmYxK/4IFpQdUhJSI+Xnhkg2mmGGnum+9fbN1zfP7n3ec84999z7lHn+eYF/Ga3s+Xy36MJK4pYSKA/MXRQawwSqn3LwGktoL3C3iY9owX4xgW8YxSr6cBTAJmzFd1teON/CIrrRHMBKzONliB0j3X1GJz7lM/iBoQCkkNJJSW/gdxB+BqYi7mYxkBx8wA7qcJmzfIAUYgfWCgKvwVXKJGvhL75jOASS1Rv0YAGDmMv1Po0RVGQCtbjAF4wHMInNhFBVjjyFSbzBeT7ERpxgN0b4J3JoxS+8wjrSFN5mEypcpNTzNt5F5UO8xxnqsReZZYtVdBMbcIpkvTdIX3FduPrFVjlVXkZ/qbfymEAWaKl38l+7GCjd35eqnv4/AN2DP0ArBQAaAAAAAElFTkSuQmCC'
 ICON_CHECK_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAsQAAALEBxi1JjQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAASfSURBVFiFzZdfbBRFHMc/M7t3Vwq09qCAxPKnJbYFKqSatCgEMdGgCKT+xagxkGCID0bA+CT4NyEN/iHBF6I+qPFBTCu+8IKQGMSWllJLQFqsEdoCd71ry9Frr3d7N+PD9Y52uS1XbaLfZLOzs7/5fT87szs7A/+xxCRipwOPAZVAEZALRIA+4BzQCLRPNSDA48IQR4UUMUBPdEhTdgC7gRlZ5K0AKibqgUphigM6rtcACCkoKPfiLZuFp8CDJz8HZSmioSihzgH6zgeJhqIACEMEdULvBr52yL0BqAOGnAC2CSEOaa1Nd56bJU+Xcs/DRbjz3I60OqHpbfXTWXeJgfZ+hCES1furZzbsaog4mHuA/ZkAaoG3ABY/WULpC+WYuaajcSb1tvhACOZUzm1Qluupo8997xu9tR74AcgBDgA77QBvAJ9Kl6Rix0qKHlkwKWMHdZhQfaTmSLXdHGDsoz2K4GOAyl0PMK96/lSYA5ReOdlzHFhqNweQo2e3dMkv0MjSLeVTaU6g1U/bwdbKTOZjAXYoSy2YuTCPJc/eO6XmzfuaUFaCRU8UR2vqaz60x0hACkPuASh/eRlCTGZuys588cYSlm+/zxOTaqc9TgKrdELNnj5/BnPun5sxWd+FIG2ftRK9MZKVeW+Lj+Z9p9Pmy7ZVJM202JIJYDPAvKq7HRNeO3mV7uNXaNhz6o4QvS0+ztQ2oSxF8aZb5gAaSjbU1ywfByBMYx1A4Yo5jknLXlpKfsldhHsGaXj7F0b6M0MEWv2cqW1GWYrFG0tYurVi3P3ojSh/1nVsHweAVsUA0wqnOQK4ZriofvehJMTVMI17b4ewj/nYJ0/p/OdttH/7++tA1S0ARR6Ax5vjCJAJomHPLYhszAF0XKeK89IA6SptD88MUbX3QfIW5TN0LUzj3lN0n+hKv3D2MbcrEUukiioNICQhwHFc7XLnuVn1werRnhik7eBZxzG3a2Qg7XEjDYCgEyASGM4KAMYPBzBht6ektSYSSP8YO1MFU8f1CaAq0OqncKXzl5AJYtX7q7l5JYS3fNYd4wfa+4kPW0iX7FKWup6ql8CPAL7TPsfGTjJzzazMAfxNSU9lqe/G1kugSZrSN+wfwtd4PVPbfy0rbNH1U1fqst4OoFVcvQNw8ZsL6IRiqtVZdwkrHEOY4gTJxWtaxui5Tbrki7FQ1KvjmtkrCqfMvP9iH+cPtaG11iieAcaNdep3HFeW2iqESHTWX+Lqz91TYh4JDNNS24SKK9B8ArTaY4wx5S6gG9jsb/ZhmEbWL1gm3bwc4vR7DYz0jyAMcRzNK2SY7gzb9W9IQLE2eC4gIsFhvGVeDE/2i1Kd0HQdu8zZj5qJ3YwhTKNRJ9QmkpuY2+S0+nheSPGVVtpj5poUb15C0boFTCvMdTSOj8TxN/v443AH4Z7BZKXkSxSvATGndhMtf8qFIfbrhN6QqsgvzqegbBY5BTl4CjzEh+NE+iKEewYJnguirORcL13yL2WpN7F9cv9Ua6SUh4UhhphoayZICFP8CrwKuLJNPpkFoBtYS3JzupDk5jQKBIALwDEgOIl8/w/9DR5k79YG7eHTAAAAAElFTkSuQmCC'
+SYMBOL_UP = '▲'
+SYMBOL_RIGHT = '►'
+SYMBOL_LEFT = '◄'
+SYMBOL_DOWN = '▼'
 MAX_LEN_LOGIN = 10
 MAX_LEN_USERNAME = 20
 MIN_LEN_PASSWORD = 6
@@ -61,7 +65,7 @@ DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
 DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
-version = '1.1.3'
+version = '1.1.5'
 
 def get_branch():
     get_branch_com = "git rev-parse --symbolic --abbrev-ref HEAD"
@@ -771,7 +775,14 @@ def make_main_window(ip):
             [[sg.Tab('Пользователи', tab1_layout, key="Tab1"),
               sg.Tab('Группы', tab2_layout, key="Tab2"),
               sg.Tab('Журнал', tab3_layout, key="Tab3"),
-              ]], key="Tabs", size=(1000, 660), enable_events=True),
+              ]], key="Tabs", size=(1000, 660),
+            pad=(0, 0),
+            enable_events=True),
+            sg.B(SYMBOL_RIGHT, pad=(5, 0),
+                 disabled_button_color='gray',
+                 # mouseover_colors='white',
+                 k='-hide-online-'),
+            sg.pin(
             sg.Frame('Онлайн', [[sg.Multiline('',
                                               # expand_x=True,
                                               horizontal_scroll=True,
@@ -782,9 +793,19 @@ def make_main_window(ip):
                                               disabled=True,
                                               auto_refresh=True, )]],
                      expand_x=True, expand_y=True,
-                     pad=((0, 5), (18, 2)))
+                     pad=((0, 5), (18, 2)),
+                     key='-frame-online-'
+                     ),
+                expand_x=True,
+                expand_y=True,
+                shrink=True,
+
+            )
         ],
-        [sg.StatusBar(users_online_text, key='-StatusBar-', size=(100, 1))]]
+        [sg.StatusBar(users_online_text, key='-StatusBar-',
+                      size=(100, 1)
+         )
+         ]]
     return sg.Window(label_text, layout, icon=ICON_BASE_64, use_ttk_buttons=True,
                      enable_close_attempted_event=True,
                      relative_location=(0, -50),
@@ -1992,7 +2013,7 @@ def validate(window: str):
             return False
     if window == 'settings':
         print(val_set)
-        if MIN_CALL_TM <= int(val_set['-Индивидуальный-таймаут-']) <= MAX_CALL_TM:
+        if val_set['-Индивидуальный-таймаут-'].isnumeric() and MIN_CALL_TM <= int(val_set['-Индивидуальный-таймаут-']) <= MAX_CALL_TM:
             window_settings['-Индивидуальный-таймаут-'].update(background_color=omega_theme['BACKGROUND'],
                                                                text_color=omega_theme['TEXT'])
         else:
@@ -2002,7 +2023,7 @@ def validate(window: str):
             window_settings['-Индивидуальный-таймаут-'].update(background_color=button_color_2,
                                                                text_color=omega_theme['BACKGROUND'])
             return False
-        if MIN_CALL_TM <= int(val_set['-Групповой-таймаут-']) <= MAX_CALL_TM:
+        if val_set['-Групповой-таймаут-'].isnumeric() and MIN_CALL_TM <= int(val_set['-Групповой-таймаут-']) <= MAX_CALL_TM:
             window_settings['-Групповой-таймаут-'].update(background_color=omega_theme['BACKGROUND'],
                                                           text_color=omega_theme['TEXT'])
         else:
@@ -2012,7 +2033,7 @@ def validate(window: str):
             window_settings['-Групповой-таймаут-'].update(background_color=button_color_2,
                                                           text_color=omega_theme['BACKGROUND'])
             return False
-        if MIN_CALL_END_TM <= int(val_set['-таймаут-окончания-']) <= MAX_CALL_END_TM:
+        if val_set['-таймаут-окончания-'].isnumeric() and MIN_CALL_END_TM <= int(val_set['-таймаут-окончания-']) <= MAX_CALL_END_TM:
             window_settings['-таймаут-окончания-'].update(background_color=omega_theme['BACKGROUND'],
                                                           text_color=omega_theme['TEXT'])
         else:
@@ -2022,7 +2043,7 @@ def validate(window: str):
             window_settings['-таймаут-окончания-'].update(background_color=button_color_2,
                                                           text_color=omega_theme['BACKGROUND'])
             return False
-        if MIN_TONAL_CALL_END_TM <= int(val_set['-таймаут-тонового-сигнала-']) <= MAX_TONAL_CALL_END_TM:
+        if val_set['-таймаут-тонового-сигнала-'].isnumeric() and MIN_TONAL_CALL_END_TM <= int(val_set['-таймаут-тонового-сигнала-']) <= MAX_TONAL_CALL_END_TM:
             window_settings['-таймаут-тонового-сигнала-'].update(background_color=omega_theme['BACKGROUND'],
                                                                  text_color=omega_theme['TEXT'])
         else:
@@ -2033,18 +2054,18 @@ def validate(window: str):
             window_settings['-таймаут-тонового-сигнала-'].update(background_color=button_color_2,
                                                                  text_color=omega_theme['BACKGROUND'])
             return False
-        if MIN_AMB_LIST_TM <= int(val_set['-таймаут-прослушивания-']) <= MAX_AMB_LIST_TM:
+        if val_set['-таймаут-прослушивания-'].isnumeric() and MIN_AMB_LIST_TM <= int(val_set['-таймаут-прослушивания-']) <= MAX_AMB_LIST_TM:
             window_settings['-таймаут-прослушивания-'].update(background_color=omega_theme['BACKGROUND'],
                                                               text_color=omega_theme['TEXT'])
         else:
             my_popup(("Длительность скрытого прослушивания должна быть не менее " + str(
                 MIN_AMB_LIST_TM) + " и не более " + str(
-                MAX_AMB_LIST_TM) + " секунд"))
+                MAX_AMB_LIST_TM)))
             window_settings.Element('-таймаут-прослушивания-').SetFocus()
             window_settings['-таймаут-прослушивания-'].update(background_color=button_color_2,
                                                               text_color=omega_theme['BACKGROUND'])
             return False
-        if MIN_AUDIO_PORT <= int(val_set['-Мин-аудио-порт-']) <= MAX_AUDIO_PORT:
+        if val_set['-Мин-аудио-порт-'].isnumeric() and MIN_AUDIO_PORT <= int(val_set['-Мин-аудио-порт-']) <= MAX_AUDIO_PORT:
             window_settings['-Мин-аудио-порт-'].update(background_color=omega_theme['BACKGROUND'],
                                                        text_color=omega_theme['TEXT'])
         else:
@@ -2054,12 +2075,12 @@ def validate(window: str):
             window_settings['-Мин-аудио-порт-'].update(background_color=button_color_2,
                                                        text_color=omega_theme['BACKGROUND'])
             return False
-        if MIN_AUDIO_PORT <= int(val_set['-Макс-аудио-порт-']) <= MAX_AUDIO_PORT:
+        if val_set['-Макс-аудио-порт-'].isnumeric() and MIN_AUDIO_PORT <= int(val_set['-Макс-аудио-порт-']) <= MAX_AUDIO_PORT:
             window_settings['-Макс-аудио-порт-'].update(background_color=omega_theme['BACKGROUND'],
                                                         text_color=omega_theme['TEXT'])
         else:
             my_popup(("Порт должен быть не менее " + str(MIN_AUDIO_PORT) + " и не более " + str(
-                MAX_AUDIO_PORT) + " секунд"))
+                MAX_AUDIO_PORT)))
             window_settings.Element('-Макс-аудио-порт-').SetFocus()
             window_settings['-Макс-аудио-порт-'].update(background_color=button_color_2,
                                                         text_color=omega_theme['BACKGROUND'])
@@ -2068,24 +2089,24 @@ def validate(window: str):
             pass
         else:
             my_popup(("Диапазон портов должен быть не менее " + str(MIN_PORTS) + " и не более " + str(
-                MAX_PORTS) + " секунд"))
+                MAX_PORTS)))
             window_settings.Element('-Мин-аудио-порт-').SetFocus()
             window_settings['-Макс-аудио-порт-'].update(background_color=button_color_2,
                                                         text_color=omega_theme['BACKGROUND'])
             window_settings['-Мин-аудио-порт-'].update(background_color=button_color_2,
                                                        text_color=omega_theme['BACKGROUND'])
             return False
-        if MIN_PING_TM <= int(val_set['-пинг-таймаут-']) <= MAX_PING_TM:
+        if val_set['-пинг-таймаут-'].isnumeric() and MIN_PING_TM <= int(val_set['-пинг-таймаут-']) <= MAX_PING_TM:
             window_settings['-пинг-таймаут-'].update(background_color=omega_theme['BACKGROUND'],
                                                      text_color=omega_theme['TEXT'])
         else:
-            my_popup(("Интервал пинга должен быть не менее " + str(MIN_PING_TM) + " и не более " + str(
+            my_popup(("Интервал опроса сервера должен быть не менее " + str(MIN_PING_TM) + " и не более " + str(
                 MAX_PING_TM) + " секунд"))
             window_settings.Element('-пинг-таймаут-').SetFocus()
             window_settings['-пинг-таймаут-'].update(background_color=button_color_2,
                                                      text_color=omega_theme['BACKGROUND'])
             return False
-        if MIN_DEL_DAYS <= int(val_set['-auto-del-']) <= MAX_DEL_DAYS:
+        if val_set['-auto-del-'].isnumeric() and MIN_DEL_DAYS <= int(val_set['-auto-del-']) <= MAX_DEL_DAYS:
             window_settings['-auto-del-'].update(background_color=omega_theme['BACKGROUND'],
                                                  text_color=omega_theme['TEXT'])
         else:
@@ -2307,12 +2328,14 @@ def set_buttons_disabled(set=True):
     window['-DelGroup-'].update(disabled=set)
     window['-filterUser-'].update(disabled=set)
     window['-filterGroup-'].update(disabled=set)
+    window['-hide-online-'].update(disabled=set)
     # window['Apply'].update(disabled=True)
     # window['Apply2'].update(disabled=True)
     window['-checkAllGroups-'].update(disabled=set)
     window['-checkAllUsers-'].update(disabled=set)
     window['-partially-dropDB-'].update(disabled=set)
     window['-dropDB-'].update(disabled=set)
+    window['-frame-online-'].update(visible=not window['-frame-online-'].metadata)
     window['-users-'].update(visible=not set)
     window['-groups2-'].update(visible=not set)
     window['-TREE-'].update(visible=not set)
@@ -2518,6 +2541,10 @@ if __name__ == '__main__':
                         thread_started = True
                     event, values = window.read()
                     # print(event, type(event), values)
+                    if event == '-hide-online-':
+                        window['-frame-online-'].update(visible=window['-frame-online-'].metadata == True)
+                        window['-frame-online-'].metadata = not window['-frame-online-'].metadata
+                        window['-hide-online-'].update(text=SYMBOL_LEFT if window['-frame-online-'].metadata else SYMBOL_RIGHT)
                     if event == '-THREAD-':
                         if not thread_started:
                             print(json.loads(values['-THREAD-'][1]))
@@ -3323,8 +3350,8 @@ if __name__ == '__main__':
                                 window_add_lic.close()
                                 break
                             if ev_add_lic == '-FILENAME-':
-                                window_add_lic['Загрузить'].update(disabled=False)
-                                window_add_lic['show_cur_lic'].update(disabled=False)
+                                # window_add_lic['Загрузить'].update(disabled=False)
+                                # window_add_lic['show_cur_lic'].update(disabled=False)
                                 machine_id = get_id('Linux')  # TODO
                                 check_remote_command = "$HOME/Omega/Licensing/ValidateCli validate --license $HOME/Omega/new.lic" + \
                                                 ' --public $HOME/Omega/keys/pub.pem --machine-id ' + \
@@ -3401,6 +3428,7 @@ if __name__ == '__main__':
                                             print(feature_name, '+', lics['ExpirationDate'])
                                             LICS.append([feature_name, '+', lics['ExpirationDate']])
                                         window_add_lic['-lic-'].update(LICS)
+                                        window_add_lic['Загрузить'].update(disabled=False)
                                     else:
                                         my_popup("Проблема с лицензией")
                                         logging.error(f"Проблема с лицензией")
@@ -3491,7 +3519,7 @@ if __name__ == '__main__':
                                         # print(type(output))
                                         # print(output)
                                         # print(output == True)
-                                if output.find('USAGE') == -1 and output:
+                                if output.find('USAGE') == -1 and output.rstrip('\n') != 'Validation Failed':
                                     index = output.find('{')
                                     lics: dict = json.loads(output[index:])
                                     # print(type(lics))
@@ -3522,11 +3550,13 @@ if __name__ == '__main__':
                                         with open("/home/omega/Omega/.licenseState", mode='w') as f_lic_st:
                                             f_lic_st.write("5")
                                             print("файл записан")
-                                    logging.error(f"Новая лицензия загружена! Необходимо перезапустить сервер!")
-                                    my_popup("Новая лицензия загружена! Необходимо перезапустить сервер!")
+                                    logging.error(f"Новая лицензия загружена! Необходимо перезагрузить сервер!")
+                                    my_popup("Новая лицензия загружена! Необходимо перезагрузить сервер!")
                                     # window_add_lic['restart'].update(disabled=False)
                                     window_add_lic['restart'].update(disabled=False, button_color=button_color_2)
                                     new_lic_installed = True
+                                    window_add_lic['show_cur_lic'].update(disabled=False)
+                                    window_add_lic['Загрузить'].update(disabled=True)
                                 else:
                                     my_popup("Проблема с загрузкой лицензии")
                                     logging.error(f"Проблема с загрузкой лицензии")
@@ -3614,8 +3644,8 @@ if __name__ == '__main__':
                                                     break
                                 except Exception as e:
                                     print(f'{e}')
-                                    logging.error('Не удалось перезапустить сервер')
-                                    my_popup('Не удалось перезапустить сервер')
+                                    logging.error('Не удалось перезагрузить сервер')
+                                    my_popup('Не удалось перезагрузить сервер')
                             if ev_add_lic == '-KEYNAME-':
                                 # print('key selected')
                                 window_add_lic['install-key'].update(disabled=False)
@@ -3681,10 +3711,11 @@ if __name__ == '__main__':
                                                 with open("/home/omega/Omega/.licenseState", mode='w') as f_lic_st:
                                                     f_lic_st.write("5")
                                                     print("файл записан") #TODO
-                                            my_popup('Ключ установлен!')
+                                            my_popup('Новый ключ загружен!\n'
+                                                     'Теперь можно загрузить новую лицензию')
                                             window_install_key.close()
-                                            window_add_lic['restart'].update(disabled=False,
-                                                                             button_color=button_color_2)
+                                            # window_add_lic['restart'].update(disabled=False,
+                                            #                                  button_color=button_color_2)
                                             break
                                         except Exception as e:
                                             print(f'{e}')
@@ -3735,10 +3766,11 @@ if __name__ == '__main__':
                                                 with open("/home/omega/Omega/.licenseState", mode='w') as f_lic_st:
                                                     f_lic_st.write("5")
                                                     print("файл записан")  # TODO
-                                            my_popup('Ключ восстановлен!')
+                                            my_popup('Ключ восстановлен!\n '
+                                                     'Теперь можно загрузить новую лицензию')
                                             window_restore_key.close()
-                                            window_add_lic['restart'].update(disabled=False,
-                                                                             button_color=button_color_2)
+                                            # window_add_lic['restart'].update(disabled=False,
+                                            #                                  button_color=button_color_2)
                                             break
                                         except Exception as e:
                                             print(f'{e}')
@@ -3855,8 +3887,8 @@ if __name__ == '__main__':
                                     window_settings['-OK-set-'].update(button_color=button_color)
                                     my_popup("Настройки изменены")
                                     window_settings.close()
-                                else:
-                                    my_popup("Введены некорректные данные!")
+                                # else:
+                                #     my_popup("Введены некорректные данные!")
                             else:
                                 pass
                                 # timeout += 1000
