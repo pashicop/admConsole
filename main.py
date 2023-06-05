@@ -35,6 +35,7 @@ ICON_ADD_BASE_64_WHITE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIU
 ICON_MODIFY_BASE_64_WHITE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cGBBU6HgL8YewAAALXSURBVFjDzZc/LHNRGMafU0UoCbrSSVlUhPgTkVSaELNEDDYGO4MgkZBIWEwGg6XJNwgTCW1i0EkTKk38GUgaAwYVA3H9Ses833Bxvktb19Um3zvdc9/n7fM75z339lyBHAZZWwsMDAB1dYDdDpycAKurQkSjufQFmZdHzs2RySS/hJTk8jJlYSEACFXU2QkMDYHV1RD5+ZktpASCQSGmplKZA36/PvNMlGtrEP39b0Wzs7QSsr7+68z//DGKTk/JsTFydJQ8ODDmentB2ddnyZzxOFlentl8c5MsKvrQSLudcntb5QMBQRkOQ7S16YpoFFhYAF5eMi6fSCTA3V1hi8fTL/vlJeB2C/H8bFwlrxcIhfTR7S3Ix0dF1NhobcN9nvl7LC2RQhj0sq5O5TUNxp5WVv7e/O4uEwQ5Oalyh4eWAdL3vKKCcmcnFQTp85FPT+r+zIwlgLTmb8826XCQoZAxv75OapoaX12R5eU/BvjOXOlSQbzH/T1lS8ub0DyAWXMDhNzf/2LO9vZ/ROYA9B76/WbN9Rqfz7jsn8x/BjA+nnVzswCULpdx9wYCWTE3DcD5eaWJxShLS7Nibh7g+FhphoezZm4GQN98z89K43ZnzdwcgMNh3HzqH/BDI7u6LJmbApAlJUaAsjJV63SS09NkImHJ3BKAjEbJSIQ8O/t65DKak0JQdneTDQ2/aEFxMc2EjMUoPR5j7diYnnx9pWxtTeVv+26FhHh8BPb20ivOz4GJCQiPR9iOjoz0b+972GxAc3Oqaru5Rvl8gNcLOhyK7OYGuLgQIhbLQC9SXv8UQAhNA7a2zMH+LL5tQa7jPwCgpn2MRFVVdn/e5VLXDw+pFHaISATwevWh30+5uIhPR2lr0dEBNDWpcZoniezp0b/XchkbGxlZyZER8vU1J94yHCadznTe6rwuPR6IwUGgpgYsKPh1B8T1NRgMAisrwpZMppP9BbWc4qhCs8IrAAAAAElFTkSuQmCC'
 ICON_DELETE_BASE_64_WHITE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cGBBYPOp6I+dIAAAHISURBVFjDxVdNzgFBEO2aiIifDXu2XEFYIU7DNbDkOMwOS5eQcAF/mUzU+xatfejp+dN4m0mqu1+9elU9gxAJAM5mgckE2O+hYbcDxmNwNpuEMxGA8RiRGI0+KGC3k0maTd2dVks58UEBEmnXg+A8V1GrgV0X8Lwgc18TJVv3PPBiAa5WzRWy60b3+E3wfB5isaq8XLbfvkpFOZG6x++L0PmdtGS2kDEp/ZaAFwdWq8+nXC5Dl8HDoezUdGorJTCbSc7BIMIBIQQdj/JUsWivasV14w4VoDbRswBgvQae7YsbuxcDXUDAEKpNrw7o7//4sRsXxXEAJgFvgMwOBMzA4SA3l0rWBCguxR3LAfqZAx9owc9nQJgd0PPDcQBm4HoFiP7j+ockTgwgklzMgKMVrAWImAXOZyEcR4h8/u3iUShIrtOJiDlSgFShrLJwE0hxBNtv+Byrq2hhDu4c+hU0C7B5FSl8AMNbYNMBStSC7zmQCT6lHHgcwtVKiNdfSnFi4UNoEHAbmAcHiNptrbhYsTRDKLZb+ez1wBmDyGgAuZwQ/b5UpjhjHWw0gMvF3r+RywWo15Op524X2GwA30+f2PclR6djyvMHRma5BDgyq2gAAAAASUVORK5CYII='
 ICON_CLONE_BASE_64_WHITE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAGYSURBVFiF7ZaxK0VhGMZ/r25iMCElgwzKbCApdzBYZDEoEv+AySCTBQOTzSAUoW5GgwyUf8CqdDeUDeHm1mO4Hz469zjnnnuznKdOX9/3ve/3/s5z3nM6EEGStlW5FsLOzkQB8HQHvEaMbQJagVVJRTNbj1nrW54D2Rg5My6n4MbFoLiMpOEI57W7sVfSp2sPZnYVIXcfGAeWJWFmK79JK1VR0nS5qp4DS5KGJD27+fwPB9z4BBxEuJtPjQFtwJakgpkdhQWb2YWkEeAEWJNU/+WEo8rHKI6kc5f37pyYCoj5csBbG5T06PdE3Lfgt+aADWDHPd+9gJisDwHkgElKPZFJ6kCnpPEgJzwHQpXUAcwsJwlKPeQ7cQnMhqSuAS2JHfDWAp0IOSNfDQcOJb1582ugB9iV9GJmx38dkBSgr8y6AaNAzQAmgIYye/3E+KZUBGBm9+X2/L6IorpKAKqpFCAFSAFSgBQg8Q9JiAYkbYbsN9caoNtdoaolwCml365/A7g1s7OoAB2SbqpUuDFOcMYbu6oEEEsfZ4a0SYpYgA4AAAAASUVORK5CYII='
+ICON_APPLY_BASE_64_WHITE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cGBQkPDYnz3/UAAADaSURBVFjD7ZQ9CsIwAEYtpGtGCb2LnqGXk5Br6JaphRxBpIfRPIeAVeyf2MTBvD3fexCSzSaT+Qfw+z3UNb4s04opCtCaB87hpUwoN4Y3jscfygGuV7wQP5IDNE1k+eEwLu86qKosnx7zZRne7G63XD5155cLKLVQLiU41x/WGooiiTwMnk7vI8YMRawv90LA7TY89hqxurwfbtvx0RARTR4ClAoDUxGR5P1VbLdwPvMxK77zzyMifDLLI2L+cLMREeXzEQnk4xEJ5Y8IlMJbi7f266eWyWSeuAN4YjZi8rn4owAAAABJRU5ErkJggg=='
 SYMBOL_UP = '▲'
 SYMBOL_RIGHT = '►'
 SYMBOL_LEFT = '◄'
@@ -642,28 +643,33 @@ def make_main_window(ip):
         # user_list = get_only_user_list(users_from_db)
         # group_list = get_only_group_list(groups_from_db)
     tab1_layout = [
-        [sg.Button('', disabled_button_color='gray',
-                   image_data=ICON_ADD_BASE_64_WHITE,
-                   tooltip='Добавить',
-                   key='-AddUser-', pad=((10, 5), (20, 5))),
-         sg.Button('', disabled_button_color='gray',
-                   image_data=ICON_MODIFY_BASE_64_WHITE,
-                   tooltip='Изменить',
-                   key='Изменить пользователя', pad=(5, (20, 5))),
-         sg.Button('', disabled_button_color='gray',
-                   image_data=ICON_DELETE_BASE_64_WHITE,
-                   tooltip='Удалить',
-                   key='-DelUser-', pad=(5, (20, 5))),
-         sg.Button('', disabled_button_color='gray',
-                   image_data=ICON_CLONE_BASE_64_WHITE,
-                   tooltip='Клонировать',
-                   key='-CloneUser-', pad=(5, (20, 5)))],
-        [sg.Text('Фильтр: '), sg.Input(size=(20, 1), enable_events=True,
-                                       # disabled=True,
-                                       key='-filterUser-')],
+
         [
             sg.Frame('Пользователи',
                      [
+                         [
+                          # sg.VPush(),
+                          sg.Column([[sg.Text('Фильтр: '),
+                                      sg.Input(size=(20, 1),
+                                               enable_events=True,
+                                               key='-filterUser-')]],
+                                    vertical_alignment='bottom'),
+                         sg.Button('', disabled_button_color='gray',
+                                    image_data=ICON_ADD_BASE_64_WHITE,
+                                    tooltip='Добавить',
+                                    key='-AddUser-', pad=((10, 5), (0, 3))),
+                          sg.Button('', disabled_button_color='gray',
+                                    image_data=ICON_MODIFY_BASE_64_WHITE,
+                                    tooltip='Изменить',
+                                    key='Изменить пользователя', pad=(5, (0, 3))),
+                          sg.Button('', disabled_button_color='gray',
+                                    image_data=ICON_DELETE_BASE_64_WHITE,
+                                    tooltip='Удалить',
+                                    key='-DelUser-', pad=(5, (0, 3))),
+                          sg.Button('', disabled_button_color='gray',
+                                    image_data=ICON_CLONE_BASE_64_WHITE,
+                                    tooltip='Клонировать',
+                                    key='-CloneUser-', pad=(5, (0, 3)))],
                          [sg.Table(user_list, headings=['id', 'Логин', 'Имя', 'Дисп', 'Адм', 'К500', 'Блок'],
                                    justification="left",
                                    # num_rows=20,
@@ -682,34 +688,49 @@ def make_main_window(ip):
                                    )], ],
                      expand_x=True,
                      expand_y=True,
-                     size=(480, 300)),
-            sg.Frame('Группы', [[sg.Tree(data=treedata,
+                     # size=(480, 300)
+                     ),
+            sg.Frame('Группы', [[sg.Column([[
+                                              sg.Checkbox('Выбрать все группы',
+                                                          enable_events=True,
+                                                          key='-checkAllGroups-',
+                                                          default=False,
+                                                          pad=[13, 0],
+                                                          disabled=True)]],
+                                  vertical_alignment='bottom')],
+                [
+                    sg.Tree(data=treedata,
                                          headings=['Имя', 'Описание'],
                                          col0_width=5,
                                          # col0_heading="",
-                                         col_widths=[20, 30],
+                                         # col_widths=[20, 20],
                                          num_rows=10,
                                          key='-TREE-',
                                          # row_height=20,
                                          metadata=[],
-                                         auto_size_columns=False,
+                                         # auto_size_columns=False,
                                          show_expanded=False,
                                          enable_events=True,
                                          justification='left',
                                          expand_y=True,
+                            expand_x=True,
                                          select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                                          selected_row_colors='black on lightblue',
-                                         )]], expand_y=True,
-                     # expand_x=True
+                                         ),
+
+                                  ]], expand_y=True,
+                                  expand_x=True
                      ),
-            # sg.Multiline('', expand_x=True, expand_y=True, key='online-users', )
+            sg.Column([[sg.Button('', key='Apply',
+                                  disabled=True,
+                                  image_data=ICON_APPLY_BASE_64_WHITE,
+                                  tooltip='Применить',
+                                  button_color=button_color_2,
+                                  disabled_button_color='gray',
+                                  pad=((0, 4), 2)
+                                  )]], vertical_alignment='bottom'),
         ],
-        [sg.Push(),
-         sg.Checkbox('Выбрать все группы', enable_events=True, key='-checkAllGroups-', default=False,
-                     pad=[30, 0],
-                     disabled=True),
-         sg.Button('Применить', key='Apply', disabled=True,
-                   disabled_button_color='gray', pad=((0, 10), (5, 10)))],
+
     ]
     tab2_layout = [
         [sg.Button('', disabled_button_color='gray',
@@ -720,11 +741,12 @@ def make_main_window(ip):
                    image_data=ICON_DELETE_BASE_64_WHITE,
                    tooltip='Удалить',
                    key='-DelGroup-', pad=(5, (20, 5)))],
-        [sg.Text('Фильтр: '), sg.Input(size=(20, 1), enable_events=True,
-                                       # disabled=True,
-                                       key='-filterGroup-')],
+
         [sg.Frame('Группы',
                   [
+                      [sg.Text('Фильтр: '), sg.Input(size=(20, 1), enable_events=True,
+                                                     # disabled=True,
+                                                     key='-filterGroup-')],
                       [sg.Table(group_list, headings=['id', 'Имя', 'Описание', 'Э', 'Блок'], justification="left",
                                 # num_rows=40,
                                 enable_events=True,
@@ -764,7 +786,14 @@ def make_main_window(ip):
          sg.Checkbox('Выбрать всех пользователей', enable_events=True, key='-checkAllUsers-', default=False,
                      pad=[30, 0],
                      disabled=True),
-         sg.Button('Применить', key='Apply2', disabled=True, disabled_button_color='gray',
+         sg.Button('',
+                   key='Apply2',
+                   disabled=True,
+                   image_data=ICON_APPLY_BASE_64_WHITE,
+                   tooltip='Применить',
+                   button_color=button_color_2,
+                   # bind_return_key=True,
+                   disabled_button_color='gray',
                    pad=((0, 10), (5, 10)))],
     ]
     tab3_layout = [
@@ -793,7 +822,7 @@ def make_main_window(ip):
     layout = [[sg.Menu([
         ['Сервер', ['Установить лицензию...', '!Настройки']],
         ['Помощь', 'О программе'], ], key='-Menu-')],
-        [sg.Frame('Сервер', [[sg.Push(),
+        [sg.Frame('Сервер', [[sg.Column([[sg.Push(),
                               sg.Button('Старт', key='-Start-',
                                         disabled_button_color='gray',
                                         size=8,
@@ -803,26 +832,33 @@ def make_main_window(ip):
                                         size=8,
                                         # image_data=DEFAULT_BASE64_LOADING_GIF,
                                         pad=((10, 20), (5, 10))),
-                              sg.Push()]], size=(200, 80), ),
-         sg.Frame('Место на сервере', [[sg.Graph(canvas_size=(110, 12), graph_bottom_left=(1, 1),
+                              sg.Push()]], vertical_alignment='center') ]]
+                                        # size=(200, 80),
+         ),
+         sg.Frame('Место на сервере', [[sg.Column([[sg.Graph(canvas_size=(110, 12), graph_bottom_left=(1, 1),
                                                  graph_top_right=(108, 10),
                                                  k='-free-space-',
                                                  pad=((20, 10), (0, 0),)),
-                                        sg.Text('', size=50, key='-free-space-perc-'),
-                                        sg.Button('Очистить частично', key='-partially-dropDB-', disabled=False,
-                                                  disabled_button_color='gray', pad=((0, 10), (5, 10))),
-                                        sg.Button('Очистить', key='-dropDB-', disabled=False,
-                                                  disabled_button_color='gray', pad=((0, 10), (5, 10))), ]],
-                  size=(790, 80)),
+                                                    sg.Text('', size=57, key='-free-space-perc-'),
+                                                    sg.Button('Очистить частично', key='-partially-dropDB-', disabled=False,
+                                                              disabled_button_color='gray', pad=((20, 10), (5, 10))),
+                                                    sg.Button('Очистить', key='-dropDB-', disabled=False,
+                                                              disabled_button_color='gray', pad=((20, 10), (5, 10))), ]],
+                                                  vertical_alignment='center',
+
+                                                  )]],
+                  # size=(790, )
+         # expand_x = True
+    ),
          ],
         [sg.TabGroup(
             [[sg.Tab('Пользователи', tab1_layout, key="Tab1"),
               sg.Tab('Группы', tab2_layout, key="Tab2"),
               sg.Tab('Журнал', tab3_layout, key="Tab3"),
-              ]], key="Tabs", size=(1000, 660),
-            pad=(0, 0),
+              ]], key="Tabs", size=(1100, 660),
+            pad=((4, 0), (0, 3)),
             enable_events=True),
-            sg.B(SYMBOL_RIGHT_ARROWHEAD, pad=(5, 0),
+            sg.B(SYMBOL_LEFT_ARROWHEAD, pad=(5, 0),
                  disabled_button_color='gray',
                  # mouseover_colors='white',
                  k='-hide-online-'),
@@ -2575,7 +2611,7 @@ if __name__ == '__main__':
                     if event == '-hide-online-':
                         window['-frame-online-'].update(visible=window['-frame-online-'].metadata == True)
                         window['-frame-online-'].metadata = not window['-frame-online-'].metadata
-                        window['-hide-online-'].update(text=SYMBOL_LEFT_ARROWHEAD if window['-frame-online-'].metadata else SYMBOL_RIGHT_ARROWHEAD)
+                        window['-hide-online-'].update(text=SYMBOL_RIGHT_ARROWHEAD if window['-frame-online-'].metadata else SYMBOL_LEFT_ARROWHEAD)
                     if event == '-THREAD-':
                         if not thread_started:
                             print(json.loads(values['-THREAD-'][1]))
