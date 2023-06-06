@@ -32,10 +32,17 @@ ICON_HIDE_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs
 ICON_CHECK_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAsQAAALEBxi1JjQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAASfSURBVFiFzZdfbBRFHMc/M7t3Vwq09qCAxPKnJbYFKqSatCgEMdGgCKT+xagxkGCID0bA+CT4NyEN/iHBF6I+qPFBTCu+8IKQGMSWllJLQFqsEdoCd71ry9Frr3d7N+PD9Y52uS1XbaLfZLOzs7/5fT87szs7A/+xxCRipwOPAZVAEZALRIA+4BzQCLRPNSDA48IQR4UUMUBPdEhTdgC7gRlZ5K0AKibqgUphigM6rtcACCkoKPfiLZuFp8CDJz8HZSmioSihzgH6zgeJhqIACEMEdULvBr52yL0BqAOGnAC2CSEOaa1Nd56bJU+Xcs/DRbjz3I60OqHpbfXTWXeJgfZ+hCES1furZzbsaog4mHuA/ZkAaoG3ABY/WULpC+WYuaajcSb1tvhACOZUzm1Qluupo8997xu9tR74AcgBDgA77QBvAJ9Kl6Rix0qKHlkwKWMHdZhQfaTmSLXdHGDsoz2K4GOAyl0PMK96/lSYA5ReOdlzHFhqNweQo2e3dMkv0MjSLeVTaU6g1U/bwdbKTOZjAXYoSy2YuTCPJc/eO6XmzfuaUFaCRU8UR2vqaz60x0hACkPuASh/eRlCTGZuys588cYSlm+/zxOTaqc9TgKrdELNnj5/BnPun5sxWd+FIG2ftRK9MZKVeW+Lj+Z9p9Pmy7ZVJM202JIJYDPAvKq7HRNeO3mV7uNXaNhz6o4QvS0+ztQ2oSxF8aZb5gAaSjbU1ywfByBMYx1A4Yo5jknLXlpKfsldhHsGaXj7F0b6M0MEWv2cqW1GWYrFG0tYurVi3P3ojSh/1nVsHweAVsUA0wqnOQK4ZriofvehJMTVMI17b4ewj/nYJ0/p/OdttH/7++tA1S0ARR6Ax5vjCJAJomHPLYhszAF0XKeK89IA6SptD88MUbX3QfIW5TN0LUzj3lN0n+hKv3D2MbcrEUukiioNICQhwHFc7XLnuVn1werRnhik7eBZxzG3a2Qg7XEjDYCgEyASGM4KAMYPBzBht6ektSYSSP8YO1MFU8f1CaAq0OqncKXzl5AJYtX7q7l5JYS3fNYd4wfa+4kPW0iX7FKWup6ql8CPAL7TPsfGTjJzzazMAfxNSU9lqe/G1kugSZrSN+wfwtd4PVPbfy0rbNH1U1fqst4OoFVcvQNw8ZsL6IRiqtVZdwkrHEOY4gTJxWtaxui5Tbrki7FQ1KvjmtkrCqfMvP9iH+cPtaG11iieAcaNdep3HFeW2iqESHTWX+Lqz91TYh4JDNNS24SKK9B8ArTaY4wx5S6gG9jsb/ZhmEbWL1gm3bwc4vR7DYz0jyAMcRzNK2SY7gzb9W9IQLE2eC4gIsFhvGVeDE/2i1Kd0HQdu8zZj5qJ3YwhTKNRJ9QmkpuY2+S0+nheSPGVVtpj5poUb15C0boFTCvMdTSOj8TxN/v443AH4Z7BZKXkSxSvATGndhMtf8qFIfbrhN6QqsgvzqegbBY5BTl4CjzEh+NE+iKEewYJnguirORcL13yL2WpN7F9cv9Ua6SUh4UhhphoayZICFP8CrwKuLJNPpkFoBtYS3JzupDk5jQKBIALwDEgOIl8/w/9DR5k79YG7eHTAAAAAElFTkSuQmCC'
 ICON_MODIFY_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAA3QAAAN0BcFOiBwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKZSURBVFiFzdfPi1ZVGAfwz3lHZWgkUipaRCFIC4MQIbOmxSSBLRIFcRdE4cpZtNWV9AcELSZBK7WpNm7ClUKgFa2KKBF0U4tcRD+MtEn8MTZPi3tHTsf7zr3vO++ADxzuPef5Puf7Pc8999znpoiwUpZS2oDd2IQJfIfTEXHxLigiRt6QMI1/EEWbx9tYHRHSYgZSSlvxGrZgbcvibmM2ImYaVt3DB3ijZY7DETG9qPgA7jSoXaot4Mli5T0cK3BzOIJ38GcR/xK8XHcGIQ/8jDUF+fECcwprM8w4vs/8JxPOYEedlkt4F7+1pG8e5yLiBnfTfgyvZ5jLeCoibuWBKaV9eL/u/gRXMkVTQ2y4Hk70ydJhqn2W4Scz/1+KgMeGIP+omGNuKRGYzXznhhZQk88W8WfwML5qEoHtuJWNHxxKwBLk47V/Al8U/s9wPetfwJqBBdTkH/cjz3ATdYqb9sZVbF48gzoLwBg+aSPP8A/gmwJ/Dc9lmIEEfNiVvMZvL9J+DdsKTDcB2DNq8s4C8Ah+z3CfD0j+N57vg+0k4FCG+QOPjoJ8EAGnMsxbA5K/0LKvOgm4nGG2joq8kwDVYZFj1jVgdjSQT7aRdxUwXmAeynyPY8b/P+dzXcmHFXABP6g+2eUJN4cXi/hn8cRyH0GXguVLbCxi36x9d1S1wT0CelosIm7jdB/3vKrCmVbVEj8W/lfr6xheaZpgVZuA2nZiCg9mY7/gfBQVT2G9PveDCYiIBZztgh3UWh/BStt9ISCvgDePauKUUsLT2dCvTbhVqoJhZ90/mlJ6T3tZ3mZj2IWN2di3/cDb8K/293w57dO+B1F9YOzHzRUiP4v1/QTkP6ebsBfPqArK5diC6q/na5yMRZIG+w8Ygbg8bIo6hwAAAABJRU5ErkJggg=='
 ICON_ADD_BASE_64_WHITE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cGBBYXLZ9A5EwAAAC4SURBVFjD7dfBCYQwEAXQH1GwDk8mZzuwCxvK0SpShh3YgUkfguLfQ2D34sVx0ct8CMwlkxdCIAGEIZ3jkRKPGMm2lfYRh/Se33gv7VPICXV9Xj8G+E8UoAAFKEABhnQOGAagLC/NZN/DdF2u5xlmmq4tve9ACIZHSjBN887+YywA8p3FcwxpbT6Cqro08/YRbBsQglhOjuPvQTKO0j6v3wIFKEABClDADcC6ntcPhbSWXJY85N/zD9XJWNi47SReAAAAAElFTkSuQmCC'
+ICON_ADD_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAYAAAAj6qa3AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAGYktHRAAAAAAAAPlDu38AAAAJcEhZcwAAAGAAAABgAPBrQs8AAAAHdElNRQfnBgYJFxxz7ciwAAABq0lEQVRo3u2YP0gCYRiHf+95QZu0lUuQm1PD2RIV6BJhkwYhVAYShSQ1N4R70BFFDQ0VCIFJRNEQWTREgxpCBEE69mdpCBoC9fuazk0w4u6N+p7xveF9eOA43iM4TN/j2Nj8qc8n50WH0I+PMYhphKUUWSToMhQqFrO368bDg1M+mtMB5IDwyNjEBN7whqOeHhxiBZNer/aEAYxMTTnt43gAbNOJDLe3tzz/cwF+GSoAtwA3KgC3ADcqALcANyoAtwA3KgC3ADdkXWciJdz1j2gU4zJJO7pu28YAzeI5GKQhdKHfMKyxvMILrgsFXMgteHI52/bv05qM1Wr6vbjBUjpN/uHwTOKsUmlcZ/8FU2bQXS5r1j3O7cOF7sqIuOwcHa2tucrkjkbxLvIotbXZtpH7FXBrfvRWqzIJgwLpNNm2qAn+k4g3Mbe6ipTshbaw0HiwTCUI08yHDiobm4uLTvn8+6+ACsAtwI0KwC3AjQrALcCNCsAtwI0KwC3AjfMB4jJE2c/Pluc2Y9+Pjya4usS5cO/t1U26o+5IxJqLJBk43d3FKwDjBwu+yRfVWJFYbEc2CQAAAABJRU5ErkJggg=='
 ICON_MODIFY_BASE_64_WHITE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cGBBU6HgL8YewAAALXSURBVFjDzZc/LHNRGMafU0UoCbrSSVlUhPgTkVSaELNEDDYGO4MgkZBIWEwGg6XJNwgTCW1i0EkTKk38GUgaAwYVA3H9Ses833Bxvktb19Um3zvdc9/n7fM75z339lyBHAZZWwsMDAB1dYDdDpycAKurQkSjufQFmZdHzs2RySS/hJTk8jJlYSEACFXU2QkMDYHV1RD5+ZktpASCQSGmplKZA36/PvNMlGtrEP39b0Wzs7QSsr7+68z//DGKTk/JsTFydJQ8ODDmentB2ddnyZzxOFlentl8c5MsKvrQSLudcntb5QMBQRkOQ7S16YpoFFhYAF5eMi6fSCTA3V1hi8fTL/vlJeB2C/H8bFwlrxcIhfTR7S3Ix0dF1NhobcN9nvl7LC2RQhj0sq5O5TUNxp5WVv7e/O4uEwQ5Oalyh4eWAdL3vKKCcmcnFQTp85FPT+r+zIwlgLTmb8826XCQoZAxv75OapoaX12R5eU/BvjOXOlSQbzH/T1lS8ub0DyAWXMDhNzf/2LO9vZ/ROYA9B76/WbN9Rqfz7jsn8x/BjA+nnVzswCULpdx9wYCWTE3DcD5eaWJxShLS7Nibh7g+FhphoezZm4GQN98z89K43ZnzdwcgMNh3HzqH/BDI7u6LJmbApAlJUaAsjJV63SS09NkImHJ3BKAjEbJSIQ8O/t65DKak0JQdneTDQ2/aEFxMc2EjMUoPR5j7diYnnx9pWxtTeVv+26FhHh8BPb20ivOz4GJCQiPR9iOjoz0b+972GxAc3Oqaru5Rvl8gNcLOhyK7OYGuLgQIhbLQC9SXv8UQAhNA7a2zMH+LL5tQa7jPwCgpn2MRFVVdn/e5VLXDw+pFHaISATwevWh30+5uIhPR2lr0dEBNDWpcZoniezp0b/XchkbGxlZyZER8vU1J94yHCadznTe6rwuPR6IwUGgpgYsKPh1B8T1NRgMAisrwpZMppP9BbWc4qhCs8IrAAAAAElFTkSuQmCC'
+ICON_MODIFY_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAYAAAAj6qa3AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAGYktHRAAAAAAAAPlDu38AAAAJcEhZcwAAAGAAAABgAPBrQs8AAAAHdElNRQfnBgYJFCB3r+f0AAAE30lEQVRo3uWZa0wUVxiG3292W0O9Fa2VYEldLlGsYBWwoKYC1sYogbIwNYiA0KSiLNZrExOjQuOl1WpCAI23gkWQLqK0GOsFCrSNGrCIxKQWwxKo1laLRlcNhp2vP+xM7G42s6CwLH1/7jnzTZ7nXGbmLMHFEjo19q3lfv7+lkTBQOb9+xGIw0icMgUXUYqc6mpcEdZw0dKl9UajMf/DW7fU6pGzgXoMDuE+LaquhhbTccfDw7ofH8YwXtXSoh0mPJI+iYi44GU07j1544bLCnAUvLciBGcD2kvQNDHe8HpAgGW50EXutbU24M2IRll3N1bxGrQfPWp9PSXDTLv9/CyrLYWaXVVVU2dE/2SI9vQc8ALkERdYusjLzpzBPkxByJgxcjsfQhfmWCzIoB+5ccmS+kXlM/K+S0jgWnxOp9atsynYRknImTBBc/Cl/dKumprQDlFMXzBunCLK2cByQkRRXBE6bx6ypcfdqysrkYwhVKvRKB3+HXHu5Dq6sHhxwyvlB3N1paXWdYJ/12dn3Fy/nmKpCVu2brW50Xj+GiuuXQM0KdwUHu50AfJUF2Isu/jv8+dRSauQPnSodb+nI79pU0PAsco8fXa2Wl1VEQc4D+9UVDhtCSjgy6TLPL6qyh64EnfMRejatcHu+pWG9TNnqtVveKN8Y57ntm0chgfYXlJi02EB7qM4IqLfBdiA21vjEXjAWU+eyL9TLOqwZfhwWonV/MXp00EcxxkcHm7vPsGP9B8ZTAsX0j4kwlcUbTqE4TJONTb22xJQA7de4/yEZ/H3nZ2Ct1CIvRUV8MFozHJzU/pH8W7sffhQ2khe6I6KukTHKI9qahTwUfQuhxYVIQDfIl6rVa77GE2ov31bky8N4buzZ/e5ALXnuDziVEAeHJqSUv9l2YF8zyNHFHH3Yr/K2DN3rpoI/gN1fGXHDiogC0Vu2GAPXNojvE1tc+Zc+sVYlvtXc3OfCXhecJsZpCbCXuyAy80vfA940eByLr16PDVv2dmzUquUgvSYGOs9oqfgcrR4QekrcJuYqJRHjxzJSXiZ6jQa+uG/zXTt6V5i2SMQsX1wOc89A/oLPKhRP2/5N/HxQhglUGZJCaVhCKqeeVHagptwM5st7ZKEzfPnq4ErwlwN3NHNzdH6PRYwWMB7LKC/wKeHxMcZMkSRmzmay4qL+wrcYQGDFVxVwGAHtyvg/wIuR3kMBi+OXZt+evJk1RMYHx5LUxMTewsuv6s7G1wRIIqiKIoaDU0S4jTxJ06ofaTYO4hwFFztI6W/wBUBpj+lSI/UwEAcx04k+/jIDfJUH6zgigDhMZ3jk76+Ni2/QsK4q1d7Cy6v8YEKrgjgHM5hX29vmxYJYxmtrb0FHyhrXFUAvLgQM3Q6mwYD7xRSTabBCq5wcgVthp+tANzF+2hVF+Cq4HK0iEQCd+p0KID52ZcCfo1mYYSn5/Q7ehiQmcknhHuc6u0NL+lnhOl0/BulYYJOx0kczdGTJrkauBwKydK3Z2jMZtVTWUfjIuByBJShC7ktLc9bSP4vjmulDyyfRUYOdHA5Wnanc8KbaWl0l7dLOHSIyzEC0yZORDd9yqM7OlCNEhplMqELw7ittVUo52TBaDKhS+jAfZNJcuP3aMH16w3+k9NH+TQ1AVmU5StJzgZzNP8AFdhd7LR0w/4AAAAASUVORK5CYII='
 ICON_DELETE_BASE_64_WHITE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cGBBYPOp6I+dIAAAHISURBVFjDxVdNzgFBEO2aiIifDXu2XEFYIU7DNbDkOMwOS5eQcAF/mUzU+xatfejp+dN4m0mqu1+9elU9gxAJAM5mgckE2O+hYbcDxmNwNpuEMxGA8RiRGI0+KGC3k0maTd2dVks58UEBEmnXg+A8V1GrgV0X8Lwgc18TJVv3PPBiAa5WzRWy60b3+E3wfB5isaq8XLbfvkpFOZG6x++L0PmdtGS2kDEp/ZaAFwdWq8+nXC5Dl8HDoezUdGorJTCbSc7BIMIBIQQdj/JUsWivasV14w4VoDbRswBgvQae7YsbuxcDXUDAEKpNrw7o7//4sRsXxXEAJgFvgMwOBMzA4SA3l0rWBCguxR3LAfqZAx9owc9nQJgd0PPDcQBm4HoFiP7j+ockTgwgklzMgKMVrAWImAXOZyEcR4h8/u3iUShIrtOJiDlSgFShrLJwE0hxBNtv+Byrq2hhDu4c+hU0C7B5FSl8AMNbYNMBStSC7zmQCT6lHHgcwtVKiNdfSnFi4UNoEHAbmAcHiNptrbhYsTRDKLZb+ez1wBmDyGgAuZwQ/b5UpjhjHWw0gMvF3r+RywWo15Op524X2GwA30+f2PclR6djyvMHRma5BDgyq2gAAAAASUVORK5CYII='
+ICON_DELETE_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAYAAAAj6qa3AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAGYktHRAAAAAAAAPlDu38AAAAJcEhZcwAAAGAAAABgAPBrQs8AAAAHdElNRQfnBgYJDQjZGuYWAAAFKklEQVRo3uVZbUxTZxR+zm3FrpTMDDdjkbnNqYE5F9QqoZJOjRo3MUgpOhCMc05D/cjmB5owCbgsc5sfgKgzcYu6NAtF3eZMjJIRRFSG1CVkKCNmRpRlGagLbYO13LMfeO0d7q4VW1u359/t+573Pue5zz3n7X0JIUJipSWziKOitF/z6T+2bNlCen6H1uXmogGtWD98uGLgWnyIjo4O1vFd3Dl0yO1WlQw9vnlzS5a9qpg8nmDzVIdKAK22d3PnmyUl1E7F9OKGDWhHK9YHELgNhdDr9QQCUFAQ3S6O6BrG3De4adMTIwA5aRAG5+ZK11yLrWKJ0XhBe/jlPbFnzyrFTZxgycyvnDpVUIlMtXV12IkVbMzLw0KU4mjwBRBCJYD0JKVLf4lLaHLYq3ZnnTmjtE6wQUoDSZ9l7LJmjxyp3kGFSN6/HzmYzNmpqahBDBVFRYVMuEfFNHRzsceDLhjRdvq0eFFoVo9durTJYa8qe+batYAFMMSZh1jLqquhxwy0zpgR7rwGjI04gFunTjWaD+sqbLNm9R9WrgG+Jw4qAlRHBCEqJzb2fLzdviPl5s1w56UEw/X0S9aG2FjMVxXiYGcnGpDBZSYTAMD24HzlGtDP6pGeuITGEd8kVEzp6lLKI3AB/icIuA0aDGaz1Sr14/8OlB3wBS+BUdaOnlBwORxcUFc34AUMH5nPWWNWr5YcMMmd4bF+W1oa7sT6Y9K+zIR8V1mZxHOyOmPiSs2qVf7i/NYAPoGfoHM6pWu6TOPRqdOFO+H+oCviRnh8vMQzwusY5+M9YAEoC7UYIltoMsbilrIAhtnmRGtbfb2hOeN7q03ZesGex6lIwl0fL2EVrmKKfwH8FkExHUcw1OkUDiANAHASo/CnTofpCgE3kYCdKSl4m77814WDPI9qkAivzAHL0II3nE40AqhQjvPrAKGBtyNepmQ6nkd35L0CbKHRcgEEJ9fT8iC8AlxKKmFRd/f9H5bgO14TExPuhPuDlvFJOu7jxeeE5b3bZbwHKoAqDmuo16ckr0A8eiPPAdiLUXJnet8DA0FwgPcX8UbPMVkXqEAc6SNQgJU0Ei4fL/UOUFAE0FztbfU+LXPARgzD7QgUYCtGyAVwWYLkgPquJGP8Jy4XDDBjJTNV83LkREf3jRL5i388IEIH16BJq5V4tmQl2p+1uN2PLABQTMUkihjGUzHO7UYF5SBREMZ/mvvcukVabbhTT6y0ZOZXRkdLvJCOcux3ue7zfnQB+sDryYNBPksN/rHH5J4X/m7w1FbvHm+1jEcBriPav/UfWgC6yC+hxNdW+qps+GuBeowQp0nz8WAbpnOu//b30AJgBa4gxqdsX5UNvwC9N1DKKh8P2ot2qELgANjQClk3EK9EhgOEdCzAuzIHvIVfQyOAhVLkf4qEUd73I0EAUUdG/lzmADu3QR0KAarxG2JlG6Krqm1C7T8UwXsfUvx+iAjSPPLwa7xOtgWehpaHESDwk6FyvsBjuruBvkMrsRwvoEGnQ/LfpzW+emRuRXZqqr/lgjWPK2HCbZ2OgGoAID1l0bFQFMGPKY+GyA4WbNzMNTNnmtjERawO2RGbEky8mBezRkNncQJrZ8++L8g+LuTkBw9AlBDwTi45af4r+aMTEryV9AN95XBQNuXjoEbzuBNXAtt4N/J6enghzSFVUlJT02HHrkmXL/uLC9gB5y8e/Xl326VLaMXvwtK0NHyABbjjcKAZ81Dl9T72jKX73uNBB4XRPGHu3EATl/AXbnI9SypdsUoAAAAASUVORK5CYII='
 ICON_CLONE_BASE_64_WHITE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAGYSURBVFiF7ZaxK0VhGMZ/r25iMCElgwzKbCApdzBYZDEoEv+AySCTBQOTzSAUoW5GgwyUf8CqdDeUDeHm1mO4Hz469zjnnnuznKdOX9/3ve/3/s5z3nM6EEGStlW5FsLOzkQB8HQHvEaMbQJagVVJRTNbj1nrW54D2Rg5My6n4MbFoLiMpOEI57W7sVfSp2sPZnYVIXcfGAeWJWFmK79JK1VR0nS5qp4DS5KGJD27+fwPB9z4BBxEuJtPjQFtwJakgpkdhQWb2YWkEeAEWJNU/+WEo8rHKI6kc5f37pyYCoj5csBbG5T06PdE3Lfgt+aADWDHPd+9gJisDwHkgElKPZFJ6kCnpPEgJzwHQpXUAcwsJwlKPeQ7cQnMhqSuAS2JHfDWAp0IOSNfDQcOJb1582ugB9iV9GJmx38dkBSgr8y6AaNAzQAmgIYye/3E+KZUBGBm9+X2/L6IorpKAKqpFCAFSAFSgBQg8Q9JiAYkbYbsN9caoNtdoaolwCml365/A7g1s7OoAB2SbqpUuDFOcMYbu6oEEEsfZ4a0SYpYgA4AAAAASUVORK5CYII='
+ICON_CLONE_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAJDSURBVFiF7ZY9iBNBGIbfbzaKFlYqB2IhFop1Mio2Z2EhwiFmN+CpxWkjZjf2VmoRFc7KSyIWcqfccUpyucoT1ELhKjcWtqKNhQpqJfhzJvNaxGguuU02boJNXhhmd76feWY+ZhhBCGnbnQYwEca3TYoX/GLhWpA51ls2eQ/wW0jnTQC2wshV7XhVv5S7HhmAghOVUv5pGF+dTE9AZBqQFZCTCcddXynlr7QBaDtzqOvE4DYBIUbi2s7EAEAMPj5fnHrZlUQ4B8IRIptwXLRCxADzuGuOPx/m7zYq1BLHMmcqi1N3O8fKW6raGIx6IERWO95KczkaJfgCYL7rahqiHKVwRJS5rZPeD7+cu9/J3S/efBZPpQ8rI0ut5WgAfPYX8mfDzq+T3m4AI/Ulck7b3jp/ITfbKeZFsbAcT6WPKCNLzeXo8RS06TyAGwBntO1hLQgaHNzreJfqPwCFJVBOCpnVqXOxSABWrfawqtS4iMwHQghHSYy2YNU7oy6rKAAAUCkXSiTH61k5o23vFADULCyDPB3YBJ+Ani+iYIhEMo1VO1HMzQJ4HRSjbfcigC2RAIxl3dNJ73vT0CuQe6h4Rzvpr36pUO6WIxIAgX0Qrh4UQAgBZAzAgAAsc9z6aTasZaqKtV9U+DvlnwD8YuFDkC3heDtABpnbFPkURNUQYAgwBBgCDAH68h4I0AFtu7c62DcPGmDX79ZRAwMg5JFAJv8bgIDv/IXck7AA27XtvunLzMTGXtxjTf3OvgAg/GMEAH4Bd0/lFie5kocAAAAASUVORK5CYII='
 ICON_APPLY_BASE_64_WHITE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAQAAACJ4248AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAACYktHRAAAqo0jMgAAAAlwSFlzAAAAYAAAAGAA8GtCzwAAAAd0SU1FB+cGBQkPDYnz3/UAAADaSURBVFjD7ZQ9CsIwAEYtpGtGCb2LnqGXk5Br6JaphRxBpIfRPIeAVeyf2MTBvD3fexCSzSaT+Qfw+z3UNb4s04opCtCaB87hpUwoN4Y3jscfygGuV7wQP5IDNE1k+eEwLu86qKosnx7zZRne7G63XD5155cLKLVQLiU41x/WGooiiTwMnk7vI8YMRawv90LA7TY89hqxurwfbtvx0RARTR4ClAoDUxGR5P1VbLdwPvMxK77zzyMifDLLI2L+cLMREeXzEQnk4xEJ5Y8IlMJbi7f266eWyWSeuAN4YjZi8rn4owAAAABJRU5ErkJggg=='
+ICON_FILTER_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYEAYAAACw5+G7AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAGYktHRAAAAAAAAPlDu38AAAAJcEhZcwAAAGAAAABgAPBrQs8AAAAHdElNRQfnBgYJJA3tNo1yAAADuUlEQVRYw+1VbWxTZRQ+7123McQR5t36gyyZMphYIrDdC8qqa8LQaMY277trpCHKgLVp3xKCEjDLcND5Y9HJcO4jA+OoCYotbJAuSJQEMsiypq2QukkGGZpucWCFGYpNtq73+MeSODMrW1k14fn55jnnPM85555LhK9opdnV1UUa4C75vLwc/uvgoRiEUIi7htn4dUmJilTBSvJlRgasAB42ut1chDutnDaZEq1zKlCHauLVaDCIC4nl6NHJI0Qin6WlwepeucJsz80Vv6HPs93BoChLdrN9y5ZEC44it+mV3B1nUlOFX+kp9sSVK0K35DP/Yrf/jSisrthv/tFoFA9IfpZ07544Un6VuZYtS7SBNZnSbcszBw+KQN9hTw0Pa7V6vcm0aNG0AeIIHWAuh0MI0XVsldtdkG+oMlQlJ8+18ILfXutgbRs2iPOojanD4QKkyFCnm8rjpj4opSmXwp+aTGQP6KB38WJu6+1g8qWamjkTnr+p3VDF81wNdx3estnwW2KAbfX1XnKStJALF2bcAeF7WTZ9UVT0sA1Ed1zolnws4PHMegNEmX5kth86JGqpjx3x+2Pu4CyEs4DBEP0GhTpZNqXk5cWK42IRxl4ItSUt2LsXT8ENePfOnfHl436ytakpXsKjVxBWkfMQbmggHhgibTt3evY5HG0Tg4Nx65DYTN9gyzUaMYPq2MpQaM1jUo0lS6+fab4iLMJaVKnEHprP3u/ri/5QHzRPzAlE4bacPN5ydWAA9+M8eLG6Gl8lZ/BYa+taLEMj5uQ8aOHQe5kLA5NWK/wMx8CbnU0KI3sIbN8et47/MwgRbtBqlnP2rNBHnzT7e3pkWZZlOSkpVmT0GNw/Dt2Sb8eK4uKZKvnXE/grEFFWdoVfqqyEpTAfHtdofmpUhKzdmzdPH1OLtchxpFSZ5HwtLXCCWEFqbvaUdD77Sf+5c3NsAMDr7co8fHh0lHsae7hCmw0qsYJoS0un46/d1J861r1kCfDAQVCj4e6O96pG6utnWn/WBu4jD+qg7OZNcBEnMp6fjqZ8yJVFsngeRKBgQXTpneqPnbduJd5AgvHIQKLxyECi8b83oHpYiZ8bluVdvWlpk2Flafg8pTAWWYdDRiNKxAMpgQC0xqdO/CbwMhrApFaLH9DjLLO9PfK2MjTx++gosWI50sZGsJJBVHm9kflcPyqFhfEqS2abQNxXkW4Or18PHYqHbOzsxDqSTr67eBEuw5s41NER0nLp/AKn84fXHScOkImJuDXsT/wBYvGEKnzpsjgAAAAASUVORK5CYII='
+WARN_FREE_SPACE = 80
+ALARM_FREE_SPACE = 95
 SYMBOL_UP = '▲'
 SYMBOL_RIGHT = '►'
 SYMBOL_LEFT = '◄'
@@ -649,25 +656,33 @@ def make_main_window(ip):
                      [
                          [
                           # sg.VPush(),
-                          sg.Column([[sg.Text('Фильтр: '),
+                          sg.Column([[
+                              # sg.Text('Фильтр: '),
+                              sg.Image(data=ICON_FILTER_BASE_64_BLUE),
                                       sg.Input(size=(20, 1),
                                                enable_events=True,
                                                key='-filterUser-')]],
                                     vertical_alignment='bottom'),
-                         sg.Button('', disabled_button_color='gray',
-                                    image_data=ICON_ADD_BASE_64_WHITE,
+                             sg.Push(),
+                          sg.Button('', disabled_button_color='white',
+                                    image_data=ICON_ADD_BASE_64_BLUE,
+                                    button_color='white',
                                     tooltip='Добавить',
-                                    key='-AddUser-', pad=((10, 5), (0, 3))),
-                          sg.Button('', disabled_button_color='gray',
-                                    image_data=ICON_MODIFY_BASE_64_WHITE,
+                                    key='-AddUser-',
+                                    pad=((10, 5), (0, 3))),
+                          sg.Button('', disabled_button_color='white',
+                                    image_data=ICON_MODIFY_BASE_64_BLUE,
+                                    button_color='white',
                                     tooltip='Изменить',
                                     key='Изменить пользователя', pad=(5, (0, 3))),
-                          sg.Button('', disabled_button_color='gray',
-                                    image_data=ICON_DELETE_BASE_64_WHITE,
+                          sg.Button('', disabled_button_color='white',
+                                    image_data=ICON_DELETE_BASE_64_BLUE,
+                                    button_color='white',
                                     tooltip='Удалить',
                                     key='-DelUser-', pad=(5, (0, 3))),
-                          sg.Button('', disabled_button_color='gray',
-                                    image_data=ICON_CLONE_BASE_64_WHITE,
+                          sg.Button('', disabled_button_color='white',
+                                    button_color='white',
+                                    image_data=ICON_CLONE_BASE_64_BLUE,
                                     tooltip='Клонировать',
                                     key='-CloneUser-', pad=(5, (0, 3)))],
                          [sg.Table(user_list, headings=['id', 'Логин', 'Имя', 'Дисп', 'Адм', 'К500', 'Блок'],
@@ -683,12 +698,13 @@ def make_main_window(ip):
                                    right_click_menu=[1, 'Изменить пользователя'],
                                    select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                                    selected_row_colors='black on lightblue',
-                                   auto_size_columns=False,
+                                   # auto_size_columns=False,
+                                   size=(450, 300),
                                    col_widths=[0, 10, 20, 5, 5, 5, 5],
                                    )], ],
-                     expand_x=True,
+                     size=(471, 300),
+                     # expand_x=True,
                      expand_y=True,
-                     # size=(480, 300)
                      ),
             sg.Frame('Группы', [[sg.Column([[
                                               sg.Checkbox('Выбрать все группы',
@@ -713,13 +729,15 @@ def make_main_window(ip):
                                          enable_events=True,
                                          justification='left',
                                          expand_y=True,
-                            expand_x=True,
+                                         expand_x=True,
+
                                          select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                                          selected_row_colors='black on lightblue',
                                          ),
 
                                   ]], expand_y=True,
-                                  expand_x=True
+                                  # expand_x=True,
+                     size=(471,300)
                      ),
             sg.Column([[sg.Button('', key='Apply',
                                   disabled=True,
@@ -729,16 +747,19 @@ def make_main_window(ip):
                                   disabled_button_color='gray',
                                   pad=((0, 4), 2)
                                   )]], vertical_alignment='bottom'),
+            # sg.Push()
         ],
 
     ]
     tab2_layout = [
-        [sg.Button('', disabled_button_color='gray',
-                   image_data=ICON_ADD_BASE_64_WHITE,
+        [sg.Button('', disabled_button_color='white',
+                   image_data=ICON_ADD_BASE_64_BLUE,
+                   button_color='white',
                    tooltip='Добавить',
                    key='-AddGroup-', pad=((10, 5), (20, 5))),
-         sg.Button('', disabled_button_color='gray',
-                   image_data=ICON_DELETE_BASE_64_WHITE,
+         sg.Button('', disabled_button_color='white',
+                   image_data=ICON_DELETE_BASE_64_BLUE,
+                   button_color='white',
                    tooltip='Удалить',
                    key='-DelGroup-', pad=(5, (20, 5)))],
 
@@ -820,8 +841,8 @@ def make_main_window(ip):
                                                    background_color='lightgray', size=10)],
     ]
     layout = [[sg.Menu([
-        ['Сервер', ['Установить лицензию...', '!Настройки']],
-        ['Помощь', 'О программе'], ], key='-Menu-')],
+        ['Сервер', ['Установить лицензию...', '!Настройки', 'Очистка БД', ['Частично', 'Полностью']]],
+        ['Помощь', 'О программе'], ], key='-Menu-',)],
         [sg.Frame('Сервер', [[sg.Column([[sg.Push(),
                               sg.Button('Старт', key='-Start-',
                                         disabled_button_color='gray',
@@ -835,27 +856,27 @@ def make_main_window(ip):
                               sg.Push()]], vertical_alignment='center') ]]
                                         # size=(200, 80),
          ),
-         sg.Frame('Место на сервере', [[sg.Column([[sg.Graph(canvas_size=(110, 12), graph_bottom_left=(1, 1),
-                                                 graph_top_right=(108, 10),
-                                                 k='-free-space-',
-                                                 pad=((20, 10), (0, 0),)),
-                                                    sg.Text('', size=57, key='-free-space-perc-'),
-                                                    sg.Button('Очистить частично', key='-partially-dropDB-', disabled=False,
-                                                              disabled_button_color='gray', pad=((20, 10), (5, 10))),
-                                                    sg.Button('Очистить', key='-dropDB-', disabled=False,
-                                                              disabled_button_color='gray', pad=((20, 10), (5, 10))), ]],
-                                                  vertical_alignment='center',
-
-                                                  )]],
-                  # size=(790, )
-         # expand_x = True
-    ),
+    #      sg.Frame('Место на сервере', [[sg.Column([[sg.Graph(canvas_size=(110, 12), graph_bottom_left=(1, 1),
+    #                                              graph_top_right=(108, 10),
+    #                                              k='-free-space-',
+    #                                              pad=((20, 10), (0, 0),)),
+    #                                                 sg.Text('', size=57, key='-free-space-perc-'),
+    #                                                 sg.Button('Очистить частично', key='-partially-dropDB-', disabled=False,
+    #                                                           disabled_button_color='gray', pad=((20, 10), (5, 10))),
+    #                                                 sg.Button('Очистить', key='-dropDB-', disabled=False,
+    #                                                           disabled_button_color='gray', pad=((20, 10), (5, 10))), ]],
+    #                                               vertical_alignment='center',
+    #
+    #                                               )]],
+    #               # size=(790, )
+    #      # expand_x = True
+    # ),
          ],
         [sg.TabGroup(
             [[sg.Tab('Пользователи', tab1_layout, key="Tab1"),
               sg.Tab('Группы', tab2_layout, key="Tab2"),
               sg.Tab('Журнал', tab3_layout, key="Tab3"),
-              ]], key="Tabs", size=(1100, 660),
+              ]], key="Tabs", size=(1020, 660),
             pad=((4, 0), (0, 3)),
             enable_events=True),
             sg.B(SYMBOL_LEFT_ARROWHEAD, pad=(5, 0),
@@ -883,9 +904,14 @@ def make_main_window(ip):
             )
         ],
         [sg.StatusBar(users_online_text, key='-StatusBar-',
-                      size=(100, 1)
+                      size=(100, 2)
          )
-         ]]
+         ],
+        # [sg.StatusBar('', key='-StatusBar2-',
+        #               size=(100, 1)
+        #               )
+        # ]
+    ]
     return sg.Window(label_text, layout, icon=ICON_BASE_64, use_ttk_buttons=True,
                      enable_close_attempted_event=True,
                      relative_location=(0, -50),
@@ -1439,9 +1465,10 @@ def get_online_users(users: list):
 
 def set_window_running_server():
     bar_text = 'Пользователей онлайн: ' + str(server_status['online']) + ', Версия БД: ' + str(server_status['db'])
+    bar_text += '\n' + update_free_space(server_status)
     window['-StatusBar-'].update(bar_text, background_color=status_bar_color)
     window['-Menu-'].update([
-        ['Сервер', ['Установить лицензию...', 'Настройки']],
+        ['Сервер', ['Установить лицензию...', 'Настройки', 'Очистка БД',['Частично', 'Полностью']]],
         ['Помощь', 'О программе'], ])
     update_free_space(server_status)
     window['online-users'].update(get_online_users(server_status['onlineUserIds']))
@@ -1456,8 +1483,8 @@ def set_window_not_running_server():
     window['-DelGroup-'].update(disabled=True)
     window['-filterUser-'].update(disabled=True)
     window['-filterGroup-'].update(disabled=True)
-    window['-partially-dropDB-'].update(disabled=True)
-    window['-dropDB-'].update(disabled=True)
+    # window['-partially-dropDB-'].update(disabled=True)
+    # window['-dropDB-'].update(disabled=True)
     window.Element('-Start-').SetFocus()
 
 
@@ -2368,22 +2395,33 @@ def update_users_and_groups():
 
 
 def update_free_space(status):
-    graph: sg.Graph = window[
-        '-free-space-']  # TODO: no server_status['spaceTotal'] if server was not available on startup
+    # graph: sg.Graph = window[
+    #     '-free-space-']  # TODO: no server_status['spaceTotal'] if server was not available on startup
     nonfree_space_perc = round((status['spaceTotal'] -
                                 status['freeSpace']) * 100 / status['spaceTotal'], 1)
-    graph.draw_rectangle(top_left=(0, 10),
-                         bottom_right=(int(nonfree_space_perc), 0),
-                         fill_color=button_color_2,
-                         line_width=0)
-    graph.draw_rectangle(top_left=(int(nonfree_space_perc), 10),
-                         bottom_right=(100, 0),
-                         fill_color=status_bar_color,
-                         line_width=0)
+    # graph.draw_rectangle(top_left=(0, 10),
+    #                      bottom_right=(int(nonfree_space_perc), 0),
+    #                      fill_color=button_color_2,
+    #                      line_width=0)
+    # graph.draw_rectangle(top_left=(int(nonfree_space_perc), 10),
+    #                      bottom_right=(100, 0),
+    #                      fill_color=status_bar_color,
+    #                      line_width=0)
     upd_t = str(round((100 - nonfree_space_perc), 1)) + '% (' \
             + str(round(status['freeSpace'] / 1024 / 1024 / 1024, 2)) \
             + ' Гб) свободного места на сервере'
-    window['-free-space-perc-'].update(upd_t)
+    # window['-free-space-perc-'].update(upd_t)
+    # print(nonfree_space_perc)
+    # window['-StatusBar2-'].update(upd_t, background_color=status_bar_color if nonfree_space_perc < WARN_FREE_SPACE else 'yellow' if nonfree_space_perc < ALARM_FREE_SPACE else button_color_2 )
+    return upd_t
+
+# def update_free_status(status):
+#     nonfree_space_perc = round((status['spaceTotal'] -
+#                                 status['freeSpace']) * 100 / status['spaceTotal'], 1)
+#     upd_t = str(round((100 - nonfree_space_perc), 1)) + '% (' \
+#             + str(round(status['freeSpace'] / 1024 / 1024 / 1024, 2)) \
+#             + ' Гб) свободного места на сервере'
+#     window['-StatusBar2-'].update(upd_t)
 
 
 def set_buttons_disabled(set=True):
@@ -2400,8 +2438,8 @@ def set_buttons_disabled(set=True):
     # window['Apply2'].update(disabled=True)
     window['-checkAllGroups-'].update(disabled=set)
     window['-checkAllUsers-'].update(disabled=set)
-    window['-partially-dropDB-'].update(disabled=set)
-    window['-dropDB-'].update(disabled=set)
+    # window['-partially-dropDB-'].update(disabled=set)
+    # window['-dropDB-'].update(disabled=set)
     window['-frame-online-'].update(visible=not window['-frame-online-'].metadata)
     window['-users-'].update(visible=not set)
     window['-groups2-'].update(visible=not set)
@@ -2638,7 +2676,7 @@ if __name__ == '__main__':
                                         HEADER_dict = {'Authorization': "Bearer " + TOKEN}
                                         update_users_and_groups()
                                         window['-Menu-'].update([
-                                            ['Сервер', ['Установить лицензию...', 'Настройки']],
+                                            ['Сервер', ['Установить лицензию...', 'Настройки', 'Очистка БД', ['Частично', 'Полностью']]],
                                             ['Помощь', 'О программе'], ])
                                 # if dict_online['databaseVersion'] != '' and current_db != '':
                                 if current_db < dict_online['databaseVersion']:  # TODO
@@ -2646,6 +2684,7 @@ if __name__ == '__main__':
                                     current_db = dict_online['databaseVersion']
                                 update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
                                               + ', Версия БД: ' + str(dict_online["databaseVersion"])
+                                update_text += '\n' + update_free_space(dict_online)
                                 window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                 set_buttons_disabled(False)
                                 server_status['run'] = True
@@ -2679,7 +2718,7 @@ if __name__ == '__main__':
                                 if server_status['run']:
                                     server_status['run'] = False
                                     window['-Menu-'].update([
-                                        ['Сервер', ['Установить лицензию...', '!Настройки']],
+                                        ['Сервер', ['Установить лицензию...', '!Настройки', 'Очистка БД',['Частично', 'Полностью']]],
                                         ['Помощь', 'О программе'], ])
                             if change_state:  # TODO
                                 with open('admin.log', mode='r', encoding='cp1251') as log_f:
@@ -3680,6 +3719,7 @@ if __name__ == '__main__':
                                                               + str(dict_online_after_start["databaseVersion"])
                                                 server_status['online'] = dict_online_after_start["onlineUsersCount"]
                                                 server_status['db'] = dict_online_after_start["databaseVersion"]
+                                                update_text += '\n' + update_free_space(dict_online_after_start)
                                                 window['-StatusBar-'].update(update_text,
                                                                              background_color=status_bar_color)
                                                 window['-Start-'].update(disabled=True)
@@ -3691,11 +3731,12 @@ if __name__ == '__main__':
                                                     print(server_status)
                                                     update_users_and_groups()
                                                     window['-Menu-'].update([
-                                                        ['Сервер', ['Установить лицензию...', 'Настройки']],
+                                                        ['Сервер', ['Установить лицензию...', 'Настройки', 'Очистка БД',['Частично', 'Полностью']]],
                                                         ['Помощь', 'О программе'], ])
                                                     update_text = 'Пользователей онлайн: ' + str(
                                                         server_status["online"]) \
                                                                   + ', Версия БД: ' + str(server_status["db"])
+                                                    update_text += '\n' + update_free_space(server_status)
                                                     window['-StatusBar-'].update(update_text,
                                                                                  background_color=status_bar_color)
                                                     set_buttons_disabled(False)
@@ -4657,6 +4698,7 @@ if __name__ == '__main__':
                                                       + str(dict_online_after_start["databaseVersion"])
                                         server_status['online'] = dict_online_after_start["onlineUsersCount"]
                                         server_status['db'] = dict_online_after_start["databaseVersion"]
+                                        update_text += '\n' + update_free_space(server_status)
                                         window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                         window['-Start-'].update(disabled=True)
                                         window['-Stop-'].update(disabled=False)
@@ -4667,10 +4709,11 @@ if __name__ == '__main__':
                                             print(server_status)
                                             update_users_and_groups()
                                             window['-Menu-'].update([
-                                                ['Сервер', ['Установить лицензию...', 'Настройки']],
+                                                ['Сервер', ['Установить лицензию...', 'Настройки', 'Очистка БД',['Частично', 'Полностью']]],
                                                 ['Помощь', 'О программе'], ])
                                             update_text = 'Пользователей онлайн: ' + str(server_status["online"]) \
                                                           + ', Версия БД: ' + str(server_status["db"])
+                                            update_text += '\n' + update_free_space(server_status)
                                             window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                             set_buttons_disabled(False)
                                             server_status['run'] = True
@@ -4768,7 +4811,7 @@ if __name__ == '__main__':
                                 # window['-partially-dropDB-'].update(disabled=True)
                                 # window['-dropDB-'].update(disabled=True)
                                 window['-Menu-'].update([
-                                    ['Сервер', ['Установить лицензию...', '!Настройки']],
+                                    ['Сервер', ['Установить лицензию...', '!Настройки', 'Очистка БД',['Частично', 'Полностью']]],
                                     ['Помощь', 'О программе'], ])
                                 server_status['run'] = False
                                 update_free_space({'freeSpace': 0, 'spaceTotal': 1})
@@ -4901,7 +4944,7 @@ if __name__ == '__main__':
                                 for user_id_for_tree in all_user_ids:
                                     tree2.update(key=user_id_for_tree, icon=check[0])
                             window['Apply2'].update(disabled=False)
-                    if event == '-dropDB-':
+                    if event == '-dropDB-' or event == 'Полностью':
                         additional_window = True
                         window_confirm = make_confirm_window('Вы уверены, что хотите удалить всю БД и все файлы?')
                         while True:
@@ -4931,7 +4974,7 @@ if __name__ == '__main__':
                                 window_confirm.close()
                                 break
                         additional_window = False
-                    if event == '-partially-dropDB-':
+                    if event == '-partially-dropDB-' or event == 'Частично':
                         additional_window = True
                         window_confirm = make_confirm_window('Вы уверены, что хотите удалить '
                                                              'все данные, кроме абонентов и групп?')
