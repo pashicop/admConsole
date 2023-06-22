@@ -45,6 +45,7 @@ ICON_SAVE_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAYAAAAj6qa3AAAAIGNIU
 ICON_LEFT_ARROW_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFXSURBVEiJndbLbhMxFIDhT0kGnoYNqKVcciNJuyvP1jeoEOIeoKUtb8St2+7NIk41ScaecSx5dTT/b9nnMkIISjZOcIfQsk9DCErhx/iFx4l4hQt8waBIgEWEP8nAv2G5hncWYI7fOEjEBxH8FdVGrAN8FuGHGfjnePpqJ94CfxXhR4l4Hx/xvQmeFWCKP3iWgX/AJR4kOYmPJxH+IgN/hx85eKMA4wh/mYD38BZXbfAdAUb4i1EG/gbXXeAbAgwjfJyBn+MGD7vA7wV4FOHTzKOf4WcJPISgZ7X68YS5VbXEm9dWzt9i0pI55VdUg8yiJPUOfbzf65EbJKlMWhdYeZrWIHP8wzARH+CTfQqtQZIquHWTK28VNcgiSlItY2A1XMqbXYPkeUaytE+7rkGOrQox1VnX06x84DRIUrOhildVPjJrkJMoeZqR7Df0tyRdfltehxD8B8k8yTaHLwT/AAAAAElFTkSuQmCC'
 WARN_FREE_SPACE = 80
 ALARM_FREE_SPACE = 95
+WARN_LIC_DAYS = 30
 SYMBOL_UP = '▲'
 SYMBOL_RIGHT = '►'
 SYMBOL_LEFT = '◄'
@@ -914,12 +915,16 @@ def make_main_window(ip):
         [sg.StatusBar(users_online_text, key='-StatusBar-',
                       size=(37, 1),
                       p=((5, 0),0),
-                      expand_x=True
+                      # expand_x=True
          )
          ,
          sg.StatusBar('', key='-StatusBar2-',
-                     size=(70, 1),
-                     p=((0, 5), 0),
+                     size=(37, 1),
+                     p=(0, 0),
+                      ),
+         sg.StatusBar('', key='-StatusBar3-',
+                      size=(30, 1),
+                      p=((0, 5), 0),
                       ),
         ]
 
@@ -946,21 +951,21 @@ def make_login_window():
                      sg.Push(background_color='white'),
                      sg.Input(
                          # default_text="",
-                         # default_text="10.1.4.73",
+                         default_text="10.1.4.73",
                          focus=True, key="ip",
                               pad=((0, 40), (0, 0)), enable_events=True)],
                     [sg.Text("Логин", background_color='white'),
                      sg.Push(background_color='white'),
                      sg.Input(
                          # default_text="",
-                         # default_text="radiotech",
+                         default_text="radiotech",
                               key="Логин",
                               pad=((0, 40), (2, 0)), disabled=False, enable_events=True)],
                     [sg.Text("Пароль", background_color='white'),
                      sg.Push(background_color='white'),
                      sg.Input(
                          # default_text='',
-                         # default_text='radiotech',
+                         default_text='radiotech',
                               key="password",
                               enable_events=True,
                               password_char='*'),
@@ -1452,21 +1457,26 @@ def set_window_running_server():
         ['Помощь', 'О программе'], ])
     update_free_space(server_status)
     window['online-users'].update(get_online_users(server_status['onlineUserIds']))
+    set_lic_status_bar()
 
 
-def set_window_not_running_server():
-    window['-StatusBar-'].update('Сервер не доступен', background_color=button_color_2)
-    window['-StatusBar2-'].update('Сервер не доступен', background_color=button_color_2)
-    window['-AddUser-'].update(disabled=True)
-    window['-ClearFilterUser-'].update(disabled=True)
-    window['-DelUser-'].update(disabled=True)
-    window['-CloneUser-'].update(disabled=True)
-    window['-BlockUser-'].update(disabled=True)
-    window['-AddGroup-'].update(disabled=True)
-    window['-DelGroup-'].update(disabled=True)
-    window['-filterUser-'].update(disabled=True)
-    window['-filterGroup-'].update(disabled=True)
-    window.Element('-Start-').SetFocus()
+def set_lic_status_bar():
+    lic = get_current_lic()
+    if lic:
+        # print(lic['ExpirationDate'])
+        # cur_date = datetime.today()
+        lic_date_format = datetime.strptime(str(lic['ExpirationDate']), '%d/%m/%Y')
+        delta = lic_date_format - datetime.today()
+        # print(f'{type(delta)}, {delta}' )
+        # print(delta.days)
+        delta_days = int(delta.days)
+        window['-StatusBar3-'].update('Лицензия до: ' + str(lic['ExpirationDate']).replace('/', '-') +
+                                      ', осталось дней: ' + str(delta_days))
+        window['-StatusBar3-'].update(background_color=status_bar_color if delta_days > WARN_LIC_DAYS
+        else button_color_2)
+        logging.info(f'Лицензия истечёт через {str(delta_days)} дней')
+        if delta_days <= WARN_LIC_DAYS:
+            logging.warning(f'Заканчивается срок действия лицензии! Осталось {str(delta_days)} дней')
 
 
 def the_thread(ip):
@@ -2242,6 +2252,8 @@ def update_users():
             filtered_users_list_of_dict)
         if not filtered_users_list:
             window['-filterUser-'].update(background_color=button_color_2)
+        else:
+            window['-filterUser-'].update(background_color='lightblue')
         window['-users-'].update(filtered_users_list)
     else:
         user_list, treedata_update_user = get_user_list(users_from_db)
@@ -2264,6 +2276,8 @@ def update_groups():
         filtered_groups_list, treedata_update_group = get_group_list(filtered_groups_list_of_dict)
         if not filtered_groups_list:
             window['-filterGroup-'].update(background_color=button_color_2)
+        else:
+            window['-filterGroup-'].update(background_color='lightblue')
         window['-groups2-'].update(filtered_groups_list)
     else:
         group_list, treedata_update_group = get_group_list(groups_from_db)
@@ -2356,6 +2370,8 @@ def set_buttons_disabled(set=True):
     window['-groups2-'].update(visible=not set)
     window['-TREE-'].update(visible=not set)
     window['-TREE2-'].update(visible=not set)
+    # if not set:
+    #     set_lic_status_bar()
 
 
 def get_current_lic():
@@ -2531,6 +2547,7 @@ if __name__ == '__main__':
     else:
         logging.basicConfig(filename='admin.log', filemode='a', format='%(asctime)s %(levelname)s %(message)s',
                             encoding='cp1251', datefmt='%d/%m/%Y %H:%M:%S', level=logging.INFO)
+    logging.getLogger('paramiko').setLevel(logging.WARNING)
     logging.info('Старт лога')
     window_login = make_login_window()
     login_password_clear = False
@@ -2695,6 +2712,7 @@ if __name__ == '__main__':
                             else:
                                 window['-StatusBar-'].update('Сервер не доступен', background_color=button_color_2)
                                 window['-StatusBar2-'].update('', background_color=button_color_2)
+                                window['-StatusBar3-'].update('', background_color=button_color_2)
                                 window['-Start-'].update(disabled=False)
                                 window['-Stop-'].update(disabled=True)
                                 window['-users-'].update([[]])
@@ -2717,6 +2735,7 @@ if __name__ == '__main__':
                                 window['journal'].update(output_text[0])
                                 count_string = str(output_text[1]) + ' из ' + str(output_text[2])
                                 window['countLogs'].update(count_string)
+                                set_lic_status_bar()
                     if event == sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
                         additional_window = True
                         break_flag = True
@@ -2758,8 +2777,10 @@ if __name__ == '__main__':
                             window['-CloneUser-'].update(disabled=False)
                             if get_block_status(selected_user):
                                 window['-BlockUser-'].update(image_data=ICON_UNBLOCK_BASE_64_BLUE)
+                                window['-BlockUser-'].TooltipObject.text = 'Разблокировать'
                             else:
                                 window['-BlockUser-'].update(image_data=ICON_BLOCK_BASE_64_BLUE)
+                                window['-BlockUser-'].TooltipObject.text = 'Заблокировать'
                             window['-BlockUser-'].update(disabled=False)
                             window['-checkAllGroups-'].update(disabled=False)
                             window['-checkAllGroups-'].update(False)
@@ -2797,8 +2818,10 @@ if __name__ == '__main__':
                             window['-DelGroup-'].update(disabled=False)
                             if get_block_status_group(selected_group):
                                 window['-BlockGroup-'].update(image_data=ICON_UNBLOCK_BASE_64_BLUE)
+                                window['-BlockGroup-'].TooltipObject.text = 'Разблокировать'
                             else:
                                 window['-BlockGroup-'].update(image_data=ICON_BLOCK_BASE_64_BLUE)
+                                window['-BlockGroup-'].TooltipObject.text = 'Заблокировать'
                             window['-BlockGroup-'].update(disabled=False)
                             window['-checkAllUsers-'].update(disabled=False)
                             window['-checkAllUsers-'].update(False)
@@ -3590,6 +3613,7 @@ if __name__ == '__main__':
                                     new_lic_installed = True
                                     window_add_lic['show_cur_lic'].update(disabled=False)
                                     window_add_lic['Загрузить'].update(disabled=True)
+                                    # set_lic_status_bar()
                                 else:
                                     my_popup("Проблема с загрузкой лицензии")
                                     logging.error(f"Проблема с загрузкой лицензии")
@@ -3673,6 +3697,7 @@ if __name__ == '__main__':
                                                     update_free_space(dict_online_after_start)
                                                     window['online-users'].update(
                                                         get_online_users(dict_online_after_start['onlineUserIds']))
+                                                    set_lic_status_bar()
                                                     my_popup('Сервер перезагружен')
                                                     break
                                                 else:
@@ -4180,6 +4205,8 @@ if __name__ == '__main__':
                                                     filtered_users_list_of_dict = list(filtered_users)
                                                     filtered_users_list, treedata_update_user = get_user_list(
                                                         filtered_users_list_of_dict)
+                                                    if not filtered_users_list:
+                                                        window['-filterUser-'].update(background_color=button_color_2)
                                                     window['-users-'].update(filtered_users_list)
                                                 else:
                                                     window['-users-'].update(user_list)
@@ -4771,6 +4798,8 @@ if __name__ == '__main__':
                                                                                      'name'],
                                                                                  filtered_group_list_of_dict[
                                                                                      'desc']])
+                                                if not filtered_groups_list:
+                                                    window['-filterGroup-'].update(background_color=button_color_2)
                                                 window['-groups2-'].update(filtered_groups_list)
                                             else:
                                                 window['-groups2-'].update(group_list)
@@ -4831,6 +4860,7 @@ if __name__ == '__main__':
                                         server_status['db'] = dict_online_after_start["databaseVersion"]
                                         window['-StatusBar-'].update(update_text, background_color=status_bar_color)
                                         window['-StatusBar2-'].update(update_text2)
+                                        set_lic_status_bar()
                                         window['-Start-'].update(disabled=True)
                                         window['-Stop-'].update(disabled=False)
                                         TOKEN = get_token(BASE_URL_AUTH)
@@ -4922,6 +4952,7 @@ if __name__ == '__main__':
                                 my_popup('Сервер остановлен')
                                 window['-StatusBar-'].update('Сервер не запущен', background_color=button_color_2)
                                 window['-StatusBar2-'].update('', background_color=button_color_2)
+                                window['-StatusBar3-'].update('', background_color=button_color_2)
                                 window['-Start-'].update(disabled=False)
                                 window['-Stop-'].update(disabled=True)
                                 window['-users-'].update([[]])
@@ -4940,12 +4971,12 @@ if __name__ == '__main__':
                                 window['online-users'].update('')
                                 break
                         additional_window = False
-                    # if event == 'Tabs':
-                    #     if values['Tabs'] == 'Tab3':
-                    #         output_text = get_logs()
-                    #         window['journal'].update(output_text[0])
-                    #         count_string = str(output_text[1]) + ' из ' + str(output_text[2])
-                    #         window['countLogs'].update(count_string)
+                    if event == 'Tabs':
+                        if values['Tabs'] == 'Tab3':
+                            output_text = get_logs()
+                            window['journal'].update(output_text[0])
+                            count_string = str(output_text[1]) + ' из ' + str(output_text[2])
+                            window['countLogs'].update(count_string)
                     if event == 'info':
                         if filter_journal_info:
                             filter_journal_info = False
