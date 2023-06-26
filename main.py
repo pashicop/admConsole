@@ -957,19 +957,19 @@ def make_login_window():
     layout_login = [[sg.Text("Адрес сервера", background_color='white'),
                      sg.Push(background_color='white'),
                      sg.Input(
-                         default_text="10.1.4.73",
+                         # default_text="10.1.4.73",
                          focus=True, key="ip",
                          pad=((0, 40), (0, 0)), enable_events=True)],
                     [sg.Text("Логин", background_color='white'),
                      sg.Push(background_color='white'),
                      sg.Input(
-                         default_text="radiotech",
+                         # default_text="radiotech",
                          key="Логин",
                          pad=((0, 40), (2, 0)), disabled=False, enable_events=True)],
                     [sg.Text("Пароль", background_color='white'),
                      sg.Push(background_color='white'),
                      sg.Input(
-                         default_text='radiotech',
+                         # default_text='radiotech',
                          key="password",
                          enable_events=True,
                          password_char='*'),
