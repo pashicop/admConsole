@@ -2596,9 +2596,9 @@ def filter_logs_server():
                                     if len(journal_list_with_types) - 1 == i + l + 1:
                                         for m in range(0, l + 1):
                                             filtered_journal_server.append(journal_list_with_types[i + m + 1])
-                                            # new_i += 1
+                                            new_i += 1
                                         break
-                                new_i = i + l + 1
+                                new_i += l
                                 filter_count_log += 1
                             except Exception as e:
                                 print(f'{e}')
