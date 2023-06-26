@@ -5180,10 +5180,11 @@ if __name__ == '__main__':
                         else:
                             filter_journal_info_server = True
                         output_text_server = filter_logs_server()
-                        if output_text_server[1] == 0:
-                            window['-filterJournalServer-'].update(background_color=button_color_2)
-                        else:
-                            window['-filterJournalServer-'].update(background_color='lightblue')
+                        # if output_text_server[1] == 0:
+                        #     window['-filterJournalServer-'].update(background_color=button_color_2)
+                        # else:
+                        #     if filter_status_journal_server:
+                        #         window['-filterJournalServer-'].update(background_color='lightblue')
                         window['journalServer'].update(output_text_server[0])
                         count_string = str(output_text_server[1]) + ' из ' + str(output_text_server[2])
                         window['countLogsServer'].update(count_string)
@@ -5193,10 +5194,11 @@ if __name__ == '__main__':
                         else:
                             filter_journal_warn_server = True
                         output_text_server = filter_logs_server()
-                        if output_text_server[1] == 0:
-                            window['-filterJournalServer-'].update(background_color=button_color_2)
-                        else:
-                            window['-filterJournalServer-'].update(background_color='lightblue')
+                        # if output_text_server[1] == 0:
+                        #     window['-filterJournalServer-'].update(background_color=button_color_2)
+                        # else:
+                        #     if filter_status_journal_server:
+                        #         window['-filterJournalServer-'].update(background_color='lightblue')
                         window['journalServer'].update(output_text_server[0])
                         count_string = str(output_text_server[1]) + ' из ' + str(output_text_server[2])
                         window['countLogsServer'].update(count_string)
@@ -5206,10 +5208,11 @@ if __name__ == '__main__':
                         else:
                             filter_journal_fail_server = True
                         output_text_server = filter_logs_server()
-                        if output_text_server[1] == 0:
-                            window['-filterJournalServer-'].update(background_color=button_color_2)
-                        else:
-                            window['-filterJournalServer-'].update(background_color='lightblue')
+                        # if output_text_server[1] == 0:
+                        #     window['-filterJournalServer-'].update(background_color=button_color_2)
+                        # else:
+                        #     if filter_status_journal_server:
+                        #         window['-filterJournalServer-'].update(background_color='lightblue')
                         window['journalServer'].update(output_text_server[0])
                         count_string = str(output_text_server[1]) + ' из ' + str(output_text_server[2])
                         window['countLogsServer'].update(count_string)
