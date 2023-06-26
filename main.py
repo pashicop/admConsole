@@ -2584,7 +2584,7 @@ def filter_logs_server():
                                 else:
                                     for j in range(1, i):
                                         if journal_list_with_types[i - j][0:6].strip().isdigit():
-                                            for k in (j, 0):
+                                            for k in range(j, -1, -1):
                                                 filtered_journal_server.append(journal_list_with_types[i - k])
                                             # filtered_journal_server.append(journal_list[i])
                                             break
@@ -2592,13 +2592,13 @@ def filter_logs_server():
                                     if journal_list_with_types[i + l + 1][0:6].strip().isdigit():
                                         for m in range(0, l):
                                             filtered_journal_server.append(journal_list_with_types[i + m + 1])
+                                        new_i += l
                                         break
                                     if len(journal_list_with_types) - 1 == i + l + 1:
                                         for m in range(0, l + 1):
                                             filtered_journal_server.append(journal_list_with_types[i + m + 1])
                                             new_i += 1
                                         break
-                                new_i += l
                                 filter_count_log += 1
                             except Exception as e:
                                 print(f'{e}')
@@ -4754,6 +4754,8 @@ if __name__ == '__main__':
                                 window['countLogsServer'].update(count_string)
                     if event == '-UpdateLogServer-':
                         output_text_server = get_logs_server()
+                        if output_text_server[1] == 0:
+                            window['-filterJournalServer-'].update(background_color=button_color_2)
                         window['journalServer'].update(output_text_server[0])
                         count_string = str(output_text_server[1]) + ' из ' + str(output_text_server[2])
                         window['countLogsServer'].update(count_string)
