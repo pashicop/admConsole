@@ -2500,8 +2500,8 @@ def filter_logs_server():
                                 filter_count_log += 1
                             except Exception as e:
                                 print(f'{e}')
-                return ["\n".join(filtered_journal_server), filter_count_log , count_log]
-            return ["\n".join(journal_list), count_log, count_log]
+                return ["\n".join(filtered_journal_server[-1000:]), filter_count_log , count_log] #TODO
+            return ["\n".join(journal_list[-1000:]), count_log, count_log]
     except Exception as e:
         print(f'{e}')
         logging.error('Не удалось прочитать логи сервера!')
