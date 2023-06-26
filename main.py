@@ -93,7 +93,9 @@ MIN_PING_TM = 2
 MAX_PING_TM = 120
 MIN_DEL_DAYS = 10
 MAX_DEL_DAYS = 1095
+MAX_DEPTH_LOG = 100000
 DEF_PING_TM = 5
+LOG_DEPTH = 1000
 LICS = ['', '', '']
 LOCAL = False
 COMPANY = 'ООО "АСТРАКОМ"'
@@ -105,7 +107,7 @@ DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
 DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
-version = '1.1.6'
+version = '1.1.7'
 
 
 def get_branch():
@@ -1110,6 +1112,10 @@ def make_settings():
                           [sg.Push(), sg.Text('Таймаут опроса сервера (сек)'),
                            sg.Input(size=20, key='-пинг-таймаут-',
                                     default_text=ping_timeout,
+                                    enable_events=True)],
+                          [sg.Push(), sg.Text('Глубина лога сервера (строки)'),
+                           sg.Input(size=20, key='-глубина-сервера-',
+                                    default_text=LOG_DEPTH,
                                     enable_events=True)],
                           [sg.Push(), sg.Text('Удалять данные старше (дней)'),
                            sg.Input(size=20, key='-auto-del-',
@@ -2151,6 +2157,16 @@ def validate(window: str):
             window_settings['-auto-del-'].update(background_color=button_color_2,
                                                  text_color=omega_theme['BACKGROUND'])
             return False
+        if val_set['-глубина-сервера-'].isnumeric() and 0 <= int(val_set['-глубина-сервера-']) <= MAX_DEPTH_LOG:
+            window_settings['-глубина-сервера-'].update(background_color=omega_theme['BACKGROUND'],
+                                                 text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Количество строк должно быть не менее 0 и не более " + str(
+                MAX_DEPTH_LOG) + " строк"))
+            window_settings.Element('-глубина-сервера-').SetFocus()
+            window_settings['-глубина-сервера-'].update(background_color=button_color_2,
+                                                 text_color=omega_theme['BACKGROUND'])
+            return False
     if window == 'clone_user':
         print(val_clone_user)
         if 0 < len(str(val_clone_user['CloneUserLogin'])) <= MAX_LEN_LOGIN:
@@ -2464,7 +2480,7 @@ def get_logs():
             if filter_status_journal:
                 filtered_journal = list(
                     filter(lambda x: values['-filterJournal-'].lower() in x.lower(), filtered_journal))
-            return ["\n".join(filtered_journal), len(filtered_journal), len(journal_list)]
+            return ["\n".join(filtered_journal[-LOG_DEPTH:]), len(filtered_journal), len(journal_list)]
     except Exception as e:
         print(f'Не удалось получить локальные логи - {e}')
         logging.error(f'Не удалось получить локальные логи - {e}')
@@ -2609,8 +2625,8 @@ def filter_logs_server():
                                 filter_count_log += 1
                             except Exception as e:
                                 print(f'{e}')
-                return ["\n".join(filtered_journal_server), filter_count_log, count_all]
-            return ["\n".join(journal_list_with_types), count_log, count_all]
+                return ["\n".join(filtered_journal_server[-LOG_DEPTH:]), filter_count_log, count_all]
+            return ["\n".join(journal_list_with_types[-LOG_DEPTH:]), count_log, count_all]
     except Exception as e:
         print(f'{e}')
         logging.error('Не удалось прочитать логи сервера!')
@@ -2642,6 +2658,7 @@ if __name__ == '__main__':
         logging.basicConfig(filename='admin.log', filemode='a', format='%(asctime)s %(levelname)s %(message)s',
                             encoding='cp1251', datefmt='%d/%m/%Y %H:%M:%S', level=logging.INFO)
     logging.getLogger('paramiko').setLevel(logging.WARNING)
+    # logging.getLogger('paramiko.transport').setLevel(logging.WARNING)
     logging.info('Старт лога')
     window_login = make_login_window()
     login_password_clear = False
@@ -3717,7 +3734,7 @@ if __name__ == '__main__':
                                         with open("/home/omega/Omega/.licenseState", mode='w') as f_lic_st:
                                             f_lic_st.write("5")
                                             print("файл записан")
-                                    logging.error(f"Новая лицензия загружена! Необходимо перезагрузить сервер!")
+                                    logging.warning(f"Новая лицензия загружена! Необходимо перезагрузить сервер!")
                                     my_popup("Новая лицензия загружена! Необходимо перезагрузить сервер!")
                                     window_add_lic['restart'].update(disabled=False, button_color=button_color_2)
                                     new_lic_installed = True
@@ -3994,6 +4011,22 @@ if __name__ == '__main__':
                                 window_settings['-Progress-Bar-'].update_bar(counter)
                                 window_settings['-OK-set-'].update(disabled=False)
                                 window_settings['-OK-set-'].update(button_color=button_color_2)
+                            elif ev_set == '-глубина-сервера-':
+                                if val_set[ev_set].isdigit():
+                                    window_settings[ev_set].update(
+                                        background_color=omega_theme['INPUT'])
+                                    if 0 < int(val_set[ev_set]) <= MAX_DEPTH_LOG:
+                                        window_settings[ev_set].update(
+                                            background_color=omega_theme['INPUT'],
+                                            text_color=omega_theme['TEXT'])
+                                    else:
+                                        window_settings[ev_set].update(background_color=button_color_2)
+                                else:
+                                    window_settings[ev_set].update(background_color=button_color_2)
+                                counter = 0
+                                window_settings['-Progress-Bar-'].update_bar(counter)
+                                window_settings['-OK-set-'].update(disabled=False)
+                                window_settings['-OK-set-'].update(button_color=button_color_2)
                             elif ev_set == '-auto-del-':
                                 if val_set[ev_set].isdigit():
                                     window_settings[ev_set].update(
@@ -4046,6 +4079,8 @@ if __name__ == '__main__':
                                         logging.error("Не удалось обновить настройки")
                                     if val_set['-пинг-таймаут-'] != str(ping_timeout):
                                         ping_timeout = int(val_set['-пинг-таймаут-'])
+                                    if val_set['-глубина-сервера-'] != str(ping_timeout):
+                                        LOG_DEPTH = int(val_set['-глубина-сервера-'])
                                     disable_input(window_settings)
                                     counter = 0
                                     while counter < 11:
