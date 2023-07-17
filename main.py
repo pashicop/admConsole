@@ -107,7 +107,7 @@ DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
 DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
-version = '1.1.7'
+version = '1.1.8'
 
 
 def get_branch():
@@ -567,7 +567,7 @@ def make_main_window(ip):
                                        button_color='white',
                                        tooltip='Добавить',
                                        key='-AddUser-',
-                                       pad=((10, 5), (0, 3))),
+                                       pad=(4, (0, 3))),
                              sg.Button('', disabled_button_color='white',
                                        disabled=True,
                                        image_data=ICON_MODIFY_BASE_64_BLUE,
@@ -579,19 +579,19 @@ def make_main_window(ip):
                                        button_color='white',
                                        image_data=ICON_CLONE_BASE_64_BLUE,
                                        tooltip='Клонировать',
-                                       key='-CloneUser-', pad=(5, (0, 3))),
+                                       key='-CloneUser-', pad=(4, (0, 3))),
                              sg.Button('', disabled_button_color='white',
                                        disabled=True,
                                        button_color='white',
                                        image_data=ICON_BLOCK_BASE_64_BLUE,
                                        tooltip='Заблокировать',
-                                       key='-BlockUser-', pad=(5, (0, 3))),
+                                       key='-BlockUser-', pad=(4, (0, 3))),
                              sg.Button('', disabled_button_color='white',
                                        disabled=True,
                                        image_data=ICON_DELETE_BASE_64_BLUE,
                                        button_color='white',
                                        tooltip='Удалить',
-                                       key='-DelUser-', pad=(5, (0, 3)))],
+                                       key='-DelUser-', pad=(4, (0, 3)))],
                          [sg.Table(user_list, headings=['id', 'Логин', 'Имя', 'Дисп', 'Адм', 'К500', 'Блок'],
                                    justification="left",
                                    # num_rows=20,
@@ -680,24 +680,25 @@ def make_main_window(ip):
                                     button_color='white',
                                     tooltip='Добавить',
                                     key='-AddGroup-',
-                                    pad=((10, 5), (0, 3))),
+                                    pad=(4, (0, 3))),
                           sg.Button('', disabled_button_color='white',
                                     disabled=True,
                                     image_data=ICON_MODIFY_BASE_64_BLUE,
                                     button_color='white',
                                     tooltip='Изменить',
-                                    key='Изменить группу', pad=(5, (0, 3))),  # TODO
+                                    key='Изменить группу', pad=(4, (0, 3))),  # TODO
                           sg.Button('', disabled_button_color='white',
                                     disabled=True,
                                     button_color='white',
                                     image_data=ICON_BLOCK_BASE_64_BLUE,
                                     tooltip='Заблокировать',
-                                    key='-BlockGroup-', pad=(5, (0, 3))),
+                                    key='-BlockGroup-', pad=(4, (0, 3))),
                           sg.Button('', disabled_button_color='white',
+                                    disabled=True,
                                     image_data=ICON_DELETE_BASE_64_BLUE,
                                     button_color='white',
                                     tooltip='Удалить',
-                                    key='-DelGroup-', pad=(5, (0, 3)))],
+                                    key='-DelGroup-', pad=(4, (0, 3)))],
                       [sg.Table(group_list, headings=['id', 'Имя', 'Описание', 'Э', 'Блок'],
                                 justification="left",
                                 # num_rows=40,
@@ -2099,7 +2100,7 @@ def validate(window: str):
         else:
             my_popup(("Длительность скрытого прослушивания должна быть не менее " + str(
                 MIN_AMB_LIST_TM) + " и не более " + str(
-                MAX_AMB_LIST_TM)))
+                MAX_AMB_LIST_TM) + ' секунд'))
             window_settings.Element('-таймаут-прослушивания-').SetFocus()
             window_settings['-таймаут-прослушивания-'].update(background_color=button_color_2,
                                                               text_color=omega_theme['BACKGROUND'])
@@ -2109,8 +2110,8 @@ def validate(window: str):
             window_settings['-Мин-аудио-порт-'].update(background_color=omega_theme['BACKGROUND'],
                                                        text_color=omega_theme['TEXT'])
         else:
-            my_popup(("Порт должен быть не менее " + str(MIN_AUDIO_PORT) + " и не более " + str(
-                MAX_AUDIO_PORT) + " секунд"))
+            my_popup(("Минимальный порт должен быть не менее " + str(MIN_AUDIO_PORT) + " и не более " + str(
+                MAX_AUDIO_PORT)))
             window_settings.Element('-Мин-аудио-порт-').SetFocus()
             window_settings['-Мин-аудио-порт-'].update(background_color=button_color_2,
                                                        text_color=omega_theme['BACKGROUND'])
@@ -2120,7 +2121,7 @@ def validate(window: str):
             window_settings['-Макс-аудио-порт-'].update(background_color=omega_theme['BACKGROUND'],
                                                         text_color=omega_theme['TEXT'])
         else:
-            my_popup(("Порт должен быть не менее " + str(MIN_AUDIO_PORT) + " и не более " + str(
+            my_popup(("Максимальный порт должен быть не менее " + str(MIN_AUDIO_PORT) + " и не более " + str(
                 MAX_AUDIO_PORT)))
             window_settings.Element('-Макс-аудио-порт-').SetFocus()
             window_settings['-Макс-аудио-порт-'].update(background_color=button_color_2,
