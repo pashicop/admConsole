@@ -163,13 +163,14 @@ if [[ $? == 0 ]]
 fi
 
 FILE="$HOME/Omega/admPass.txt"
-#echo "$FILE"
-#if [[ -f "$FILE" ]]
-#  then
-#    OMEGA_PWD_B=$(python2.7 -c "import sys, binascii, hashlib;  sys.stdout.write(binascii.hexlify(hashlib.pbkdf2_hmac('sha256', bytes('$(<./admPass.txt)'), b'omega', 10000)))")
+echo "$FILE"
+if [[ -f "$FILE" ]]
+  then
+    OMEGA_PWD_B=$(python2.7 -c "import sys, binascii, hashlib;  sys.stdout.write(binascii.hexlify(hashlib.pbkdf2_hmac('sha256', bytes('$(<./admPass.txt)'), b'omega', 10000)))")
+    echo $OMEGA_PWD_B > .admPWD_b
 #    sed -i.bak "s/04533cc2be3af54c7f5c827f07417a14ea8f1ba5ec2b6a2756b101c5446cd0ae/${OMEGA_PWD_B}/" ~/admConsole/main.py
 #    rm ~/Omega/admPass.txt
-#fi
+fi
 
 echo -e "\033[31mВы хотите установить панель администратора? Y/n|Д/н]:\033[0m"
 while true
