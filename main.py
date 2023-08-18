@@ -1,4 +1,5 @@
 import hashlib
+import base64
 import json
 import os
 import platform
@@ -96,6 +97,12 @@ MAX_DEL_DAYS = 1095
 MAX_DEPTH_LOG = 100000
 DEF_PING_TM = 5
 LOG_DEPTH = 1000
+SSH_PORT_DEF = 22
+SSH_PORT = 22
+SSH_LOGIN_DEF = b'b21lZ2E='
+SSH_LOGIN = b''
+SSH_PWD_DEF = b'b21lZ2ExMjM0NQ=='
+SSH_PWD = b''
 LICS = ['', '', '']
 LOCAL = False
 COMPANY = 'ООО "АСТРАКОМ"'
@@ -105,6 +112,7 @@ DEF1A = '04533cc2be3af54c7f5c827f07417a14ea8f1ba5ec2b6a2756b101c5446cd0ae'
 DEF2 = '1d053666c10241ec97f4b70a168d5060425476a34416ee20c9d9d7629b083292'
 DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
 DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
+DEFSSH = '738344928e9d24022d6c7f66f0a200032a66d4524b649553d4261ed23916cb86'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
 version = '1.1.8'
@@ -955,16 +963,39 @@ def make_login_window():
         print(f'Неверный IP, {e}')
         ip = ''
     print(ip)
+    global SSH_PORT, SSH_LOGIN, SSH_PWD
+    config_app = {'ip': '', 'login': '', 'ssh_port': SSH_PORT_DEF, 'ssh_login': SSH_LOGIN_DEF.decode('utf-8'),
+                  'ssh_PWD': SSH_PWD_DEF.decode('utf-8')}
+    print(os.stat(Path(Path.cwd(), 'config', 'app.json')).st_size)
+    if os.stat(Path(Path.cwd(), 'config', 'app.json')).st_size:
+        try:
+            with open(Path(Path.cwd(), 'config', 'app.json'), 'r') as f_app_config:
+                config_app = json.load(f_app_config)
+                print(config_app)
+                SSH_PORT, SSH_LOGIN, SSH_PWD = config_app['ssh_port'], bytes(config_app['ssh_login'].encode()), bytes(config_app['ssh_PWD'].encode())
+        except Exception as e:
+            print(f'{e}')
+    global active_config, ip_config
+    if config_app['ip']:
+        active_config = True
+        ip_config = config_app['ip']
+    else:
+        active_config = False
+        ip_config = ''
     layout_login = [[sg.Text("Адрес сервера", background_color='white'),
                      sg.Push(background_color='white'),
                      sg.Input(
                          # default_text="10.1.4.73",
-                         focus=True, key="ip",
-                         pad=((0, 40), (0, 0)), enable_events=True)],
+                         default_text=config_app['ip'],
+                         focus=True,
+                         key="ip",
+                         pad=((0, 40), (0, 0)),
+                         enable_events=True)],
                     [sg.Text("Логин", background_color='white'),
                      sg.Push(background_color='white'),
                      sg.Input(
                          # default_text="radiotech",
+                         default_text=config_app['login'],
                          key="Логин",
                          pad=((0, 40), (2, 0)), disabled=False, enable_events=True)],
                     [sg.Text("Пароль", background_color='white'),
@@ -979,7 +1010,10 @@ def make_login_window():
                                image_data=ICON_SHOW_BASE_64,
                                disabled=False)
                      ],
-                    [sg.Push(), sg.Checkbox('https', default=False, key='https_on')],
+                    [sg.Checkbox('Запомнить данные',
+                                 default=True,
+                                 enable_events=True,
+                                 key='remember_credentials'), sg.Push(), sg.Checkbox('https', default=False, key='https_on')],
                     [sg.Push(background_color='white'),
                      sg.Button('Вход', key="OK button", size=10,
                                bind_return_key=True),
@@ -1092,7 +1126,7 @@ def make_settings():
                           #                                                            enable_events=True)]
                       ], expand_x=True)
              ],
-            [sg.Frame('Настройка портов',
+            [sg.Frame('Голосовые порты',
                       [
                           # [sg.Push(), sg.Text('Порт подключения'),
                           #  sg.Input(size=20, key='-порт-подкл-', enable_events=True)],
@@ -1121,6 +1155,19 @@ def make_settings():
                           [sg.Push(), sg.Text('Удалять данные старше (дней)'),
                            sg.Input(size=20, key='-auto-del-',
                                     default_text=settings['autoCleanDays'],
+                                    enable_events=True)],
+                          [sg.Push(), sg.Text('Порт SSH'),
+                           sg.Input(size=20, key='-порт-ssh-',
+                                    default_text=SSH_PORT,
+                                    enable_events=True)],
+                          [sg.Push(), sg.Text('Логин'),
+                           sg.Input(size=20, key='-логин-ssh-',
+                                    default_text=base64.b64decode(SSH_LOGIN),
+                                    enable_events=True)],
+                          [sg.Push(), sg.Text('Пароль'),
+                           sg.Input(size=20, key='-пароль-ssh-',
+                                    # default_text=SSH_PWD,
+                                    default_text=base64.b64decode(SSH_PWD),
                                     enable_events=True)],
                       ], expand_x=True)
              ],
@@ -1676,7 +1723,7 @@ def get_id(os):
         try:
             ssh = paramiko.SSHClient()
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+            ssh.connect(hostname=ip, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN), password=base64.b64decode(SSH_PWD))
             stdin, stdout, stderr = ssh.exec_command(start_command)
             stdout = stdout.readlines()
             ssh.close()
@@ -2421,7 +2468,7 @@ def get_current_lic():
     try:
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+        ssh.connect(hostname=ip, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN), password=base64.b64decode(SSH_PWD))
         stdin, stdout, stderr = ssh.exec_command('cat $HOME/Omega/.licenseState')
         stdout = stdout.readlines()
         ssh.close()
@@ -2542,7 +2589,7 @@ def get_logs_server():
     try:
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+        ssh.connect(hostname=ip, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN), password=base64.b64decode(SSH_PWD))
         ftp_client = ssh.open_sftp()
         ftp_client.get(remotepath='/home/omega/Omega/log.txt', localpath='logs/ServerLog.txt')
         ftp_client.close()
@@ -2649,6 +2696,26 @@ def filter_logs_server():
         return ['', 0, 0]
 
 
+def change_config_file():
+    if os.stat(Path(Path.cwd(), 'config', 'app.json')).st_size:
+        try:
+            with open(Path(Path.cwd(), 'config', 'app.json'), 'r') as f_app_config:
+                config_app = json.load(f_app_config)
+                print(config_app)
+        except Exception as e:
+            print(f'{e}')
+        try:
+            config_json = {'ip': val_login['ip'], 'login': val_login['Логин'], 'ssh_port': SSH_PORT,
+                           'ssh_login': SSH_LOGIN.decode('utf-8'),
+                           'ssh_PWD': SSH_PWD.decode('utf-8')}
+            with open(Path(Path.cwd(), 'config', 'app.json'), 'w') as f_app_config:
+                f_app_config.write(json.dumps(config_json, sort_keys=True, indent=4))
+                print("Данные входа сохранены")
+        except Exception as e:
+            print(f'{e}')
+
+
+
 if __name__ == '__main__':
     omega_theme = {'BACKGROUND': '#ffffff',
                    'TEXT': '#000000',
@@ -2677,11 +2744,14 @@ if __name__ == '__main__':
     logging.info('Старт лога')
     window_login = make_login_window()
     login_password_clear = False
+    remember_credentials = True
     window = None
     create_db()
     thread_started = False
     current_db = 0
     additional_window = False
+    if active_config:
+        window_login.Element('password').SetFocus()
     while True:
         break_flag = False
         break_flag2 = False
@@ -2705,7 +2775,38 @@ if __name__ == '__main__':
             pass
         if ev_login == 'Логин':
             pass
+        if ev_login == 'remember_credentials':
+            print(ev_login)
+            print(val_login)
+            if val_login['remember_credentials']:
+                remember_credentials = True
+            else:
+                remember_credentials = False
         if ev_login == "OK button":
+            if remember_credentials:
+                if ip_config != val_login['ip']:
+                    try:
+                        config_json = {'ip': val_login['ip'], 'login': val_login['Логин'], 'ssh_port': SSH_PORT_DEF,
+                                       'ssh_login': SSH_LOGIN_DEF.decode('utf-8'),
+                                       'ssh_PWD': SSH_PWD_DEF.decode('utf-8')}
+                        SSH_PORT = SSH_PORT_DEF
+                        SSH_LOGIN = SSH_LOGIN_DEF
+                        SSH_PWD = SSH_PWD_DEF
+                        with open(Path(Path.cwd(), 'config', 'app.json'), 'w') as f_app_config:
+                            f_app_config.write(json.dumps(config_json, sort_keys=True, indent=4))
+                            print("Данные входа сохранены")
+                    except Exception as e:
+                        print(f'{e}')
+            else:
+                try:
+                    config_json = {'ip': '', 'login': '', 'ssh_port': SSH_PORT_DEF,
+                                   'ssh_login': SSH_LOGIN_DEF.decode('utf-8'),
+                                   'ssh_PWD': SSH_PWD_DEF.decode('utf-8')}
+                    with open(Path(Path.cwd(), 'config', 'app.json'), 'w') as f_app_config:
+                        f_app_config.write(json.dumps(config_json, sort_keys=True, indent=4))
+                        print("Данные входа сброшены")
+                except Exception as e:
+                    print(f'{e}')
             try:
                 ip = ipaddress.ip_address(val_login['ip']).exploded
             except ValueError:
@@ -3278,8 +3379,8 @@ if __name__ == '__main__':
                                                                 ssh = paramiko.SSHClient()
                                                                 ssh.set_missing_host_key_policy(
                                                                     paramiko.AutoAddPolicy())
-                                                                ssh.connect(hostname=ip, port=22, username='omega',
-                                                                            password='omega12345')
+                                                                ssh.connect(hostname=ip, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN),
+                                                                            password=base64.b64decode(SSH_PWD))
                                                                 change_password_command = 'echo ' + new_hash_pwd + ' > /home/omega/Omega/.admPWD_b'
                                                                 stdin, stdout, stderr = ssh.exec_command(
                                                                     change_password_command)
@@ -3663,7 +3764,7 @@ if __name__ == '__main__':
                                         try:
                                             ssh = paramiko.SSHClient()
                                             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                                            ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+                                            ssh.connect(hostname=ip, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN), password=base64.b64decode(SSH_PWD))
                                             ftp_client = ssh.open_sftp()
                                             ftp_client.put(val_add_lic['-FILENAME-'], '/home/omega/Omega/new.lic')
                                             ftp_client.close()
@@ -3754,7 +3855,7 @@ if __name__ == '__main__':
                                         try:
                                             ssh = paramiko.SSHClient()
                                             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                                            ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+                                            ssh.connect(hostname=ip, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN), password=base64.b64decode(SSH_PWD))
                                             ftp_client = ssh.open_sftp()
                                             ftp_client.put(val_add_lic['-FILENAME-'], '/home/omega/Omega/generated.lic')
                                             ftp_client.close()
@@ -3851,7 +3952,7 @@ if __name__ == '__main__':
                                         # ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
                                         start_command = 'sudo systemctl restart omega'
                                         if ip != '127.0.0.1':
-                                            ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+                                            ssh.connect(hostname=ip, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN), password=base64.b64decode(SSH_PWD))
                                             stdin, stdout, stderr = ssh.exec_command(start_command)
                                             stdout = stdout.readlines()
                                             ssh.close()
@@ -3943,8 +4044,8 @@ if __name__ == '__main__':
                                                 # ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
                                                 backup_command = 'cp $HOME/Omega/keys/pub.pem $HOME/Omega/keys/pub.pem.bak'
                                                 if ip != '127.0.0.1':
-                                                    ssh.connect(hostname=ip, port=22, username='omega',
-                                                                password='omega12345')
+                                                    ssh.connect(hostname=ip, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN),
+                                                                password=base64.b64decode(SSH_PWD))
                                                     stdin, stdout, stderr = ssh.exec_command(backup_command)
                                                     stdout = stdout.readlines()
                                                     output = ''
@@ -4011,8 +4112,8 @@ if __name__ == '__main__':
                                                 if ip != '127.0.0.1':
                                                     ssh = paramiko.SSHClient()
                                                     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                                                    ssh.connect(hostname=ip, port=22, username='omega',
-                                                                password='omega12345')
+                                                    ssh.connect(hostname=ip, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN),
+                                                                password=base64.b64decode(SSH_PWD))
                                                     stdin, stdout, stderr = ssh.exec_command(restore_command)
                                                     stdout = stdout.readlines()
                                                     output = ''
@@ -4115,6 +4216,29 @@ if __name__ == '__main__':
                                     window_settings['-Progress-Bar-'].update_bar(counter)
                                     window_settings['-OK-set-'].update(disabled=False)
                                     window_settings['-OK-set-'].update(button_color=button_color_2)
+                                elif ev_set == '-порт-ssh-':
+                                    if val_set[ev_set].isdigit():
+                                        window_settings[ev_set].update(
+                                            background_color=omega_theme['INPUT'])
+                                        if 0 < int(val_set[ev_set]) <= MAX_AUDIO_PORT:
+                                            window_settings[ev_set].update(
+                                                background_color=omega_theme['INPUT'],
+                                                text_color=omega_theme['TEXT'])
+                                        else:
+                                            window_settings[ev_set].update(background_color=button_color_2)
+                                    else:
+                                        window_settings[ev_set].update(background_color=button_color_2)
+                                    counter = 0
+                                    window_settings['-Progress-Bar-'].update_bar(counter)
+                                    window_settings['-OK-set-'].update(disabled=False)
+                                    window_settings['-OK-set-'].update(button_color=button_color_2)
+                                elif ev_set == '-логин-ssh-':
+                                    window_settings[ev_set].update(
+                                        background_color=omega_theme['INPUT'])
+                                    counter = 0
+                                    window_settings['-Progress-Bar-'].update_bar(counter)
+                                    window_settings['-OK-set-'].update(disabled=False)
+                                    window_settings['-OK-set-'].update(button_color=button_color_2)
                                 elif ev_set == '-auto-del-':
                                     if val_set[ev_set].isdigit():
                                         window_settings[ev_set].update(
@@ -4165,15 +4289,24 @@ if __name__ == '__main__':
                                         except Exception as e:
                                             print(f'Не удалось обновить настройки - {e}')
                                             logging.error("Не удалось обновить настройки")
+                                        ssh_change = False
                                         if val_set['-пинг-таймаут-'] != str(ping_timeout):
                                             ping_timeout = int(val_set['-пинг-таймаут-'])
-                                        if val_set['-глубина-сервера-'] != str(ping_timeout):
+                                        if val_set['-глубина-сервера-'] != str(LOG_DEPTH):
                                             LOG_DEPTH = int(val_set['-глубина-сервера-'])
+                                        if val_set['-порт-ssh-'] != str(SSH_PORT):
+                                            SSH_PORT = int(val_set['-порт-ssh-'])
+                                            ssh_change = True
+                                        if val_set['-логин-ssh-'].encode() != base64.b64decode(SSH_LOGIN):
+                                            SSH_LOGIN = base64.b64encode(val_set['-логин-ssh-'].encode())
+                                            ssh_change = True
+                                        if ssh_change:
+                                            change_config_file()
                                         disable_input(window_settings)
                                         counter = 0
                                         while counter < 11:
                                             counter += 2
-                                            sleep(1)
+                                            sleep(0.5)
                                             window_settings['-Progress-Bar-'].update_bar(counter)
                                         enable_input(window_settings)
                                         window_settings['-OK-set-'].update(disabled=True)
@@ -4882,16 +5015,45 @@ if __name__ == '__main__':
                                     window['journalServer'].update(output_text_server[0])
                                     count_string = str(output_text_server[1]) + ' из ' + str(output_text_server[2])
                                     window['countLogsServer'].update(count_string)
+                                    if output_text_server[2] == 0:
+                                        window['-filterJournalServer-'].update(disabled=True)
+                                        window['-ClearFilterJournalServer-'].update(disabled=True)
+                                        window['-SaveLogServer-'].update(disabled=True)
+                                        window['info_server'].update(disabled=True)
+                                        window['warning_server'].update(disabled=True)
+                                        window['fail_server'].update(disabled=True)
+                                    else:
+                                        window['-filterJournalServer-'].update(disabled=False)
+                                        window['-ClearFilterJournalServer-'].update(disabled=False)
+                                        window['-SaveLogServer-'].update(disabled=False)
+                                        window['info_server'].update(disabled=False)
+                                        window['warning_server'].update(disabled=False)
+                                        window['fail_server'].update(disabled=False)
                         if event == '-UpdateLogServer-':
                             output_text_server = get_logs_server()
                             if output_text_server[1] == 0:
-                                window['-filterJournalServer-'].update(background_color=button_color_2)
+                                if filter_status_journal_server:
+                                    window['-filterJournalServer-'].update(background_color=button_color_2)
                             else:
                                 if filter_status_journal_server:
                                     window['-filterJournalServer-'].update(background_color='lightblue')
                             window['journalServer'].update(output_text_server[0])
                             count_string = str(output_text_server[1]) + ' из ' + str(output_text_server[2])
                             window['countLogsServer'].update(count_string)
+                            if output_text_server[2] == 0:
+                                window['-filterJournalServer-'].update(disabled=True)
+                                window['-ClearFilterJournalServer-'].update(disabled=True)
+                                window['-SaveLogServer-'].update(disabled=True)
+                                window['info_server'].update(disabled=True)
+                                window['warning_server'].update(disabled=True)
+                                window['fail_server'].update(disabled=True)
+                            else:
+                                window['-filterJournalServer-'].update(disabled=False)
+                                window['-ClearFilterJournalServer-'].update(disabled=False)
+                                window['-SaveLogServer-'].update(disabled=False)
+                                window['info_server'].update(disabled=False)
+                                window['warning_server'].update(disabled=False)
+                                window['fail_server'].update(disabled=False)
                         if event == '-filterJournalServer-':
                             filter_status_journal_server = True
                             output_text = filter_logs_server()
@@ -5070,7 +5232,7 @@ if __name__ == '__main__':
                                 # ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
                                 start_command = 'sudo systemctl restart omega'
                                 if ip != '127.0.0.1':
-                                    ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+                                    ssh.connect(hostname=ip, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN), password=base64.b64decode(SSH_PWD))
                                     stdin, stdout, stderr = ssh.exec_command(start_command)
                                     stdout = stdout.readlines()
                                     ssh.close()
