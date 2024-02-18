@@ -139,7 +139,7 @@ fi
 printf '\n##### Запускаем ОМЕГУ #####\n'
 ip_host=127.0.0.1
 ADM=$(cat "$HOME"/Omega/admPass.txt)
-echo $ADM
+#echo $ADM
 sudo systemctl start omega >> ~/install_log.txt
 if [[ $? == 0 ]]
   then export ip_host=$(hostname -I | awk '{print $1}')
@@ -149,10 +149,10 @@ if [[ $? == 0 ]]
     printf '\n##### Время '
     printf "$(date)"
     printf ' ######\n'
-    printf '\n##### Пароль для admin - '
-#    printf "$adminPass"
-    printf "$(<./admPass.txt)"
-    printf ' ######\n'
+#    printf '\n##### Пароль для admin - '
+##    printf "$adminPass"
+#    printf "$(<./admPass.txt)"
+#    printf ' ######\n'
     unset ip_host
   else printf '\n##### Ошибка при запуске сервера #####\n'
   exit 12
@@ -160,14 +160,14 @@ fi
 
 FILE="$HOME/Omega/admPass.txt"
 #echo "$FILE"
-if [[ -f "$FILE" ]]
-  then
-#    OMEGA_PWD_B=$(python2.7 -c "import sys, binascii, random, string; sys.stdout.write(binascii.hexlify(str('$(<./admPass.txt)').encode('ascii')))")
-    OMEGA_PWD_B=$(python2.7 -c "import sys, binascii, hashlib;  sys.stdout.write(binascii.hexlify(hashlib.pbkdf2_hmac('sha256', bytes('$(<./admPass.txt)'), b'omega', 10000)))")
-#    echo $OMEGA_PWD_B
-    sed -i.bak "s/04533cc2be3af54c7f5c827f07417a14ea8f1ba5ec2b6a2756b101c5446cd0ae/${OMEGA_PWD_B}/" ~/admConsole/main.py
-    rm ~/Omega/admPass.txt
-fi
+#if [[ -f "$FILE" ]]
+#  then
+##    OMEGA_PWD_B=$(python2.7 -c "import sys, binascii, random, string; sys.stdout.write(binascii.hexlify(str('$(<./admPass.txt)').encode('ascii')))")
+#    OMEGA_PWD_B=$(python2.7 -c "import sys, binascii, hashlib;  sys.stdout.write(binascii.hexlify(hashlib.pbkdf2_hmac('sha256', bytes('$(<./admPass.txt)'), b'omega', 10000)))")
+##    echo $OMEGA_PWD_B
+#    sed -i.bak "s/04533cc2be3af54c7f5c827f07417a14ea8f1ba5ec2b6a2756b101c5446cd0ae/${OMEGA_PWD_B}/" ~/admConsole/main.py
+#    rm ~/Omega/admPass.txt
+#fi
 
 echo -e "\033[31mВы хотите установить панель администратора? Y/n|Д/н]:\033[0m"
 while true
@@ -214,7 +214,7 @@ if [[ $PA -eq 1 ]]
     command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
     eval "$(pyenv virtualenv-init -)"
-    printf '\n##### Рестарт bash #####\n'
+    printf '\n##### Перезапускаем оболочку #####\n'
     #exec "$SHELL"
     . ~/.bashrc
     printf '\n##### Устанавливаем дополнительные пакеты  #####\n'
