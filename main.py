@@ -2690,6 +2690,7 @@ def get_current_lic():
                             login_ssh_password_clear = True
                         window_ssh_credentials.Element('ssh_password').SetFocus()
                     if ev_cred == 'OK cred':
+                        global SSH_PORT, SSH_LOGIN, SSH_PWD
                         SSH_PORT, SSH_LOGIN, SSH_PWD = val_cred['ssh_port'], val_cred['ssh_login'], val_cred[
                             'ssh_password']
                         window_ssh_credentials.close()
