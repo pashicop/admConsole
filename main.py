@@ -972,7 +972,8 @@ def make_login_window():
             with open(Path(Path.cwd(), 'config', 'app.json'), 'r') as f_app_config:
                 config_app = json.load(f_app_config)
                 print(config_app)
-                # SSH_PORT, SSH_LOGIN, SSH_PWD = config_app['ssh_port'], bytes(config_app['ssh_login'].encode()), bytes(config_app['ssh_PWD'].encode())
+                global SSH_PORT, SSH_LOGIN
+                SSH_PORT, SSH_LOGIN = config_app['ssh_port'], config_app['ssh_login']
         except Exception as e:
             print(f'{e}')
             config_app = {'ip': '', 'login': ''}
@@ -1093,12 +1094,12 @@ def make_add_lic():
 
 
 def make_credential_window():
-    global SSH_PORT, SSH_LOGIN, SSH_PWD
+    # global SSH_PORT, SSH_LOGIN, SSH_PWD
     layout_ssh_credentials = [[sg.Text("Логин", background_color='white'),
                      sg.Push(background_color='white'),
                      sg.Input(
                          # default_text="radiotech",
-                         # default_text=config_app['ssh_login'],
+                         default_text=SSH_LOGIN,
                          key="ssh_login",
                          focus=True,
                          pad=((0, 40), (2, 0)), disabled=False, enable_events=True)],
@@ -2570,12 +2571,11 @@ def get_ssh_connection():
             window_ssh_credentials.Element('ssh_login').SetFocus()
             while True:
                 ev_cred, val_cred = window_ssh_credentials.Read()
+
                 print(f'{ev_cred}, {val_cred}')
                 if ev_cred == sg.WIN_CLOSED or ev_cred == '-Exit-set-':
                     window_ssh_credentials.close()
                     break
-                elif ev_cred == 'OK cred':
-                    print('ok')
                 if ev_cred == 'showLoginPasswordCred':
                     if login_ssh_password_clear:
                         window_ssh_credentials['ssh_password'].update(password_char='*')
@@ -2667,36 +2667,34 @@ def get_current_lic():
         except Exception as e:
             print(f"Не удалось посмотреть состояние лицензии - {e}")
             logging.warning(f"Не удалось посмотреть состояние лицензии - {e}")
-            try:
-                window_ssh_credentials = make_credential_window()
-                login_ssh_password_clear = False
-                window_ssh_credentials.Element('ssh_login').SetFocus()
-                while True:
-                    ev_cred, val_cred = window_ssh_credentials.Read()
-                    print(f'{ev_cred}, {val_cred}')
-                    if ev_cred == sg.WIN_CLOSED or ev_cred == '-Exit-set-':
-                        window_ssh_credentials.close()
-                        break
-                    elif ev_cred == 'OK cred':
-                        print('ok')
-                    if ev_cred == 'showLoginPasswordCred':
-                        if login_ssh_password_clear:
-                            window_ssh_credentials['ssh_password'].update(password_char='*')
-                            window_ssh_credentials['showLoginPasswordCred'].update(image_data=ICON_SHOW_BASE_64)
-                            login_ssh_password_clear = False
-                        else:
-                            window_ssh_credentials['ssh_password'].update(password_char='')
-                            window_ssh_credentials['showLoginPasswordCred'].update(image_data=ICON_HIDE_BASE_64)
-                            login_ssh_password_clear = True
-                        window_ssh_credentials.Element('ssh_password').SetFocus()
-                    if ev_cred == 'OK cred':
-                        global SSH_PORT, SSH_LOGIN, SSH_PWD
-                        SSH_PORT, SSH_LOGIN, SSH_PWD = val_cred['ssh_port'], val_cred['ssh_login'], val_cred[
-                            'ssh_password']
-                        window_ssh_credentials.close()
-                        break
-            except Exception as e:
-                print(f'{e}')
+            # try:
+            #     window_ssh_credentials = make_credential_window()
+            #     login_ssh_password_clear = False
+            #     window_ssh_credentials.Element('ssh_login').SetFocus()
+            #     while True:
+            #         ev_cred, val_cred = window_ssh_credentials.Read()
+            #         print(f'{ev_cred}, {val_cred}')
+            #         if ev_cred == sg.WIN_CLOSED or ev_cred == '-Exit-set-':
+            #             window_ssh_credentials.close()
+            #             break
+            #         if ev_cred == 'showLoginPasswordCred':
+            #             if login_ssh_password_clear:
+            #                 window_ssh_credentials['ssh_password'].update(password_char='*')
+            #                 window_ssh_credentials['showLoginPasswordCred'].update(image_data=ICON_SHOW_BASE_64)
+            #                 login_ssh_password_clear = False
+            #             else:
+            #                 window_ssh_credentials['ssh_password'].update(password_char='')
+            #                 window_ssh_credentials['showLoginPasswordCred'].update(image_data=ICON_HIDE_BASE_64)
+            #                 login_ssh_password_clear = True
+            #             window_ssh_credentials.Element('ssh_password').SetFocus()
+            #         if ev_cred == 'OK cred':
+            #             global SSH_PORT, SSH_LOGIN, SSH_PWD
+            #             SSH_PORT, SSH_LOGIN, SSH_PWD = val_cred['ssh_port'], val_cred['ssh_login'], val_cred[
+            #                 'ssh_password']
+            #             window_ssh_credentials.close()
+            #             break
+            # except Exception as e:
+            #     print(f'{e}')
     return lic
 
 
