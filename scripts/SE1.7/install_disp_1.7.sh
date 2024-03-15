@@ -62,7 +62,8 @@ mv dispatcher ~/dispatcher
 cd ~/dispatcher
 #cd ~ && rm -R "$DIRECTORY"
 #sudo cp run.sh ~/Desktop/ &&
-sudo chown user:user ~/dispatcher/run.sh &&
+sudo sed -i.bak "s/omega/$USER/" shortcut.desktop
+sudo chown ${USER}:${USER} ~/dispatcher/run.sh &&
 sudo chmod +x ~/dispatcher/run.sh &&
 mv shortcut.desktop ~/Desktop/
 if [[ $? == 0 ]]
