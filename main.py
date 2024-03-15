@@ -5,6 +5,7 @@ import platform
 import socket
 import subprocess
 import threading
+import urllib.parse
 from time import sleep
 import paramiko
 import requests
@@ -530,7 +531,7 @@ def make_main_window(ip):
     group_list = list()
     treedata = sg.TreeData()
     treedata2 = sg.TreeData()
-    label_text = 'Панель администратора ОМЕГА К100 ' + ip + ' Версия ' + version + ', ' + val_login['Логин']
+    label_text = 'Панель администратора ОМЕГА К100 ' + ip + ':' + str(port) + ' Версия ' + version + ', ' + val_login['Логин']
     branch_name = get_branch()
     if branch_name != 'Неизвестно':
         label_text += ' Ветка: ' + branch_name
@@ -952,7 +953,7 @@ def make_login_window():
                                          [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) + ["no IP found"])[
                                       0]).exploded
     except Exception as e:
-        print(f'Неверный IP, {e}')
+        print(f'Не могу получить локальный ip, {e}')
         ip = ''
     print(ip)
     layout_login = [[sg.Text("Адрес сервера", background_color='white'),
@@ -2706,9 +2707,22 @@ if __name__ == '__main__':
         if ev_login == 'Логин':
             pass
         if ev_login == "OK button":
+            host_ok = False
+            port = 5000
             try:
-                ip = ipaddress.ip_address(val_login['ip']).exploded
-            except ValueError:
+                parsed_url = urllib.parse.urlsplit('//' + val_login['ip'])
+                print(parsed_url.hostname, parsed_url.port)
+                if re.search('^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+', parsed_url.hostname):
+                    ip = ipaddress.ip_address(parsed_url.hostname).exploded
+                else:
+                    print(socket.gethostbyname(parsed_url.hostname))
+                    ip = socket.gethostbyname(parsed_url.hostname)
+                host_ok = True
+                if parsed_url.port:
+                    port = parsed_url.port
+            except Exception as e:
+                print(f'{e}')
+            if not host_ok:
                 my_popup('Неверный IP')
                 window_login.Element('ip').SetFocus()
                 window_login['ip'].update(background_color=button_color_2,
@@ -2760,10 +2774,10 @@ if __name__ == '__main__':
                         BASE_URL = BASE_URL_PING = BASE_URL_AUTH = BASE_URL_SETTINGS = 'https://' #TODO
                     else:
                         BASE_URL = BASE_URL_PING = BASE_URL_AUTH = BASE_URL_SETTINGS = 'http://'
-                    BASE_URL += val_login['ip'] + ':5000/api/admin/'
-                    BASE_URL_PING += val_login['ip'] + ':5000/api/ping'
-                    BASE_URL_AUTH += val_login['ip'] + ':5000/api/auth'
-                    BASE_URL_SETTINGS += val_login['ip'] + ':5000/api/admin/settings'
+                    BASE_URL += ip + ':' + str(port) + '/api/admin/'
+                    BASE_URL_PING += ip + ':' + str(port) + '/api/ping'
+                    BASE_URL_AUTH += ip + ':' + str(port) + '/api/auth'
+                    BASE_URL_SETTINGS += ip + ':' + str(port) + '/api/admin/settings'
                     server_status = check_server(BASE_URL_PING)
                     current_db = server_status['db']
                     if server_status['run']:
