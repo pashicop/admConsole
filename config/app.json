@@ -1,6 +1,6 @@
 {
-    "ip": "10.1.4.73",
+    "ip": "195.182.130.39",
     "login": "radiotech",
     "ssh_login": "omega",
-    "ssh_port": "22"
+    "ssh_port": "2222"
 }

@@ -1774,40 +1774,8 @@ def get_id(os):
     start_command = 'cat /var/lib/dbus/machine-id'
     if ip != '127.0.0.1':
         global SSH_PORT, SSH_LOGIN, SSH_PWD
-        if not SSH_PWD:
-            try:
-                window_ssh_credentials = make_credential_window()
-                login_ssh_password_clear = False
-                window_ssh_credentials.Element('ssh_login').SetFocus()
-                while True:
-                    ev_cred, val_cred = window_ssh_credentials.Read()
-                    print(f'{ev_cred}, {val_cred}')
-                    if ev_cred == sg.WIN_CLOSED or ev_cred == '-Exit-set-':
-                        window_ssh_credentials.close()
-                        break
-                    elif ev_cred == 'OK cred':
-                        print('ok')
-                    if ev_cred == 'showLoginPasswordCred':
-                        if login_ssh_password_clear:
-                            window_ssh_credentials['ssh_password'].update(password_char='*')
-                            window_ssh_credentials['showLoginPasswordCred'].update(image_data=ICON_SHOW_BASE_64)
-                            login_ssh_password_clear = False
-                        else:
-                            window_ssh_credentials['ssh_password'].update(password_char='')
-                            window_ssh_credentials['showLoginPasswordCred'].update(image_data=ICON_HIDE_BASE_64)
-                            login_ssh_password_clear = True
-                        window_ssh_credentials.Element('ssh_password').SetFocus()
-                    if ev_cred == 'OK cred':
-                        SSH_PORT, SSH_LOGIN, SSH_PWD = val_cred['ssh_port'], val_cred['ssh_login'], val_cred['ssh_password']
-                        window_ssh_credentials.close()
-                        break
-            except Exception as e:
-                print(f'{e}')
+        ssh, remotepath = get_ssh_connection()
         try:
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(hostname=ip, port=SSH_PORT, username=SSH_LOGIN, password=SSH_PWD)
-            # ssh.connect(hostname=ip, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN), password=base64.b64decode(SSH_PWD))
             stdin, stdout, stderr = ssh.exec_command(start_command)
             stdout = stdout.readlines()
             ssh.close()
@@ -1818,7 +1786,6 @@ def get_id(os):
             system_id = output.rstrip('\n')
         except Exception as e:
             print(f'{e}')
-            SSH_PWD = b''
             logging.error('Не удалось соединиться с сервером')
             my_popup("Не удалось соединиться с сервером")
             return ''
@@ -2358,6 +2325,12 @@ def validate(window: str):
             window_login['Логин'].update(background_color=button_color_2,
                                                           text_color=omega_theme['BACKGROUND'])
             return False
+    elif window == 'ssh_cred':
+        if not (val_cred['ssh_port'] and val_cred['ssh_login']
+                and val_cred['ssh_password']):
+            my_popup('Введите логин, пароль и порт!')
+            window_ssh_credentials.Element('ssh_login').SetFocus()
+            return False
     return result
 
 
@@ -2550,14 +2523,14 @@ def get_ssh_connection():
     try:
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        if not SSH_LOGIN:
-            ssh.connect(hostname=ip, port=SSH_PORT_DEF, username=base64.b64decode(SSH_LOGIN_DEF),
-                        password=base64.b64decode(SSH_PWD_DEF))
-            SSH_LOGIN, SSH_PWD, SSH_PORT = base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"), base64.b64decode(
-                SSH_PWD_DEF).decode("utf-8"), SSH_PORT_DEF
+        if not SSH_LOGIN or SSH_LOGIN == base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"):
+            ssh.connect(hostname=ip, timeout=3, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"),
+                        password=base64.b64decode(SSH_PWD_DEF).decode("utf-8"))
+            SSH_LOGIN, SSH_PWD = base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"), base64.b64decode(
+                SSH_PWD_DEF).decode("utf-8")
             remotepath = '/home/omega/Omega/'
         else:
-            ssh.connect(hostname=ip, port=SSH_PORT, username=SSH_LOGIN, password=SSH_PWD)
+            ssh.connect(hostname=ip, timeout=3, port=SSH_PORT, username=SSH_LOGIN, password=SSH_PWD)
             remotepath = '/home/' + SSH_LOGIN + '/Omega/'
         change_config_file('ssh')
         return ssh, remotepath
@@ -2566,12 +2539,13 @@ def get_ssh_connection():
         logging.error('Не удалось подключиться к серверу!')
         my_popup("Не удалось подключиться к серверу! Введите логин/пароль ssh для сервера")
         try:
+            global window_ssh_credentials
             window_ssh_credentials = make_credential_window()
             login_ssh_password_clear = False
             window_ssh_credentials.Element('ssh_login').SetFocus()
             while True:
+                global ev_cred, val_cred
                 ev_cred, val_cred = window_ssh_credentials.Read()
-
                 print(f'{ev_cred}, {val_cred}')
                 if ev_cred == sg.WIN_CLOSED or ev_cred == '-Exit-set-':
                     window_ssh_credentials.close()
@@ -2587,17 +2561,28 @@ def get_ssh_connection():
                         login_ssh_password_clear = True
                     window_ssh_credentials.Element('ssh_password').SetFocus()
                 if ev_cred == 'OK cred':
-                    SSH_PORT, SSH_LOGIN, SSH_PWD = val_cred['ssh_port'], val_cred['ssh_login'], val_cred[
-                        'ssh_password']
-                    window_ssh_credentials.close()
+                    if validate('ssh_cred'):
+                        SSH_PORT, SSH_LOGIN, SSH_PWD = val_cred['ssh_port'], val_cred['ssh_login'], val_cred[
+                            'ssh_password']
+                        ssh = paramiko.SSHClient()
+                        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                        try:
+                            ssh.connect(hostname=ip, timeout=3, port=SSH_PORT, username=SSH_LOGIN, password=SSH_PWD)
+                        except Exception as e:
+                            print(f'{e}')
+                            my_popup('Введите корректные данные!')
+                            window_ssh_credentials.Element('ssh_login').SetFocus()
+                            continue
+                        if ssh:
+                            remotepath = '/home/' + SSH_LOGIN + '/Omega/'
+                            change_config_file('ssh')
+                            window_ssh_credentials.close()
+                            return ssh, remotepath
+                        else:
+                            continue
+                    else:
+                        continue
                     break
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            if SSH_LOGIN:
-                ssh.connect(hostname=ip, port=SSH_PORT, username=SSH_LOGIN, password=SSH_PWD)
-                remotepath = '/home/' + SSH_LOGIN + '/Omega/'
-                change_config_file('ssh')
-                return ssh, remotepath
         except Exception as e:
             print(f'{e}')
 
@@ -2771,18 +2756,10 @@ def get_block_status_group(group):
 
 def get_logs_server():
     global SSH_LOGIN, SSH_PWD, SSH_PORT
+    ssh, remotepath = get_ssh_connection()
     try:
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        if not SSH_LOGIN:
-            ssh.connect(hostname=ip, port=SSH_PORT_DEF, username=base64.b64decode(SSH_LOGIN_DEF), password=base64.b64decode(SSH_PWD_DEF))
-            SSH_LOGIN, SSH_PWD, SSH_PORT = base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"), base64.b64decode(SSH_PWD_DEF).decode("utf-8"), SSH_PORT_DEF
-            remotepath = '/home/omega/Omega/log.txt'
-        else:
-            ssh.connect(hostname=ip, port=SSH_PORT, username=SSH_LOGIN, password=SSH_PWD)
-            remotepath = '/home/' + SSH_LOGIN + '/Omega/log.txt'
         ftp_client = ssh.open_sftp()
-        ftp_client.get(remotepath=remotepath, localpath='logs/ServerLog.txt')
+        ftp_client.get(remotepath=(remotepath+'/log.txt'), localpath='logs/ServerLog.txt')
         ftp_client.close()
         ssh.close()
         change_config_file('ssh')
@@ -3552,11 +3529,7 @@ if __name__ == '__main__':
                                                         print(f'{new_hash_pwd}')
                                                         try:
                                                             if ip != '127.0.0.1':
-                                                                ssh = paramiko.SSHClient()
-                                                                ssh.set_missing_host_key_policy(
-                                                                    paramiko.AutoAddPolicy())
-                                                                ssh.connect(hostname=ip, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN),
-                                                                            password=base64.b64decode(SSH_PWD))
+                                                                ssh, remotepath = get_ssh_connection()
                                                                 change_password_command = 'echo ' + new_hash_pwd + ' > $HOME/Omega/.admPWD_b'
                                                                 stdin, stdout, stderr = ssh.exec_command(
                                                                     change_password_command)
@@ -3597,7 +3570,7 @@ if __name__ == '__main__':
                                         window_modify_user['modifyUserButton'].update(button_color=button_color_2)
                             additional_window = False
                         if event == 'Изменить группу':
-                            """обновляем group_from_db вконце"""
+                            """обновляем group_from_db в конце"""
                             additional_window = True
                             modify_group_success = False
                             if not values['-groups2-']:
@@ -3938,11 +3911,9 @@ if __name__ == '__main__':
                                     output = ''
                                     if ip != '127.0.0.1':
                                         try:
-                                            ssh = paramiko.SSHClient()
-                                            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                                            ssh.connect(hostname=ip, port=SSH_PORT, username=SSH_LOGIN, password=SSH_PWD)
+                                            ssh, remotepath = get_ssh_connection()
                                             ftp_client = ssh.open_sftp()
-                                            ftp_client.put(val_add_lic['-FILENAME-'], '/home/omega/Omega/new.lic')
+                                            ftp_client.put(val_add_lic['-FILENAME-'], (remotepath + '/new.lic'))
                                             ftp_client.close()
                                             stdin, stdout, stderr = ssh.exec_command(check_remote_command)
                                             stdout = stdout.readlines()
@@ -3984,11 +3955,13 @@ if __name__ == '__main__':
                                                     else "Геопозиционирование" if feature == "GeoData" \
                                                     else "Динамические группы" if feature == "DGNA" \
                                                     else "Удалённое управление терминалами" if feature == "OTAP" \
-                                                    else feature
+                                                    else "Длительное прослушивание" if feature == "LongAmbientListening" \
+                                                    else "Контроль пересылки" if feature == "MFC" else "?"
                                                 print(feature_name, '+', lics['ExpirationDate'])
                                                 LICS.append([feature_name, '+', lics['ExpirationDate']])
                                             window_add_lic['-lic-'].update(LICS)
-                                            window_add_lic['Загрузить'].update(disabled=False)
+                                            window_add_lic['Загрузить'].update(disabled=False,
+                                                                               button_color=button_color_2)
                                         else:
                                             my_popup("Проблема с лицензией")
                                             logging.error(f"Проблема с лицензией")
@@ -4029,11 +4002,9 @@ if __name__ == '__main__':
                                                     machine_id
                                     if ip != '127.0.0.1':
                                         try:
-                                            ssh = paramiko.SSHClient()
-                                            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                                            ssh.connect(hostname=ip, port=SSH_PORT, username=SSH_LOGIN, password=SSH_PWD)
+                                            ssh, remotepath = get_ssh_connection()
                                             ftp_client = ssh.open_sftp()
-                                            ftp_client.put(val_add_lic['-FILENAME-'], '/home/omega/Omega/generated.lic')
+                                            ftp_client.put(val_add_lic['-FILENAME-'], (remotepath + '/generated.lic'))
                                             ftp_client.close()
                                             stdin, stdout, stderr = ssh.exec_command(start_command)
                                             stdout = stdout.readlines()
@@ -4082,7 +4053,8 @@ if __name__ == '__main__':
                                                 else "Геопозиционирование" if feature == "GeoData" \
                                                 else "Динамические группы" if feature == "DGNA" \
                                                 else "Удалённое управление терминалами" if feature == "OTAP" \
-                                                else feature
+                                                else "Длительное прослушивание" if feature == "LongAmbientListening" \
+                                                else "Контроль пересылки" if feature == "MFC" else "?"
                                             print(feature_name, '+', lics['ExpirationDate'])
                                             LICS.append([feature_name, '+', lics['ExpirationDate']])
                                         window_add_lic['-lic-'].update(LICS)
@@ -4104,7 +4076,7 @@ if __name__ == '__main__':
                                         window_add_lic['restart'].update(disabled=False, button_color=button_color_2)
                                         new_lic_installed = True
                                         window_add_lic['show_cur_lic'].update(disabled=False)
-                                        window_add_lic['Загрузить'].update(disabled=True)
+                                        window_add_lic['Загрузить'].update(disabled=True, button_color=button_color)
                                         # set_lic_status_bar()
                                     else:
                                         my_popup("Проблема с загрузкой лицензии")
@@ -4123,12 +4095,9 @@ if __name__ == '__main__':
                                         window['-TREE-'].update(clear_treedata)
                                         window['-TREE2-'].update(clear_treedata)
                                         window.refresh()
-                                        ssh = paramiko.SSHClient()
-                                        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                                        # ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
+                                        ssh, remotepath = get_ssh_connection()
                                         start_command = 'sudo systemctl restart omega'
                                         if ip != '127.0.0.1':
-                                            ssh.connect(hostname=ip, port=SSH_PORT, username=SSH_LOGIN, password=SSH_PWD)
                                             stdin, stdout, stderr = ssh.exec_command(start_command)
                                             stdout = stdout.readlines()
                                             ssh.close()
@@ -4215,13 +4184,9 @@ if __name__ == '__main__':
                                             break
                                         if ev_install_key == 'okExit':
                                             try:
-                                                ssh = paramiko.SSHClient()
-                                                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                                                # ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
+                                                ssh, remotepath = get_ssh_connection()
                                                 backup_command = 'cp $HOME/Omega/keys/pub.pem $HOME/Omega/keys/pub.pem.bak'
                                                 if ip != '127.0.0.1':
-                                                    ssh.connect(hostname=ip, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN),
-                                                                password=base64.b64decode(SSH_PWD))
                                                     stdin, stdout, stderr = ssh.exec_command(backup_command)
                                                     stdout = stdout.readlines()
                                                     output = ''
@@ -4286,10 +4251,7 @@ if __name__ == '__main__':
                                             try:
                                                 restore_command = 'cp $HOME/Omega/keys/.pub.default $HOME/Omega/keys/pub.pem'
                                                 if ip != '127.0.0.1':
-                                                    ssh = paramiko.SSHClient()
-                                                    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                                                    ssh.connect(hostname=ip, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN),
-                                                                password=base64.b64decode(SSH_PWD))
+                                                    ssh, remotepath = get_ssh_connection()
                                                     stdin, stdout, stderr = ssh.exec_command(restore_command)
                                                     stdout = stdout.readlines()
                                                     output = ''
@@ -5297,9 +5259,9 @@ if __name__ == '__main__':
                                 print(log_filename)
                                 full_log_path = Path(Path.cwd(), 'logs', log_filename)
                                 os.makedirs('logs', exist_ok=True)
-                                if output_text[0]:
+                                if output_text_server[0]:
                                     with open(full_log_path, 'w', encoding='utf-8') as log:
-                                        log.write(output_text[0])
+                                        log.write(output_text_server[0])
                                     my_popup(f'Файл {full_log_path} сохранён')
                                 else:
                                     my_popup('Лог пуст!')
@@ -5433,12 +5395,10 @@ if __name__ == '__main__':
                         if event == '-Start-':
                             additional_window = True
                             try:
-                                ssh = paramiko.SSHClient()
-                                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                                # ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
+                                ssh, remotepath = get_ssh_connection()
                                 start_command = 'sudo systemctl restart omega'
                                 if ip != '127.0.0.1':
-                                    ssh.connect(hostname=ip, port=SSH_PORT, username=SSH_LOGIN, password=SSH_PWD)
+                                    ssh, remotepath = get_ssh_connection()
                                     stdin, stdout, stderr = ssh.exec_command(start_command)
                                     stdout = stdout.readlines()
                                     ssh.close()
@@ -5512,7 +5472,7 @@ if __name__ == '__main__':
                             additional_window = True
                             # PySimpleGUI.shell_with_animation()
                             try:
-                                res = requests.get(BASE_URL + 'stopServer', headers=HEADER_dict)
+                                res = requests.get(BASE_URL + 'stopServer1', headers=HEADER_dict)
                             except Exception as e:
                                 print("Сервер недоступен")
                                 logging.warning(f"Сервер не отвечает на запрос выключения")
@@ -5537,16 +5497,27 @@ if __name__ == '__main__':
                                     logging.warning(f'Сервер НЕ остановлен администратором')
                                     if num == 10:
                                         my_popup('Сервер НЕ остановлен')  # TODO
-                                        if ip == '127.0.0.1' and not hard_stop:
-                                            window_confirm = make_confirm_window('Хотите попробовать остановить сервис?')
+                                        if not hard_stop:
+                                            window_confirm = make_confirm_window('Хотите остановить сервис локально?')
                                             while True:
                                                 ev_confirm, val_confirm = window_confirm.Read()
                                                 # print(ev_exit, val_confirm)
                                                 if ev_confirm == 'okExit':
                                                     stop_command = 'sudo systemctl stop omega'
-                                                    process = subprocess.Popen(stop_command, shell=True,
-                                                                               stdout=subprocess.PIPE,
-                                                                               stderr=subprocess.PIPE)
+                                                    if ip == '127.0.0.1':
+                                                        process = subprocess.Popen(stop_command, shell=True,
+                                                                                   stdout=subprocess.PIPE,
+                                                                                   stderr=subprocess.PIPE)
+                                                    else:
+                                                        ssh, remotepath = get_ssh_connection()
+                                                        stop_command = 'sudo systemctl stop omega'
+                                                        stdin, stdout, stderr = ssh.exec_command(stop_command)
+                                                        stdout = stdout.readlines()
+                                                        ssh.close()
+                                                        output = ''
+                                                        for line in stdout:
+                                                            output = output + line
+                                                        print(output)
                                                     num = 0
                                                     window_confirm.close()
                                                     hard_stop = True
