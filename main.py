@@ -1,3 +1,4 @@
+import copy
 import hashlib
 import base64
 import json
@@ -102,9 +103,9 @@ LOG_DEPTH = 1000
 SSH_PORT_DEF = 22
 SSH_PORT = 22
 SSH_LOGIN_DEF = b'b21lZ2E='
-SSH_LOGIN = b''
+SSH_LOGIN = ''
 SSH_PWD_DEF = b'b21lZ2ExMjM0NQ=='
-SSH_PWD = b''
+SSH_PWD = ''
 LICS = ['', '', '']
 LOCAL = False
 COMPANY = 'ООО "АСТРАКОМ"'
@@ -117,7 +118,7 @@ DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 DEFSSH = '738344928e9d24022d6c7f66f0a200032a66d4524b649553d4261ed23916cb86'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
-version = '1.1.8'
+version = '2.0.0'
 
 
 def get_branch():
@@ -1220,6 +1221,7 @@ def make_settings():
                            sg.Input(size=20, key='-пароль-ssh-',
                                     # default_text=SSH_PWD,
                                     default_text=SSH_PWD,
+                                    password_char='*',
                                     enable_events=True)],
                       ], expand_x=True)
              ],
@@ -1872,6 +1874,10 @@ def disable_input(win):
     win['-Макс-аудио-порт-'].update(disabled=True)
     win['-пинг-таймаут-'].update(disabled=True)
     win['-auto-del-'].update(disabled=True)
+    win['-глубина-сервера-'].update(disabled=True)
+    win['-порт-ssh-'].update(disabled=True)
+    win['-логин-ssh-'].update(disabled=True)
+    win['-пароль-ssh-'].update(disabled=True)
     win.DisableClose = True
 
 
@@ -1887,6 +1893,10 @@ def enable_input(win):
     win['-Макс-аудио-порт-'].update(disabled=False)
     win['-пинг-таймаут-'].update(disabled=False)
     win['-auto-del-'].update(disabled=False)
+    win['-глубина-сервера-'].update(disabled=False)
+    win['-порт-ssh-'].update(disabled=False)
+    win['-логин-ssh-'].update(disabled=False)
+    win['-пароль-ssh-'].update(disabled=False)
     win.DisableClose = False
 
 
@@ -2519,16 +2529,22 @@ def set_buttons_disabled(set=True):
     #     set_lic_status_bar()
 
 
-def get_ssh_connection():
+def get_ssh_connection(pwd=SSH_PWD):
     global SSH_LOGIN, SSH_PWD, SSH_PORT
     try:
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         if not SSH_LOGIN or SSH_LOGIN == base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"):
-            ssh.connect(hostname=ip, timeout=3, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"),
-                        password=base64.b64decode(SSH_PWD_DEF).decode("utf-8"))
-            SSH_LOGIN, SSH_PWD = base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"), base64.b64decode(
-                SSH_PWD_DEF).decode("utf-8")
+            if pwd:
+                ssh.connect(hostname=ip, timeout=3, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"),
+                        password=pwd)
+                SSH_LOGIN, SSH_PWD = base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"), pwd
+            else:
+                ssh.connect(hostname=ip, timeout=3, port=SSH_PORT,
+                            username=base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"),
+                            password=base64.b64decode(SSH_PWD_DEF).decode("utf-8"))
+                SSH_LOGIN, SSH_PWD = base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"), base64.b64decode(
+                    SSH_PWD_DEF).decode("utf-8")
             remotepath = '/home/omega/Omega/'
         else:
             ssh.connect(hostname=ip, timeout=3, port=SSH_PORT, username=SSH_LOGIN, password=SSH_PWD)
@@ -4310,6 +4326,7 @@ if __name__ == '__main__':
                             # counter = 0
                             while True:
                                 ev_set, val_set = window_settings.Read(1000)
+                                change_settings_by_post = False
                                 print(f'{ev_set}, {val_set}')
                                 if ev_set == sg.WIN_CLOSED or ev_set == '-Exit-set-':
                                     window_settings.close()
@@ -4335,6 +4352,7 @@ if __name__ == '__main__':
                                     window_settings['-Progress-Bar-'].update_bar(counter)
                                     window_settings['-OK-set-'].update(disabled=False)
                                     window_settings['-OK-set-'].update(button_color=button_color_2)
+                                    change_settings_by_post = True
                                 elif ev_set == '-Макс-аудио-порт-' \
                                         or ev_set == '-Мин-аудио-порт-':
                                     if val_set[ev_set].isdigit():
@@ -4352,6 +4370,7 @@ if __name__ == '__main__':
                                     window_settings['-Progress-Bar-'].update_bar(counter)
                                     window_settings['-OK-set-'].update(disabled=False)
                                     window_settings['-OK-set-'].update(button_color=button_color_2)
+                                    change_settings_by_post = True
                                 elif ev_set == '-глубина-сервера-':
                                     if val_set[ev_set].isdigit():
                                         window_settings[ev_set].update(
@@ -4384,6 +4403,13 @@ if __name__ == '__main__':
                                     window_settings['-Progress-Bar-'].update_bar(counter)
                                     window_settings['-OK-set-'].update(disabled=False)
                                     window_settings['-OK-set-'].update(button_color=button_color_2)
+                                elif ev_set == '-пароль-ssh-':
+                                    window_settings[ev_set].update(
+                                        background_color=omega_theme['INPUT'])
+                                    counter = 0
+                                    window_settings['-Progress-Bar-'].update_bar(counter)
+                                    window_settings['-OK-set-'].update(disabled=False)
+                                    window_settings['-OK-set-'].update(button_color=button_color_2)
                                 elif ev_set == '-логин-ssh-':
                                     window_settings[ev_set].update(
                                         background_color=omega_theme['INPUT'])
@@ -4410,54 +4436,88 @@ if __name__ == '__main__':
                                 elif ev_set == '-OK-set-':
                                     # print(val_set.values())
                                     if validate('settings'):
-                                        settings_dict = {'privateCallTimeout': val_set['-Индивидуальный-таймаут-'],
-                                                         'groupCallTimeout': val_set['-Групповой-таймаут-'],
-                                                         'finalizeCallTimeout': val_set['-таймаут-окончания-'],
-                                                         'finalizeTonalTimeout': val_set['-таймаут-тонового-сигнала-'],
-                                                         'ambientCallDuration': val_set['-таймаут-прослушивания-'],
-                                                         'autoCleanDays': val_set['-auto-del-'],
-                                                         'udpPortsRange': val_set['-Мин-аудио-порт-'] + '-' + val_set[
-                                                             '-Макс-аудио-порт-']}
-                                        try:
-                                            res_update_set = requests.post(BASE_URL_SETTINGS,
-                                                                           json=settings_dict,
-                                                                           headers=HEADER_dict)
-                                            if res_update_set.status_code == 200:
-                                                current_db += 1
-                                                logging.info(
-                                                    f"Настройки изменены: "
-                                                    f"Инд. вызов - {settings_dict['privateCallTimeout']}, "
-                                                    f"Гр. вызов - {settings_dict['groupCallTimeout']}, "
-                                                    f"Таймаут окончания вызова - {settings_dict['finalizeCallTimeout']}, "
-                                                    f"Тональный вызов - {settings_dict['finalizeTonalTimeout']}, "
-                                                    f"Скрытое прослушивание - {settings_dict['ambientCallDuration']}, "
-                                                    # f"Аудио порты - {settings_dict['udpPortsRange']}, "
-                                                    f"Аудио порты - {settings_dict['udpPortsRange']}. "
-                                                )
-                                            else:
-                                                logging.error(
-                                                    f'Ошибка при изменении настроек - {res_update_set.status_code}')
-                                                my_popup("Ошибка при изменении настроек")
-                                        except Exception as e:
-                                            print(f'Не удалось обновить настройки - {e}')
-                                            logging.error("Не удалось обновить настройки")
+                                        if change_settings_by_post:
+                                            settings_dict = {'privateCallTimeout': val_set['-Индивидуальный-таймаут-'],
+                                                             'groupCallTimeout': val_set['-Групповой-таймаут-'],
+                                                             'finalizeCallTimeout': val_set['-таймаут-окончания-'],
+                                                             'finalizeTonalTimeout': val_set['-таймаут-тонового-сигнала-'],
+                                                             'ambientCallDuration': val_set['-таймаут-прослушивания-'],
+                                                             'autoCleanDays': val_set['-auto-del-'],
+                                                             'udpPortsRange': val_set['-Мин-аудио-порт-'] + '-' + val_set[
+                                                                 '-Макс-аудио-порт-']}
+                                            try:
+                                                res_update_set = requests.post(BASE_URL_SETTINGS,
+                                                                               json=settings_dict,
+                                                                               headers=HEADER_dict)
+                                                if res_update_set.status_code == 200:
+                                                    current_db += 1
+                                                    logging.info(
+                                                        f"Настройки изменены: "
+                                                        f"Инд. вызов - {settings_dict['privateCallTimeout']}, "
+                                                        f"Гр. вызов - {settings_dict['groupCallTimeout']}, "
+                                                        f"Таймаут окончания вызова - {settings_dict['finalizeCallTimeout']}, "
+                                                        f"Тональный вызов - {settings_dict['finalizeTonalTimeout']}, "
+                                                        f"Скрытое прослушивание - {settings_dict['ambientCallDuration']}, "
+                                                        # f"Аудио порты - {settings_dict['udpPortsRange']}, "
+                                                        f"Аудио порты - {settings_dict['udpPortsRange']}. "
+                                                    )
+                                                else:
+                                                    logging.error(
+                                                        f'Ошибка при изменении настроек - {res_update_set.status_code}')
+                                                    my_popup("Ошибка при изменении настроек")
+                                            except Exception as e:
+                                                print(f'Не удалось обновить настройки - {e}')
+                                                logging.error("Не удалось обновить настройки")
                                         ssh_change = False
+                                        local_change = False
                                         if val_set['-пинг-таймаут-'] != str(ping_timeout):
                                             ping_timeout = int(val_set['-пинг-таймаут-'])
+                                            local_change = True
                                         if val_set['-глубина-сервера-'] != str(LOG_DEPTH):
                                             LOG_DEPTH = int(val_set['-глубина-сервера-'])
-                                        if val_set['-порт-ssh-'] != str(SSH_PORT):
+                                            local_change = True
+                                        if val_set['-порт-ssh-'] != str(SSH_PORT) or \
+                                            val_set['-логин-ssh-'] != SSH_LOGIN or \
+                                            val_set['-пароль-ssh-'] != SSH_PWD:
+                                            SSH_PORT_OLD = copy.deepcopy(SSH_PORT)
+                                            SSH_LOGIN_OLD = copy.deepcopy(SSH_LOGIN)
                                             SSH_PORT = int(val_set['-порт-ssh-'])
+                                            SSH_LOGIN = val_set['-логин-ssh-']
+                                            SSH_PWD = val_set['-пароль-ssh-']
                                             ssh_change = True
-                                        if val_set['-логин-ssh-'].encode() != base64.b64decode(SSH_LOGIN):
-                                            SSH_LOGIN = base64.b64encode(val_set['-логин-ssh-'].encode())
-                                            ssh_change = True
+                                        # if val_set['-логин-ssh-'] != SSH_LOGIN:
+                                        #     SSH_PORT_OLD = copy.deepcopy(SSH_PORT)
+                                        #     SSH_LOGIN_OLD = copy.deepcopy(SSH_LOGIN)
+                                        #     SSH_LOGIN = val_set['-логин-ssh-']
+                                        #     ssh_change = True
+                                        # if val_set['-пароль-ssh-'] != SSH_PWD:
+                                        #     SSH_PORT_OLD = copy.deepcopy(SSH_PORT)
+                                        #     SSH_LOGIN_OLD = copy.deepcopy(SSH_LOGIN)
+                                        #     SSH_PWD = val_set['-пароль-ssh-']
+                                        #     ssh_change = True
                                         if ssh_change:
-                                            change_config_file('ssh')
+                                            try:
+                                                ssh, remotepath = get_ssh_connection(val_set['-пароль-ssh-'])
+                                                window_settings['-логин-ssh-'].update(SSH_LOGIN)
+                                                window_settings['-порт-ssh-'].update(SSH_PORT)
+                                                change_config_file('ssh')
+                                            except Exception as e:
+                                                print(f'{e}')
+                                                val_set['-логин-ssh-'] = SSH_LOGIN_OLD
+                                                val_set['-порт-ssh-'] = SSH_PORT_OLD
+                                                SSH_LOGIN = copy.deepcopy(SSH_LOGIN_OLD)
+                                                SSH_PORT = copy.deepcopy(SSH_PORT_OLD)
+                                                window_settings['-логин-ssh-'].update(SSH_LOGIN_OLD)
+                                                window_settings['-порт-ssh-'].update(SSH_PORT_OLD)
+                                                window_settings['-пароль-ssh-'].update('')
+                                                if not local_change and not change_settings_by_post:
+                                                    window_settings['-OK-set-'].update(disabled=True)
+                                                    window_settings['-OK-set-'].update(button_color=button_color)
+                                                    continue
                                         disable_input(window_settings)
                                         counter = 0
                                         while counter < 11:
-                                            counter += 2
+                                            counter += 3
                                             sleep(0.5)
                                             window_settings['-Progress-Bar-'].update_bar(counter)
                                         enable_input(window_settings)
