@@ -8,7 +8,7 @@ CONF_D="Y"
 printf '##### Установка сервиса ОМЕГА #####\n'
 printf '\n##### Удаление старой версии #####\n'
 . ~/.bashrc
-#pyenv uninstall 3.9.10
+#pyenv uninstall 3.10.12
 #export PGPASSWORD=omega1q2w &&
 #psql -d omega_db -U omega_user -f Omega/dropAllTables.sql &&
 #unset PGPASSWORD
@@ -207,7 +207,7 @@ if [[ $PA -eq 1 ]]
 #    cd ~
 #    unzip ~/admConsole-tray.zip >> ~/install_log.txt
 fi
-FILE_PYTHON="$HOME/.pyenv/versions/3.9.10/bin/python"
+FILE_PYTHON="$HOME/.pyenv/versions/3.10.12/bin/python"
 echo "$FILE_PYTHON"
 if [[ -f "$FILE_PYTHON" ]]
   then
@@ -258,13 +258,13 @@ if [[ $IP -eq 1 ]]
     libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev >> ~/install_log.txt
     printf '\n##### Все пакеты установлены #####\n'
 #    printf '\n##### Installing python #####\n'
-    pyenv install 3.9.10
+    pyenv install 3.10.12
 #    printf '\n##### Python have been installed #####\n'
-    pyenv global 3.9.10
+    pyenv global 3.10.12
     python --version
 fi
 printf '\n##### Установка дополнительных пакетов интерпретатора #####\n'
-pyenv global 3.9.10
+pyenv global 3.10.12
 python --version
 cd ~/admConsole/
 pip install -r requirements.txt >> ~/install_log.txt
