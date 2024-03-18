@@ -2964,9 +2964,6 @@ if __name__ == '__main__':
                 if ip_config != val_login['ip']:
                     change_config_file('auth')
             try:
-                ip = ipaddress.ip_address(val_login['ip']).exploded
-            except ValueError:
-                my_popup('Неверный IP')
                 parsed_url = urllib.parse.urlsplit('//' + val_login['ip'])
                 print(parsed_url.hostname, parsed_url.port)
                 if re.search('^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+', parsed_url.hostname):
@@ -3031,10 +3028,10 @@ if __name__ == '__main__':
                         BASE_URL = BASE_URL_PING = BASE_URL_AUTH = BASE_URL_SETTINGS = 'https://' #TODO
                     else:
                         BASE_URL = BASE_URL_PING = BASE_URL_AUTH = BASE_URL_SETTINGS = 'http://'
-                    BASE_URL += val_login['ip'] + ':5000/api/admin/'
-                    BASE_URL_PING += val_login['ip'] + ':5000/api/ping'
-                    BASE_URL_AUTH += val_login['ip'] + ':5000/api/auth'
-                    BASE_URL_SETTINGS += val_login['ip'] + ':5000/api/admin/settings'
+                    BASE_URL += ip + ':' + str(port) + '/api/admin/'
+                    BASE_URL_PING += ip + ':' + str(port) + '/api/ping'
+                    BASE_URL_AUTH += ip + ':' + str(port) + '/api/auth'
+                    BASE_URL_SETTINGS += ip + ':' + str(port) + '/api/admin/settings'
                     server_status = check_server(BASE_URL_PING)
                     current_db = server_status['db']
                     if server_status['run']:
