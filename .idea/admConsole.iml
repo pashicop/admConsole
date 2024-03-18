@@ -5,6 +5,11 @@
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/venv2" />
       <excludeFolder url="file://$MODULE_DIR$/venv3.5" />
+      <excludeFolder url="file://$MODULE_DIR$/.pyarmor" />
+      <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/logs" />
+      <excludeFolder url="file://$MODULE_DIR$/obf" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (admConsole)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -2,6 +2,8 @@
 CR=0
 TP=0
 PA=0
+IP=0
+
 CONF_D="Y"
 printf '##### Установка сервиса ОМЕГА #####\n'
 printf '\n##### Удаление старой версии #####\n'
@@ -18,7 +20,7 @@ sudo rm ~/Desktop/run.sh >> ~/install_log.txt 2>&1
 sudo rm ~/Desktop/shortcut.desktop >> ~/install_log.txt 2>&1
 sudo rm -rf ~/Omega >> ~/install_log.txt 2>&1
 sudo rm -rf ~/admConsole >> ~/install_log.txt 2>&1
-sed -i.bak '/omega start/,/stop omega/d' ~/.bashrc
+
 printf '##### ------------OK----------- #####\n'
 echo -e "\033[31mВы хотите обновить репозитории? Y/n|Д/н]:\033[0m"
 while true
@@ -202,14 +204,44 @@ if [[ $PA -eq 1 ]]
     printf '##### ------------OK----------- #####\n'
     printf '\n##### Устанавливаем необходимые пакеты #####\n'
     sudo apt-get -y install xorgxrdp xrdp >> ~/install_log.txt
+#    cd ~
+#    unzip ~/admConsole-tray.zip >> ~/install_log.txt
+fi
+FILE_PYTHON="$HOME/.pyenv/versions/3.9.10/bin/python"
+echo "$FILE_PYTHON"
+if [[ -f "$FILE_PYTHON" ]]
+  then
+    echo "У вас уже есть установленная версия интерпретатора"
+  else
+    echo "Вам необходимо установить интерпретатор для панели администратора"
+fi
+echo -e "\033[31mВы хотите установить интерпретатор для панели администратора? Y/n|Д/н]:\033[0m"
+while true
+  do
+  read -n 1 CONF_D
+  case $CONF_D in
+    y|Y|yes|Yes|"Д"|"д"|"Да"|"да")
+      printf "\nИнтерпретатор будет установлен\n"
+      IP=1
+      break;;
+    n|N|no|No|"Н"|"н"|"Нет"|"нет")
+      printf "\nИнтерпретатор не будет установлен\n"
+      break;;
+    *)
+      printf "\nСимвол $CONF_D не распознан - повторите!\n";;
+  esac
+done
+
+if [[ $IP -eq 1 ]]
+  then
     sudo apt-get -y install curl git >> ~/install_log.txt
     curl https://pyenv.run | bash >> ~/install_log.txt 1>&2
+    sed -i.bak '/omega start/,/stop omega/d' ~/.bashrc
     echo '# omega start' >> ~/.bashrc
     echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
     echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
     echo 'eval "$(pyenv init -)"' >> ~/.bashrc
     echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
-#    echo 'export OMEGA=0' >> ~/.bashrc
     echo '# omega end' >> ~/.bashrc
     #tail -n 10 ~/.bashrc
     export PYENV_ROOT="$HOME/.pyenv"
@@ -230,12 +262,14 @@ if [[ $PA -eq 1 ]]
 #    printf '\n##### Python have been installed #####\n'
     pyenv global 3.9.10
     python --version
-    cd ~
-#    unzip ~/admConsole-tray.zip >> ~/install_log.txt
-    cd ~/admConsole/
-    pip install -r requirements.txt >> ~/install_log.txt
-    cd ~
 fi
+printf '\n##### Установка дополнительных пакетов интерпретатора #####\n'
+pyenv global 3.9.10
+python --version
+cd ~/admConsole/
+pip install -r requirements.txt >> ~/install_log.txt
+cd ~
+printf '\n##### Все пакеты установлены #####\n\n'
 printf '\n##### Установка завершена #####\n'
     printf '\n##### Логин по умолчанию - admin, Пароль - '
     printf "$ADM"

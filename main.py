@@ -1,4 +1,5 @@
 import hashlib
+import base64
 import json
 import os
 import platform
@@ -72,7 +73,8 @@ SYMBOL_LEFT_ARROWHEAD = '‹'
 SYMBOL_RIGHT_ARROWHEAD = '›'
 SYMBOL_UP_ARROWHEAD = '⮝'
 SYMBOL_DOWN_ARROWHEAD = '⮟'
-MAX_LEN_LOGIN = 10
+MAX_LEN_LOGIN = 25
+MIN_LEN_LOGIN = 2
 MAX_LEN_USERNAME = 20
 MIN_LEN_PASSWORD = 6
 MAX_LEN_PASSWORD = 20
@@ -85,7 +87,7 @@ MAX_CALL_END_TM = 10
 MIN_TONAL_CALL_END_TM = 3
 MAX_TONAL_CALL_END_TM = 60
 MIN_AMB_LIST_TM = 3
-MAX_AMB_LIST_TM = 30
+MAX_AMB_LIST_TM = 90
 MIN_AUDIO_PORT = 1025
 MAX_AUDIO_PORT = 65535
 MIN_PORTS = 20
@@ -97,6 +99,12 @@ MAX_DEL_DAYS = 1095
 MAX_DEPTH_LOG = 100000
 DEF_PING_TM = 5
 LOG_DEPTH = 1000
+SSH_PORT_DEF = 22
+SSH_PORT = 22
+SSH_LOGIN_DEF = b'b21lZ2E='
+SSH_LOGIN = b''
+SSH_PWD_DEF = b'b21lZ2ExMjM0NQ=='
+SSH_PWD = b''
 LICS = ['', '', '']
 LOCAL = False
 COMPANY = 'ООО "АСТРАКОМ"'
@@ -106,6 +114,7 @@ DEF1A = '04533cc2be3af54c7f5c827f07417a14ea8f1ba5ec2b6a2756b101c5446cd0ae'
 DEF2 = '1d053666c10241ec97f4b70a168d5060425476a34416ee20c9d9d7629b083292'
 DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
 DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
+DEFSSH = '738344928e9d24022d6c7f66f0a200032a66d4524b649553d4261ed23916cb86'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
 version = '1.1.8'
@@ -531,7 +540,7 @@ def make_main_window(ip):
     group_list = list()
     treedata = sg.TreeData()
     treedata2 = sg.TreeData()
-    label_text = 'Панель администратора ОМЕГА К100 ' + ip + ':' + str(port) + ' Версия ' + version + ', ' + val_login['Логин']
+    label_text = 'Панель администратора ОМЕГА К100 ' + ip + ' Версия ' + version + ', ' + val_login['Логин']
     branch_name = get_branch()
     if branch_name != 'Неизвестно':
         label_text += ' Ветка: ' + branch_name
@@ -956,16 +965,43 @@ def make_login_window():
         print(f'Не могу получить локальный ip, {e}')
         ip = ''
     print(ip)
+    # global SSH_PORT, SSH_LOGIN, SSH_PWD
+    config_app = {"ip": "","login": "","ssh_login": "","ssh_port": ""}
+    if os.path.isfile(Path(Path.cwd(), 'config', 'app.json')):
+        print(os.stat(Path(Path.cwd(), 'config', 'app.json')).st_size)
+        try:
+            with open(Path(Path.cwd(), 'config', 'app.json'), 'r') as f_app_config:
+                config_app = json.load(f_app_config)
+                print(config_app)
+                global SSH_PORT, SSH_LOGIN
+                SSH_PORT, SSH_LOGIN = config_app['ssh_port'], config_app['ssh_login']
+        except Exception as e:
+            print(f'{e}')
+            config_app = {'ip': '', 'login': ''}
+    else:
+        with open(Path(Path.cwd(), 'config', 'app.json'), 'x') as f_app_config:
+            f_app_config.write(json.dumps(config_app, sort_keys=True, indent=4))
+    global active_config, ip_config
+    if config_app['ip']:
+        active_config = True
+        ip_config = config_app['ip']
+    else:
+        active_config = False
+        ip_config = ''
     layout_login = [[sg.Text("Адрес сервера", background_color='white'),
                      sg.Push(background_color='white'),
                      sg.Input(
                          # default_text="10.1.4.73",
-                         focus=True, key="ip",
-                         pad=((0, 40), (0, 0)), enable_events=True)],
+                         default_text=config_app['ip'],
+                         focus=True,
+                         key="ip",
+                         pad=((0, 40), (0, 0)),
+                         enable_events=True)],
                     [sg.Text("Логин", background_color='white'),
                      sg.Push(background_color='white'),
                      sg.Input(
                          # default_text="radiotech",
+                         default_text=config_app['login'],
                          key="Логин",
                          pad=((0, 40), (2, 0)), disabled=False, enable_events=True)],
                     [sg.Text("Пароль", background_color='white'),
@@ -980,7 +1016,10 @@ def make_login_window():
                                image_data=ICON_SHOW_BASE_64,
                                disabled=False)
                      ],
-                    [sg.Push(), sg.Checkbox('https', default=False, key='https_on')],
+                    [sg.Checkbox('Запомнить данные',
+                                 default=True,
+                                 enable_events=True,
+                                 key='remember_credentials'), sg.Push(), sg.Checkbox('https', default=False, key='https_on')],
                     [sg.Push(background_color='white'),
                      sg.Button('Вход', key="OK button", size=10,
                                bind_return_key=True),
@@ -1055,6 +1094,52 @@ def make_add_lic():
     return sg.Window('Лицензия', layout_lic, icon=ICON_BASE_64, background_color='white', modal=True, finalize=True)
 
 
+def make_credential_window():
+    # global SSH_PORT, SSH_LOGIN, SSH_PWD
+    layout_ssh_credentials = [[sg.Text("Логин", background_color='white'),
+                     sg.Push(background_color='white'),
+                     sg.Input(
+                         # default_text="radiotech",
+                         default_text=SSH_LOGIN,
+                         key="ssh_login",
+                         focus=True,
+                         pad=((0, 40), (2, 0)), disabled=False, enable_events=True)],
+                    [sg.Text("Пароль", background_color='white'),
+                     sg.Push(background_color='white'),
+                     sg.Input(
+                         # default_text='radiotech',
+                         # default_text=config_app['ssh_PWD'],
+                         key="ssh_password",
+                         enable_events=True,
+                         password_char='*'),
+                     sg.Button(key='showLoginPasswordCred',
+                               button_color='#ffffff',
+                               image_data=ICON_SHOW_BASE_64,
+                               disabled=False)
+                     ],
+                    [sg.Text("SSH порт", background_color='white'),
+                     sg.Push(background_color='white'),
+                     sg.Input(
+                         default_text=SSH_PORT,
+                         key="ssh_port",
+                         pad=((0, 40), (2, 0)), disabled=False, enable_events=True)],
+                    [sg.Checkbox('Запомнить данные',
+                                 default=True,
+                                 enable_events=True,
+                                 key='remember_ssh_credentials'), sg.Push()],
+                    [sg.Push(background_color='white'),
+                     sg.Button('Вход', key="OK cred", size=10,
+                               bind_return_key=True),
+                     sg.Push(background_color='white')]]
+    return sg.Window('Данные для входа на сервер', layout_ssh_credentials,
+                     icon=ICON_BASE_64,
+                     background_color='white',
+                     use_ttk_buttons=True,
+                     modal=True,
+                     use_default_focus=True,
+                     finalize=True)
+
+
 def make_settings():
     settings = get_settings(BASE_URL_SETTINGS)
     if settings:
@@ -1093,7 +1178,7 @@ def make_settings():
                           #                                                            enable_events=True)]
                       ], expand_x=True)
              ],
-            [sg.Frame('Настройка портов',
+            [sg.Frame('Голосовые порты',
                       [
                           # [sg.Push(), sg.Text('Порт подключения'),
                           #  sg.Input(size=20, key='-порт-подкл-', enable_events=True)],
@@ -1122,6 +1207,19 @@ def make_settings():
                           [sg.Push(), sg.Text('Удалять данные старше (дней)'),
                            sg.Input(size=20, key='-auto-del-',
                                     default_text=settings['autoCleanDays'],
+                                    enable_events=True)],
+                          [sg.Push(), sg.Text('Порт SSH'),
+                           sg.Input(size=20, key='-порт-ssh-',
+                                    default_text=SSH_PORT,
+                                    enable_events=True)],
+                          [sg.Push(), sg.Text('Логин'),
+                           sg.Input(size=20, key='-логин-ssh-',
+                                    default_text=SSH_LOGIN,
+                                    enable_events=True)],
+                          [sg.Push(), sg.Text('Пароль'),
+                           sg.Input(size=20, key='-пароль-ssh-',
+                                    # default_text=SSH_PWD,
+                                    default_text=SSH_PWD,
                                     enable_events=True)],
                       ], expand_x=True)
              ],
@@ -1166,7 +1264,8 @@ def make_get_id(id):
 def make_add_user_window():
     layout_add_user = [
         [sg.Text('Логин'), sg.Push(), sg.Input(key='UserLogin', pad=((0, 40), (0, 0)), enable_events=True,
-                                               tooltip=('Не больше ' + str(MAX_LEN_LOGIN) + ' символов'))],
+                                               tooltip=('Не меньше' + str(MIN_LEN_LOGIN) + 'и не больше ' +
+                                                        str(MAX_LEN_LOGIN) + ' символов'))],
         [sg.Text('Имя'), sg.Push(), sg.Input(key='UserName', pad=((0, 40), (2, 0)), enable_events=True,
                                              tooltip=('Не больше ' + str(MAX_LEN_USERNAME) + ' символов'))],
         [sg.Text('Пароль'), sg.Push(), sg.Input(key='UserPassword',
@@ -1369,7 +1468,8 @@ def make_del_user_window(user):
 def make_clone_user_window(user):
     layout_clone_user = [
         [sg.Text('Логин'), sg.Push(), sg.Input(key='CloneUserLogin', pad=((0, 40), (0, 0)), enable_events=True,
-                                               tooltip=('Не больше ' + str(MAX_LEN_LOGIN) + ' символов'))],
+                                               tooltip=('Не меньше' + str(MIN_LEN_LOGIN) + 'и не больше ' +
+                                                        str(MAX_LEN_LOGIN) + ' символов'))],
         [sg.Text('Имя'), sg.Push(), sg.Input(key='CloneUserName', pad=((0, 40), (2, 0)), enable_events=True,
                                              tooltip=('Не больше ' + str(MAX_LEN_USERNAME) + ' символов'))],
         [sg.Text('Пароль'), sg.Push(), sg.Input(key='CloneUserPassword', password_char='*', enable_events=True,
@@ -1674,10 +1774,9 @@ def check_os():
 def get_id(os):
     start_command = 'cat /var/lib/dbus/machine-id'
     if ip != '127.0.0.1':
+        global SSH_PORT, SSH_LOGIN, SSH_PWD
+        ssh, remotepath = get_ssh_connection()
         try:
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
             stdin, stdout, stderr = ssh.exec_command(start_command)
             stdout = stdout.readlines()
             ssh.close()
@@ -1867,7 +1966,7 @@ def validate(window: str):
     result = True
     if window == 'add_user':
         print(val_add_user)
-        if 0 < len(str(val_add_user['UserLogin'])) <= MAX_LEN_LOGIN:
+        if MIN_LEN_LOGIN <= len(str(val_add_user['UserLogin'])) <= MAX_LEN_LOGIN:
             if not validate_input(str(val_add_user['UserLogin'])):
                 window_add_user['UserLogin'].update(background_color=omega_theme['BACKGROUND'],
                                                     text_color=omega_theme['TEXT'])
@@ -1879,7 +1978,8 @@ def validate(window: str):
                                                     text_color=omega_theme['BACKGROUND'])
                 return False
         else:
-            my_popup(("Логин должен быть не более " + str(MAX_LEN_LOGIN) + " символов"))
+            my_popup(("Логин должен быть не более " + str(MAX_LEN_LOGIN) + " и не менее " +
+                      str(MIN_LEN_LOGIN) + " символов"))
             window_add_user.Element('UserLogin').SetFocus()
             window_add_user['UserLogin'].update(background_color=button_color_2,
                                                 text_color=omega_theme['BACKGROUND'])
@@ -2174,7 +2274,7 @@ def validate(window: str):
             return False
     elif window == 'clone_user':
         print(val_clone_user)
-        if 0 < len(str(val_clone_user['CloneUserLogin'])) <= MAX_LEN_LOGIN:
+        if MIN_LEN_LOGIN <= len(str(val_clone_user['CloneUserLogin'])) <= MAX_LEN_LOGIN:
             if not validate_input(str(val_clone_user['CloneUserLogin'])):
                 window_clone_user['CloneUserLogin'].update(background_color=omega_theme['BACKGROUND'],
                                                            text_color=omega_theme['TEXT'])
@@ -2186,7 +2286,8 @@ def validate(window: str):
                                                            text_color=omega_theme['BACKGROUND'])
                 return False
         else:
-            my_popup(("Логин должен быть не более " + str(MAX_LEN_LOGIN) + " символов"))
+            my_popup(("Логин должен быть не более " + str(MAX_LEN_LOGIN) + " и не менее " +
+                      str(MIN_LEN_LOGIN) + " символов"))
             window_clone_user.Element('CloneUserLogin').SetFocus()
             window_clone_user['CloneUserLogin'].update(background_color=button_color_2,
                                                        text_color=omega_theme['BACKGROUND'])
@@ -2224,6 +2325,12 @@ def validate(window: str):
             window_login.Element('Логин').SetFocus()
             window_login['Логин'].update(background_color=button_color_2,
                                                           text_color=omega_theme['BACKGROUND'])
+            return False
+    elif window == 'ssh_cred':
+        if not (val_cred['ssh_port'] and val_cred['ssh_login']
+                and val_cred['ssh_password']):
+            my_popup('Введите логин, пароль и порт!')
+            window_ssh_credentials.Element('ssh_login').SetFocus()
             return False
     return result
 
@@ -2412,6 +2519,76 @@ def set_buttons_disabled(set=True):
     #     set_lic_status_bar()
 
 
+def get_ssh_connection():
+    global SSH_LOGIN, SSH_PWD, SSH_PORT
+    try:
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        if not SSH_LOGIN or SSH_LOGIN == base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"):
+            ssh.connect(hostname=ip, timeout=3, port=SSH_PORT, username=base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"),
+                        password=base64.b64decode(SSH_PWD_DEF).decode("utf-8"))
+            SSH_LOGIN, SSH_PWD = base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"), base64.b64decode(
+                SSH_PWD_DEF).decode("utf-8")
+            remotepath = '/home/omega/Omega/'
+        else:
+            ssh.connect(hostname=ip, timeout=3, port=SSH_PORT, username=SSH_LOGIN, password=SSH_PWD)
+            remotepath = '/home/' + SSH_LOGIN + '/Omega/'
+        change_config_file('ssh')
+        return ssh, remotepath
+    except Exception as e:
+        print(f'{e}')
+        logging.error('Не удалось подключиться к серверу!')
+        my_popup("Не удалось подключиться к серверу! Введите логин/пароль ssh для сервера")
+        try:
+            global window_ssh_credentials
+            window_ssh_credentials = make_credential_window()
+            login_ssh_password_clear = False
+            window_ssh_credentials.Element('ssh_login').SetFocus()
+            while True:
+                global ev_cred, val_cred
+                ev_cred, val_cred = window_ssh_credentials.Read()
+                print(f'{ev_cred}, {val_cred}')
+                if ev_cred == sg.WIN_CLOSED or ev_cred == '-Exit-set-':
+                    window_ssh_credentials.close()
+                    break
+                if ev_cred == 'showLoginPasswordCred':
+                    if login_ssh_password_clear:
+                        window_ssh_credentials['ssh_password'].update(password_char='*')
+                        window_ssh_credentials['showLoginPasswordCred'].update(image_data=ICON_SHOW_BASE_64)
+                        login_ssh_password_clear = False
+                    else:
+                        window_ssh_credentials['ssh_password'].update(password_char='')
+                        window_ssh_credentials['showLoginPasswordCred'].update(image_data=ICON_HIDE_BASE_64)
+                        login_ssh_password_clear = True
+                    window_ssh_credentials.Element('ssh_password').SetFocus()
+                if ev_cred == 'OK cred':
+                    if validate('ssh_cred'):
+                        SSH_PORT, SSH_LOGIN, SSH_PWD = val_cred['ssh_port'], val_cred['ssh_login'], val_cred[
+                            'ssh_password']
+                        ssh = paramiko.SSHClient()
+                        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                        try:
+                            ssh.connect(hostname=ip, timeout=3, port=SSH_PORT, username=SSH_LOGIN, password=SSH_PWD)
+                        except Exception as e:
+                            print(f'{e}')
+                            my_popup('Введите корректные данные!')
+                            window_ssh_credentials.Element('ssh_login').SetFocus()
+                            continue
+                        if ssh:
+                            remotepath = '/home/' + SSH_LOGIN + '/Omega/'
+                            change_config_file('ssh')
+                            window_ssh_credentials.close()
+                            return ssh, remotepath
+                        else:
+                            continue
+                    else:
+                        continue
+                    break
+        except Exception as e:
+            print(f'{e}')
+
+
+
 def get_current_lic():
     res_get_lic = ''
     try:
@@ -2419,54 +2596,91 @@ def get_current_lic():
     except Exception as e:
         print(f"Запрос лицензии прошёл неудачно - {e}")
         logging.warning(f"Запрос лицензии прошёл неудачно - {e}")
-    try:
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
-        stdin, stdout, stderr = ssh.exec_command('cat $HOME/Omega/.licenseState')
-        stdout = stdout.readlines()
-        ssh.close()
-        output = ''
-        for line in stdout:
-            output = output + line
-        print(f'Состояние лицензии - {output}')
-        if output:
-            if output == '0':
-                print('С лицензией всё в порядке')
-                logging.info('С лицензией всё в порядке')
-            elif output == '5':
-                print('Ожидается применение лицензии')
-                logging.warning('Ожидается применение лицензии')
-            elif output == '6':
-                print('Нет файла Omega/generated.lic')
-                logging.error('Нет файла Omega/generated.lic')
-            elif output == '7':
-                print('Нет файла Omega/keys/pub.pem')
-                logging.error('Нет файла Omega/keys/pub.pem')
-            elif output == '8':
-                print('Лицензия не валидна')
-                logging.error('Лицензия не валидна')
-            elif output == '9':
-                print('Не получить дату окончания лицензии')
-                logging.error('Не получить дату окончания лицензии')
-            elif output == '10':
-                print('Лицензия просрочена')
-                logging.error('Лицензия просрочена')
-            elif output == '11':
-                print('Количество пользователей в лицензии = 0')
-                logging.error('Количество пользователей в лицензии = 0')
-            else:
-                print(f'Неизвестное состояние лицензии: {output}')
-                logging.warning(f'Неизвестное состояние лицензии: {output}')
-        ssh.close()
-    except Exception as e:
-        print(f"Не удалось посмотреть состояние лицензии - {e}")
-        logging.warning(f"Не удалось посмотреть состояние лицензии - {e}")
     if res_get_lic != '' and res_get_lic.status_code == 200:
         lic = res_get_lic.json()
         print(lic)
     else:
         lic = dict()
+        my_popup('Запрос лицензии прошёл неудачно! Смотрим причину на сервере...')
+        try:
+            ssh, remotepath = get_ssh_connection()
+            if ssh:
+                stdin, stdout, stderr = ssh.exec_command('cat $HOME/Omega/.licenseState')
+                stdout = stdout.readlines()
+                ssh.close()
+                output = ''
+                for line in stdout:
+                    output = output + line
+                print(f'Состояние лицензии - {output}')
+                if output:
+                    if output == '0':
+                        print('С лицензией всё в порядке')
+                        logging.info('С лицензией всё в порядке')
+                        my_popup('С лицензией всё в порядке')
+                    elif output == '5':
+                        print('Ожидается применение лицензии')
+                        logging.warning('Ожидается применение лицензии')
+                        my_popup('Ожидается применение лицензии')
+                    elif output == '6':
+                        print('Нет файла Omega/generated.lic')
+                        logging.error('Нет файла Omega/generated.lic')
+                        my_popup('Нет файла Omega/generated.lic')
+                    elif output == '7':
+                        print('Нет файла Omega/keys/pub.pem')
+                        logging.error('Нет файла Omega/keys/pub.pem')
+                        my_popup('Нет файла Omega/keys/pub.pem')
+                    elif output == '8':
+                        print('Лицензия не валидна')
+                        logging.error('Лицензия не валидна')
+                        my_popup('Лицензия не валидна')
+                    elif output == '9':
+                        print('Не получить дату окончания лицензии')
+                        logging.error('Не получить дату окончания лицензии')
+                        my_popup('Не получить дату окончания лицензии')
+                    elif output == '10':
+                        print('Лицензия просрочена')
+                        logging.error('Лицензия просрочена')
+                        my_popup('Лицензия просрочена')
+                    elif output == '11':
+                        print('Количество пользователей в лицензии = 0')
+                        logging.error('Количество пользователей в лицензии = 0')
+                        my_popup('Количество пользователей в лицензии = 0')
+                    else:
+                        print(f'Неизвестное состояние лицензии: {output}')
+                        logging.warning(f'Неизвестное состояние лицензии: {output}')
+                        my_popup(f'Неизвестное состояние лицензии: {output}')
+                ssh.close()
+        except Exception as e:
+            print(f"Не удалось посмотреть состояние лицензии - {e}")
+            logging.warning(f"Не удалось посмотреть состояние лицензии - {e}")
+            # try:
+            #     window_ssh_credentials = make_credential_window()
+            #     login_ssh_password_clear = False
+            #     window_ssh_credentials.Element('ssh_login').SetFocus()
+            #     while True:
+            #         ev_cred, val_cred = window_ssh_credentials.Read()
+            #         print(f'{ev_cred}, {val_cred}')
+            #         if ev_cred == sg.WIN_CLOSED or ev_cred == '-Exit-set-':
+            #             window_ssh_credentials.close()
+            #             break
+            #         if ev_cred == 'showLoginPasswordCred':
+            #             if login_ssh_password_clear:
+            #                 window_ssh_credentials['ssh_password'].update(password_char='*')
+            #                 window_ssh_credentials['showLoginPasswordCred'].update(image_data=ICON_SHOW_BASE_64)
+            #                 login_ssh_password_clear = False
+            #             else:
+            #                 window_ssh_credentials['ssh_password'].update(password_char='')
+            #                 window_ssh_credentials['showLoginPasswordCred'].update(image_data=ICON_HIDE_BASE_64)
+            #                 login_ssh_password_clear = True
+            #             window_ssh_credentials.Element('ssh_password').SetFocus()
+            #         if ev_cred == 'OK cred':
+            #             global SSH_PORT, SSH_LOGIN, SSH_PWD
+            #             SSH_PORT, SSH_LOGIN, SSH_PWD = val_cred['ssh_port'], val_cred['ssh_login'], val_cred[
+            #                 'ssh_password']
+            #             window_ssh_credentials.close()
+            #             break
+            # except Exception as e:
+            #     print(f'{e}')
     return lic
 
 
@@ -2479,7 +2693,9 @@ def parse_cur_lic(lic):
         feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
             else "Геопозиционирование" if feature == "GeoData" \
             else "Динамические группы" if feature == "DGNA" \
-            else "Удалённое управление терминалами" if feature == "OTAP" else "?"
+            else "Удалённое управление терминалами" if feature == "OTAP" \
+            else "Длительное прослушивание" if feature == "LongAmbientListening" \
+            else "Контроль пересылки" if feature == "MFC" else "?"
         LICS.append([feature_name, '+', lic['ExpirationDate']])
     return LICS
 
@@ -2540,14 +2756,14 @@ def get_block_status_group(group):
 
 
 def get_logs_server():
+    global SSH_LOGIN, SSH_PWD, SSH_PORT
+    ssh, remotepath = get_ssh_connection()
     try:
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
         ftp_client = ssh.open_sftp()
-        ftp_client.get(remotepath='/home/omega/Omega/log.txt', localpath='logs/ServerLog.txt')
+        ftp_client.get(remotepath=(remotepath+'/log.txt'), localpath='logs/ServerLog.txt')
         ftp_client.close()
         ssh.close()
+        change_config_file('ssh')
         global got_server_log
         got_server_log = True
         return filter_logs_server()
@@ -2650,6 +2866,31 @@ def filter_logs_server():
         return ['', 0, 0]
 
 
+def change_config_file(mode):
+    if os.stat(Path(Path.cwd(), 'config', 'app.json')).st_size:
+        try:
+            with open(Path(Path.cwd(), 'config', 'app.json'), 'r') as f_app_config:
+                config_app = json.load(f_app_config)
+                print(config_app)
+                if mode == 'auth':
+                    config_app['ip'] = val_login['ip']
+                    config_app['login'] = val_login['Логин']
+                elif mode == 'ssh':
+                    config_app['ssh_login'] = SSH_LOGIN
+                    config_app['ssh_port'] = SSH_PORT
+                elif mode == 'all':
+                    config_app['ip'] = val_login['ip']
+                    config_app['login'] = val_login['Логин']
+                    config_app['ssh_login'] = SSH_LOGIN
+                    config_app['ssh_port'] = SSH_PORT
+            with open(Path(Path.cwd(), 'config', 'app.json'), 'w') as f_app_config:
+                f_app_config.write(json.dumps(config_app, sort_keys=True, indent=4))
+                print("Данные входа сохранены")
+        except Exception as e:
+            print(f'{e}')
+
+
+
 if __name__ == '__main__':
     omega_theme = {'BACKGROUND': '#ffffff',
                    'TEXT': '#000000',
@@ -2678,11 +2919,14 @@ if __name__ == '__main__':
     logging.info('Старт лога')
     window_login = make_login_window()
     login_password_clear = False
+    remember_credentials = True
     window = None
     create_db()
     thread_started = False
     current_db = 0
     additional_window = False
+    if active_config:
+        window_login.Element('password').SetFocus()
     while True:
         break_flag = False
         break_flag2 = False
@@ -2706,10 +2950,23 @@ if __name__ == '__main__':
             pass
         if ev_login == 'Логин':
             pass
+        if ev_login == 'remember_credentials':
+            print(ev_login)
+            print(val_login)
+            if val_login['remember_credentials']:
+                remember_credentials = True
+            else:
+                remember_credentials = False
         if ev_login == "OK button":
             host_ok = False
             port = 5000
+            if remember_credentials:
+                if ip_config != val_login['ip']:
+                    change_config_file('auth')
             try:
+                ip = ipaddress.ip_address(val_login['ip']).exploded
+            except ValueError:
+                my_popup('Неверный IP')
                 parsed_url = urllib.parse.urlsplit('//' + val_login['ip'])
                 print(parsed_url.hostname, parsed_url.port)
                 if re.search('^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+', parsed_url.hostname):
@@ -2774,10 +3031,10 @@ if __name__ == '__main__':
                         BASE_URL = BASE_URL_PING = BASE_URL_AUTH = BASE_URL_SETTINGS = 'https://' #TODO
                     else:
                         BASE_URL = BASE_URL_PING = BASE_URL_AUTH = BASE_URL_SETTINGS = 'http://'
-                    BASE_URL += ip + ':' + str(port) + '/api/admin/'
-                    BASE_URL_PING += ip + ':' + str(port) + '/api/ping'
-                    BASE_URL_AUTH += ip + ':' + str(port) + '/api/auth'
-                    BASE_URL_SETTINGS += ip + ':' + str(port) + '/api/admin/settings'
+                    BASE_URL += val_login['ip'] + ':5000/api/admin/'
+                    BASE_URL_PING += val_login['ip'] + ':5000/api/ping'
+                    BASE_URL_AUTH += val_login['ip'] + ':5000/api/auth'
+                    BASE_URL_SETTINGS += val_login['ip'] + ':5000/api/admin/settings'
                     server_status = check_server(BASE_URL_PING)
                     current_db = server_status['db']
                     if server_status['run']:
@@ -3289,12 +3546,8 @@ if __name__ == '__main__':
                                                         print(f'{new_hash_pwd}')
                                                         try:
                                                             if ip != '127.0.0.1':
-                                                                ssh = paramiko.SSHClient()
-                                                                ssh.set_missing_host_key_policy(
-                                                                    paramiko.AutoAddPolicy())
-                                                                ssh.connect(hostname=ip, port=22, username='omega',
-                                                                            password='omega12345')
-                                                                change_password_command = 'echo ' + new_hash_pwd + ' > /home/omega/Omega/.admPWD_b'
+                                                                ssh, remotepath = get_ssh_connection()
+                                                                change_password_command = 'echo ' + new_hash_pwd + ' > $HOME/Omega/.admPWD_b'
                                                                 stdin, stdout, stderr = ssh.exec_command(
                                                                     change_password_command)
                                                                 stdout = stdout.readlines()
@@ -3334,7 +3587,7 @@ if __name__ == '__main__':
                                         window_modify_user['modifyUserButton'].update(button_color=button_color_2)
                             additional_window = False
                         if event == 'Изменить группу':
-                            """обновляем group_from_db вконце"""
+                            """обновляем group_from_db в конце"""
                             additional_window = True
                             modify_group_success = False
                             if not values['-groups2-']:
@@ -3675,11 +3928,9 @@ if __name__ == '__main__':
                                     output = ''
                                     if ip != '127.0.0.1':
                                         try:
-                                            ssh = paramiko.SSHClient()
-                                            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                                            ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+                                            ssh, remotepath = get_ssh_connection()
                                             ftp_client = ssh.open_sftp()
-                                            ftp_client.put(val_add_lic['-FILENAME-'], '/home/omega/Omega/new.lic')
+                                            ftp_client.put(val_add_lic['-FILENAME-'], (remotepath + '/new.lic'))
                                             ftp_client.close()
                                             stdin, stdout, stderr = ssh.exec_command(check_remote_command)
                                             stdout = stdout.readlines()
@@ -3721,11 +3972,13 @@ if __name__ == '__main__':
                                                     else "Геопозиционирование" if feature == "GeoData" \
                                                     else "Динамические группы" if feature == "DGNA" \
                                                     else "Удалённое управление терминалами" if feature == "OTAP" \
-                                                    else feature
+                                                    else "Длительное прослушивание" if feature == "LongAmbientListening" \
+                                                    else "Контроль пересылки" if feature == "MFC" else "?"
                                                 print(feature_name, '+', lics['ExpirationDate'])
                                                 LICS.append([feature_name, '+', lics['ExpirationDate']])
                                             window_add_lic['-lic-'].update(LICS)
-                                            window_add_lic['Загрузить'].update(disabled=False)
+                                            window_add_lic['Загрузить'].update(disabled=False,
+                                                                               button_color=button_color_2)
                                         else:
                                             my_popup("Проблема с лицензией")
                                             logging.error(f"Проблема с лицензией")
@@ -3766,11 +4019,9 @@ if __name__ == '__main__':
                                                     machine_id
                                     if ip != '127.0.0.1':
                                         try:
-                                            ssh = paramiko.SSHClient()
-                                            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                                            ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+                                            ssh, remotepath = get_ssh_connection()
                                             ftp_client = ssh.open_sftp()
-                                            ftp_client.put(val_add_lic['-FILENAME-'], '/home/omega/Omega/generated.lic')
+                                            ftp_client.put(val_add_lic['-FILENAME-'], (remotepath + '/generated.lic'))
                                             ftp_client.close()
                                             stdin, stdout, stderr = ssh.exec_command(start_command)
                                             stdout = stdout.readlines()
@@ -3819,7 +4070,8 @@ if __name__ == '__main__':
                                                 else "Геопозиционирование" if feature == "GeoData" \
                                                 else "Динамические группы" if feature == "DGNA" \
                                                 else "Удалённое управление терминалами" if feature == "OTAP" \
-                                                else feature
+                                                else "Длительное прослушивание" if feature == "LongAmbientListening" \
+                                                else "Контроль пересылки" if feature == "MFC" else "?"
                                             print(feature_name, '+', lics['ExpirationDate'])
                                             LICS.append([feature_name, '+', lics['ExpirationDate']])
                                         window_add_lic['-lic-'].update(LICS)
@@ -3841,7 +4093,7 @@ if __name__ == '__main__':
                                         window_add_lic['restart'].update(disabled=False, button_color=button_color_2)
                                         new_lic_installed = True
                                         window_add_lic['show_cur_lic'].update(disabled=False)
-                                        window_add_lic['Загрузить'].update(disabled=True)
+                                        window_add_lic['Загрузить'].update(disabled=True, button_color=button_color)
                                         # set_lic_status_bar()
                                     else:
                                         my_popup("Проблема с загрузкой лицензии")
@@ -3860,12 +4112,9 @@ if __name__ == '__main__':
                                         window['-TREE-'].update(clear_treedata)
                                         window['-TREE2-'].update(clear_treedata)
                                         window.refresh()
-                                        ssh = paramiko.SSHClient()
-                                        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                                        # ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
+                                        ssh, remotepath = get_ssh_connection()
                                         start_command = 'sudo systemctl restart omega'
                                         if ip != '127.0.0.1':
-                                            ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
                                             stdin, stdout, stderr = ssh.exec_command(start_command)
                                             stdout = stdout.readlines()
                                             ssh.close()
@@ -3952,13 +4201,9 @@ if __name__ == '__main__':
                                             break
                                         if ev_install_key == 'okExit':
                                             try:
-                                                ssh = paramiko.SSHClient()
-                                                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                                                # ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
+                                                ssh, remotepath = get_ssh_connection()
                                                 backup_command = 'cp $HOME/Omega/keys/pub.pem $HOME/Omega/keys/pub.pem.bak'
                                                 if ip != '127.0.0.1':
-                                                    ssh.connect(hostname=ip, port=22, username='omega',
-                                                                password='omega12345')
                                                     stdin, stdout, stderr = ssh.exec_command(backup_command)
                                                     stdout = stdout.readlines()
                                                     output = ''
@@ -4023,10 +4268,7 @@ if __name__ == '__main__':
                                             try:
                                                 restore_command = 'cp $HOME/Omega/keys/.pub.default $HOME/Omega/keys/pub.pem'
                                                 if ip != '127.0.0.1':
-                                                    ssh = paramiko.SSHClient()
-                                                    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                                                    ssh.connect(hostname=ip, port=22, username='omega',
-                                                                password='omega12345')
+                                                    ssh, remotepath = get_ssh_connection()
                                                     stdin, stdout, stderr = ssh.exec_command(restore_command)
                                                     stdout = stdout.readlines()
                                                     output = ''
@@ -4129,6 +4371,29 @@ if __name__ == '__main__':
                                     window_settings['-Progress-Bar-'].update_bar(counter)
                                     window_settings['-OK-set-'].update(disabled=False)
                                     window_settings['-OK-set-'].update(button_color=button_color_2)
+                                elif ev_set == '-порт-ssh-':
+                                    if val_set[ev_set].isdigit():
+                                        window_settings[ev_set].update(
+                                            background_color=omega_theme['INPUT'])
+                                        if 0 < int(val_set[ev_set]) <= MAX_AUDIO_PORT:
+                                            window_settings[ev_set].update(
+                                                background_color=omega_theme['INPUT'],
+                                                text_color=omega_theme['TEXT'])
+                                        else:
+                                            window_settings[ev_set].update(background_color=button_color_2)
+                                    else:
+                                        window_settings[ev_set].update(background_color=button_color_2)
+                                    counter = 0
+                                    window_settings['-Progress-Bar-'].update_bar(counter)
+                                    window_settings['-OK-set-'].update(disabled=False)
+                                    window_settings['-OK-set-'].update(button_color=button_color_2)
+                                elif ev_set == '-логин-ssh-':
+                                    window_settings[ev_set].update(
+                                        background_color=omega_theme['INPUT'])
+                                    counter = 0
+                                    window_settings['-Progress-Bar-'].update_bar(counter)
+                                    window_settings['-OK-set-'].update(disabled=False)
+                                    window_settings['-OK-set-'].update(button_color=button_color_2)
                                 elif ev_set == '-auto-del-':
                                     if val_set[ev_set].isdigit():
                                         window_settings[ev_set].update(
@@ -4179,15 +4444,24 @@ if __name__ == '__main__':
                                         except Exception as e:
                                             print(f'Не удалось обновить настройки - {e}')
                                             logging.error("Не удалось обновить настройки")
+                                        ssh_change = False
                                         if val_set['-пинг-таймаут-'] != str(ping_timeout):
                                             ping_timeout = int(val_set['-пинг-таймаут-'])
-                                        if val_set['-глубина-сервера-'] != str(ping_timeout):
+                                        if val_set['-глубина-сервера-'] != str(LOG_DEPTH):
                                             LOG_DEPTH = int(val_set['-глубина-сервера-'])
+                                        if val_set['-порт-ssh-'] != str(SSH_PORT):
+                                            SSH_PORT = int(val_set['-порт-ssh-'])
+                                            ssh_change = True
+                                        if val_set['-логин-ssh-'].encode() != base64.b64decode(SSH_LOGIN):
+                                            SSH_LOGIN = base64.b64encode(val_set['-логин-ssh-'].encode())
+                                            ssh_change = True
+                                        if ssh_change:
+                                            change_config_file('ssh')
                                         disable_input(window_settings)
                                         counter = 0
                                         while counter < 11:
                                             counter += 2
-                                            sleep(1)
+                                            sleep(0.5)
                                             window_settings['-Progress-Bar-'].update_bar(counter)
                                         enable_input(window_settings)
                                         window_settings['-OK-set-'].update(disabled=True)
@@ -4893,19 +5167,78 @@ if __name__ == '__main__':
                             elif values['Tabs_journal'] == 'Tab2_journal':
                                 if not got_server_log:
                                     output_text_server = get_logs_server()
+                                    if output_text_server == ['', 0, 0]:
+                                        try:
+                                            window_ssh_credentials = make_credential_window()
+                                            login_ssh_password_clear = False
+                                            while True:
+                                                ev_cred, val_cred = window_ssh_credentials.Read()
+                                                print(f'{ev_cred}, {val_cred}')
+                                                if ev_cred == sg.WIN_CLOSED or ev_cred == '-Exit-set-':
+                                                    window_ssh_credentials.close()
+                                                    break
+                                                elif ev_cred == 'OK cred':
+                                                    print('ok')
+                                                if ev_cred == 'showLoginPasswordCred':
+                                                    if login_ssh_password_clear:
+                                                        window_ssh_credentials['ssh_password'].update(password_char='*')
+                                                        window_ssh_credentials['showLoginPasswordCred'].update(image_data=ICON_SHOW_BASE_64)
+                                                        login_ssh_password_clear = False
+                                                    else:
+                                                        window_ssh_credentials['ssh_password'].update(password_char='')
+                                                        window_ssh_credentials['showLoginPasswordCred'].update(image_data=ICON_HIDE_BASE_64)
+                                                        login_ssh_password_clear = True
+                                                    window_ssh_credentials.Element('ssh_password').SetFocus()
+                                                if ev_cred == 'OK cred':
+                                                    SSH_PORT, SSH_LOGIN, SSH_PWD = val_cred['ssh_port'], val_cred['ssh_login'], val_cred['ssh_password']
+                                                    window_ssh_credentials.close()
+                                                    break
+                                        except Exception as e:
+                                            print(f'{e}')
+
+                                        output_text_server = get_logs_server()
                                     window['journalServer'].update(output_text_server[0])
                                     count_string = str(output_text_server[1]) + ' из ' + str(output_text_server[2])
                                     window['countLogsServer'].update(count_string)
+                                    if output_text_server[2] == 0:
+                                        window['-filterJournalServer-'].update(disabled=True)
+                                        window['-ClearFilterJournalServer-'].update(disabled=True)
+                                        window['-SaveLogServer-'].update(disabled=True)
+                                        window['info_server'].update(disabled=True)
+                                        window['warning_server'].update(disabled=True)
+                                        window['fail_server'].update(disabled=True)
+                                    else:
+                                        window['-filterJournalServer-'].update(disabled=False)
+                                        window['-ClearFilterJournalServer-'].update(disabled=False)
+                                        window['-SaveLogServer-'].update(disabled=False)
+                                        window['info_server'].update(disabled=False)
+                                        window['warning_server'].update(disabled=False)
+                                        window['fail_server'].update(disabled=False)
                         if event == '-UpdateLogServer-':
                             output_text_server = get_logs_server()
                             if output_text_server[1] == 0:
-                                window['-filterJournalServer-'].update(background_color=button_color_2)
+                                if filter_status_journal_server:
+                                    window['-filterJournalServer-'].update(background_color=button_color_2)
                             else:
                                 if filter_status_journal_server:
                                     window['-filterJournalServer-'].update(background_color='lightblue')
                             window['journalServer'].update(output_text_server[0])
                             count_string = str(output_text_server[1]) + ' из ' + str(output_text_server[2])
                             window['countLogsServer'].update(count_string)
+                            if output_text_server[2] == 0:
+                                window['-filterJournalServer-'].update(disabled=True)
+                                window['-ClearFilterJournalServer-'].update(disabled=True)
+                                window['-SaveLogServer-'].update(disabled=True)
+                                window['info_server'].update(disabled=True)
+                                window['warning_server'].update(disabled=True)
+                                window['fail_server'].update(disabled=True)
+                            else:
+                                window['-filterJournalServer-'].update(disabled=False)
+                                window['-ClearFilterJournalServer-'].update(disabled=False)
+                                window['-SaveLogServer-'].update(disabled=False)
+                                window['info_server'].update(disabled=False)
+                                window['warning_server'].update(disabled=False)
+                                window['fail_server'].update(disabled=False)
                         if event == '-filterJournalServer-':
                             filter_status_journal_server = True
                             output_text = filter_logs_server()
@@ -4943,9 +5276,9 @@ if __name__ == '__main__':
                                 print(log_filename)
                                 full_log_path = Path(Path.cwd(), 'logs', log_filename)
                                 os.makedirs('logs', exist_ok=True)
-                                if output_text[0]:
+                                if output_text_server[0]:
                                     with open(full_log_path, 'w', encoding='utf-8') as log:
-                                        log.write(output_text[0])
+                                        log.write(output_text_server[0])
                                     my_popup(f'Файл {full_log_path} сохранён')
                                 else:
                                     my_popup('Лог пуст!')
@@ -5079,12 +5412,10 @@ if __name__ == '__main__':
                         if event == '-Start-':
                             additional_window = True
                             try:
-                                ssh = paramiko.SSHClient()
-                                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                                # ssh.get_host_keys().add('10.1.4.173', 'ssh-rsa', key)
+                                ssh, remotepath = get_ssh_connection()
                                 start_command = 'sudo systemctl restart omega'
                                 if ip != '127.0.0.1':
-                                    ssh.connect(hostname=ip, port=22, username='omega', password='omega12345')
+                                    ssh, remotepath = get_ssh_connection()
                                     stdin, stdout, stderr = ssh.exec_command(start_command)
                                     stdout = stdout.readlines()
                                     ssh.close()
@@ -5158,7 +5489,7 @@ if __name__ == '__main__':
                             additional_window = True
                             # PySimpleGUI.shell_with_animation()
                             try:
-                                res = requests.get(BASE_URL + 'stopServer', headers=HEADER_dict)
+                                res = requests.get(BASE_URL + 'stopServer1', headers=HEADER_dict)
                             except Exception as e:
                                 print("Сервер недоступен")
                                 logging.warning(f"Сервер не отвечает на запрос выключения")
@@ -5183,16 +5514,27 @@ if __name__ == '__main__':
                                     logging.warning(f'Сервер НЕ остановлен администратором')
                                     if num == 10:
                                         my_popup('Сервер НЕ остановлен')  # TODO
-                                        if ip == '127.0.0.1' and not hard_stop:
-                                            window_confirm = make_confirm_window('Хотите попробовать остановить сервис?')
+                                        if not hard_stop:
+                                            window_confirm = make_confirm_window('Хотите остановить сервис локально?')
                                             while True:
                                                 ev_confirm, val_confirm = window_confirm.Read()
                                                 # print(ev_exit, val_confirm)
                                                 if ev_confirm == 'okExit':
                                                     stop_command = 'sudo systemctl stop omega'
-                                                    process = subprocess.Popen(stop_command, shell=True,
-                                                                               stdout=subprocess.PIPE,
-                                                                               stderr=subprocess.PIPE)
+                                                    if ip == '127.0.0.1':
+                                                        process = subprocess.Popen(stop_command, shell=True,
+                                                                                   stdout=subprocess.PIPE,
+                                                                                   stderr=subprocess.PIPE)
+                                                    else:
+                                                        ssh, remotepath = get_ssh_connection()
+                                                        stop_command = 'sudo systemctl stop omega'
+                                                        stdin, stdout, stderr = ssh.exec_command(stop_command)
+                                                        stdout = stdout.readlines()
+                                                        ssh.close()
+                                                        output = ''
+                                                        for line in stdout:
+                                                            output = output + line
+                                                        print(output)
                                                     num = 0
                                                     window_confirm.close()
                                                     hard_stop = True
