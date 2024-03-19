@@ -1581,14 +1581,16 @@ def the_thread(ip):
                                        'onlineUserIds': [],
                                        'isReserved': False}
                 default_json = json.dumps(default_status_dict)
-                print(f' Thread {num} after - {default_status_dict}')
+                # print(f' Thread {num} after - {default_status_dict}')
+                print(f' Thread {num} ')
                 window.write_event_value('-THREAD-', (threading.current_thread().name, default_json))
             else:
                 if res_ping.status_code == 200:
                     if not server_status['run']:
                         logging.info(f'[{num}] Сервер доступен ')
                         change_state = True
-                    print(f' Thread {num} after - {res_ping.text}')
+                    # print(f' Thread {num} after - {res_ping.text}')
+                    print(f' Thread {num}')
                     window.write_event_value('-THREAD-', (threading.current_thread().name, res_ping.text))
             num += 1
             sleep(ping_timeout)
@@ -2689,8 +2691,8 @@ def get_block_status_group(group):
 
 def get_logs_server():
     global SSH_LOGIN, SSH_PWD, SSH_PORT
-    ssh, remotepath = get_ssh_connection()
     try:
+        ssh, remotepath = get_ssh_connection()
         ftp_client = ssh.open_sftp()
         ftp_client.get(remotepath=(remotepath + '/log.txt'), localpath='logs/ServerLog.txt')
         ftp_client.close()
@@ -3001,7 +3003,7 @@ if __name__ == '__main__':
                             threading.Thread(target=the_thread, args=[BASE_URL_PING], daemon=True).start()
                             thread_started = True
                         event, values = window.read()
-                        print(event, type(event), values)
+                        # print(event, type(event), values)
                         if event == '-hide-online-':
                             window['-frame-online-'].update(visible=window['-frame-online-'].metadata == True)
                             window['-frame-online-'].metadata = not window['-frame-online-'].metadata
@@ -3010,12 +3012,12 @@ if __name__ == '__main__':
                                     '-frame-online-'].metadata else SYMBOL_LEFT_ARROWHEAD)
                         if event == '-THREAD-':
                             if not thread_started:
-                                print(json.loads(values['-THREAD-'][1]))
+                                # print(json.loads(values['-THREAD-'][1]))
                                 threading.Thread(target=the_thread, args=[BASE_URL_PING], daemon=True).start()
                                 thread_started = True
                             else:
                                 dict_online = json.loads(values['-THREAD-'][1])
-                                print(current_db)
+                                # print(current_db)
                                 if dict_online["onlineUsersCount"] != -1:
                                     update_free_space(dict_online)
                                     window['-Start-'].update(disabled=True)
@@ -3091,10 +3093,10 @@ if __name__ == '__main__':
                                     break_flag2 = True
                                     break
                                 if ev_exit == sg.WIN_CLOSED or ev_exit == 'Exit':
-                                    print('Закрыл окно выхода')
+                                    # print('Закрыл окно выхода')
                                     break
                                 if ev_exit == 'noExit':
-                                    print('Закрыл окно выхода')
+                                    # print('Закрыл окно выхода')
                                     window_exit.close()
                                     break
                             additional_window = False
@@ -5156,38 +5158,39 @@ if __name__ == '__main__':
                                 if not got_server_log:
                                     output_text_server = get_logs_server()
                                     if output_text_server == ['', 0, 0]:
-                                        try:
-                                            window_ssh_credentials = make_credential_window()
-                                            login_ssh_password_clear = False
-                                            while True:
-                                                ev_cred, val_cred = window_ssh_credentials.Read()
-                                                print(f'{ev_cred}, {val_cred}')
-                                                if ev_cred == sg.WIN_CLOSED or ev_cred == '-Exit-set-':
-                                                    window_ssh_credentials.close()
-                                                    break
-                                                elif ev_cred == 'OK cred':
-                                                    print('ok')
-                                                if ev_cred == 'showLoginPasswordCred':
-                                                    if login_ssh_password_clear:
-                                                        window_ssh_credentials['ssh_password'].update(password_char='*')
-                                                        window_ssh_credentials['showLoginPasswordCred'].update(
-                                                            image_data=ICON_SHOW_BASE_64)
-                                                        login_ssh_password_clear = False
-                                                    else:
-                                                        window_ssh_credentials['ssh_password'].update(password_char='')
-                                                        window_ssh_credentials['showLoginPasswordCred'].update(
-                                                            image_data=ICON_HIDE_BASE_64)
-                                                        login_ssh_password_clear = True
-                                                    window_ssh_credentials.Element('ssh_password').SetFocus()
-                                                if ev_cred == 'OK cred':
-                                                    SSH_PORT, SSH_LOGIN, SSH_PWD = val_cred['ssh_port'], val_cred[
-                                                        'ssh_login'], val_cred['ssh_password']
-                                                    window_ssh_credentials.close()
-                                                    break
-                                        except Exception as e:
-                                            print(f'{e}')
+                                        continue
+                                        # try:
+                                        #     window_ssh_credentials = make_credential_window()
+                                        #     login_ssh_password_clear = False
+                                        #     while True:
+                                        #         ev_cred, val_cred = window_ssh_credentials.Read()
+                                        #         print(f'{ev_cred}, {val_cred}')
+                                        #         if ev_cred == sg.WIN_CLOSED or ev_cred == '-Exit-set-':
+                                        #             window_ssh_credentials.close()
+                                        #             break
+                                        #         elif ev_cred == 'OK cred':
+                                        #             print('ok')
+                                        #         if ev_cred == 'showLoginPasswordCred':
+                                        #             if login_ssh_password_clear:
+                                        #                 window_ssh_credentials['ssh_password'].update(password_char='*')
+                                        #                 window_ssh_credentials['showLoginPasswordCred'].update(
+                                        #                     image_data=ICON_SHOW_BASE_64)
+                                        #                 login_ssh_password_clear = False
+                                        #             else:
+                                        #                 window_ssh_credentials['ssh_password'].update(password_char='')
+                                        #                 window_ssh_credentials['showLoginPasswordCred'].update(
+                                        #                     image_data=ICON_HIDE_BASE_64)
+                                        #                 login_ssh_password_clear = True
+                                        #             window_ssh_credentials.Element('ssh_password').SetFocus()
+                                        #         if ev_cred == 'OK cred':
+                                        #             SSH_PORT, SSH_LOGIN, SSH_PWD = val_cred['ssh_port'], val_cred[
+                                        #                 'ssh_login'], val_cred['ssh_password']
+                                        #             window_ssh_credentials.close()
+                                        #             break
+                                        # except Exception as e:
+                                        #     print(f'{e}')
 
-                                        output_text_server = get_logs_server()
+                                        # output_text_server = get_logs_server()
                                     window['journalServer'].update(output_text_server[0])
                                     count_string = str(output_text_server[1]) + ' из ' + str(output_text_server[2])
                                     window['countLogsServer'].update(count_string)
