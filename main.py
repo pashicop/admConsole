@@ -118,7 +118,7 @@ DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 DEFSSH = '738344928e9d24022d6c7f66f0a200032a66d4524b649553d4261ed23916cb86'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
-version = '2.0.0'
+version = '2.0.1'
 
 
 def get_branch():
