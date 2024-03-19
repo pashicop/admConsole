@@ -237,7 +237,7 @@ done
 if [[ $IP -eq 1 ]]
   then
     sudo apt-get -y install curl git >> ~/install_log.txt
-    curl https://pyenv.run | bash >> ~/install_log.txt 1>&2
+    curl -k https://pyenv.run | bash >> ~/install_log.txt 1>&2
     sed -i.bak '/omega start/,/stop omega/d' ~/.bashrc
     echo '# omega start' >> ~/.bashrc
     echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
