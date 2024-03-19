@@ -135,6 +135,7 @@ fi
 #. ~/.bashrc
 printf '##### ------------OK----------- #####\n'
 printf '\n##### Устанавливаем сервис ОМЕГИ #####\n'
+sed -i.bak "s/omega/${USER}/" ~/Omega/omega.service
 sudo cp ~/Omega/omega.service /lib/systemd/system/ &&
 sudo systemctl enable omega
 if [[ $? == 0 ]]
@@ -195,12 +196,13 @@ if [[ $PA -eq 1 ]]
     printf '\n##### Установка панели администратора #####\n'
     sleep 1
     cd ~/admConsole/
+    sed -i.bak "s/omega/${USER}/" shortcut.desktop
     mv ~/admConsole/shortcut.desktop ~/Desktop/
     chmod +x ~/admConsole/run.sh
     printf '##### ------------OK----------- #####\n'
     printf '\n##### Добавляем необходимые права #####\n'
-    echo 'omega ALL=(ALL) NOPASSWD: /bin/systemctl * omega' | sudo EDITOR='tee -a' visudo
-    echo 'omega ALL=(ALL) NOPASSWD: /usr/bin/crontab *' | sudo EDITOR='tee -a' visudo
+    echo "${USER} ALL=(ALL) NOPASSWD: /bin/systemctl * omega" | sudo EDITOR='tee -a' visudo
+    echo "${USER} ALL=(ALL) NOPASSWD: /usr/bin/crontab *" | sudo EDITOR='tee -a' visudo
     printf '##### ------------OK----------- #####\n'
     printf '\n##### Устанавливаем необходимые пакеты #####\n'
     sudo apt-get -y install xorgxrdp xrdp >> ~/install_log.txt

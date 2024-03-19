@@ -1559,9 +1559,11 @@ def get_online_users(users: list):
 
 
 def set_window_running_server():
-    bar_text = 'Пользователей онлайн: ' + str(server_status['online']) + ', Версия БД: ' + str(server_status['db'])
+    bar_text = 'Онлайн: ' + str(server_status['online']) + ', БД: ' + str(server_status['db']) \
+                          + (', Резервный' if server_status["isReserved"] else ', Основной')
     bar_text2 = update_free_space(server_status)
-    window['-StatusBar-'].update(bar_text, background_color=status_bar_color)
+    window['-StatusBar-'].update(bar_text, background_color=(button_color_2 if
+                                                                 server_status["isReserved"] else status_bar_color))
     window['-StatusBar2-'].update(bar_text2)
     window['-Menu-'].update([
         ['Сервер', ['Установить лицензию...', 'Настройки', 'Очистка БД', ['Частично', 'Полностью']]],
@@ -1596,7 +1598,6 @@ def the_thread(ip):
         num = 0
         print('Запускаем поток')
         while True:
-
             if additional_window:
                 sleep(ping_timeout)
                 continue
@@ -1616,17 +1617,18 @@ def the_thread(ip):
                                        'run': server_status['run'],
                                        'freeSpace': 0,
                                        'spaceTotal': 1,
-                                       'onlineUserIds': []}
+                                       'onlineUserIds': [],
+                                       'isReserved': False}
                 default_json = json.dumps(default_status_dict)
                 print(f' Thread {num} after - {default_status_dict}')
-                window.write_event_value('-THREAD-', (threading.currentThread().name, default_json))
+                window.write_event_value('-THREAD-', (threading.current_thread().name, default_json))
             else:
                 if res_ping.status_code == 200:
                     if not server_status['run']:
                         logging.info(f'[{num}] Сервер доступен ')
                         change_state = True
                     print(f' Thread {num} after - {res_ping.text}')
-                    window.write_event_value('-THREAD-', (threading.currentThread().name, res_ping.text))
+                    window.write_event_value('-THREAD-', (threading.current_thread().name, res_ping.text))
                     # server_status['run'] = True
             num += 1
             sleep(ping_timeout)
@@ -1634,7 +1636,7 @@ def the_thread(ip):
         global thread_started
         thread_started = False
         print(f'Exception! {e}, thread_started = {thread_started}')
-        window.write_event_value('-THREAD-', (threading.currentThread().name, json.dumps({'restart': 'true'})))
+        window.write_event_value('-THREAD-', (threading.current_thread().name, json.dumps({'restart': 'true'})))
 
 
 def check_server(url_ping):
@@ -1644,7 +1646,8 @@ def check_server(url_ping):
         'db': 0,
         'freeSpace': 0,
         'spaceTotal': 1,
-        'onlineUserIds': []}
+        'onlineUserIds': [],
+        'isReserved': False}
     res_ping = ''
     try:
         res_ping = requests.get(url_ping, timeout=3)
@@ -1663,6 +1666,7 @@ def check_server(url_ping):
             status['freeSpace'] = res_dict['freeSpace']
             status['spaceTotal'] = res_dict['spaceTotal']
             status['onlineUserIds'] = res_dict['onlineUserIds']
+            status['isReserved'] = res_dict['isReserved']
             print(status)
         else:
             print(f'Некорректный ответ {res_ping.status_code} от сервера {url_ping}')
@@ -3132,10 +3136,13 @@ if __name__ == '__main__':
                                     if current_db < dict_online['databaseVersion']:  # TODO
                                         update_users_and_groups()
                                         current_db = dict_online['databaseVersion']
-                                    update_text = 'Пользователей онлайн: ' + str(dict_online["onlineUsersCount"]) \
-                                                  + ', Версия БД: ' + str(dict_online["databaseVersion"])
+                                    update_text = 'Онлайн: ' + str(dict_online["onlineUsersCount"])\
+                                    + ', БД: ' + str(dict_online["databaseVersion"])\
+                                    + (', Резервный' if dict_online["isReserved"] else ', Основной')
                                     update_text2 = update_free_space(dict_online)
-                                    window['-StatusBar-'].update(update_text, background_color=status_bar_color)
+                                    window['-StatusBar-'].update(update_text,
+                                                                 background_color=(button_color_2 if
+                                                                 dict_online["isReserved"] else status_bar_color))
                                     window['-StatusBar2-'].update(update_text2)
                                     set_buttons_disabled(False)
                                     server_status['run'] = True
@@ -4157,13 +4164,17 @@ if __name__ == '__main__':
                                                     print(f'{res_ping.text}')
                                                     dict_online_after_start = json.loads(res_ping.text)
                                                     # print(dict_online_after_start)
-                                                    update_text = 'Пользователей онлайн: обновление...' + ', Версия БД: ' \
-                                                                  + str(dict_online_after_start["databaseVersion"])
+                                                    update_text = 'Онлайн: обновление...' + ', БД: ' \
+                                                                  + str(dict_online_after_start["databaseVersion"]) \
+                                                                  + (', Резервный' if dict_online_after_start[
+                                                        "isReserved"] else ', Основной')
                                                     update_text2 = update_free_space(dict_online_after_start)
                                                     server_status['online'] = dict_online_after_start["onlineUsersCount"]
                                                     server_status['db'] = dict_online_after_start["databaseVersion"]
                                                     window['-StatusBar-'].update(update_text,
-                                                                                 background_color=status_bar_color)
+                                                                                 background_color=(button_color_2 if
+                                                                                                   dict_online_after_start[
+                                                                                                       "isReserved"] else status_bar_color))
                                                     window['-StatusBar2-'].update(update_text2)
                                                     window['-Start-'].update(disabled=True)
                                                     window['-Stop-'].update(disabled=False)
@@ -4177,12 +4188,16 @@ if __name__ == '__main__':
                                                             ['Сервер', ['Установить лицензию...', 'Настройки', 'Очистка БД',
                                                                         ['Частично', 'Полностью']]],
                                                             ['Помощь', 'О программе'], ])
-                                                        update_text = 'Пользователей онлайн: ' + str(
+                                                        update_text = 'Онлайн: ' + str(
                                                             server_status["online"]) \
-                                                                      + ', Версия БД: ' + str(server_status["db"])
+                                                                      + ', БД: ' + str(server_status["db"]) \
+                                                                      + (', Резервный' if server_status[
+                                                        "isReserved"] else ', Основной')
                                                         update_text2 = update_free_space(server_status)
                                                         window['-StatusBar-'].update(update_text,
-                                                                                     background_color=status_bar_color)
+                                                                                     background_color=(button_color_2 if
+                                                                                                       server_status[
+                                                                                                           "isReserved"] else status_bar_color))
                                                         window['-StatusBar2-'].update(update_text2)
                                                         set_buttons_disabled(False)
                                                         server_status['run'] = True
@@ -5502,12 +5517,15 @@ if __name__ == '__main__':
                                             print(f'{res_ping.text}')
                                             dict_online_after_start = json.loads(res_ping.text)
                                             # print(dict_online_after_start)
-                                            update_text = 'Пользователей онлайн: обновление...' + ', Версия БД: ' \
-                                                          + str(dict_online_after_start["databaseVersion"])
+                                            update_text = 'Онлайн: обновление...' + ', БД: ' \
+                                                          + str(dict_online_after_start["databaseVersion"]) \
+                                                          + (', Резервный' if dict_online_after_start[
+                                                "isReserved"] else ', Основной')
                                             update_text2 = update_free_space(server_status)
                                             server_status['online'] = dict_online_after_start["onlineUsersCount"]
                                             server_status['db'] = dict_online_after_start["databaseVersion"]
-                                            window['-StatusBar-'].update(update_text, background_color=status_bar_color)
+                                            window['-StatusBar-'].update(update_text, background_color=(button_color_2 if
+                                                                 dict_online_after_start["isReserved"] else status_bar_color))
                                             window['-StatusBar2-'].update(update_text2)
                                             window['-Start-'].update(disabled=True)
                                             window['-Stop-'].update(disabled=False)
@@ -5521,10 +5539,14 @@ if __name__ == '__main__':
                                                     ['Сервер', ['Установить лицензию...', 'Настройки', 'Очистка БД',
                                                                 ['Частично', 'Полностью']]],
                                                     ['Помощь', 'О программе'], ])
-                                                update_text = 'Пользователей онлайн: ' + str(server_status["online"]) \
-                                                              + ', Версия БД: ' + str(server_status["db"])
+                                                update_text = 'Онлайн: ' + str(server_status["online"]) \
+                                                              + ', БД: ' + str(server_status["db"]) \
+                                                              + (', Резервный' if server_status[
+                                                    "isReserved"] else ', Основной')
                                                 update_text2 = update_free_space(server_status)
-                                                window['-StatusBar-'].update(update_text, background_color=status_bar_color)
+                                                window['-StatusBar-'].update(update_text,
+                                                                             background_color=(button_color_2 if
+                                                                                               server_status["isReserved"] else status_bar_color))
                                                 window['-StatusBar2-'].update(update_text2)
                                                 set_buttons_disabled(False)
                                                 server_status['run'] = True
@@ -5546,7 +5568,7 @@ if __name__ == '__main__':
                             additional_window = True
                             # PySimpleGUI.shell_with_animation()
                             try:
-                                res = requests.get(BASE_URL + 'stopServer1', headers=HEADER_dict)
+                                res = requests.get(BASE_URL + 'stopServer', headers=HEADER_dict)
                             except Exception as e:
                                 print("Сервер недоступен")
                                 logging.warning(f"Сервер не отвечает на запрос выключения")
