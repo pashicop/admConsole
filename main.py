@@ -118,6 +118,24 @@ DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 DEFSSH = '738344928e9d24022d6c7f66f0a200032a66d4524b649553d4261ed23916cb86'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
+# OMEGA THEME
+omega_theme = {'BACKGROUND': '#ffffff',
+                   'TEXT': '#000000',
+                   'INPUT': '#f2f2f2',
+                   'TEXT_INPUT': '#000000',
+                   'SCROLL': '#bfbfbf',
+                   'BUTTON': ('white', '#35536b'),
+                   'PROGRESS': ('#699349', '#D0D0D0'),
+                   'BORDER': 1,
+                   'SLIDER_DEPTH': 0,
+                   'PROGRESS_DEPTH': 0}
+button_color = omega_theme['BUTTON'][1]
+button_color_2 = '#a6674c'
+status_bar_color = '#699349'
+disabled_input = 'dark gray'
+sg.theme_add_new('OmegaTheme', omega_theme)
+sg.theme('OmegaTheme')
+#OMEGA THEME end
 version = '2.0.1'
 
 
@@ -151,7 +169,7 @@ def icon(check):
     draw = ImageDraw.Draw(im, 'RGBA')
     draw.rectangle(rectangle, outline='black', width=1)
     if check == 1:
-        draw.line(line, fill='black', width=2, joint='curve')
+        draw.line(line, fill=button_color_2, width=2, joint='curve')
     elif check == 2:
         draw.line(line, fill='red', width=2, joint='curve')
     with BytesIO() as output:
@@ -944,7 +962,7 @@ def make_login_window():
         print(f'Не могу получить локальный ip, {e}')
         ip = ''
     print(ip)
-    # global SSH_PORT, SSH_LOGIN, SSH_PWD
+    # global active_config
     config_app = {"ip": "", "login": "", "ssh_login": "", "ssh_port": ""}
     if os.path.isfile(Path(Path.cwd(), 'config', 'app.json')):
         print(os.stat(Path(Path.cwd(), 'config', 'app.json')).st_size)
@@ -956,7 +974,7 @@ def make_login_window():
                 SSH_PORT, SSH_LOGIN = config_app['ssh_port'], config_app['ssh_login']
         except Exception as e:
             print(f'{e}')
-            config_app = {'ip': '', 'login': ''}
+            # config_app = {'ip': '', 'login': ''}
     else:
         with open(Path(Path.cwd(), 'config', 'app.json'), 'x') as f_app_config:
             f_app_config.write(json.dumps(config_app, sort_keys=True, indent=4))
@@ -2811,22 +2829,7 @@ def change_config_file(mode):
 
 
 if __name__ == '__main__':
-    omega_theme = {'BACKGROUND': '#ffffff',
-                   'TEXT': '#000000',
-                   'INPUT': '#f2f2f2',
-                   'TEXT_INPUT': '#000000',
-                   'SCROLL': '#bfbfbf',
-                   'BUTTON': ('white', '#35536b'),
-                   'PROGRESS': ('#699349', '#D0D0D0'),
-                   'BORDER': 1,
-                   'SLIDER_DEPTH': 0,
-                   'PROGRESS_DEPTH': 0}
-    button_color = omega_theme['BUTTON'][1]
-    button_color_2 = '#a6674c'
-    status_bar_color = '#699349'
-    disabled_input = 'dark gray'
-    sg.theme_add_new('OmegaTheme', omega_theme)
-    sg.theme('OmegaTheme')
+
     if sys.version_info[1] < 9:
         logging.basicConfig(filename='admin.log', filemode='a', format='%(asctime)s %(levelname)s %(message)s',
                             datefmt='%d/%m/%Y %H:%M:%S', level=logging.INFO)
@@ -2839,7 +2842,7 @@ if __name__ == '__main__':
     login_password_clear = False
     remember_credentials = True
     window = None
-    active_config = None
+    # active_config = None
     ip_config = None
     change_state = None
     create_db()
@@ -2849,7 +2852,10 @@ if __name__ == '__main__':
     additional_window = False
     # noinspection PyUnboundLocalVariable
     if active_config:
-        window_login.Element('password').SetFocus()
+        if window_login.ReturnValuesDictionary['Логин']:
+            window_login.Element('password').SetFocus()
+        else:
+            window_login.Element('Логин').SetFocus()
     while True:
         break_flag = False
         break_flag2 = False
@@ -3831,7 +3837,7 @@ if __name__ == '__main__':
                             additional_window = False
                         if event == 'О программе':
                             additional_window = True
-                            my_popup('Разработано ' + COMPANY + ',\n'
+                            my_popup('Разработано ' + COMPANY + '\n'
                                                                 '\n'
                                                                 '2021-2023')
                             # noinspection PyRedeclaration
