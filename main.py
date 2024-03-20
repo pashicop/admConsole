@@ -83,6 +83,7 @@ MAX_LEN_GROUPNAME = 20
 MAX_LEN_GROUPDESC = 100
 MIN_CALL_TM = 10
 MAX_CALL_TM = 120
+MAX_LA_TM = 1440
 MIN_CALL_END_TM = 1
 MAX_CALL_END_TM = 10
 MIN_TONAL_CALL_END_TM = 3
@@ -135,7 +136,7 @@ status_bar_color = '#699349'
 disabled_input = 'dark gray'
 sg.theme_add_new('OmegaTheme', omega_theme)
 sg.theme('OmegaTheme')
-#OMEGA THEME end
+# OMEGA THEME end
 version = '2.0.1'
 
 
@@ -804,13 +805,13 @@ def make_main_window(ip):
                   size=(150, 140),
                   vertical_alignment='top')
          ],
-        [sg.T('Количество записей:'), sg.Multiline(key='countLogs', no_scrollbar=True,
-                                                   write_only=True, disabled=True, auto_refresh=True,
-                                                   background_color='lightgray',
-                                                   # auto_size_text=True,
-                                                   size=15,
-                                                   justification='right'
-                                                   )]
+        [sg.T('Количество записей:'),
+         sg.Multiline(key='countLogs', no_scrollbar=True,
+                      write_only=True, disabled=True, auto_refresh=True,
+                      background_color='lightgray', size=15, justification='right'
+                      ),
+         sg.T('Лимит ' + str(LOG_DEPTH) + ' строк', key='rowLimit')
+         ]
     ]
     tab2_journal = [
         [sg.Column([[
@@ -857,13 +858,14 @@ def make_main_window(ip):
                   size=(150, 110),
                   vertical_alignment='top')
          ],
-        [sg.T('Количество записей:'), sg.Multiline(key='countLogsServer', no_scrollbar=True,
-                                                   write_only=True, disabled=True, auto_refresh=True,
-                                                   background_color='lightgray',
-                                                   # auto_size_text=True,
-                                                   size=15,
-                                                   justification='right'
-                                                   )]
+        [sg.T('Количество записей:'),
+         sg.Multiline(key='countLogsServer', no_scrollbar=True, write_only=True, disabled=True, auto_refresh=True,
+                      background_color='lightgray',
+                      size=15,
+                      justification='right'
+                      ),
+         sg.T('Лимит ' + str(LOG_DEPTH) + ' строк', key='rowLimitServer')
+         ]
     ]
     tab3_layout = [
         [sg.Frame('Логи',
@@ -1138,7 +1140,7 @@ def make_credential_window():
 def make_settings():
     settings = get_settings(BASE_URL_SETTINGS)
     if settings:
-        layout_settings = [
+        tab1_layout = [
             [sg.Frame('Таймауты',
                       [
                           [sg.Push(), sg.Text('Индивидуальный вызов (сек)'),
@@ -1157,7 +1159,7 @@ def make_settings():
                                     key='-таймаут-окончания-',
                                     enable_events=True)],
                           [sg.Push(), sg.Text('Длительность тонального вызова (сек)'),
-                           sg.Input(default_text=settings['finalizeTonalTimeout'],
+                           sg.Input(default_text=settings['tonalTimeout'],
                                     size=20,
                                     key='-таймаут-тонового-сигнала-',
                                     enable_events=True)],
@@ -1211,12 +1213,65 @@ def make_settings():
                                     enable_events=True)],
                       ], expand_x=True)
              ],
-            [sg.Push()],
+        ]
+        tab2_layout = [[sg.Frame('Дополнительные функции',
+                                 [[sg.Checkbox('Скрытое прослушивание',
+                                               default=True if settings['ambientListening'] else False,
+                                               enable_events=True,
+                                               pad=(10, (5, 2)),
+                                               key='ambientListening')],
+                                   [sg.Checkbox('Авторизация устройств',
+                                               default=True if settings['deviceAuthorization'] else False,
+                                               enable_events=True,
+                                               pad=(10, 2),
+                                               key='deviceAuthorization')],
+                                  [sg.Checkbox('Динамические группы',
+                                               default=True if settings['dgna'] else False,
+                                               enable_events=True,
+                                               pad=(10, 2),
+                                               key='dgna')],
+                                  [sg.Checkbox('Геопозиционирование',
+                                               default=True if settings['geoData'] else False,
+                                               enable_events=True,
+                                               pad=(10, 2),
+                                               key='geoData')],
+                                  [sg.Checkbox('Долгое скрытое прослушивание',
+                                               default=True if settings['longAmbientListening'] else False,
+                                               enable_events=True,
+                                               pad=(10, 2),
+                                               key='longAmbientListening')],
+                                  [sg.T('Макс время прослушивания (мин)',
+                                        pad=((40, 10), 2)),
+                                   sg.Input(settings['longAmbientCallDuration'],
+                                            enable_events=True,
+                                            size=5,
+                                            disabled=False if settings['longAmbientListening'] else True,
+                                            pad=((0, 20), 2),
+                                            key='longAmbientCallDuration')],
+                                  [sg.Checkbox('Контроль пересылки',
+                                               default=True if settings['mfc'] else False,
+                                               enable_events=True,
+                                               pad=(10, 2),
+                                               key='mfc')],
+                                  [sg.Checkbox('Удалённое программирование терминалов',
+                                               default=True if settings['otap'] else False,
+                                               enable_events=True,
+                                               pad=(10, (2, 5)),
+                                               key='otap')],
+                                  ], expand_x=True)
+                        ]]
+        layout_settings = [
+            [
+                sg.TabGroup([[sg.Tab('Осн настройки', tab1_layout)],
+                             [sg.Tab('Доп настройки', tab2_layout)],
+                             ])
+            ],
+            [[sg.Push()],
             [sg.ProgressBar(max_value=10, orientation='horizontal', key='-Progress-Bar-',
                             size_px=(400, 10),
                             pad=((30, 30), (30, 10))
                             )],
-            [sg.Push(), sg.Button('OK', disabled=True, key='-OK-set-'), sg.Button('Выйти', key='-Exit-set-'), sg.Push()]
+            [sg.Push(), sg.Button('OK', disabled=True, key='-OK-set-'), sg.Button('Выйти', key='-Exit-set-'), sg.Push()]]
         ]
     else:
         layout_settings = [
@@ -2515,7 +2570,7 @@ def get_ssh_connection(pwd=SSH_PWD):
                             password=pwd)
                 SSH_LOGIN, SSH_PWD = base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"), pwd
             else:
-                ssh.connect(hostname=ip, timeout=3, port=SSH_PORT,
+                ssh.connect(hostname=ip, timeout=3, port=(SSH_PORT_DEF if not SSH_PORT else SSH_PORT),
                             username=base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"),
                             password=base64.b64decode(SSH_PWD_DEF).decode("utf-8"))
                 SSH_LOGIN, SSH_PWD = base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"), base64.b64decode(
@@ -2829,7 +2884,6 @@ def change_config_file(mode):
 
 
 if __name__ == '__main__':
-
     if sys.version_info[1] < 9:
         logging.basicConfig(filename='admin.log', filemode='a', format='%(asctime)s %(levelname)s %(message)s',
                             datefmt='%d/%m/%Y %H:%M:%S', level=logging.INFO)
@@ -2969,7 +3023,7 @@ if __name__ == '__main__':
                             break
                         else:
                             HEADER_dict = {'Authorization': "Bearer " + TOKEN}
-                            print(get_settings(BASE_URL_SETTINGS))
+                            # print(get_settings(BASE_URL_SETTINGS))
                             init_db()
                             users_from_db = get_users_from_db()
                             groups_from_db = get_groups_from_db()
@@ -3016,6 +3070,8 @@ if __name__ == '__main__':
                             window['-hide-online-'].update(
                                 text=SYMBOL_RIGHT_ARROWHEAD if window[
                                     '-frame-online-'].metadata else SYMBOL_LEFT_ARROWHEAD)
+                        if event == 'ambientListening':
+                            print('sdgfdfgdfg')
                         if event == '-THREAD-':
                             if not thread_started:
                                 # print(json.loads(values['-THREAD-'][1]))
@@ -3041,7 +3097,7 @@ if __name__ == '__main__':
                                                 ['Сервер', ['Установить лицензию...', 'Настройки', 'Очистка БД',
                                                             ['Частично', 'Полностью']]],
                                                 ['Помощь', 'О программе'], ])
-                                    if current_db < dict_online['databaseVersion']:  #TODO
+                                    if current_db < dict_online['databaseVersion']:  # TODO
                                         update_users_and_groups()
                                         current_db = dict_online['databaseVersion']
                                     update_text = 'Онлайн: ' + str(dict_online["onlineUsersCount"]) \
@@ -3083,6 +3139,7 @@ if __name__ == '__main__':
                                     window['journal'].update(output_text[0])
                                     count_string = str(output_text[1]) + ' из ' + str(output_text[2])
                                     window['countLogs'].update(count_string)
+                                    window['rowLimit'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                                     set_lic_status_bar()
                         if event == sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
                             additional_window = True
@@ -4255,10 +4312,12 @@ if __name__ == '__main__':
                         if event == 'Настройки':
                             additional_window = True
                             window_settings = make_settings()
-                            timeout = 0
+                            # timeout = 0
+                            change_settings_by_post = False
                             while True:
-                                ev_set, val_set = window_settings.Read(1000)
-                                change_settings_by_post = False
+                                counter = 0
+                                window_settings['-Progress-Bar-'].update_bar(counter)
+                                ev_set, val_set = window_settings.Read()
                                 print(f'{ev_set}, {val_set}')
                                 if ev_set == sg.WIN_CLOSED or ev_set == '-Exit-set-':
                                     window_settings.close()
@@ -4365,19 +4424,59 @@ if __name__ == '__main__':
                                     window_settings['-Progress-Bar-'].update_bar(counter)
                                     window_settings['-OK-set-'].update(disabled=False)
                                     window_settings['-OK-set-'].update(button_color=button_color_2)
+                                elif ev_set == 'ambientListening' \
+                                        or ev_set == 'deviceAuthorization' \
+                                        or ev_set == 'dgna' \
+                                        or ev_set == 'geoData' \
+                                        or ev_set == 'longAmbientListening' \
+                                        or ev_set == 'otap' \
+                                        or ev_set == 'longAmbientCallDuration' \
+                                        or ev_set == 'mfc':
+                                    if ev_set == 'longAmbientListening':
+                                        window_settings['longAmbientCallDuration'].update(disabled=(False if
+                                                                                                    val_set['longAmbientListening'] else True))
+                                    if ev_set == 'longAmbientCallDuration':
+                                        if val_set['longAmbientCallDuration'].isdigit():
+                                            window_settings['longAmbientCallDuration'].update(
+                                                background_color=omega_theme['INPUT'])
+                                            if 0 < int(val_set['longAmbientCallDuration']) <= MAX_LA_TM:
+                                                window_settings['longAmbientCallDuration'].update(
+                                                    background_color=omega_theme['INPUT'],
+                                                    text_color=omega_theme['TEXT'])
+                                            else:
+                                                window_settings['longAmbientCallDuration'].update(background_color=button_color_2)
+                                        else:
+                                            window_settings['longAmbientCallDuration'].update(background_color=button_color_2)
+                                    print(f'change_settings_by_post - {change_settings_by_post}')
+                                    change_settings_by_post = True
+                                    print(f'change_settings_by_post - {change_settings_by_post}')
+                                    counter = 0
+                                    window_settings['-Progress-Bar-'].update_bar(counter)
+                                    window_settings['-OK-set-'].update(disabled=False)
+                                    window_settings['-OK-set-'].update(button_color=button_color_2)
                                 elif ev_set == '-OK-set-':
                                     if validate('settings'):
+                                        print(f'change_settings_by_post - {change_settings_by_post}')
                                         if change_settings_by_post:
                                             settings_dict = {'privateCallTimeout': val_set['-Индивидуальный-таймаут-'],
                                                              'groupCallTimeout': val_set['-Групповой-таймаут-'],
                                                              'finalizeCallTimeout': val_set['-таймаут-окончания-'],
-                                                             'finalizeTonalTimeout': val_set[
+                                                             'tonalTimeout': val_set[
                                                                  '-таймаут-тонового-сигнала-'],
                                                              'ambientCallDuration': val_set['-таймаут-прослушивания-'],
                                                              'autoCleanDays': val_set['-auto-del-'],
                                                              'udpPortsRange': val_set['-Мин-аудио-порт-'] + '-' +
                                                                               val_set[
-                                                                                  '-Макс-аудио-порт-']}
+                                                                                  '-Макс-аудио-порт-'],
+                                                             'ambientListening': val_set['ambientListening'],
+                                                             'deviceAuthorization': val_set['deviceAuthorization'],
+                                                             'dgna': val_set['dgna'],
+                                                             'geoData': val_set['geoData'],
+                                                             'longAmbientListening': val_set['longAmbientListening'],
+                                                             'mfc': val_set['mfc'],
+                                                             'otap': val_set['otap'],
+                                                             'longAmbientCallDuration': val_set[
+                                                                 'longAmbientCallDuration'], }
                                             try:
                                                 res_update_set = requests.post(BASE_URL_SETTINGS,
                                                                                json=settings_dict,
@@ -4389,9 +4488,18 @@ if __name__ == '__main__':
                                                         f"Инд. вызов - {settings_dict['privateCallTimeout']}, "
                                                         f"Гр. вызов - {settings_dict['groupCallTimeout']}, "
                                                         f"Таймаут окончания вызова - {settings_dict['finalizeCallTimeout']}, "
-                                                        f"Тональный вызов - {settings_dict['finalizeTonalTimeout']}, "
-                                                        f"Скрытое прослушивание - {settings_dict['ambientCallDuration']}, "
-                                                        f"Аудио порты - {settings_dict['udpPortsRange']}. "
+                                                        f"Тональный вызов - {settings_dict['tonalTimeout']}, "
+                                                        f"Скрытое прослушивание, сек - {settings_dict['ambientCallDuration']}, "
+                                                        f"Удаление данных старше - {settings_dict['autoCleanDays']}, "
+                                                        f"Аудио порты - {settings_dict['udpPortsRange']}, "
+                                                        f"Скрытое прослушивание - {settings_dict['ambientListening']}, "
+                                                        f"Авторизация устройств - {settings_dict['deviceAuthorization']}, "
+                                                        f"Динамические группы - {settings_dict['dgna']}, "
+                                                        f"Геопозиционирование - {settings_dict['geoData']}, "
+                                                        f"Долгое скрытое прослушивание - {settings_dict['longAmbientListening']}, "
+                                                        f"Контроль пересылки - {settings_dict['mfc']}, "
+                                                        f"Удалённое программирование терминалов - {settings_dict['otap']}, "
+                                                        f"Макс время прослушивания - {settings_dict['longAmbientCallDuration']}, "
                                                     )
                                                 else:
                                                     logging.error(
@@ -4441,16 +4549,15 @@ if __name__ == '__main__':
                                         disable_input(window_settings)
                                         counter = 0
                                         while counter < 11:
-                                            counter += 3
+                                            counter += 5
                                             sleep(0.5)
                                             window_settings['-Progress-Bar-'].update_bar(counter)
                                         enable_input(window_settings)
                                         window_settings['-OK-set-'].update(disabled=True)
                                         window_settings['-OK-set-'].update(button_color=button_color)
                                         my_popup("Настройки изменены")
-                                        window_settings.close()
-                                else:
-                                    pass
+                                        continue
+                            window_settings.close()
                             additional_window = False
                         if event == '-AddUser-':
                             """
@@ -5122,6 +5229,7 @@ if __name__ == '__main__':
                             window['journal'].update(output_text[0])
                             count_string = str(output_text[1]) + ' из ' + str(output_text[2])
                             window['countLogs'].update(count_string)
+                            window['rowLimit'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                         if event == '-ClearFilterJournal-':
                             window['-filterJournal-'].update('')
                             window['-filterJournal-'].update(background_color=omega_theme['INPUT'])
@@ -5132,6 +5240,7 @@ if __name__ == '__main__':
                             window['journal'].update(output_text[0])
                             count_string = str(output_text[1]) + ' из ' + str(output_text[2])
                             window['countLogs'].update(count_string)
+                            window['rowLimit'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                         if event == '-SaveLog-':
                             print(f'Открываем файл для записи')
                             try:
@@ -5160,46 +5269,16 @@ if __name__ == '__main__':
                                 window['journal'].update(output_text[0])
                                 count_string = str(output_text[1]) + ' из ' + str(output_text[2])
                                 window['countLogs'].update(count_string)
+                                window['rowLimit'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                             elif values['Tabs_journal'] == 'Tab2_journal':
                                 if not got_server_log:
                                     output_text_server = get_logs_server()
                                     if output_text_server == ['', 0, 0]:
                                         continue
-                                        # try:
-                                        #     window_ssh_credentials = make_credential_window()
-                                        #     login_ssh_password_clear = False
-                                        #     while True:
-                                        #         ev_cred, val_cred = window_ssh_credentials.Read()
-                                        #         print(f'{ev_cred}, {val_cred}')
-                                        #         if ev_cred == sg.WIN_CLOSED or ev_cred == '-Exit-set-':
-                                        #             window_ssh_credentials.close()
-                                        #             break
-                                        #         elif ev_cred == 'OK cred':
-                                        #             print('ok')
-                                        #         if ev_cred == 'showLoginPasswordCred':
-                                        #             if login_ssh_password_clear:
-                                        #                 window_ssh_credentials['ssh_password'].update(password_char='*')
-                                        #                 window_ssh_credentials['showLoginPasswordCred'].update(
-                                        #                     image_data=ICON_SHOW_BASE_64)
-                                        #                 login_ssh_password_clear = False
-                                        #             else:
-                                        #                 window_ssh_credentials['ssh_password'].update(password_char='')
-                                        #                 window_ssh_credentials['showLoginPasswordCred'].update(
-                                        #                     image_data=ICON_HIDE_BASE_64)
-                                        #                 login_ssh_password_clear = True
-                                        #             window_ssh_credentials.Element('ssh_password').SetFocus()
-                                        #         if ev_cred == 'OK cred':
-                                        #             SSH_PORT, SSH_LOGIN, SSH_PWD = val_cred['ssh_port'], val_cred[
-                                        #                 'ssh_login'], val_cred['ssh_password']
-                                        #             window_ssh_credentials.close()
-                                        #             break
-                                        # except Exception as e:
-                                        #     print(f'{e}')
-
-                                        # output_text_server = get_logs_server()
                                     window['journalServer'].update(output_text_server[0])
                                     count_string = str(output_text_server[1]) + ' из ' + str(output_text_server[2])
                                     window['countLogsServer'].update(count_string)
+                                    window['rowLimitServer'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                                     if output_text_server[2] == 0:
                                         window['-filterJournalServer-'].update(disabled=True)
                                         window['-ClearFilterJournalServer-'].update(disabled=True)
@@ -5225,6 +5304,7 @@ if __name__ == '__main__':
                             window['journalServer'].update(output_text_server[0])
                             count_string = str(output_text_server[1]) + ' из ' + str(output_text_server[2])
                             window['countLogsServer'].update(count_string)
+                            window['rowLimitServer'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                             if output_text_server[2] == 0:
                                 window['-filterJournalServer-'].update(disabled=True)
                                 window['-ClearFilterJournalServer-'].update(disabled=True)
@@ -5254,6 +5334,7 @@ if __name__ == '__main__':
                             window['journalServer'].update(output_text[0])
                             count_string = str(output_text[1]) + ' из ' + str(output_text[2])
                             window['countLogsServer'].update(count_string)
+                            window['rowLimitServer'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                         if event == '-ClearFilterJournalServer-':
                             window['-filterJournalServer-'].update('')
                             window['-filterJournalServer-'].update(background_color=omega_theme['INPUT'])
@@ -5264,6 +5345,7 @@ if __name__ == '__main__':
                             window['journalServer'].update(output_text[0])
                             count_string = str(output_text[1]) + ' из ' + str(output_text[2])
                             window['countLogsServer'].update(count_string)
+                            window['rowLimitServer'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                         if event == '-SaveLogServer-':
                             print(f'Открываем файл для записи')
                             try:
@@ -5594,6 +5676,7 @@ if __name__ == '__main__':
                                 window['journal'].update(output_text[0])
                                 count_string = str(output_text[1]) + ' из ' + str(output_text[2])
                                 window['countLogs'].update(count_string)
+                                window['rowLimit'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                         if event == 'info':
                             if filter_journal_info:
                                 filter_journal_info = False
@@ -5603,6 +5686,7 @@ if __name__ == '__main__':
                             window['journal'].update(output_text[0])
                             count_string = str(output_text[1]) + ' из ' + str(output_text[2])
                             window['countLogs'].update(count_string)
+                            window['rowLimit'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                         if event == 'warning':
                             if filter_journal_warning:
                                 filter_journal_warning = False
@@ -5612,6 +5696,7 @@ if __name__ == '__main__':
                             window['journal'].update(output_text[0])
                             count_string = str(output_text[1]) + ' из ' + str(output_text[2])
                             window['countLogs'].update(count_string)
+                            window['rowLimit'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                         if event == 'error':
                             if filter_journal_error:
                                 filter_journal_error = False
@@ -5621,6 +5706,7 @@ if __name__ == '__main__':
                             window['journal'].update(output_text[0])
                             count_string = str(output_text[1]) + ' из ' + str(output_text[2])
                             window['countLogs'].update(count_string)
+                            window['rowLimit'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                         if event == 'critical':
                             if filter_journal_critical:
                                 filter_journal_critical = False
@@ -5630,6 +5716,7 @@ if __name__ == '__main__':
                             window['journal'].update(output_text[0])
                             count_string = str(output_text[1]) + ' из ' + str(output_text[2])
                             window['countLogs'].update(count_string)
+                            window['rowLimit'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                         if event == 'info_server':
                             if filter_journal_info_server:
                                 filter_journal_info_server = False
@@ -5639,6 +5726,7 @@ if __name__ == '__main__':
                             window['journalServer'].update(output_text_server[0])
                             count_string = str(output_text_server[1]) + ' из ' + str(output_text_server[2])
                             window['countLogsServer'].update(count_string)
+                            window['rowLimitServer'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                         if event == 'warning_server':
                             if filter_journal_warn_server:
                                 filter_journal_warn_server = False
@@ -5648,6 +5736,7 @@ if __name__ == '__main__':
                             window['journalServer'].update(output_text_server[0])
                             count_string = str(output_text_server[1]) + ' из ' + str(output_text_server[2])
                             window['countLogsServer'].update(count_string)
+                            window['rowLimitServer'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                         if event == 'fail_server':
                             if filter_journal_fail_server:
                                 filter_journal_fail_server = False
@@ -5657,6 +5746,7 @@ if __name__ == '__main__':
                             window['journalServer'].update(output_text_server[0])
                             count_string = str(output_text_server[1]) + ' из ' + str(output_text_server[2])
                             window['countLogsServer'].update(count_string)
+                            window['rowLimitServer'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                         if event == '-checkAllGroups-':
                             if not values['-users-']:
                                 my_popup('Не выбран пользователь')
