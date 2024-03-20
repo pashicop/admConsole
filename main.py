@@ -117,7 +117,8 @@ DEF2 = '1d053666c10241ec97f4b70a168d5060425476a34416ee20c9d9d7629b083292'
 DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
 DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 DEFSSH = '738344928e9d24022d6c7f66f0a200032a66d4524b649553d4261ed23916cb86'
-role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes')
+role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes role_changer screen_shooter '
+                    'amb_caller amb_callee missing_msg_rv allow_LLA allow_LLA_client mfc fix_device multiple_devices')
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
 # OMEGA THEME
 omega_theme = {'BACKGROUND': '#ffffff',
@@ -233,7 +234,9 @@ def add_users(users_list):
     cur = con.cursor()
     for user in users_list:
         is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, enabled_ind_mes, en_del_chats, \
-            en_partial_drop, priority = 1 if user["userType"] == 15 or user['previousType'] == 15 else 0, \
+            en_partial_drop, role_changer, screen_shooter, amb_caller, amb_callee, missing_msg_rv, allow_LLA, \
+            allow_LLA_client, mfc, fix_device, multiple_devices, priority = (
+            1 if user["userType"] == 15 or user['previousType'] == 15 else 0, \
             1 if user["userType"] == 30 or user['previousType'] == 30 else 0, \
             1 if user["userType"] == -1 else 0, \
             1 if user["userType"] == 1 or user['previousType'] == 1 else 0, \
@@ -242,13 +245,25 @@ def add_users(users_list):
             1 if role.allow_ind_mes.value in user["userRoles"] else 0, \
             1 if role.allow_delete_chats.value in user['userRoles'] else 0, \
             1 if role.allow_partial_drop.value in user['userRoles'] else 0, \
-            user['priority']
+            1 if role.role_changer.value in user['userRoles'] else 0, \
+            1 if role.screen_shooter.value in user['userRoles'] else 0, \
+            1 if role.amb_caller.value in user['userRoles'] else 0, \
+            1 if role.amb_callee.value in user['userRoles'] else 0, \
+            1 if role.missing_msg_rv.value in user['userRoles'] else 0, \
+            1 if role.allow_LLA.value in user['userRoles'] else 0, \
+            1 if role.allow_LLA_client.value in user['userRoles'] else 0, \
+            1 if role.mfc.value in user['userRoles'] else 0, \
+            1 if role.fix_device.value in user['userRoles'] else 0, \
+            1 if role.multiple_devices.value in user['userRoles'] else 0, \
+            user['priority'])
         db_insert_user = """insert or replace into Users(id, login, Display_name, is_dispatcher, is_admin, 
-        is_blocked, is_gw, previous_type, en_ind, en_ind_mes, en_del_chats, en_partial_drop, priority) Values (?, ?, 
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+            is_blocked, is_gw, previous_type, en_ind, en_ind_mes, en_del_chats, en_partial_drop, role_changer, 
+            screen_shooter, amb_caller, amb_callee, missing_msg_rv, allow_LLA, allow_LLA_client, mfc, fix_device, 
+            multiple_devices, priority) Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         user_data = user['id'], user['login'], user['displayName'], \
             is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, enabled_ind_mes, \
-            en_del_chats, en_partial_drop, priority
+            en_del_chats, en_partial_drop, role_changer, screen_shooter, amb_caller, amb_callee, missing_msg_rv, \
+            allow_LLA, allow_LLA_client, mfc, fix_device, multiple_devices, priority
         cur.execute(db_insert_user, user_data)
     con.commit()
     con.close()
@@ -383,7 +398,17 @@ def get_users_from_db() -> list[dict]:
                           'en_ind_mes': user[10],
                           'en_del_chats': user[11],
                           'en_partial_drop': user[12],
-                          'priority': user[13],
+                          'role_changer': user[13],
+                          'screen_shooter': user[14],
+                          'amb_caller': user[15],
+                          'amb_callee': user[16],
+                          'missing_msg_rv': user[17],
+                          'allow_LLA': user[18],
+                          'allow_LLA_client': user[19],
+                          'mfc': user[20],
+                          'fix_device': user[21],
+                          'multiple_devices': user[22],
+                          'priority': user[23],
                           }
         users_for_table.append(user_for_table)
     con.close()
@@ -1418,12 +1443,12 @@ def make_modify_user_window(user: dict):
             [sg.Checkbox('Разрешить индивидуальные вызовы',
                          default=user['en_ind'],
                          enable_events=True,
-                         disabled=True if user['is_admin'] else False,
+                         disabled=True if (user['is_admin'] or user['is_gw']) else False,
                          key='modifyUserIndCallEn'), sg.Push()],
             [sg.Checkbox('Разрешить индивидуальные сообщения',
                          default=user['en_ind_mes'],
                          enable_events=True,
-                         disabled=True if user['is_admin'] else False,
+                         disabled=True if (user['is_admin'] or user['is_gw']) else False,
                          key='modifyUserIndMesEn'), sg.Push()],
             [sg.Checkbox('Разрешить удалять переписку в чатах',
                          default=user['en_del_chats'],
@@ -1434,7 +1459,57 @@ def make_modify_user_window(user: dict):
                          default=user['en_partial_drop'],
                          disabled=False if user['is_dispatcher'] else True,
                          enable_events=True,
-                         key='modifyUserAllowPartialDrop'), sg.Push()]
+                         key='modifyUserAllowPartialDrop'), sg.Push()],
+            [sg.Checkbox('Разрешить менять роли пользователя',
+                         default=user['role_changer'],
+                         disabled=False if user['is_dispatcher'] else True,
+                         enable_events=True,
+                         key='modifyUserRoleChanger'), sg.Push()],
+            [sg.Checkbox('Разрешить скриншоты',
+                         default=user['screen_shooter'],
+                         disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
+                         enable_events=True,
+                         key='modifyUserScreenShooter'), sg.Push()],
+            [sg.Checkbox('Разрешить совершать скрытое прослушивание',
+                         default=user['amb_caller'],
+                         disabled=False if user['is_dispatcher'] else True,
+                         enable_events=True,
+                         key='modifyUserAmbCaller'), sg.Push()],
+            [sg.Checkbox('Разрешить принимать скрытое прослушивание',
+                         default=user['amb_callee'],
+                         disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
+                         enable_events=True,
+                         key='modifyUserAmbCallee'), sg.Push()],
+            [sg.Checkbox('Получать пропущенные сообщения',
+                         default=user['missing_msg_rv'],
+                         disabled=True if (user['is_admin'] or user['is_gw']) else False,
+                         enable_events=True,
+                         key='modifyUserMissingMsgRv'), sg.Push()],
+            [sg.Checkbox('Разрешить долгое скрытое прослушивание',
+                         default=user['allow_LLA'],
+                         disabled=False if user['is_dispatcher'] else True,
+                         enable_events=True,
+                         key='modifyUserAllowLLA'), sg.Push()],
+            [sg.Checkbox('Разрешить принимать долгие скрытые прослушивания',
+                         default=user['allow_LLA_client'],
+                         disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
+                         enable_events=True,
+                         key='modifyUserAllowLLAclient'), sg.Push()],
+            [sg.Checkbox('Разрешить контроль переписки',
+                         default=user['mfc'],
+                         disabled=True if (user['is_admin'] or user['is_gw']) else False,
+                         enable_events=True,
+                         key='modifyUserMfc'), sg.Push()],
+            [sg.Checkbox('Привязать новое устройство',
+                         default=user['fix_device'],
+                         disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
+                         enable_events=True,
+                         key='modifyUserFixDevice'), sg.Push()],
+            [sg.Checkbox('Разрешить любые устройства',
+                         default=user['multiple_devices'],
+                         disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
+                         enable_events=True,
+                         key='modifyUserMultipleDevices'), sg.Push()],
         ],
                   # size=(300, 110),
                   pad=((8, 0), (10, 10)))],

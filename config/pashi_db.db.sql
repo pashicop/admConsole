@@ -21,7 +21,17 @@ CREATE TABLE IF NOT EXISTS "Users" (
 	"en_ind"	INTEGER DEFAULT 1,
 	"en_ind_mes"	INTEGER DEFAULT 1,
 	"en_del_chats" INTEGER DEFAULT 0,
-	"en_partial_drop" INTEGER DEFAULT 0,
+    "en_partial_drop" INTEGER DEFAULT 0,
+	"role_changer" INTEGER DEFAULT 0,
+	"screen_shooter" INTEGER DEFAULT 0,
+	"amb_caller" INTEGER DEFAULT 0,
+	"amb_callee" INTEGER DEFAULT 0,
+	"missing_msg_rv" INTEGER DEFAULT 0,
+	"allow_LLA" INTEGER DEFAULT 0,
+	"allow_LLA_client" INTEGER DEFAULT 0,
+	"mfc" INTEGER DEFAULT 0,
+	"fix_device" INTEGER DEFAULT 0,
+	"multiple_devices" INTEGER DEFAULT 0,
 	"priority" INTEGER DEFAULT 1,
 	PRIMARY KEY("id")
 );
