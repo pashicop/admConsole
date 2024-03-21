@@ -1494,22 +1494,22 @@ def make_modify_user_window(user: dict):
                          default=user['en_ind'],
                          enable_events=True,
                          disabled=True if (user['is_admin'] or user['is_gw']) else False,
-                         key='modifyUserIndCallEn'), sg.Push()],
+                         key='modifyUserRoleIndCallEn'), sg.Push()],
             [sg.Checkbox('Разрешить индивидуальные сообщения',
                          default=user['en_ind_mes'],
                          enable_events=True,
                          disabled=True if (user['is_admin'] or user['is_gw']) else False,
-                         key='modifyUserIndMesEn'), sg.Push()],
+                         key='modifyUserRoleIndMesEn'), sg.Push()],
             [sg.Checkbox('Разрешить удалять переписку в чатах',
                          default=user['en_del_chats'],
                          disabled=False if user['is_dispatcher'] else True,
                          enable_events=True,
-                         key='modifyUserAllowDelChats'), sg.Push()],
+                         key='modifyUserRoleAllowDelChats'), sg.Push()],
             [sg.Checkbox('Разрешить удалять данные БД',
                          default=user['en_partial_drop'],
                          disabled=False if user['is_dispatcher'] else True,
                          enable_events=True,
-                         key='modifyUserAllowPartialDrop'), sg.Push()],
+                         key='modifyUserRoleAllowPartialDrop'), sg.Push()],
             [sg.Checkbox('Разрешить менять роли пользователя',
                          default=user['role_changer'],
                          disabled=False if user['is_dispatcher'] else True,
@@ -1519,50 +1519,51 @@ def make_modify_user_window(user: dict):
                          default=user['screen_shooter'],
                          disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
                          enable_events=True,
-                         key='modifyUserScreenShooter'), sg.Push()],
+                         key='modifyUserRoleScreenShooter'), sg.Push()],
             [sg.Checkbox('Разрешить совершать скрытое прослушивание',
                          default=user['amb_caller'],
                          disabled=False if user['is_dispatcher'] else True,
                          enable_events=True,
-                         key='modifyUserAmbCaller'), sg.Push()],
+                         key='modifyUserRoleAmbCaller'), sg.Push()],
             [sg.Checkbox('Разрешить принимать скрытое прослушивание',
                          default=user['amb_callee'],
                          disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
                          enable_events=True,
-                         key='modifyUserAmbCallee'), sg.Push()],
+                         key='modifyUserRoleAmbCallee'), sg.Push()],
             [sg.Checkbox('Получать пропущенные сообщения',
                          default=user['missing_msg_rv'],
                          disabled=True if (user['is_admin'] or user['is_gw']) else False,
                          enable_events=True,
-                         key='modifyUserMissingMsgRv'), sg.Push()],
+                         key='modifyUserRoleMissingMsgRv'), sg.Push()],
             [sg.Checkbox('Разрешить долгое скрытое прослушивание',
                          default=user['allow_LLA'],
                          disabled=False if user['is_dispatcher'] else True,
                          enable_events=True,
-                         key='modifyUserAllowLLA'), sg.Push()],
+                         key='modifyUserRoleAllowLLA'), sg.Push()],
             [sg.Checkbox('Разрешить принимать долгие скрытые прослушивания',
                          default=user['allow_LLA_client'],
                          disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
                          enable_events=True,
-                         key='modifyUserAllowLLAclient'), sg.Push()],
+                         key='modifyUserRoleAllowLLAclient'), sg.Push()],
             [sg.Checkbox('Разрешить контроль переписки',
                          default=user['mfc'],
                          disabled=True if (user['is_admin'] or user['is_gw']) else False,
                          enable_events=True,
-                         key='modifyUserMfc'), sg.Push()],
+                         key='modifyUserRoleMfc'), sg.Push()],
             [sg.Checkbox('Привязать новое устройство',
                          default=user['fix_device'],
                          disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
                          enable_events=True,
-                         key='modifyUserFixDevice'), sg.Push()],
+                         key='modifyUserRoleFixDevice'), sg.Push()],
             [sg.Checkbox('Разрешить любые устройства',
                          default=user['multiple_devices'],
                          disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
                          enable_events=True,
-                         key='modifyUserMultipleDevices'), sg.Push()],
+                         key='modifyUserRoleMultipleDevices'), sg.Push()],
         ],
                   # size=(300, 110),
-                  pad=((8, 0), (10, 10)))],
+                  pad=((8, 0), (10, 10)),
+                  key='modifyUserRoles')],
         [sg.Text('Приоритет'), sg.Input(key='UserModifyPriority',
                                         default_text=user['priority'],
                                         size=(4, 1),
@@ -2082,6 +2083,86 @@ def change_role(role: Enum, set_flag, us_id):
     return res_modify_user_role
 
 
+def get_role_from_key(key: str):
+    if key == 'modifyUserRoleIndCallEn':
+        return 1
+    elif key == 'modifyUserRoleAllowDelChats':
+        return 2
+    elif key == 'modifyUserRoleAllowPartialDrop':
+        return 3
+    elif key == 'modifyUserRoleIndMesEn':
+        return 4
+    elif key == 'modifyUserRoleChanger':
+        return 5
+    elif key == 'modifyUserRoleScreenShooter':
+        return 6
+    elif key == 'modifyUserRoleAmbCaller':
+        return 7
+    elif key == 'modifyUserRoleAmbCallee':
+        return 8
+    elif key == 'modifyUserRoleMissingMsgRv':
+        return 9
+    elif key == 'modifyUserRoleAllowLLA':
+        return 10
+    elif key == 'modifyUserRoleAllowLLAclient':
+        return 11
+    elif key == 'modifyUserRoleMfc':
+        return 12
+    elif key == 'modifyUserRoleFixDevice':
+        return 13
+    elif key == 'modifyUserRoleMultipleDevices':
+        return 14
+    else:
+        return 0
+
+
+def change_all_roles(us_id, val):
+    print(us_id)
+    print(val)
+    role_change_error = False
+    add_roles = list()
+    remove_roles = list()
+    for par in val:
+        if 'Role' in par:
+            role_number = get_role_from_key(par)
+            if val[par]:
+                add_roles.append(role_number)
+            else:
+                remove_roles.append(role_number)
+    if add_roles:
+        modify_role_add_dict={'userIds': [us_id], 'roles': add_roles}
+        try:
+            res_modify_user_add_role = requests.post(BASE_URL +
+                                                 'addToRole',
+                                                 json=modify_role_add_dict,
+                                                 headers=HEADER_dict)
+        except Exception as e:
+            print(f'Не удалось добавить роль - {e}')
+            logging.error("Не удалось добавить роль")
+    if remove_roles:
+        modify_role_remove_dict={'userIds': [us_id], 'roles': remove_roles}
+        try:
+            res_modify_user_remove_role = requests.post(BASE_URL +
+                                                 'removeFromRole',
+                                                 json=modify_role_remove_dict,
+                                                 headers=HEADER_dict)
+        except Exception as e:
+            print(f'Не удалось удалить роль - {e}')
+            logging.error("Не удалось удалить роль")
+    if res_modify_user_add_role.status_code == 200:
+        global current_db
+        current_db += 1
+    else:
+        role_change_error = True
+    if res_modify_user_remove_role.status_code == 200:
+        # global current_db
+        current_db += 1
+    else:
+        role_change_error = True
+    if role_change_error:
+        my_popup("Ошибка при изменении ролей!")
+
+
 def change_user_type(us_id, user_type):
     user_dict = {'userId': us_id, 'userType': int(user_type)}
     res = False
@@ -2196,7 +2277,7 @@ def validate(window: str):
                                                    text_color=omega_theme['BACKGROUND'])
             return False
     elif window == 'modify_user':
-        print(val_modify_user)
+        # print(val_modify_user)
         if 0 < len(str(val_modify_user['UserModifyName'])) <= MAX_LEN_USERNAME:
             if not validate_input(str(val_modify_user['UserModifyName']), 2):
                 window_modify_user['UserModifyName'].update(background_color=omega_theme['BACKGROUND'],
@@ -3013,20 +3094,38 @@ def set_roles(ev: str):
         print('add')
     else:
         print('modify')
-        window_modify_user['modifyUserIndCallEn'].update(True, disabled=False)
-        window_modify_user['modifyUserIndMesEn'].update(True, disabled=False)
-        window_modify_user['modifyUserAllowDelChats'].update(False, disabled=True)
-        window_modify_user['modifyUserAllowPartialDrop'].update(False, disabled=True)
-        window_modify_user['modifyUserRoleChanger'].update(False, disabled=True)
-        window_modify_user['modifyUserScreenShooter'].update(False, disabled=True)
-        window_modify_user['modifyUserAmbCaller'].update(False, disabled=True)
-        window_modify_user['modifyUserAmbCallee'].update(False, disabled=True)
-        window_modify_user['modifyUserMissingMsgRv'].update(False, disabled=True)
-        window_modify_user['modifyUserAllowLLA'].update(False, disabled=True)
-        window_modify_user['modifyUserAllowLLAclient'].update(False, disabled=True)
-        window_modify_user['modifyUserMfc'].update(False, disabled=True)
-        window_modify_user['modifyUserFixDevice'].update(False, disabled=True)
-        window_modify_user['modifyUserMultipleDevices'].update(False, disabled=True)
+        window_modify_user['modifyUserRoleIndCallEn'].update(user_to_change['en_ind'],
+                                                         disabled=False if ev == 'modifyUserUser' or
+                                                                           ev == 'modifyUserDispatcher' else True)
+        window_modify_user['modifyUserRoleAllowDelChats'].update(user_to_change['en_del_chats'],
+                                                             disabled=False if ev == 'modifyUserDispatcher' else True)
+        window_modify_user['modifyUserRoleAllowPartialDrop'].update(user_to_change['en_partial_drop'],
+                                                                disabled=False if ev == 'modifyUserDispatcher' else True)
+        window_modify_user['modifyUserRoleIndMesEn'].update(user_to_change['en_ind_mes'],
+                                                        disabled=False if ev == 'modifyUserUser' or
+                                                                          ev == 'modifyUserDispatcher' else True)
+        window_modify_user['modifyUserRoleChanger'].update(user_to_change['role_changer'],
+                                                           disabled=False if ev == 'modifyUserDispatcher' else True)
+        window_modify_user['modifyUserRoleScreenShooter'].update(user_to_change['screen_shooter'],
+                                                             disabled=False if ev == 'modifyUserUser' else True)
+        window_modify_user['modifyUserRoleAmbCaller'].update(user_to_change['amb_caller'],
+                                                         disabled=False if ev == 'modifyUserDispatcher' else True)
+        window_modify_user['modifyUserRoleAmbCallee'].update(user_to_change['amb_callee'],
+                                                         disabled=False if ev == 'modifyUserUser' else True)
+        window_modify_user['modifyUserRoleMissingMsgRv'].update(user_to_change['missing_msg_rv'],
+                                                            disabled=False if ev == 'modifyUserUser' or
+                                                                              ev == 'modifyUserDispatcher' else True)
+        window_modify_user['modifyUserRoleAllowLLA'].update(user_to_change['allow_LLA'],
+                                                        disabled=False if ev == 'modifyUserDispatcher' else True)
+        window_modify_user['modifyUserRoleAllowLLAclient'].update(user_to_change['allow_LLA_client'],
+                                                              disabled=False if ev == 'modifyUserUser' else True)
+        window_modify_user['modifyUserRoleMfc'].update(user_to_change['mfc'],
+                                                   disabled=False if ev == 'modifyUserUser' or
+                                                                     ev == 'modifyUserDispatcher' else True)
+        window_modify_user['modifyUserRoleFixDevice'].update(user_to_change['fix_device'],
+                                                         disabled=False if ev == 'modifyUserUser' else True)
+        window_modify_user['modifyUserRoleMultipleDevices'].update(user_to_change['multiple_devices'],
+                                                               disabled=False if ev == 'modifyUserUser' else True)
 
 
 if __name__ == '__main__':
@@ -3413,6 +3512,7 @@ if __name__ == '__main__':
                                 window_modify_user = make_modify_user_window(user_to_change)
                                 window_modify_user.Element('UserModifyName').SetFocus()
                                 password_clear = False
+                                modify_role = False
                                 while True:
                                     ev_modify_user, val_modify_user = window_modify_user.Read()
                                     print(ev_modify_user, val_modify_user)
@@ -3426,25 +3526,21 @@ if __name__ == '__main__':
                                             or ev_modify_user == 'modifyUserGw' \
                                             or ev_modify_user == 'modifyUserAdm':
                                         set_roles(ev_modify_user)
-                                    # if ev_modify_user == 'modifyUserUser':
-                                    #     window_modify_user['modifyUserIndCallEn'].update(True, disabled=False)
-                                    #     window_modify_user['modifyUserIndMesEn'].update(True, disabled=False)
-                                    #     window_modify_user['modifyUserAllowDelChats'].update(False, disabled=True)
-                                    #     window_modify_user['modifyUserAllowPartialDrop'].update(False, disabled=True)
-                                    # if ev_modify_user == 'modifyUserDispatcher':
-                                    #     window_modify_user['modifyUserIndMesEn'].update(True, disabled=False)
-                                    #     window_modify_user['modifyUserAllowDelChats'].update(False, disabled=False)
-                                    #     window_modify_user['modifyUserAllowPartialDrop'].update(False, disabled=False)
-                                    # if ev_modify_user == 'modifyUserGw':
-                                    #     window_modify_user['modifyUserIndCallEn'].update(False, disabled=True)
-                                    #     window_modify_user['modifyUserIndMesEn'].update(False, disabled=True)
-                                    #     window_modify_user['modifyUserAllowDelChats'].update(False, disabled=True)
-                                    #     window_modify_user['modifyUserAllowPartialDrop'].update(False, disabled=True)
-                                    # if ev_modify_user == 'modifyUserAdm':
-                                    #     window_modify_user['modifyUserIndCallEn'].update(False, disabled=True)
-                                    #     window_modify_user['modifyUserIndMesEn'].update(False, disabled=False)
-                                    #     window_modify_user['modifyUserAllowDelChats'].update(False, disabled=False)
-                                    #     window_modify_user['modifyUserAllowPartialDrop'].update(False, disabled=False)
+                                    if (ev_modify_user == 'modifyUserRoleIndCallEn'
+                                            or ev_modify_user == 'modifyUserRoleIndMesEn'
+                                            or ev_modify_user == 'modifyUserRoleAllowDelChats'
+                                            or ev_modify_user == 'modifyUserRoleAllowPartialDrop'
+                                            or ev_modify_user == 'modifyUserRoleChanger'
+                                            or ev_modify_user == 'modifyUserRoleScreenShooter'
+                                            or ev_modify_user == 'modifyUserRoleAmbCaller'
+                                            or ev_modify_user == 'modifyUserRoleAmbCallee'
+                                            or ev_modify_user == 'modifyUserRoleMissingMsgRv'
+                                            or ev_modify_user == 'modifyUserRoleAllowLLA'
+                                            or ev_modify_user == 'modifyUserRoleAllowLLAclient'
+                                            or ev_modify_user == 'modifyUserRoleMfc'
+                                            or ev_modify_user == 'modifyUserRoleFixDevice'
+                                            or ev_modify_user == 'modifyUserRoleMultipleDevices'):
+                                        modify_role = True
                                     if ev_modify_user == 'UserModifyPriority':
                                         if val_modify_user['UserModifyPriority'] == '':
                                             window_modify_user['UserModifyPriority'].update(
@@ -3500,120 +3596,8 @@ if __name__ == '__main__':
                                             if val_modify_user['userModifyPassword']:
                                                 modify_user_dict['password'] = val_modify_user['userModifyPassword']
                                                 modify_password = True
-                                            if val_modify_user['modifyUserIndCallEn'] != user_to_change['en_ind']:
-                                                modify_is_en_ind = True
-                                                res_modify_user_en_ind = change_role(role.allow_ind_call,
-                                                                                     val_modify_user[
-                                                                                         'modifyUserIndCallEn'],
-                                                                                     user_to_change['id'])
-                                                if res_modify_user_en_ind:
-                                                    if res_modify_user_en_ind.status_code == 200:
-                                                        current_db += 1
-                                                        modify_success = True
-                                                        if val_modify_user['modifyUserIndCallEn']:
-                                                            logging.info(
-                                                                f"'Пользователю {val_modify_user['UserModifyLogin']} "
-                                                                f'разрешено совершать индивидуальные вызовы')
-                                                        else:
-                                                            logging.info(
-                                                                f"Пользователю {val_modify_user['UserModifyLogin']} "
-                                                                f'запрещено совершать индивидуальные вызовы')
-                                                    else:
-                                                        my_popup('Ошибка при изменении ролей')
-                                                        if val_modify_user['modifyUserIndCallEn']:
-                                                            logging.error(
-                                                                f'Ошибка при разрешении индивидуальных вызовов - '
-                                                                f'{res_modify_user_en_ind.status_code}')
-                                                        else:
-                                                            logging.error(
-                                                                f'Ошибка при запрещении индивидуальных вызовов - '
-                                                                f'{res_modify_user_en_ind.status_code}')
-                                            if val_modify_user['modifyUserIndMesEn'] != user_to_change['en_ind_mes']:
-                                                modify_is_en_ind_mes = True
-                                                res_modify_user_en_ind_mes = change_role(role.allow_ind_mes,
-                                                                                         val_modify_user[
-                                                                                             'modifyUserIndMesEn'],
-                                                                                         user_to_change['id'])
-                                                if res_modify_user_en_ind_mes:
-                                                    if res_modify_user_en_ind_mes.status_code == 200:
-                                                        current_db += 1
-                                                        modify_success = True
-                                                        if val_modify_user['modifyUserIndMesEn']:
-                                                            logging.info(
-                                                                f"Пользователю {val_modify_user['UserModifyLogin']} "
-                                                                f'разрешено отправлять индивидуальные сообщения')
-                                                        else:
-                                                            logging.info(
-                                                                f"Пользователю {val_modify_user['UserModifyLogin']} "
-                                                                f'запрещено отправлять индивидуальные сообщения')
-                                                    else:
-                                                        my_popup('Ошибка при изменении ролей')
-                                                        if val_modify_user['modifyUserIndMesEn']:
-                                                            logging.error(
-                                                                f'Ошибка при разрешении отправления индивидуальных сообщений - '
-                                                                f'{res_modify_user_en_ind_mes.status_code}')
-                                                        else:
-                                                            logging.error(
-                                                                f'Ошибка при запрещении отправления индивидуальных сообщений - '
-                                                                f'{res_modify_user_en_ind_mes.status_code}')
-                                            if (val_modify_user['modifyUserAllowDelChats'] !=
-                                                    user_to_change['en_del_chats']):
-                                                modify_en_del_chats = True
-                                                res_modify_user_en_del_chats = change_role(role.allow_delete_chats,
-                                                                                           val_modify_user[
-                                                                                               'modifyUserAllowDelChats'],
-                                                                                           user_to_change['id'])
-                                                if res_modify_user_en_del_chats:
-                                                    if res_modify_user_en_del_chats.status_code == 200:
-                                                        current_db += 1
-                                                        modify_success = True
-                                                        if val_modify_user['modifyUserAllowDelChats']:
-                                                            logging.info(f"Пользователю "
-                                                                         f"{val_modify_user['UserModifyLogin']}"
-                                                                         f' разрешено удалять чаты групп')
-                                                        else:
-                                                            logging.info(f"Пользователю "
-                                                                         f"{val_modify_user['UserModifyLogin']}"
-                                                                         f' запрещено удалять чаты групп')
-                                                    else:
-                                                        my_popup('Ошибка при изменении ролей')
-                                                        if val_modify_user['modifyUserAllowDelChats']:
-                                                            logging.error(
-                                                                f'Ошибка при разрешении удаления чатов групп - '
-                                                                f'{res_modify_user_en_del_chats.status_code}')
-                                                        else:
-                                                            logging.error(
-                                                                f'Ошибка при запрещении удаления чатов групп - '
-                                                                f'{res_modify_user_en_del_chats.status_code}')
-                                            if (val_modify_user['modifyUserAllowPartialDrop'] !=
-                                                    user_to_change['en_partial_drop']):
-                                                modify_en_partial_drop = True
-                                                res_modify_user_en_partial_drop = change_role(role.allow_partial_drop,
-                                                                                              val_modify_user[
-                                                                                                  'modifyUserAllowPartialDrop'],
-                                                                                              user_to_change['id'])
-                                                if res_modify_user_en_partial_drop:
-                                                    if res_modify_user_en_partial_drop.status_code == 200:
-                                                        current_db += 1
-                                                        modify_success = True
-                                                        if val_modify_user['modifyUserAllowPartialDrop']:
-                                                            logging.info(f"Пользователю "
-                                                                         f"{val_modify_user['UserModifyLogin']}"
-                                                                         f' разрешено удалять данные БД')
-                                                        else:
-                                                            logging.info(f"Пользователю "
-                                                                         f"{val_modify_user['UserModifyLogin']}"
-                                                                         f' запрещено удалять данные БД')
-                                                    else:
-                                                        my_popup('Ошибка при изменении ролей')
-                                                        if val_modify_user['modifyUserAllowDelChats']:
-                                                            logging.error(
-                                                                f'Ошибка при разрешении удаления данных БД - '
-                                                                f'{res_modify_user_en_partial_drop.status_code}')
-                                                        else:
-                                                            logging.error(
-                                                                f'Ошибка при запрещении удаления данных БД - '
-                                                                f'{res_modify_user_en_partial_drop.status_code}')
+                                            if modify_role:
+                                                res_modify_role = change_all_roles(user_to_change['id'], val_modify_user)
                                             if val_modify_user['modifyUserBlock'] != user_to_change['is_blocked']:
                                                 modify_is_blocked = True
                                                 res_block = block_user(val_modify_user['modifyUserBlock'],
