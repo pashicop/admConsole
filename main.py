@@ -1369,7 +1369,57 @@ def make_add_user_window():
                          default=False,
                          disabled=True,
                          enable_events=True,
-                         key='addUserAllowPartialDrop'), sg.Push()]
+                         key='addUserAllowPartialDrop'), sg.Push()],
+            [sg.Checkbox('Разрешить менять роли пользователя',
+                         default=False,
+                         disabled=True,
+                         enable_events=True,
+                         key='addUserRoleChanger'), sg.Push()],
+            [sg.Checkbox('Разрешить скриншоты',
+                         default=False,
+                         disabled=False,
+                         enable_events=True,
+                         key='addUserScreenShooter'), sg.Push()],
+            [sg.Checkbox('Разрешить совершать скрытое прослушивание',
+                         default=False,
+                         disabled=True,
+                         enable_events=True,
+                         key='addUserAmbCaller'), sg.Push()],
+            [sg.Checkbox('Разрешить принимать скрытое прослушивание',
+                         default=False,
+                         disabled=False,
+                         enable_events=True,
+                         key='addUserAmbCallee'), sg.Push()],
+            [sg.Checkbox('Получать пропущенные сообщения',
+                         default=False,
+                         disabled=False,
+                         enable_events=True,
+                         key='addUserMissingMsgRv'), sg.Push()],
+            [sg.Checkbox('Разрешить долгое скрытое прослушивание',
+                         default=False,
+                         disabled=True,
+                         enable_events=True,
+                         key='addUserAllowLLA'), sg.Push()],
+            [sg.Checkbox('Разрешить принимать долгие скрытые прослушивания',
+                         default=False,
+                         disabled=False,
+                         enable_events=True,
+                         key='addUserAllowLLAclient'), sg.Push()],
+            [sg.Checkbox('Разрешить контроль переписки',
+                         default=False,
+                         disabled=False,
+                         enable_events=True,
+                         key='addUserMfc'), sg.Push()],
+            [sg.Checkbox('Привязать новое устройство',
+                         default=False,
+                         disabled=False,
+                         enable_events=True,
+                         key='addUserFixDevice'), sg.Push()],
+            [sg.Checkbox('Разрешить любые устройства',
+                         default=False,
+                         disabled=False,
+                         enable_events=True,
+                         key='addUserMultipleDevices'), sg.Push()],
         ],
                   # size=(300, 110),
                   pad=((8, 0), (10, 10)))],
@@ -2958,6 +3008,27 @@ def change_config_file(mode):
             print(f'{e}')
 
 
+def set_roles(ev: str):
+    if 'add' in ev:
+        print('add')
+    else:
+        print('modify')
+        window_modify_user['modifyUserIndCallEn'].update(True, disabled=False)
+        window_modify_user['modifyUserIndMesEn'].update(True, disabled=False)
+        window_modify_user['modifyUserAllowDelChats'].update(False, disabled=True)
+        window_modify_user['modifyUserAllowPartialDrop'].update(False, disabled=True)
+        window_modify_user['modifyUserRoleChanger'].update(False, disabled=True)
+        window_modify_user['modifyUserScreenShooter'].update(False, disabled=True)
+        window_modify_user['modifyUserAmbCaller'].update(False, disabled=True)
+        window_modify_user['modifyUserAmbCallee'].update(False, disabled=True)
+        window_modify_user['modifyUserMissingMsgRv'].update(False, disabled=True)
+        window_modify_user['modifyUserAllowLLA'].update(False, disabled=True)
+        window_modify_user['modifyUserAllowLLAclient'].update(False, disabled=True)
+        window_modify_user['modifyUserMfc'].update(False, disabled=True)
+        window_modify_user['modifyUserFixDevice'].update(False, disabled=True)
+        window_modify_user['modifyUserMultipleDevices'].update(False, disabled=True)
+
+
 if __name__ == '__main__':
     if sys.version_info[1] < 9:
         logging.basicConfig(filename='admin.log', filemode='a', format='%(asctime)s %(levelname)s %(message)s',
@@ -3350,18 +3421,30 @@ if __name__ == '__main__':
                                     if ev_modify_user == 'userModifyPassword':
                                         window_modify_user['showModifyPassword'].update(disabled=False)
                                         window_modify_user['showModifyPassword'].update(image_data=ICON_SHOW_BASE_64)
-                                    if ev_modify_user == 'modifyUserDispatcher' or ev_modify_user == 'modifyUserAdm':
-                                        window_modify_user['modifyUserIndMesEn'].update(True, disabled=False)
-                                        window_modify_user['modifyUserAllowDelChats'].update(False, disabled=False)
-                                        window_modify_user['modifyUserAllowPartialDrop'].update(False, disabled=False)
-                                    if ev_modify_user == 'modifyUserGw':
-                                        window_modify_user['modifyUserIndMesEn'].update(False, disabled=True)
-                                        window_modify_user['modifyUserAllowDelChats'].update(False, disabled=True)
-                                        window_modify_user['modifyUserAllowPartialDrop'].update(False, disabled=True)
-                                    if ev_modify_user == 'modifyUserUser':
-                                        window_modify_user['modifyUserIndMesEn'].update(True, disabled=False)
-                                        window_modify_user['modifyUserAllowDelChats'].update(False, disabled=True)
-                                        window_modify_user['modifyUserAllowPartialDrop'].update(False, disabled=True)
+                                    if ev_modify_user == 'modifyUserUser' \
+                                            or ev_modify_user == 'modifyUserDispatcher' \
+                                            or ev_modify_user == 'modifyUserGw' \
+                                            or ev_modify_user == 'modifyUserAdm':
+                                        set_roles(ev_modify_user)
+                                    # if ev_modify_user == 'modifyUserUser':
+                                    #     window_modify_user['modifyUserIndCallEn'].update(True, disabled=False)
+                                    #     window_modify_user['modifyUserIndMesEn'].update(True, disabled=False)
+                                    #     window_modify_user['modifyUserAllowDelChats'].update(False, disabled=True)
+                                    #     window_modify_user['modifyUserAllowPartialDrop'].update(False, disabled=True)
+                                    # if ev_modify_user == 'modifyUserDispatcher':
+                                    #     window_modify_user['modifyUserIndMesEn'].update(True, disabled=False)
+                                    #     window_modify_user['modifyUserAllowDelChats'].update(False, disabled=False)
+                                    #     window_modify_user['modifyUserAllowPartialDrop'].update(False, disabled=False)
+                                    # if ev_modify_user == 'modifyUserGw':
+                                    #     window_modify_user['modifyUserIndCallEn'].update(False, disabled=True)
+                                    #     window_modify_user['modifyUserIndMesEn'].update(False, disabled=True)
+                                    #     window_modify_user['modifyUserAllowDelChats'].update(False, disabled=True)
+                                    #     window_modify_user['modifyUserAllowPartialDrop'].update(False, disabled=True)
+                                    # if ev_modify_user == 'modifyUserAdm':
+                                    #     window_modify_user['modifyUserIndCallEn'].update(False, disabled=True)
+                                    #     window_modify_user['modifyUserIndMesEn'].update(False, disabled=False)
+                                    #     window_modify_user['modifyUserAllowDelChats'].update(False, disabled=False)
+                                    #     window_modify_user['modifyUserAllowPartialDrop'].update(False, disabled=False)
                                     if ev_modify_user == 'UserModifyPriority':
                                         if val_modify_user['UserModifyPriority'] == '':
                                             window_modify_user['UserModifyPriority'].update(
