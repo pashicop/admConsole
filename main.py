@@ -124,15 +124,15 @@ role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
 # OMEGA THEME
 omega_theme = {'BACKGROUND': '#ffffff',
-                   'TEXT': '#000000',
-                   'INPUT': '#f2f2f2',
-                   'TEXT_INPUT': '#000000',
-                   'SCROLL': '#bfbfbf',
-                   'BUTTON': ('white', '#35536b'),
-                   'PROGRESS': ('#699349', '#D0D0D0'),
-                   'BORDER': 1,
-                   'SLIDER_DEPTH': 0,
-                   'PROGRESS_DEPTH': 0}
+               'TEXT': '#000000',
+               'INPUT': '#f2f2f2',
+               'TEXT_INPUT': '#000000',
+               'SCROLL': '#bfbfbf',
+               'BUTTON': ('white', '#35536b'),
+               'PROGRESS': ('#699349', '#D0D0D0'),
+               'BORDER': 1,
+               'SLIDER_DEPTH': 0,
+               'PROGRESS_DEPTH': 0}
 button_color = omega_theme['BUTTON'][1]
 button_color_2 = '#a6674c'
 status_bar_color = '#699349'
@@ -288,25 +288,25 @@ def add_users(users_list):
         is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, enabled_ind_mes, en_del_chats, \
             en_partial_drop, role_changer, screen_shooter, amb_caller, amb_callee, missing_msg_rv, allow_LLA, \
             allow_LLA_client, mfc, fix_device, multiple_devices, priority = (
-            1 if user["userType"] == 15 or user['previousType'] == 15 else 0, \
-            1 if user["userType"] == 30 or user['previousType'] == 30 else 0, \
-            1 if user["userType"] == -1 else 0, \
-            1 if user["userType"] == 1 or user['previousType'] == 1 else 0, \
-            user['previousType'], \
-            1 if role.allow_ind_call.value in user["userRoles"] else 0, \
-            1 if role.allow_ind_mes.value in user["userRoles"] else 0, \
-            1 if role.allow_delete_chats.value in user['userRoles'] else 0, \
-            1 if role.allow_partial_drop.value in user['userRoles'] else 0, \
-            1 if role.role_changer.value in user['userRoles'] else 0, \
-            1 if role.screen_shooter.value in user['userRoles'] else 0, \
-            1 if role.amb_caller.value in user['userRoles'] else 0, \
-            1 if role.amb_callee.value in user['userRoles'] else 0, \
-            1 if role.missing_msg_rv.value in user['userRoles'] else 0, \
-            1 if role.allow_LLA.value in user['userRoles'] else 0, \
-            1 if role.allow_LLA_client.value in user['userRoles'] else 0, \
-            1 if role.mfc.value in user['userRoles'] else 0, \
-            1 if role.fix_device.value in user['userRoles'] else 0, \
-            1 if role.multiple_devices.value in user['userRoles'] else 0, \
+            1 if user["userType"] == 15 or user['previousType'] == 15 else 0,
+            1 if user["userType"] == 30 or user['previousType'] == 30 else 0,
+            1 if user["userType"] == -1 else 0,
+            1 if user["userType"] == 1 or user['previousType'] == 1 else 0,
+            user['previousType'],
+            1 if role.allow_ind_call.value in user["userRoles"] else 0,
+            1 if role.allow_ind_mes.value in user["userRoles"] else 0,
+            1 if role.allow_delete_chats.value in user['userRoles'] else 0,
+            1 if role.allow_partial_drop.value in user['userRoles'] else 0,
+            1 if role.role_changer.value in user['userRoles'] else 0,
+            1 if role.screen_shooter.value in user['userRoles'] else 0,
+            1 if role.amb_caller.value in user['userRoles'] else 0,
+            1 if role.amb_callee.value in user['userRoles'] else 0,
+            1 if role.missing_msg_rv.value in user['userRoles'] else 0,
+            1 if role.allow_LLA.value in user['userRoles'] else 0,
+            1 if role.allow_LLA_client.value in user['userRoles'] else 0,
+            1 if role.mfc.value in user['userRoles'] else 0,
+            1 if role.fix_device.value in user['userRoles'] else 0,
+            1 if role.multiple_devices.value in user['userRoles'] else 0,
             user['priority'])
         db_insert_user = """insert or replace into Users(id, login, Display_name, is_dispatcher, is_admin, 
             is_blocked, is_gw, previous_type, en_ind, en_ind_mes, en_del_chats, en_partial_drop, role_changer, 
@@ -959,7 +959,7 @@ def make_main_window(ip):
          ],
     ]
     layout = [[sg.Menu([
-        ['Сервер', ['Установить лицензию...', '!Настройки', 'Очистка БД', ['Частично', 'Полностью']]],
+        ['Сервер', ['Установить лицензию...', '!Настройки', 'Обновления', 'Очистка БД', ['Частично', 'Полностью']]],
         ['Помощь', 'О программе'], ], key='-Menu-', )],
         [sg.Frame('Сервер', [[sg.Column([[sg.Push(),
                                           sg.Button('Старт', key='-Start-',
@@ -1301,7 +1301,7 @@ def make_settings():
                                                enable_events=True,
                                                pad=(10, (5, 2)),
                                                key='ambientListening')],
-                                   [sg.Checkbox('Авторизация устройств',
+                                  [sg.Checkbox('Авторизация устройств',
                                                default=True if settings['deviceAuthorization'] else False,
                                                enable_events=True,
                                                pad=(10, 2),
@@ -1348,11 +1348,12 @@ def make_settings():
                              ])
             ],
             [[sg.Push()],
-            [sg.ProgressBar(max_value=10, orientation='horizontal', key='-Progress-Bar-',
-                            size_px=(400, 10),
-                            pad=((30, 30), (30, 10))
-                            )],
-            [sg.Push(), sg.Button('OK', disabled=True, key='-OK-set-'), sg.Button('Выйти', key='-Exit-set-'), sg.Push()]]
+             [sg.ProgressBar(max_value=10, orientation='horizontal', key='-Progress-Bar-',
+                             size_px=(400, 10),
+                             pad=((30, 30), (30, 10))
+                             )],
+             [sg.Push(), sg.Button('OK', disabled=True, key='-OK-set-'), sg.Button('Выйти', key='-Exit-set-'),
+              sg.Push()]]
         ]
     else:
         layout_settings = [
@@ -1379,6 +1380,75 @@ def make_get_id(srv_id):
     layout_get_id = [[sg.InputText(srv_id, key='-id-'), sg.Button('Скопировать', key='-Скопировать-')],
                      [sg.Push(), sg.Button('OK'), sg.Push()]]
     return sg.Window('id сервера', layout_get_id, icon=ICON_BASE_64, background_color='white', modal=True,
+                     finalize=True)
+
+
+def make_updates_window():
+    update_list = [['2.0.9.2.9.1', 'Основная']]
+    server_ver = get_version()
+    layout = [
+        [sg.Text('Версия сервера: ' + server_ver)],
+        [sg.Frame('Обновления мобильного приложения',
+                  [
+                      [sg.Push(),
+                       sg.Text('Файл обновления',
+                               pad=(0, (10,5))),
+                       sg.Input(default_text='Выберите файл .apk -->',
+                                disabled=True,
+                                text_color='gray',
+                                enable_events=True,
+                                # expand_x=True,
+                                pad=(10, (10, 5)),
+                                size=30,
+                                key='-FILENAME-UPDATE-'),
+                       sg.FileBrowse('Выбрать',
+                                     target='-FILENAME-UPDATE-',
+                                     disabled=False,
+                                     initial_folder='../',
+                                     pad=((0, 10), (10, 5)),
+                                     size=10,
+                                     enable_events=True,
+                                     key='-choose-apk-',
+                                     file_types=(("Файл обновления", "*.apk"),))],
+                      [sg.Push(),
+                       sg.Text('Версия приложения'),
+                       sg.Input('',
+                                size=30,
+                                key='-ver-',
+                                pad=((0, 120), 5))],
+                      [sg.Push(),
+                       sg.Text('Описание'),
+
+                       sg.Multiline(size=(28, 5),
+                                    pad=((5, 10), 10)),
+                       sg.Button('Загрузить',
+                                 key='-upload-apk-',
+                                 size=10,
+                                 disabled=True,
+                                 pad=((0, 10), (10, 5)),)
+                       ],
+                      [sg.Table(update_list,
+                                headings=['Версия', 'Описание'],
+                                justification="left",
+                                key='-updates-',
+                                expand_x=True,
+                                enable_click_events=True,
+                                enable_events=True,
+                                auto_size_columns=False,
+                                select_mode=sg.TABLE_SELECT_MODE_BROWSE,
+                                selected_row_colors='black on lightblue',
+                                metadata=[],
+                                pad=(10, 5),
+                                col_widths=[20, 40],
+
+                                )
+                       ]
+                  ])
+         ]]
+    return sg.Window('Обновление приложения', layout=layout,
+                     icon=ICON_BASE_64,
+                     background_color='white',
+                     modal=True,
                      finalize=True)
 
 
@@ -1619,17 +1689,18 @@ def make_modify_user_window(user: dict):
                   key='modifyUserRoles',
                   expand_x=True)],
         [sg.Frame('Привязка к устройству',
-                 [[sg.Checkbox('Разрешить любые устройства',
-                         default=user['multiple_devices'],
-                         disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
-                         enable_events=True,
-                         key='modifyUserRoleMultipleDevices'), sg.Push()],
-                  [sg.Push(), sg.Button(button_text='Привязать новое устройство',
-                                        key='modifyUserFixNewDevice',
-                                        disabled=False,
-                                        disabled_button_color='gray'
-                                        )
-                   ]],
+                  [[sg.Checkbox('Разрешить любые устройства',
+                                default=user['multiple_devices'],
+                                disabled=True if (
+                                            user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
+                                enable_events=True,
+                                key='modifyUserRoleMultipleDevices'), sg.Push()],
+                   [sg.Push(), sg.Button(button_text='Привязать новое устройство',
+                                         key='modifyUserFixNewDevice',
+                                         disabled=False,
+                                         disabled_button_color='gray'
+                                         )
+                    ]],
                   pad=((8, 0), (10, 10)),
                   key='modifyUserDeviceAutorization',
                   expand_x=True),
@@ -1801,7 +1872,7 @@ def set_window_running_server():
                                                              server_status["isReserved"] else status_bar_color))
     window['-StatusBar2-'].update(bar_text2)
     window['-Menu-'].update([
-        ['Сервер', ['Установить лицензию...', 'Настройки', 'Очистка БД', ['Частично', 'Полностью']]],
+        ['Сервер', ['Установить лицензию...', 'Настройки', 'Обновления', 'Очистка БД', ['Частично', 'Полностью']]],
         ['Помощь', 'О программе'], ])
     update_free_space(server_status)
     window['online-users'].update(get_online_users(server_status['onlineUserIds']))
@@ -1951,6 +2022,54 @@ def get_settings(url):
         else:
             print(f'Некорректный ответ {res.status_code} от сервера {url}')
     return res_dict
+
+
+def get_version():
+    res = ''
+    result = 'Неизвестно'
+    try:
+        res = requests.get(BASE_URL + 'version', timeout=3, headers=HEADER_dict)
+    except Exception as e:
+        print(f"Ошибка подключения. {e}")
+    if res == '':
+        print('Сервер не отвечает')
+        logging.info(f'Сервер НЕ доступен при запуске приложения')
+    else:
+        if res.status_code == 200:
+            result = json.loads(res.text)
+        else:
+            print(f'Некорректный ответ {res.status_code} от сервера')
+            logging.error(f'Некорректный ответ {res.status_code} от сервера')
+            result = 'Неизвестно'
+    return result
+
+
+def get_app_version_from_filename(filename: str):
+    version = ''
+    filename = filename.rstrip('.apk')
+    for word in filename[::-1]:
+        if word.isdigit() or word == '.':
+            version += word
+        elif word == '\\' or word == '/':
+            break
+    if version:
+        version = version[::-1].strip('.')
+    return version
+
+
+def upload_app(app_path: str):
+    res = False
+    with open(app_path, "rb") as file:
+        files = {'file': file, 'type': (None, '0')}
+        try:
+            res = requests.post(BASE_URL_UPDATE +
+                                'upload',
+                                files=files,
+                                headers=HEADER_dict)
+        except Exception as e:
+            print(f'Не удалось загрузить приложение - {e}')
+            logging.error("Не удалось загрузить приложение")
+    return res
 
 
 def filter_journal(journal: list):
@@ -3155,37 +3274,37 @@ def set_roles(ev: str):
     else:
         print('modify')
         window_modify_user['modifyUserRoleIndCallEn'].update(user_to_change['en_ind'],
-                                                         disabled=False if ev == 'modifyUserUser' or
-                                                                           ev == 'modifyUserDispatcher' else True)
+                                                             disabled=False if ev == 'modifyUserUser' or
+                                                                               ev == 'modifyUserDispatcher' else True)
         window_modify_user['modifyUserRoleAllowDelChats'].update(user_to_change['en_del_chats'],
-                                                             disabled=False if ev == 'modifyUserDispatcher' else True)
+                                                                 disabled=False if ev == 'modifyUserDispatcher' else True)
         window_modify_user['modifyUserRoleAllowPartialDrop'].update(user_to_change['en_partial_drop'],
-                                                                disabled=False if ev == 'modifyUserDispatcher' else True)
+                                                                    disabled=False if ev == 'modifyUserDispatcher' else True)
         window_modify_user['modifyUserRoleIndMesEn'].update(user_to_change['en_ind_mes'],
-                                                        disabled=False if ev == 'modifyUserUser' or
-                                                                          ev == 'modifyUserDispatcher' else True)
+                                                            disabled=False if ev == 'modifyUserUser' or
+                                                                              ev == 'modifyUserDispatcher' else True)
         window_modify_user['modifyUserRoleChanger'].update(user_to_change['role_changer'],
                                                            disabled=False if ev == 'modifyUserDispatcher' else True)
         window_modify_user['modifyUserRoleScreenShooter'].update(user_to_change['screen_shooter'],
-                                                             disabled=False if ev == 'modifyUserUser' else True)
+                                                                 disabled=False if ev == 'modifyUserUser' else True)
         window_modify_user['modifyUserRoleAmbCaller'].update(user_to_change['amb_caller'],
-                                                         disabled=False if ev == 'modifyUserDispatcher' else True)
+                                                             disabled=False if ev == 'modifyUserDispatcher' else True)
         window_modify_user['modifyUserRoleAmbCallee'].update(user_to_change['amb_callee'],
-                                                         disabled=False if ev == 'modifyUserUser' else True)
+                                                             disabled=False if ev == 'modifyUserUser' else True)
         window_modify_user['modifyUserRoleMissingMsgRv'].update(user_to_change['missing_msg_rv'],
-                                                            disabled=False if ev == 'modifyUserUser' or
-                                                                              ev == 'modifyUserDispatcher' else True)
+                                                                disabled=False if ev == 'modifyUserUser' or
+                                                                                  ev == 'modifyUserDispatcher' else True)
         window_modify_user['modifyUserRoleAllowLLA'].update(user_to_change['allow_LLA'],
-                                                        disabled=False if ev == 'modifyUserDispatcher' else True)
+                                                            disabled=False if ev == 'modifyUserDispatcher' else True)
         window_modify_user['modifyUserRoleAllowLLAclient'].update(user_to_change['allow_LLA_client'],
-                                                              disabled=False if ev == 'modifyUserUser' else True)
+                                                                  disabled=False if ev == 'modifyUserUser' else True)
         window_modify_user['modifyUserRoleMfc'].update(user_to_change['mfc'],
-                                                   disabled=False if ev == 'modifyUserUser' or
-                                                                     ev == 'modifyUserDispatcher' else True)
+                                                       disabled=False if ev == 'modifyUserUser' or
+                                                                         ev == 'modifyUserDispatcher' else True)
         window_modify_user['modifyUserRoleFixDevice'].update(user_to_change['fix_device'],
-                                                         disabled=False if ev == 'modifyUserUser' else True)
+                                                             disabled=False if ev == 'modifyUserUser' else True)
         window_modify_user['modifyUserRoleMultipleDevices'].update(user_to_change['multiple_devices'],
-                                                               disabled=False if ev == 'modifyUserUser' else True)
+                                                                   disabled=False if ev == 'modifyUserUser' else True)
 
 
 if __name__ == '__main__':
@@ -3313,13 +3432,14 @@ if __name__ == '__main__':
                         break
                     https_on = True if val_login['https_on'] else False
                     if https_on:
-                        BASE_URL = BASE_URL_PING = BASE_URL_AUTH = BASE_URL_SETTINGS = 'https://'  # TODO
+                        BASE_URL_PROTO = 'https://'  # TODO
                     else:
-                        BASE_URL = BASE_URL_PING = BASE_URL_AUTH = BASE_URL_SETTINGS = 'http://'
-                    BASE_URL += ip + ':' + str(port) + '/api/admin/'
-                    BASE_URL_PING += ip + ':' + str(port) + '/api/ping'
-                    BASE_URL_AUTH += ip + ':' + str(port) + '/api/auth'
-                    BASE_URL_SETTINGS += ip + ':' + str(port) + '/api/admin/settings'
+                        BASE_URL_PROTO = 'http://'
+                    BASE_URL = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/'
+                    BASE_URL_PING = BASE_URL_PROTO + ip + ':' + str(port) + '/api/ping'
+                    BASE_URL_AUTH = BASE_URL_PROTO + ip + ':' + str(port) + '/api/auth'
+                    BASE_URL_SETTINGS = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/settings'
+                    BASE_URL_UPDATE = BASE_URL_PROTO + ip + ':' + str(port) + '/api/update/'
                     server_status = check_server(BASE_URL_PING)
                     current_db = server_status['db']
                     if server_status['run']:
@@ -3399,8 +3519,9 @@ if __name__ == '__main__':
                                             HEADER_dict = {'Authorization': "Bearer " + TOKEN}
                                             update_users_and_groups()
                                             window['-Menu-'].update([
-                                                ['Сервер', ['Установить лицензию...', 'Настройки', 'Очистка БД',
-                                                            ['Частично', 'Полностью']]],
+                                                ['Сервер',
+                                                 ['Установить лицензию...', 'Настройки', 'Обновления', 'Очистка БД',
+                                                  ['Частично', 'Полностью']]],
                                                 ['Помощь', 'О программе'], ])
                                     if current_db < dict_online['databaseVersion']:  # TODO
                                         update_users_and_groups()
@@ -3435,8 +3556,9 @@ if __name__ == '__main__':
                                     if server_status['run']:
                                         server_status['run'] = False
                                         window['-Menu-'].update([
-                                            ['Сервер', ['Установить лицензию...', '!Настройки', 'Очистка БД',
-                                                        ['Частично', 'Полностью']]],
+                                            ['Сервер',
+                                             ['Установить лицензию...', '!Настройки', 'Обновления', 'Очистка БД',
+                                              ['Частично', 'Полностью']]],
                                             ['Помощь', 'О программе'], ])
                                 # noinspection PyUnboundLocalVariable
                                 if change_state:  # TODO
@@ -4363,7 +4485,7 @@ if __name__ == '__main__':
                                                     print(f'{res_ping.text}')
                                                     dict_online_after_start = json.loads(res_ping.text)
                                                     update_text = (('Онлайн: обновление...' + ', БД: '
-                                                                   + str(dict_online_after_start["databaseVersion"]))
+                                                                    + str(dict_online_after_start["databaseVersion"]))
                                                                    + (', Резервный' if
                                                                       dict_online_after_start["isReserved"] else
                                                                       ', Основной'))
@@ -4386,7 +4508,8 @@ if __name__ == '__main__':
                                                         update_users_and_groups()
                                                         window['-Menu-'].update([
                                                             ['Сервер',
-                                                             ['Установить лицензию...', 'Настройки', 'Очистка БД',
+                                                             ['Установить лицензию...', 'Настройки', 'Обновления',
+                                                              'Очистка БД',
                                                               ['Частично', 'Полностью']]],
                                                             ['Помощь', 'О программе'], ])
                                                         update_text = ('Онлайн: ' + str(server_status["online"])
@@ -4660,7 +4783,8 @@ if __name__ == '__main__':
                                         or ev_set == 'mfc':
                                     if ev_set == 'longAmbientListening':
                                         window_settings['longAmbientCallDuration'].update(disabled=(False if
-                                                                                                    val_set['longAmbientListening'] else True))
+                                                                                                    val_set[
+                                                                                                        'longAmbientListening'] else True))
                                     if ev_set == 'longAmbientCallDuration':
                                         if val_set['longAmbientCallDuration'].isdigit():
                                             window_settings['longAmbientCallDuration'].update(
@@ -4670,9 +4794,11 @@ if __name__ == '__main__':
                                                     background_color=omega_theme['INPUT'],
                                                     text_color=omega_theme['TEXT'])
                                             else:
-                                                window_settings['longAmbientCallDuration'].update(background_color=button_color_2)
+                                                window_settings['longAmbientCallDuration'].update(
+                                                    background_color=button_color_2)
                                         else:
-                                            window_settings['longAmbientCallDuration'].update(background_color=button_color_2)
+                                            window_settings['longAmbientCallDuration'].update(
+                                                background_color=button_color_2)
                                     print(f'change_settings_by_post - {change_settings_by_post}')
                                     change_settings_by_post = True
                                     print(f'change_settings_by_post - {change_settings_by_post}')
@@ -4785,6 +4911,22 @@ if __name__ == '__main__':
                                         continue
                             window_settings.close()
                             additional_window = False
+                        if event == 'Обновления':
+                            additional_window = True
+                            window_updates = make_updates_window()
+                            while True:
+                                ev_upd, val_upd = window_updates.Read()
+                                if ev_upd == sg.WIN_CLOSED or ev_upd == 'Exit':
+                                    break
+                                if ev_upd == '-choose-apk-':
+                                    pass
+                                if ev_upd == '-FILENAME-UPDATE-':
+                                    version_app = get_app_version_from_filename(val_upd['-FILENAME-UPDATE-'])
+                                    window_updates['-ver-'].update(version_app if version_app else '?')
+                                    window_updates['-upload-apk-'].update(disabled=False, button_color=button_color_2)
+                                if ev_upd == '-upload-apk-':
+                                    res_upload = upload_app(val_upd['-FILENAME-UPDATE-'])
+                            additional_window = False
                         if event == '-AddUser-':
                             """
                             Новая модель с userType
@@ -4859,7 +5001,7 @@ if __name__ == '__main__':
                                                          'password': val_add_user['UserPassword'],
                                                          'userType': new_user_type,
                                                          'priority': val_add_user['UserPriority']
-                                                             if val_add_user['UserPriority'] else 1}
+                                                         if val_add_user['UserPriority'] else 1}
                                         try:
                                             res_add_user = requests.post(BASE_URL + 'addUser',
                                                                          json=add_user_dict, headers=HEADER_dict)
@@ -5774,8 +5916,9 @@ if __name__ == '__main__':
                                                 print(server_status)
                                                 update_users_and_groups()
                                                 window['-Menu-'].update([
-                                                    ['Сервер', ['Установить лицензию...', 'Настройки', 'Очистка БД',
-                                                                ['Частично', 'Полностью']]],
+                                                    ['Сервер',
+                                                     ['Установить лицензию...', 'Настройки', 'Обновления', 'Очистка БД',
+                                                      ['Частично', 'Полностью']]],
                                                     ['Помощь', 'О программе'], ])
                                                 update_text = ('Онлайн: ' + str(server_status["online"]) + ', БД: '
                                                                + str(server_status["db"]) +
@@ -5888,7 +6031,7 @@ if __name__ == '__main__':
                                     window['Apply2'].update(disabled=True)
                                     window['-Menu-'].update([
                                         ['Сервер',
-                                         ['Установить лицензию...', '!Настройки', 'Очистка БД',
+                                         ['Установить лицензию...', '!Настройки', 'Обновления', 'Очистка БД',
                                           ['Частично', 'Полностью']]],
                                         ['Помощь', 'О программе'], ])
                                     server_status['run'] = False
