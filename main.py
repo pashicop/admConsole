@@ -23,6 +23,8 @@ from enum import Enum
 import re
 from datetime import date, datetime
 
+PATH_CONFIG = Path(Path.cwd(), 'config')
+PATH_LOG = Path(Path.cwd(), 'logs')
 DEFAULT_BASE64_LOADING_GIF = b'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'
 ICON_BASE_64 = b'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'
 ICON_BLANK_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZSURBVDhPY/hPIhjVQAwY1UAMGHQa/v8HAK+t/R8kTA7nAAAAAElFTkSuQmCC'
@@ -138,6 +140,7 @@ disabled_input = 'dark gray'
 sg.theme_add_new('OmegaTheme', omega_theme)
 sg.theme('OmegaTheme')
 # OMEGA THEME end
+current_db = 0
 version = '2.0.1'
 
 
@@ -196,8 +199,57 @@ def create_db():
         print('Файл БД создан')
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
-    with open(Path(Path.cwd(), 'config', 'pashi_db.db.sql'), 'r') as c_sql:
-        sql_to_create = c_sql.read()
+    # with open(Path(Path.cwd(), 'config', 'pashi_db.db.sql'), 'r') as c_sql:
+    #     sql_to_create = c_sql.read()
+    sql_to_create = """BEGIN TRANSACTION;
+                        CREATE TABLE IF NOT EXISTS "Users_in_Groups" (
+                            "id"	INTEGER NOT NULL UNIQUE,
+                            "user_id"	INTEGER NOT NULL,
+                            "group_id"	INTEGER NOT NULL,
+                            "is_boss"	INTEGER DEFAULT 0,
+                            PRIMARY KEY("id" AUTOINCREMENT),
+                            FOREIGN KEY("group_id") REFERENCES "Groups"("id"),
+                            FOREIGN KEY("user_id") REFERENCES "Users"("id")
+                        );
+                        CREATE TABLE IF NOT EXISTS "Users" (
+                            "id"	TEXT NOT NULL UNIQUE,
+                            "Login"	TEXT NOT NULL UNIQUE,
+                            "Password"	TEXT NOT NULL DEFAULT '********',
+                            "Display_name"	TEXT NOT NULL,
+                            "is_dispatcher"	INTEGER DEFAULT 0,
+                            "is_admin"	INTEGER DEFAULT 0,
+                            "is_blocked"	INTEGER DEFAULT 0,
+                            "is_gw"	INTEGER DEFAULT 0,
+                            "previous_type"	INTEGER DEFAULT 0,
+                            "en_ind"	INTEGER DEFAULT 1,
+                            "en_ind_mes"	INTEGER DEFAULT 1,
+                            "en_del_chats" INTEGER DEFAULT 0,
+                            "en_partial_drop" INTEGER DEFAULT 0,
+                            "role_changer" INTEGER DEFAULT 0,
+                            "screen_shooter" INTEGER DEFAULT 0,
+                            "amb_caller" INTEGER DEFAULT 0,
+                            "amb_callee" INTEGER DEFAULT 0,
+                            "missing_msg_rv" INTEGER DEFAULT 0,
+                            "allow_LLA" INTEGER DEFAULT 0,
+                            "allow_LLA_client" INTEGER DEFAULT 0,
+                            "mfc" INTEGER DEFAULT 0,
+                            "fix_device" INTEGER DEFAULT 0,
+                            "multiple_devices" INTEGER DEFAULT 0,
+                            "priority" INTEGER DEFAULT 1,
+                            PRIMARY KEY("id")
+                        );
+                        CREATE TABLE IF NOT EXISTS "Groups" (
+                            "id"	TEXT NOT NULL UNIQUE,
+                            "Name"	TEXT NOT NULL UNIQUE,
+                            "description"	TEXT DEFAULT NULL,
+                            "priority"	INTEGER DEFAULT 0,
+                            "is_broadcast"	INTEGER DEFAULT 0,
+                            "is_emergency"	INTEGER DEFAULT 0,
+                            "is_disabled"	INTEGER DEFAULT 0,
+                            PRIMARY KEY("id")
+                        );
+                        COMMIT;
+                    """
     cur.executescript(sql_to_create)
     con.commit()
     con.close()
@@ -989,10 +1041,14 @@ def make_login_window():
         print(f'Не могу получить локальный ip, {e}')
         ip = ''
     print(ip)
+    if not os.path.exists(PATH_CONFIG):
+        os.mkdir(PATH_CONFIG)
+    if not os.path.exists(PATH_LOG):
+        os.mkdir(PATH_LOG)
     # global active_config
     config_app = {"ip": "", "login": "", "ssh_login": "", "ssh_port": ""}
     if os.path.isfile(Path(Path.cwd(), 'config', 'app.json')):
-        print(os.stat(Path(Path.cwd(), 'config', 'app.json')).st_size)
+        # print(os.stat(Path(Path.cwd(), 'config', 'app.json')).st_size)
         try:
             with open(Path(Path.cwd(), 'config', 'app.json'), 'r') as f_app_config:
                 config_app = json.load(f_app_config)
@@ -1547,23 +1603,37 @@ def make_modify_user_window(user: dict):
                          key='modifyUserRoleAllowLLAclient'), sg.Push()],
             [sg.Checkbox('Разрешить контроль переписки',
                          default=user['mfc'],
+                         # default=False,
                          disabled=True if (user['is_admin'] or user['is_gw']) else False,
+                         # disabled=True,
                          enable_events=True,
                          key='modifyUserRoleMfc'), sg.Push()],
-            [sg.Checkbox('Привязать новое устройство',
-                         default=user['fix_device'],
-                         disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
-                         enable_events=True,
-                         key='modifyUserRoleFixDevice'), sg.Push()],
-            [sg.Checkbox('Разрешить любые устройства',
+            # [sg.Checkbox('Привязать новое устройство',
+            #              default=user['fix_device'],
+            #              disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
+            #              enable_events=True,
+            #              key='modifyUserRoleFixDevice'), sg.Push()],
+        ],
+                  # size=(300, 110),
+                  pad=((8, 0), (10, 10)),
+                  key='modifyUserRoles',
+                  expand_x=True)],
+        [sg.Frame('Привязка к устройству',
+                 [[sg.Checkbox('Разрешить любые устройства',
                          default=user['multiple_devices'],
                          disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
                          enable_events=True,
                          key='modifyUserRoleMultipleDevices'), sg.Push()],
-        ],
-                  # size=(300, 110),
+                  [sg.Push(), sg.Button(button_text='Привязать новое устройство',
+                                        key='modifyUserFixNewDevice',
+                                        disabled=False,
+                                        disabled_button_color='gray'
+                                        )
+                   ]],
                   pad=((8, 0), (10, 10)),
-                  key='modifyUserRoles')],
+                  key='modifyUserDeviceAutorization',
+                  expand_x=True),
+         ],
         [sg.Text('Приоритет'), sg.Input(key='UserModifyPriority',
                                         default_text=user['priority'],
                                         size=(4, 1),
@@ -1577,7 +1647,8 @@ def make_modify_user_window(user: dict):
                                 enable_events=True,
                                 key='modifyUserBlock')],
         # [sg.Text('Таймаут (сек)', size=(13)), sg.Input(size=(10), enable_events=True, key='userTimeout')],
-        [sg.Push(), sg.Button(button_text='Изменить', key='modifyUserButton',
+        [sg.Push(), sg.Button(button_text='Изменить',
+                              key='modifyUserButton',
                               disabled=True,
                               disabled_button_color='gray')]
     ]
@@ -2119,48 +2190,37 @@ def get_role_from_key(key: str):
 def change_all_roles(us_id, val):
     print(us_id)
     print(val)
-    role_change_error = False
     add_roles = list()
-    remove_roles = list()
-    for par in val:
-        if 'Role' in par:
-            role_number = get_role_from_key(par)
-            if val[par]:
-                add_roles.append(role_number)
-            else:
-                remove_roles.append(role_number)
-    if add_roles:
-        modify_role_add_dict={'userIds': [us_id], 'roles': add_roles}
-        try:
-            res_modify_user_add_role = requests.post(BASE_URL +
-                                                 'addToRole',
-                                                 json=modify_role_add_dict,
-                                                 headers=HEADER_dict)
-        except Exception as e:
-            print(f'Не удалось добавить роль - {e}')
-            logging.error("Не удалось добавить роль")
-    if remove_roles:
-        modify_role_remove_dict={'userIds': [us_id], 'roles': remove_roles}
-        try:
-            res_modify_user_remove_role = requests.post(BASE_URL +
-                                                 'removeFromRole',
-                                                 json=modify_role_remove_dict,
-                                                 headers=HEADER_dict)
-        except Exception as e:
-            print(f'Не удалось удалить роль - {e}')
-            logging.error("Не удалось удалить роль")
-    if res_modify_user_add_role.status_code == 200:
-        global current_db
-        current_db += 1
+    role_change_error = False
+    if val == 'FixDevice':
+        add_roles.append(13)
     else:
-        role_change_error = True
-    if res_modify_user_remove_role.status_code == 200:
-        # global current_db
-        current_db += 1
-    else:
-        role_change_error = True
+        for par in val:
+            if 'Role' in par:
+                role_number = get_role_from_key(par)
+                if val[par]:
+                    add_roles.append(role_number)
+    modify_role_add_dict = {'userId': us_id, 'roles': add_roles}
+    try:
+        res_modify_user_change_role = requests.post(BASE_URL +
+                                                    'changeRoles',
+                                                    json=modify_role_add_dict,
+                                                    headers=HEADER_dict)
+        if res_modify_user_change_role.status_code == 200:
+            global current_db, modify_success
+            modify_success = True
+            current_db += 1
+        else:
+            role_change_error = True
+    except Exception as e:
+        print(f'Не удалось изменить роли - {e}')
+        logging.error("Не удалось изменить роли")
+    # print(res_modify_user_change_role.status_code)
     if role_change_error:
         my_popup("Ошибка при изменении ролей!")
+        return False
+    else:
+        return True
 
 
 def change_user_type(us_id, user_type):
@@ -3516,15 +3576,17 @@ if __name__ == '__main__':
                                 while True:
                                     ev_modify_user, val_modify_user = window_modify_user.Read()
                                     print(ev_modify_user, val_modify_user)
+                                    modify_fix_device = False
+                                    modify_success = False
                                     if ev_modify_user == sg.WIN_CLOSED or ev_modify_user == 'Exit':
                                         break
                                     if ev_modify_user == 'userModifyPassword':
                                         window_modify_user['showModifyPassword'].update(disabled=False)
                                         window_modify_user['showModifyPassword'].update(image_data=ICON_SHOW_BASE_64)
-                                    if ev_modify_user == 'modifyUserUser' \
-                                            or ev_modify_user == 'modifyUserDispatcher' \
-                                            or ev_modify_user == 'modifyUserGw' \
-                                            or ev_modify_user == 'modifyUserAdm':
+                                    if (ev_modify_user == 'modifyUserUser'
+                                            or ev_modify_user == 'modifyUserDispatcher'
+                                            or ev_modify_user == 'modifyUserGw'
+                                            or ev_modify_user == 'modifyUserAdm'):
                                         set_roles(ev_modify_user)
                                     if (ev_modify_user == 'modifyUserRoleIndCallEn'
                                             or ev_modify_user == 'modifyUserRoleIndMesEn'
@@ -3538,9 +3600,21 @@ if __name__ == '__main__':
                                             or ev_modify_user == 'modifyUserRoleAllowLLA'
                                             or ev_modify_user == 'modifyUserRoleAllowLLAclient'
                                             or ev_modify_user == 'modifyUserRoleMfc'
-                                            or ev_modify_user == 'modifyUserRoleFixDevice'
+                                            # or ev_modify_user == 'modifyUserRoleFixDevice'
                                             or ev_modify_user == 'modifyUserRoleMultipleDevices'):
                                         modify_role = True
+                                    if ev_modify_user == 'modifyUserFixNewDevice':
+                                        modify_fix_device = change_all_roles(user_to_change['id'], 'FixDevice')
+                                        if modify_fix_device:
+                                            my_popup('Теперь можно привязать новое устройство')
+                                            logging.info(
+                                                f"Пользователю {val_modify_user['UserModifyLogin']} "
+                                                f'можно привязать новое устройство')
+                                        else:
+                                            my_popup('Произошла ошибка')
+                                            logging.error(
+                                                f"Ошибка при привязке нового утсройства для "
+                                                f"пользователя {val_modify_user['UserModifyLogin']}")
                                     if ev_modify_user == 'UserModifyPriority':
                                         if val_modify_user['UserModifyPriority'] == '':
                                             window_modify_user['UserModifyPriority'].update(
@@ -3579,11 +3653,11 @@ if __name__ == '__main__':
                                             modify_user_dict = {'id': user_to_change['id']}
                                             modify_name = False
                                             modify_password = False
-                                            modify_is_en_ind = False
-                                            modify_is_en_ind_mes = False
+                                            # modify_is_en_ind = False
+                                            # modify_is_en_ind_mes = False
                                             modify_is_blocked = False
-                                            modify_en_del_chats = False
-                                            modify_en_partial_drop = False
+                                            # modify_en_del_chats = False
+                                            # modify_en_partial_drop = False
                                             modify_priority = False
                                             modify_u_t = False
                                             modify_success = False
@@ -3597,7 +3671,15 @@ if __name__ == '__main__':
                                                 modify_user_dict['password'] = val_modify_user['userModifyPassword']
                                                 modify_password = True
                                             if modify_role:
-                                                res_modify_role = change_all_roles(user_to_change['id'], val_modify_user)
+                                                result = change_all_roles(user_to_change['id'], val_modify_user)
+                                                if result:
+                                                    logging.info(
+                                                        f"Пользователю {val_modify_user['UserModifyLogin']} "
+                                                        f'поменяли роли')
+                                                else:
+                                                    logging.error(
+                                                        f"Ошибка при смене ролей "
+                                                        f"пользователю {val_modify_user['UserModifyLogin']}")
                                             if val_modify_user['modifyUserBlock'] != user_to_change['is_blocked']:
                                                 modify_is_blocked = True
                                                 res_block = block_user(val_modify_user['modifyUserBlock'],
@@ -3702,22 +3784,24 @@ if __name__ == '__main__':
                                                 except Exception as e:
                                                     print(f'Не удалось обновить данные абонента - {e}')
                                                     logging.error("Не удалось обновить данные абонента")
-
-                                            if modify_name or modify_password \
-                                                    or modify_is_en_ind \
-                                                    or modify_is_en_ind_mes \
-                                                    or modify_en_del_chats \
-                                                    or modify_en_partial_drop \
-                                                    or modify_is_blocked \
-                                                    or modify_priority \
-                                                    or modify_u_t:
+                                            if (modify_name or modify_password
+                                                    # or modify_is_en_ind
+                                                    # or modify_is_en_ind_mes
+                                                    # or modify_en_del_chats
+                                                    # or modify_en_partial_drop
+                                                    or modify_is_blocked
+                                                    or modify_priority
+                                                    or modify_u_t
+                                                    or modify_role):
                                                 window_modify_user.close()
                                                 if modify_success:
                                                     update_users()
                                                     my_popup("Пользователь изменён!")
+                                                else:
+                                                    my_popup("Ошибка изменения пользователя!")
                                             else:
                                                 my_popup("Нет никаких изменений!")
-                                    else:
+                                    if not modify_fix_device and not modify_success:
                                         window_modify_user['modifyUserButton'].update(disabled=False)
                                         window_modify_user['modifyUserButton'].update(button_color=button_color_2)
                             additional_window = False
@@ -4038,7 +4122,7 @@ if __name__ == '__main__':
                             additional_window = True
                             my_popup('Разработано ' + COMPANY + '\n'
                                                                 '\n'
-                                                                '2021-2023')
+                                                                '2021-2024')
                             # noinspection PyRedeclaration
                             additional_window = False
                         if event == 'Установить лицензию...':
