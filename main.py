@@ -121,6 +121,8 @@ DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 DEFSSH = '738344928e9d24022d6c7f66f0a200032a66d4524b649553d4261ed23916cb86'
 role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes role_changer screen_shooter '
                     'amb_caller amb_callee missing_msg_rv allow_LLA allow_LLA_client mfc fix_device multiple_devices')
+# type_app = Enum(value='type_app', names={'vBasic': 0, 'vTonal': 1, 'vNoScreen': 2, 'vBox': 3, 'vZteEverlink': 4})
+type_app = {'Основная': 0, 'Тональник': 1, 'Без экрана': 2, 'К500': 3, 'ZTE': 4}
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
 # OMEGA THEME
 omega_theme = {'BACKGROUND': '#ffffff',
@@ -703,9 +705,10 @@ def make_main_window(ip):
                             enable_events=True,
                             key='-checkAllGroups-',
                             default=False,
-                            pad=(13, (14, 0)),
+                            pad=(13, (14, 4)),
                             disabled=True)]],
-                vertical_alignment='bottom')],
+                vertical_alignment='bottom')
+            ],
                 [
                     sg.Tree(data=treedata,
                             headings=['Имя', 'Описание'],
@@ -808,7 +811,7 @@ def make_main_window(ip):
                          enable_events=True,
                          key='-checkAllUsers-',
                          default=False,
-                         pad=(13, (14, 0)),
+                         pad=(13, (14, 4)),
                          disabled=True)]],
              vertical_alignment='bottom')],
              [
@@ -1384,15 +1387,18 @@ def make_get_id(srv_id):
 
 
 def make_updates_window():
-    update_list = [['2.0.9.2.9.1', 'Основная']]
+    # update_list = [['2.0.9.2.9.1', 'Основная']]
     server_ver = get_version()
+    update_list = get_updates()
     layout = [
         [sg.Text('Версия сервера: ' + server_ver)],
         [sg.Frame('Обновления мобильного приложения',
                   [
                       [sg.Push(),
                        sg.Text('Файл обновления',
-                               pad=(0, (10,5))),
+                               size=17,
+                               justification='right',
+                               pad=(0, (10, 5))),
                        sg.Input(default_text='Выберите файл .apk -->',
                                 disabled=True,
                                 text_color='gray',
@@ -1405,30 +1411,80 @@ def make_updates_window():
                                      target='-FILENAME-UPDATE-',
                                      disabled=False,
                                      initial_folder='../',
-                                     pad=((0, 10), (10, 5)),
+                                     pad=((0, 0), 5),
                                      size=10,
                                      enable_events=True,
                                      key='-choose-apk-',
-                                     file_types=(("Файл обновления", "*.apk"),))],
+                                     file_types=(("Файл обновления", "*.apk"),)),
+                       sg.Push()],
                       [sg.Push(),
-                       sg.Text('Версия приложения'),
+                       sg.Text('Версия приложения',
+                               size=17,
+                               justification='right',
+                               pad=(0, 5)),
                        sg.Input('',
                                 size=30,
                                 key='-ver-',
-                                pad=((0, 120), 5))],
+                                disabled=True,
+                                pad=((11, 109), 5)),
+                       sg.Push()],
                       [sg.Push(),
-                       sg.Text('Описание'),
-
-                       sg.Multiline(size=(28, 5),
-                                    pad=((5, 10), 10)),
+                       sg.Text('Тип приложения',
+                               size=17,
+                               justification='right',
+                               pad=(0, 5)
+                               ),
+                       sg.Combo(list(type_app),
+                                size=28,
+                                default_value=list(type_app.keys())[list(type_app.values()).index(0)],
+                                disabled=True,
+                                key='-type-app-',
+                                pad=((10, 110), 5)),
+                       sg.Push()
+                       ],
+                      [sg.Push(),
+                       sg.Checkbox('Обязательное',
+                                   default=False,
+                                   enable_events=True,
+                                   disabled=True,
+                                   key='-isForced-',
+                                   pad=((10, 100),(10, 5))),
+                       sg.Push()
+                       ],
+                      [sg.Push(),
+                       sg.Text('Комментарии',
+                               size=17,
+                               justification='right',
+                               pad=(0, 5)
+                               ),
+                       sg.Multiline(size=(30, 1),
+                                    pad=((11, 109), 5),
+                                    no_scrollbar=True,
+                                    enable_events=True,
+                                    key='-notes-',
+                                    disabled=True),
+                       sg.Push()
+                       ],
+                      [sg.Push(),
+                       sg.Text('Изменения',
+                               size=17,
+                               justification='right',
+                               pad=(0, 5)
+                               ),
+                       sg.Multiline(size=(30, 5),
+                                    pad=((10, 10), (5, 10)),
+                                    no_scrollbar=True,
+                                    enable_events=True,
+                                    key='-changelog-',
+                                    disabled=True),
                        sg.Button('Загрузить',
                                  key='-upload-apk-',
                                  size=10,
                                  disabled=True,
-                                 pad=((0, 10), (10, 5)),)
-                       ],
+                                 pad=((0, 0), 5)),
+                       sg.Push()],
                       [sg.Table(update_list,
-                                headings=['Версия', 'Описание'],
+                                headings=['Тип', 'Версия', 'Обязательное', 'Описание', 'Изменения'],
                                 justification="left",
                                 key='-updates-',
                                 expand_x=True,
@@ -1439,7 +1495,7 @@ def make_updates_window():
                                 selected_row_colors='black on lightblue',
                                 metadata=[],
                                 pad=(10, 5),
-                                col_widths=[20, 40],
+                                col_widths=[10, 10, 12, 15, 30],
 
                                 )
                        ]
@@ -2044,8 +2100,20 @@ def get_version():
     return result
 
 
-def get_app_version_from_filename(filename: str):
+def get_app_version_and_type_from_filename(filename: str):
     version = ''
+    if '_a.apk' in filename:
+        type = type_app['Основная']
+    elif '_t.apk' in filename:
+        type = type_app['Тональник']
+    elif '_ns.apk' in filename:
+        type = type_app['Без экрана']
+    elif 'box' in filename:
+        type = type_app['К500']
+    elif 'ZTE' in filename:
+        type = type_app['ZTE']
+    else:
+        type = ''
     filename = filename.rstrip('.apk')
     for word in filename[::-1]:
         if word.isdigit() or word == '.':
@@ -2054,23 +2122,58 @@ def get_app_version_from_filename(filename: str):
             break
     if version:
         version = version[::-1].strip('.')
-    return version
+    return version, type
 
 
-def upload_app(app_path: str):
+def upload_app(app_path: str, type_a):
     res = False
     with open(app_path, "rb") as file:
-        files = {'file': file, 'type': (None, '0')}
+        files = {'file': file,
+                 'type': (None, type_a),
+                 'notes': (None, val_upd['-notes-']),
+                 'version': (None, val_upd['-ver-']),
+                 'changelog': (None, val_upd['-changelog-']),
+                 'isForced': (None, val_upd['-isForced-'])}
         try:
             res = requests.post(BASE_URL_UPDATE +
                                 'upload',
                                 files=files,
                                 headers=HEADER_dict)
+            if res.status_code == 200:
+                print('Файл обновления загружен')
+                logging.info('Файл обновления загружен')
+                my_popup('Файл обновления загружен')
+            else:
+                print(f'Не удалось загрузить приложение - {res.status_code}')
+                logging.error("Не удалось загрузить приложение")
+                my_popup('Не удалось загрузить приложение')
         except Exception as e:
             print(f'Не удалось загрузить приложение - {e}')
             logging.error("Не удалось загрузить приложение")
+            my_popup('Не удалось загрузить приложение')
     return res
 
+
+def get_updates():
+    updates = []
+    try:
+        res = requests.get(BASE_URL_UPDATE +
+                            'info',
+                            headers=HEADER_dict)
+        if res.status_code == 200:
+            print(res.text)
+            updates_dict = json.loads(res.text)
+            for update in updates_dict:
+                updates.append([list(type_app.keys())[list(type_app.values()).index(update['type'])],
+                                '?' if update['version'] is None else update['version'],
+                                'Да' if update['force'] else 'Нет',
+                                '' if update['notes'] is None else str(update['notes']).replace('\n', ' '),
+                                '' if update['changelog'] is None else str(update['changelog']).replace('\n', ' ')])
+    except Exception as e:
+        print(f'Не удалось запросить версии - {e}')
+        logging.error("Не удалось запросить версии")
+        my_popup('Не удалось запросить версии')
+    return sorted(updates, key=lambda upd: upd[0])
 
 def filter_journal(journal: list):
     if filter_journal_info:
@@ -2311,14 +2414,11 @@ def change_all_roles(us_id, val):
     print(val)
     add_roles = list()
     role_change_error = False
-    if val == 'FixDevice':
-        add_roles.append(13)
-    else:
-        for par in val:
-            if 'Role' in par:
-                role_number = get_role_from_key(par)
-                if val[par]:
-                    add_roles.append(role_number)
+    for par in val:
+        if 'Role' in par:
+            role_number = get_role_from_key(par)
+            if val[par]:
+                add_roles.append(role_number)
     modify_role_add_dict = {'userId': us_id, 'roles': add_roles}
     try:
         res_modify_user_change_role = requests.post(BASE_URL +
@@ -3567,7 +3667,8 @@ if __name__ == '__main__':
                                     count_string = str(output_text[1]) + ' из ' + str(output_text[2])
                                     window['countLogs'].update(count_string)
                                     window['rowLimit'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
-                                    set_lic_status_bar()
+                                    if server_status['run']:
+                                        set_lic_status_bar()
                         if event == sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
                             additional_window = True
                             break_flag = True
@@ -3726,8 +3827,34 @@ if __name__ == '__main__':
                                             or ev_modify_user == 'modifyUserRoleMultipleDevices'):
                                         modify_role = True
                                     if ev_modify_user == 'modifyUserFixNewDevice':
-                                        modify_fix_device = change_all_roles(user_to_change['id'], 'FixDevice')
-                                        if modify_fix_device:
+                                        fix_device_error = False
+                                        window_confirm = make_confirm_window(
+                                            'Вы уверены, что хотите привязать одно новое устройство?\n'
+                                            'Это приведёт к отмене авторизаций на любых устройствах!')
+                                        while True:
+                                            ev_confirm, val_confirm = window_confirm.Read()
+                                            if ev_confirm == 'okExit':
+                                                try:
+                                                    res_modify_fix_new_dev = requests.post(BASE_URL +
+                                                                                                'allowNewDevice',
+                                                                                                json={'UserId': user_to_change['id']},
+                                                                                                headers=HEADER_dict)
+                                                    if res_modify_fix_new_dev.status_code == 200:
+                                                        modify_success = True
+                                                        current_db += 1
+                                                    else:
+                                                        fix_device_error = True
+                                                except Exception as e:
+                                                    print(f'Не удалось изменить роли - {e}')
+                                                    logging.error("Не удалось изменить роли")
+                                                window_modify_user['modifyUserRoleMultipleDevices'].update(False)
+                                                window_confirm.close()
+                                            if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
+                                                break
+                                            if ev_confirm == 'noExit':
+                                                window_confirm.close()
+                                                break
+                                        if not fix_device_error:
                                             my_popup('Теперь можно привязать новое устройство')
                                             logging.info(
                                                 f"Пользователю {val_modify_user['UserModifyLogin']} "
@@ -4921,11 +5048,30 @@ if __name__ == '__main__':
                                 if ev_upd == '-choose-apk-':
                                     pass
                                 if ev_upd == '-FILENAME-UPDATE-':
-                                    version_app = get_app_version_from_filename(val_upd['-FILENAME-UPDATE-'])
-                                    window_updates['-ver-'].update(version_app if version_app else '?')
+                                    version_app, type_app_val = get_app_version_and_type_from_filename(val_upd['-FILENAME-UPDATE-'])
+                                    print(version_app, type_app_val)
+                                    window_updates['-ver-'].update(version_app if version_app else '?', disabled=False)
+                                    window_updates['-notes-'].update(disabled=False)
+                                    window_updates['-changelog-'].update(disabled=False)
+                                    window_updates['-isForced-'].update(disabled=False)
+                                    if type_app_val:
+                                        window_updates['-type-app-'].update(list(type_app.keys())[list(type_app.values()).index(type_app_val)], disabled=False)
+                                    else:
+                                        window_updates['-type-app-'].update(list(type_app.keys())[list(type_app.values()).index(0)], disabled=False)
                                     window_updates['-upload-apk-'].update(disabled=False, button_color=button_color_2)
                                 if ev_upd == '-upload-apk-':
-                                    res_upload = upload_app(val_upd['-FILENAME-UPDATE-'])
+                                    res_upload = upload_app(val_upd['-FILENAME-UPDATE-'], type_app_val)
+                                    if res_upload:
+                                        window_updates['-ver-'].update('', disabled=True)
+                                        window_updates['-notes-'].update('', disabled=True)
+                                        window_updates['-changelog-'].update('', disabled=True)
+                                        window_updates['-isForced-'].update('', disabled=True)
+                                        window_updates['-FILENAME-UPDATE-'].update('', disabled=True)
+                                        window_updates['-type-app-'].update(list(type_app.keys())[list(type_app.values()).index(0)], disabled=True)
+                                        updates_list = get_updates()
+                                        window_updates['-updates-'].update(updates_list)
+                                    window_updates['-upload-apk-'].update(disabled=True,
+                                                                          button_color=button_color)
                             additional_window = False
                         if event == '-AddUser-':
                             """
