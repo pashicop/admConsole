@@ -8,6 +8,7 @@ import socket
 import subprocess
 import threading
 import urllib.parse
+from gc import enable
 from time import sleep
 import paramiko
 import requests
@@ -1394,26 +1395,101 @@ def make_updates_window():
         [sg.Text('Версия сервера: ' + server_ver)],
         [sg.Frame('Обновления мобильного приложения',
                   [
+                      [
+                          # sg.Column([[
+                          # sg.Image(data=ICON_FILTER_BASE_64_BLUE),
+                          # sg.Input(size=(15, 1),
+                          #          enable_events=True,
+                          #          disabled_readonly_background_color=disabled_input,
+                          #          key='-filterUpdate-'),
+                          # sg.Button('', disabled_button_color='white',
+                          #           image_data=ICON_CLEAR_FILTER_BASE_64_BLUE,
+                          #           button_color='white',
+                          #           border_width=0,
+                          #           tooltip='Очистить фильтр',
+                          #           key='-ClearFilterUpdate-',
+                          #           disabled=True,
+                          #           pad=((0, 5), 0))]],
+                          # vertical_alignment='bottom'),
+                          sg.Push(),
+                          sg.Button('', disabled_button_color='white',
+                                    image_data=ICON_ADD_BASE_64_BLUE,
+                                    button_color='white',
+                                    tooltip='Добавить',
+                                    border_width=0,
+                                    key='-AddUpdate-',
+                                    pad=(4, (0, 3))),
+                          sg.Button('', disabled_button_color='white',
+                                    disabled=True,
+                                    image_data=ICON_MODIFY_BASE_64_BLUE,
+                                    button_color='white',
+                                    tooltip='Изменить',
+                                    border_width=0,
+                                    key='-EditUpdate-',
+                                    pad=(4, (0, 3))),
+                          sg.Button('', disabled_button_color='white',
+                                    disabled=True,
+                                    image_data=ICON_DELETE_BASE_64_BLUE,
+                                    button_color='white',
+                                    tooltip='Удалить',
+                                    border_width=0,
+                                    key='-DelUpdate-',
+                                    pad=((4, 10), (0, 3)))],
+                      [sg.Table(update_list,
+                                headings=['id','Тип', 'Версия', 'Обязательное', 'Описание', 'Изменения'],
+                                justification="left",
+                                key='-updates-',
+                                expand_x=True,
+                                enable_click_events=True,
+                                enable_events=True,
+                                auto_size_columns=False,
+                                visible_column_map=[False, True, True, True, True, True],
+                                select_mode=sg.TABLE_SELECT_MODE_BROWSE,
+                                selected_row_colors='black on lightblue',
+                                metadata=[],
+                                pad=(10, 5),
+                                col_widths=[10, 10, 10, 12, 15, 30],
+                                )
+                       ],
+
+                  ])
+         ]]
+    return sg.Window('Обновление приложения', layout=layout,
+                     icon=ICON_BASE_64,
+                     background_color='white',
+                     # use_ttk_buttons=True,
+                     modal=True,
+                     finalize=True)
+
+
+def make_add_update_window(update_info=None):
+    print(update_info)
+    layout = [
+        [sg.Frame('Обновления мобильного приложения',
+                  [
                       [sg.Push(),
                        sg.Text('Файл обновления',
                                size=17,
                                justification='right',
+                               visible=False if update_info else True,
                                pad=(0, (10, 5))),
-                       sg.Input(default_text='Выберите файл .apk -->',
+                       sg.Input(default_text='' if update_info else 'Выберите файл .apk -->',
                                 disabled=True,
                                 text_color='gray',
                                 enable_events=True,
+                                visible=False if update_info else True,
                                 # expand_x=True,
                                 pad=(10, (10, 5)),
                                 size=30,
                                 key='-FILENAME-UPDATE-'),
                        sg.FileBrowse('Выбрать',
                                      target='-FILENAME-UPDATE-',
-                                     disabled=False,
+                                     disabled=True if update_info else False,
                                      initial_folder='../',
                                      pad=((0, 0), 5),
                                      size=10,
                                      enable_events=True,
+                                     visible=False if update_info else True,
                                      key='-choose-apk-',
                                      file_types=(("Файл обновления", "*.apk"),)),
                        sg.Push()],
@@ -1422,10 +1498,11 @@ def make_updates_window():
                                size=17,
                                justification='right',
                                pad=(0, 5)),
-                       sg.Input('',
+                       sg.Input(default_text=update_info[2] if update_info else '',
                                 size=30,
                                 key='-ver-',
-                                disabled=True,
+                                enable_events=True,
+                                disabled=False if update_info else True,
                                 pad=((11, 109), 5)),
                        sg.Push()],
                       [sg.Push(),
@@ -1436,17 +1513,18 @@ def make_updates_window():
                                ),
                        sg.Combo(list(type_app),
                                 size=28,
-                                default_value=list(type_app.keys())[list(type_app.values()).index(0)],
-                                disabled=True,
+                                default_value=update_info[1] if update_info else list(type_app.keys())[list(type_app.values()).index(0)],
+                                disabled=False if update_info else True,
+                                enable_events=True,
                                 key='-type-app-',
                                 pad=((10, 110), 5)),
                        sg.Push()
                        ],
                       [sg.Push(),
                        sg.Checkbox('Обязательное',
-                                   default=False,
+                                   default=True if update_info and update_info[3] == 'Да' else False,
                                    enable_events=True,
-                                   disabled=True,
+                                   disabled=False if update_info else True,
                                    key='-isForced-',
                                    pad=((10, 100),(10, 5))),
                        sg.Push()
@@ -1461,8 +1539,10 @@ def make_updates_window():
                                     pad=((11, 109), 5),
                                     no_scrollbar=True,
                                     enable_events=True,
+                                    default_text=update_info[4] if update_info else '',
                                     key='-notes-',
-                                    disabled=True),
+                                    disabled=False if update_info else True,
+                                    ),
                        sg.Push()
                        ],
                       [sg.Push(),
@@ -1475,38 +1555,25 @@ def make_updates_window():
                                     pad=((10, 10), (5, 10)),
                                     no_scrollbar=True,
                                     enable_events=True,
+                                    default_text=str(update_info[5]).replace(' | ', '\n') if update_info else '',
                                     key='-changelog-',
-                                    disabled=True),
-                       sg.Button('Загрузить',
+                                    disabled=False if update_info else True,
+                                    ),
+                       sg.Button(button_text='Изменить' if update_info else'Загрузить',
                                  key='-upload-apk-',
                                  size=10,
                                  disabled=True,
                                  pad=((0, 0), 5)),
                        sg.Push()],
-                      [sg.Table(update_list,
-                                headings=['Тип', 'Версия', 'Обязательное', 'Описание', 'Изменения'],
-                                justification="left",
-                                key='-updates-',
-                                expand_x=True,
-                                enable_click_events=True,
-                                enable_events=True,
-                                auto_size_columns=False,
-                                select_mode=sg.TABLE_SELECT_MODE_BROWSE,
-                                selected_row_colors='black on lightblue',
-                                metadata=[],
-                                pad=(10, 5),
-                                col_widths=[10, 10, 12, 15, 30],
-
-                                )
-                       ]
                   ])
          ]]
-    return sg.Window('Обновление приложения', layout=layout,
+    return sg.Window(title='Изменить обновление' if update_info else 'Добавление обновления',
+                     layout=layout,
                      icon=ICON_BASE_64,
                      background_color='white',
+                     # use_ttk_buttons=True,
                      modal=True,
                      finalize=True)
-
 
 def make_add_user_window():
     layout_add_user = [
@@ -2113,7 +2180,7 @@ def get_app_version_and_type_from_filename(filename: str):
     elif 'ZTE' in filename:
         type = type_app['ZTE']
     else:
-        type = ''
+        type = type = type_app['Основная']
     filename = filename.rstrip('.apk')
     for word in filename[::-1]:
         if word.isdigit() or word == '.':
@@ -2125,33 +2192,66 @@ def get_app_version_and_type_from_filename(filename: str):
     return version, type
 
 
-def upload_app(app_path: str, type_a):
+def upload_app(app_path: str):
     res = False
     with open(app_path, "rb") as file:
         files = {'file': file,
-                 'type': (None, type_a),
-                 'notes': (None, val_upd['-notes-']),
-                 'version': (None, val_upd['-ver-']),
-                 'changelog': (None, val_upd['-changelog-']),
-                 'isForced': (None, val_upd['-isForced-'])}
+                 'type': (None, type_app[val_add_upd['-type-app-']]),
+                 'notes': (None, val_add_upd['-notes-']),
+                 'version': (None, val_add_upd['-ver-']),
+                 'changelog': (None, val_add_upd['-changelog-']),
+                 'isForced': (None, val_add_upd
+                 ['-isForced-'])}
         try:
             res = requests.post(BASE_URL_UPDATE +
                                 'upload',
                                 files=files,
                                 headers=HEADER_dict)
             if res.status_code == 200:
+                updates_dict = json.loads(res.text)
                 print('Файл обновления загружен')
                 logging.info('Файл обновления загружен')
                 my_popup('Файл обновления загружен')
+                return updates_dict['id']
             else:
-                print(f'Не удалось загрузить приложение - {res.status_code}')
+                print(f'Не удалось загрузить приложение - {res.status_code}, {res.text}')
                 logging.error("Не удалось загрузить приложение")
                 my_popup('Не удалось загрузить приложение')
         except Exception as e:
             print(f'Не удалось загрузить приложение - {e}')
             logging.error("Не удалось загрузить приложение")
             my_popup('Не удалось загрузить приложение')
-    return res
+    return False
+
+
+def edit_app(update_info_id):
+    res = False
+    json_dict = {'InfoId': update_info_id,
+             'Type': type_app[val_edit_upd['-type-app-']],
+             'Notes': val_edit_upd['-notes-'],
+             'Version': val_edit_upd['-ver-'],
+             'Changelog': val_edit_upd['-changelog-'],
+             'Force': val_edit_upd['-isForced-']}
+    try:
+        res = requests.post(BASE_URL_UPDATE +
+                            'update',
+                            json=json_dict,
+                            headers=HEADER_dict)
+        if res.status_code == 200:
+            updates_dict = json.loads(res.text)
+            print('Файл обновления изменён')
+            logging.info('Файл обновления изменён')
+            my_popup('Файл обновления изменён')
+            return updates_dict['id']
+        else:
+            print(f'Не удалось изменить обновление - {res.status_code}, {res.text}')
+            logging.error("Не удалось изменить обновление")
+            my_popup('Не удалось изменить обновление')
+    except Exception as e:
+        print(f'Не удалось изменить обновление - {e}')
+        logging.error("Не удалось изменить обновление")
+        my_popup('Не удалось изменить обновление')
+    return False
 
 
 def get_updates():
@@ -2164,16 +2264,69 @@ def get_updates():
             print(res.text)
             updates_dict = json.loads(res.text)
             for update in updates_dict:
-                updates.append([list(type_app.keys())[list(type_app.values()).index(update['type'])],
+                updates.append([update['id'],
+                                list(type_app.keys())[list(type_app.values()).index(update['type'])],
                                 '?' if update['version'] is None else update['version'],
                                 'Да' if update['force'] else 'Нет',
-                                '' if update['notes'] is None else str(update['notes']).replace('\n', ' '),
-                                '' if update['changelog'] is None else str(update['changelog']).replace('\n', ' ')])
+                                '' if update['notes'] is None else str(update['notes']).replace('\n', ' | '),
+                                '' if update['changelog'] is None else str(update['changelog']).replace('\n', ' | ')])
     except Exception as e:
         print(f'Не удалось запросить версии - {e}')
         logging.error("Не удалось запросить версии")
         my_popup('Не удалось запросить версии')
-    return sorted(updates, key=lambda upd: upd[0])
+    return sorted(updates, key=lambda upd: upd[1])
+
+
+def get_update_id_from_table():
+    id = ''
+    print(val_upd)
+    if val_upd['-updates-']:
+        index_upd = val_upd['-updates-'][0]
+        print(val_upd['-updates-'][0])
+        id = window_updates['-updates-'].Values[index_upd][0]
+        print(window_updates['-updates-'].Values[index_upd][0])
+    return id
+
+
+def del_update(id):
+    if id:
+        window_confirm = make_confirm_window('Хотите удалить обновление?')
+        while True:
+            ev_confirm, val_confirm = window_confirm.Read()
+            if ev_confirm == 'okExit':
+                res = False
+                try:
+                    del_upd_dict = {'InfoId': id}
+                    res = requests.post(BASE_URL_UPDATE +
+                                        'delete',
+                                        json=del_upd_dict,
+                                        headers=HEADER_dict)
+                    if res.status_code == 200:
+                        updates_dict = json.loads(res.text)
+                        window_confirm.close()
+                        print('Файл обновления удалён')
+                        logging.info('Файл обновления удалён')
+                        my_popup('Файл обновления удалён')
+                    else:
+                        window_confirm.close()
+                        print(f'Не удалось удалить приложение - {res.status_code}, {res.text}')
+                        logging.error("Не удалось удалить приложение")
+                        my_popup('Не удалось удалить приложение')
+                except Exception as e:
+                    window_confirm.close()
+                    print(f'Не удалось удалить приложение - {e}')
+                    logging.error("Не удалось удалить приложение")
+                    my_popup('Не удалось удалить приложение')
+            if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
+                break
+            if ev_confirm == 'noExit':
+                window_confirm.close()
+                break
+    else:
+        print(f'Не удалось удалить приложение - нет id')
+        logging.error("Не удалось удалить приложение")
+        my_popup('Не удалось удалить приложение')
+
 
 def filter_journal(journal: list):
     if filter_journal_info:
@@ -3595,8 +3748,8 @@ if __name__ == '__main__':
                             window['-hide-online-'].update(
                                 text=SYMBOL_RIGHT_ARROWHEAD if window[
                                     '-frame-online-'].metadata else SYMBOL_LEFT_ARROWHEAD)
-                        if event == 'ambientListening':
-                            print('sdgfdfgdfg')
+                        # if event == 'ambientListening':
+                        #     print('sdgfdfgdfg')
                         if event == '-THREAD-':
                             if not thread_started:
                                 # print(json.loads(values['-THREAD-'][1]))
@@ -4909,9 +5062,7 @@ if __name__ == '__main__':
                                         or ev_set == 'longAmbientCallDuration' \
                                         or ev_set == 'mfc':
                                     if ev_set == 'longAmbientListening':
-                                        window_settings['longAmbientCallDuration'].update(disabled=(False if
-                                                                                                    val_set[
-                                                                                                        'longAmbientListening'] else True))
+                                        window_settings['longAmbientCallDuration'].update(disabled=(False if val_set['longAmbientListening'] else True))
                                     if ev_set == 'longAmbientCallDuration':
                                         if val_set['longAmbientCallDuration'].isdigit():
                                             window_settings['longAmbientCallDuration'].update(
@@ -5041,37 +5192,89 @@ if __name__ == '__main__':
                         if event == 'Обновления':
                             additional_window = True
                             window_updates = make_updates_window()
+                            # after_change = False
                             while True:
                                 ev_upd, val_upd = window_updates.Read()
+                                # print(ev_upd, val_upd)
                                 if ev_upd == sg.WIN_CLOSED or ev_upd == 'Exit':
                                     break
-                                if ev_upd == '-choose-apk-':
-                                    pass
-                                if ev_upd == '-FILENAME-UPDATE-':
-                                    version_app, type_app_val = get_app_version_and_type_from_filename(val_upd['-FILENAME-UPDATE-'])
-                                    print(version_app, type_app_val)
-                                    window_updates['-ver-'].update(version_app if version_app else '?', disabled=False)
-                                    window_updates['-notes-'].update(disabled=False)
-                                    window_updates['-changelog-'].update(disabled=False)
-                                    window_updates['-isForced-'].update(disabled=False)
-                                    if type_app_val:
-                                        window_updates['-type-app-'].update(list(type_app.keys())[list(type_app.values()).index(type_app_val)], disabled=False)
-                                    else:
-                                        window_updates['-type-app-'].update(list(type_app.keys())[list(type_app.values()).index(0)], disabled=False)
-                                    window_updates['-upload-apk-'].update(disabled=False, button_color=button_color_2)
-                                if ev_upd == '-upload-apk-':
-                                    res_upload = upload_app(val_upd['-FILENAME-UPDATE-'], type_app_val)
-                                    if res_upload:
-                                        window_updates['-ver-'].update('', disabled=True)
-                                        window_updates['-notes-'].update('', disabled=True)
-                                        window_updates['-changelog-'].update('', disabled=True)
-                                        window_updates['-isForced-'].update('', disabled=True)
-                                        window_updates['-FILENAME-UPDATE-'].update('', disabled=True)
-                                        window_updates['-type-app-'].update(list(type_app.keys())[list(type_app.values()).index(0)], disabled=True)
-                                        updates_list = get_updates()
-                                        window_updates['-updates-'].update(updates_list)
-                                    window_updates['-upload-apk-'].update(disabled=True,
-                                                                          button_color=button_color)
+                                if ev_upd == '-updates-':
+                                    print(val_upd)
+                                    update_id = get_update_id_from_table()
+                                    if val_upd['-updates-']:
+                                        window_updates['-EditUpdate-'].update(disabled=False)
+                                        window_updates['-DelUpdate-'].update(disabled=False)
+                                if ev_upd == '-DelUpdate-':
+                                    del_update(update_id)
+                                    updates_list = get_updates()
+                                    window_updates['-updates-'].update(updates_list)
+                                    window_updates['-EditUpdate-'].update(disabled=True)
+                                    window_updates['-DelUpdate-'].update(disabled=True)
+                                    # after_change = True
+                                if ev_upd == '-AddUpdate-':
+                                    window_add_update = make_add_update_window()
+                                    while True:
+                                        ev_add_upd, val_add_upd = window_add_update.Read()
+                                        print(ev_add_upd, val_add_upd)
+                                        if ev_add_upd == sg.WIN_CLOSED or ev_add_upd == 'Exit':
+                                            break
+                                        if ev_add_upd == '-choose-apk-':
+                                            pass
+                                        if ev_add_upd == '-FILENAME-UPDATE-':
+                                            version_app, type_app_val = get_app_version_and_type_from_filename(val_add_upd['-FILENAME-UPDATE-'])
+                                            print(version_app, type_app_val)
+                                            window_add_update['-ver-'].update(version_app if version_app else '?', disabled=False)
+                                            window_add_update['-notes-'].update(disabled=False)
+                                            window_add_update['-changelog-'].update(disabled=False)
+                                            window_add_update['-isForced-'].update(disabled=False)
+                                            if type_app_val:
+                                                window_add_update['-type-app-'].update(list(type_app.keys())[list(type_app.values()).index(type_app_val)], disabled=False)
+                                            else:
+                                                window_add_update['-type-app-'].update(list(type_app.keys())[list(type_app.values()).index(0)], disabled=False)
+                                            window_add_update['-upload-apk-'].update(disabled=False, button_color=button_color_2)
+                                        if ev_add_upd == '-upload-apk-':
+                                            update_id_from_server = upload_app(val_add_upd['-FILENAME-UPDATE-'])
+                                            if update_id_from_server:
+                                                window_add_update['-ver-'].update('', disabled=True)
+                                                window_add_update['-notes-'].update('', disabled=True)
+                                                window_add_update['-changelog-'].update('', disabled=True)
+                                                window_add_update['-isForced-'].update('', disabled=True)
+                                                window_add_update['-FILENAME-UPDATE-'].update('', disabled=True)
+                                                window_add_update['-type-app-'].update(list(type_app.keys())[list(type_app.values()).index(0)], disabled=True)
+                                                updates_list = get_updates()
+                                                window_updates['-updates-'].update(updates_list)
+                                                window_updates['-EditUpdate-'].update(disabled=True)
+                                                window_updates['-DelUpdate-'].update(disabled=True)
+                                                # after_change = True
+                                                window_add_update.close()
+                                                break
+                                            window_add_update['-upload-apk-'].update(disabled=True, button_color=button_color)
+                                if ev_upd == '-EditUpdate-':
+                                    window_add_update = make_add_update_window(window_updates['-updates-'].Values[val_upd['-updates-'][0]])
+                                    while True:
+                                        ev_edit_upd, val_edit_upd = window_add_update.Read()
+                                        print(ev_edit_upd, val_edit_upd)
+                                        if ev_edit_upd == sg.WIN_CLOSED or ev_edit_upd == 'Exit':
+                                            break
+                                        if ev_edit_upd == '-upload-apk-':
+                                            print(f"updates - {window_updates['-updates-'].Values[val_upd['-updates-'][0]][0]}")
+                                            update_id = edit_app(window_updates['-updates-'].Values[val_upd['-updates-'][0]][0])
+                                            if update_id:
+                                                window_add_update['-ver-'].update('', disabled=True)
+                                                window_add_update['-notes-'].update('', disabled=True)
+                                                window_add_update['-changelog-'].update('', disabled=True)
+                                                window_add_update['-isForced-'].update('', disabled=True)
+                                                window_add_update['-FILENAME-UPDATE-'].update('', disabled=True)
+                                                window_add_update['-type-app-'].update(list(type_app.keys())[list(type_app.values()).index(0)], disabled=True)
+                                                updates_list = get_updates()
+                                                window_updates['-updates-'].update(updates_list)
+                                                window_updates['-EditUpdate-'].update(disabled=True)
+                                                window_updates['-DelUpdate-'].update(disabled=True)
+                                                # after_change = True
+                                                window_add_update.close()
+                                                break
+                                            window_add_update['-upload-apk-'].update(disabled=True, button_color=button_color)
+                                        window_add_update['-upload-apk-'].update(disabled=False, button_color=button_color_2)
                             additional_window = False
                         if event == '-AddUser-':
                             """
