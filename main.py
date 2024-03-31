@@ -144,7 +144,7 @@ sg.theme_add_new('OmegaTheme', omega_theme)
 sg.theme('OmegaTheme')
 # OMEGA THEME end
 current_db = 0
-version = '2.0.1'
+version = '2.0.2'
 
 
 def get_branch():
@@ -605,7 +605,10 @@ def get_group_list(groups):
         else:
             gr_list[index].append('')
         if groups != [{}]:
-            group_treedata.insert('', gr_from_db['id'], '', values=[gr_from_db['name'], gr_from_db['desc']],
+            group_treedata.insert('', gr_from_db['id'], '',
+                                  values=[gr_from_db['name'],
+                                          gr_from_db['desc'],
+                                          (u'\u0020\u0020\u0020' + SYMBOL_X_SMALL) if gr_from_db['is_disabled'] else ''],
                                   icon=check[0])
     return gr_list, group_treedata
 
@@ -712,10 +715,10 @@ def make_main_window(ip):
             ],
                 [
                     sg.Tree(data=treedata,
-                            headings=['Имя', 'Описание'],
+                            headings=['Имя', 'Описание', 'Блок'],
                             col0_width=5,
                             # col0_heading="",
-                            col_widths=[20, 20],
+                            col_widths=[15, 20, 5],
                             num_rows=10,
                             key='-TREE-',
                             # row_height=20,
@@ -1815,15 +1818,22 @@ def make_modify_user_window(user: dict):
                   [[sg.Checkbox('Разрешить любые устройства',
                                 default=user['multiple_devices'],
                                 disabled=True if (
-                                            user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
+                                            user['is_dispatcher'] or user['is_admin']) else False,
                                 enable_events=True,
                                 key='modifyUserRoleMultipleDevices'), sg.Push()],
-                   [sg.Push(), sg.Button(button_text='Привязать новое устройство',
-                                         key='modifyUserFixNewDevice',
-                                         disabled=False,
-                                         disabled_button_color='gray'
-                                         )
-                    ]],
+                   [sg.Push(),
+                    sg.Button(button_text='Показать устройство',
+                              key='modifyUserShowDevice',
+                              disabled=False,
+                              disabled_button_color='gray'
+                              ),
+                    sg.Button(button_text='Привязать новое устройство',
+                              key='modifyUserFixNewDevice',
+                              disabled=True if (user['is_dispatcher'] or user['is_admin']) else False,
+                              disabled_button_color='gray'
+                              )
+                    ]
+                   ],
                   pad=((8, 0), (10, 10)),
                   key='modifyUserDeviceAutorization',
                   expand_x=True),
@@ -1853,6 +1863,35 @@ def make_modify_user_window(user: dict):
                      # disable_minimize=True,
                      modal=True)
 
+
+def make_device():
+    # dev_list = [['skjfdhksdjh2342jh', 'RG360SN0010', 'Основная', '2.0.9.2.10.2', '90', '28.03.2024 08:55', '00:11:22:33:44:55','195.182.130.39', '28.03.2024 08:59']]
+    dev_list = get_last_device()
+    layout =[[sg.Table(dev_list,
+                       headings=['id устройства','Серийный номер', 'Тип приложения', 'Версия приложения', 'Заряд батареи', 'Инфо о батарее', 'MAC-адрес' ,'IP-адрес', 'Последнее время в сети'],
+                       justification="left",
+                       key='-updates-',
+                       expand_x=True,
+                       enable_click_events=True,
+                       enable_events=True,
+                       auto_size_columns=True,
+                       # visible_column_map=[False, True, True, True, True, True],
+                       select_mode=sg.TABLE_SELECT_MODE_BROWSE,
+                       selected_row_colors='black on lightblue',
+                       metadata=[],
+                       pad=10,
+                       num_rows=1,
+                       hide_vertical_scroll=True
+                       # col_widths=[15, 15, 15, 15, 15, 15, 15, 15, 15],
+                       )
+              ]]
+    return sg.Window('Устройство', layout,
+                     icon=ICON_BASE_64,
+                     # use_ttk_buttons=True,
+                     finalize=True,
+                     # disable_minimize=True,
+                     modal=True
+                     )
 
 def make_modify_group_window(group: dict):
     layout_modify_group = [
@@ -2328,6 +2367,43 @@ def del_update(id):
         my_popup('Не удалось удалить приложение')
 
 
+def get_all_devices():
+    devs = []
+    try:
+        res = requests.get(BASE_URL_DEVICE +
+                           'getDevices',
+                           headers=HEADER_dict)
+        if res.status_code == 200:
+            print(res.text)
+            devs = json.loads(res.text)
+        else:
+            print(res.status_code)
+    except Exception as e:
+        print(f'Не удалось запросить версии - {e}')
+        logging.error("Не удалось запросить версии")
+        my_popup('Не удалось запросить версии')
+    return devs
+
+
+def get_last_device():
+    dev = {}
+    try:
+        res = requests.get(BASE_URL_DEVICE +
+                           'getLastDevice/' + str(user_to_change['id']),
+                           headers=HEADER_dict)
+        if res.status_code == 200:
+            print(res.text)
+            dev = json.loads(res.text)
+        else:
+            print(res.status_code)
+    except Exception as e:
+        print(f'Не удалось запросить версии - {e}')
+        logging.error("Не удалось запросить версии")
+        my_popup('Не удалось запросить версии')
+    return dev
+
+
+
 def filter_journal(journal: list):
     if filter_journal_info:
         if filter_journal_warning:
@@ -2554,8 +2630,8 @@ def get_role_from_key(key: str):
         return 11
     elif key == 'modifyUserRoleMfc':
         return 12
-    elif key == 'modifyUserRoleFixDevice':
-        return 13
+    # elif key == 'modifyUserRoleFixDevice':
+    #     return 13
     elif key == 'modifyUserRoleMultipleDevices':
         return 14
     else:
@@ -3554,10 +3630,11 @@ def set_roles(ev: str):
         window_modify_user['modifyUserRoleMfc'].update(user_to_change['mfc'],
                                                        disabled=False if ev == 'modifyUserUser' or
                                                                          ev == 'modifyUserDispatcher' else True)
-        window_modify_user['modifyUserRoleFixDevice'].update(user_to_change['fix_device'],
-                                                             disabled=False if ev == 'modifyUserUser' else True)
+        # window_modify_user['modifyUserRoleFixDevice'].update(user_to_change['fix_device'],
+        #                                                      disabled=False if ev == 'modifyUserUser' else True)
         window_modify_user['modifyUserRoleMultipleDevices'].update(user_to_change['multiple_devices'],
-                                                                   disabled=False if ev == 'modifyUserUser' else True)
+                                                                   disabled=False if ev == 'modifyUserUser' or
+                                                                   ev == 'modifyUserGw' else True)
 
 
 if __name__ == '__main__':
@@ -3693,6 +3770,7 @@ if __name__ == '__main__':
                     BASE_URL_AUTH = BASE_URL_PROTO + ip + ':' + str(port) + '/api/auth'
                     BASE_URL_SETTINGS = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/settings'
                     BASE_URL_UPDATE = BASE_URL_PROTO + ip + ':' + str(port) + '/api/update/'
+                    BASE_URL_DEVICE = BASE_URL_PROTO + ip + ':' + str(port) + '/api/device/'
                     server_status = check_server(BASE_URL_PING)
                     current_db = server_status['db']
                     if server_status['run']:
@@ -3979,8 +4057,16 @@ if __name__ == '__main__':
                                             # or ev_modify_user == 'modifyUserRoleFixDevice'
                                             or ev_modify_user == 'modifyUserRoleMultipleDevices'):
                                         modify_role = True
+                                    if ev_modify_user == 'modifyUserShowDevice':
+                                        window_device = make_device()
+                                        while True:
+                                            ev_dev, val_dev = window_device.Read()
+                                            if ev_dev == sg.WIN_CLOSED or ev_dev == 'Выйти':
+                                                window_device.close()
+                                                break
                                     if ev_modify_user == 'modifyUserFixNewDevice':
-                                        fix_device_error = False
+                                        # fix_device_error = False
+                                        modify_fix_device = True
                                         window_confirm = make_confirm_window(
                                             'Вы уверены, что хотите привязать одно новое устройство?\n'
                                             'Это приведёт к отмене авторизаций на любых устройствах!')
@@ -3993,30 +4079,27 @@ if __name__ == '__main__':
                                                                                                 json={'UserId': user_to_change['id']},
                                                                                                 headers=HEADER_dict)
                                                     if res_modify_fix_new_dev.status_code == 200:
-                                                        modify_success = True
+                                                        # modify_success = True
                                                         current_db += 1
+                                                        my_popup('Теперь можно привязать новое устройство')
+                                                        logging.info(
+                                                            f"Пользователю {val_modify_user['UserModifyLogin']} "
+                                                            f'можно привязать новое устройство')
                                                     else:
-                                                        fix_device_error = True
+                                                        my_popup('Произошла ошибка')
+                                                        logging.error(
+                                                            f"Ошибка при привязке нового утсройства для "
+                                                            f"пользователя {val_modify_user['UserModifyLogin']}")
+                                                    window_confirm.close()
                                                 except Exception as e:
                                                     print(f'Не удалось изменить роли - {e}')
                                                     logging.error("Не удалось изменить роли")
                                                 window_modify_user['modifyUserRoleMultipleDevices'].update(False)
-                                                window_confirm.close()
                                             if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
                                                 break
                                             if ev_confirm == 'noExit':
                                                 window_confirm.close()
                                                 break
-                                        if not fix_device_error:
-                                            my_popup('Теперь можно привязать новое устройство')
-                                            logging.info(
-                                                f"Пользователю {val_modify_user['UserModifyLogin']} "
-                                                f'можно привязать новое устройство')
-                                        else:
-                                            my_popup('Произошла ошибка')
-                                            logging.error(
-                                                f"Ошибка при привязке нового утсройства для "
-                                                f"пользователя {val_modify_user['UserModifyLogin']}")
                                     if ev_modify_user == 'UserModifyPriority':
                                         if val_modify_user['UserModifyPriority'] == '':
                                             window_modify_user['UserModifyPriority'].update(
@@ -4055,11 +4138,7 @@ if __name__ == '__main__':
                                             modify_user_dict = {'id': user_to_change['id']}
                                             modify_name = False
                                             modify_password = False
-                                            # modify_is_en_ind = False
-                                            # modify_is_en_ind_mes = False
                                             modify_is_blocked = False
-                                            # modify_en_del_chats = False
-                                            # modify_en_partial_drop = False
                                             modify_priority = False
                                             modify_u_t = False
                                             modify_success = False
@@ -4075,6 +4154,7 @@ if __name__ == '__main__':
                                             if modify_role:
                                                 result = change_all_roles(user_to_change['id'], val_modify_user)
                                                 if result:
+                                                    modify_success = True
                                                     logging.info(
                                                         f"Пользователю {val_modify_user['UserModifyLogin']} "
                                                         f'поменяли роли')
@@ -4195,12 +4275,12 @@ if __name__ == '__main__':
                                                     or modify_priority
                                                     or modify_u_t
                                                     or modify_role):
-                                                window_modify_user.close()
                                                 if modify_success:
                                                     update_users()
                                                     my_popup("Пользователь изменён!")
                                                 else:
                                                     my_popup("Ошибка изменения пользователя!")
+                                                window_modify_user.close()
                                             else:
                                                 my_popup("Нет никаких изменений!")
                                     if not modify_fix_device and not modify_success:
