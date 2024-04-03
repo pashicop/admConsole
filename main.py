@@ -10,6 +10,7 @@ import threading
 import urllib.parse
 from gc import enable
 from time import sleep
+from time import strftime, localtime
 import paramiko
 import requests
 from pathlib import Path
@@ -71,12 +72,10 @@ SYMBOL_BALLOT_X = '☒'
 SYMBOL_BALLOT_CHECK = '☑'
 SYMBOL_LEFT_DOUBLE = '«'
 SYMBOL_RIGHT_DOUBLE = '»'
-# SYMBOL_LEFT_ARROWHEAD = '⮜'
 SYMBOL_LEFT_ARROWHEAD = '‹'
-# SYMBOL_RIGHT_ARROWHEAD = '⮞'
 SYMBOL_RIGHT_ARROWHEAD = '›'
-SYMBOL_UP_ARROWHEAD = '⮝'
-SYMBOL_DOWN_ARROWHEAD = '⮟'
+SYMBOL_UP_ARROWHEAD = '⌃'
+SYMBOL_DOWN_ARROWHEAD = '⌄'
 MAX_LEN_LOGIN = 25
 MIN_LEN_LOGIN = 2
 MAX_LEN_USERNAME = 20
@@ -125,6 +124,7 @@ role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_
 # type_app = Enum(value='type_app', names={'vBasic': 0, 'vTonal': 1, 'vNoScreen': 2, 'vBox': 3, 'vZteEverlink': 4})
 type_app = {'Основная': 0, 'Тональник': 1, 'Без экрана': 2, 'К500': 3, 'ZTE': 4}
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
+client_os = Enum(value='client_os', names={'Unknown': 0, 'Android': 1, 'Linux': 2, 'Windows': 3})
 # OMEGA THEME
 omega_theme = {'BACKGROUND': '#ffffff',
                'TEXT': '#000000',
@@ -594,22 +594,21 @@ def get_group_list(groups):
     group_treedata :sg.Treedata: '', id, login, name"""
     group_treedata = sg.TreeData()
     gr_list = []
-    for index, gr_from_db in enumerate(groups):
-        gr_list.append([gr_from_db['id'], gr_from_db['name'], gr_from_db['desc']])
-        if gr_from_db['is_emergency']:
-            gr_list[index].append(u'\u0020\u0020\u0020\u2713')
-        else:
-            gr_list[index].append('')
-        if gr_from_db['is_disabled']:
-            gr_list[index].append(u'\u0020\u0020\u0020' + SYMBOL_X_SMALL)
-        else:
-            gr_list[index].append('')
-        if groups != [{}]:
+    if groups:
+        for index, gr_from_db in enumerate(groups):
+            gr_list.append([gr_from_db['id'], gr_from_db['name'], gr_from_db['desc']])
+            if gr_from_db['is_emergency']:
+                gr_list[index].append(u'\u0020\u0020\u0020\u2713')
+            else:
+                gr_list[index].append('')
+            if gr_from_db['is_disabled']:
+                gr_list[index].append(u'\u0020\u0020\u0020' + SYMBOL_X_SMALL)
+            else:
+                gr_list[index].append('')
             group_treedata.insert('', gr_from_db['id'], '',
                                   values=[gr_from_db['name'],
                                           gr_from_db['desc'],
-                                          (u'\u0020\u0020\u0020' + SYMBOL_X_SMALL) if gr_from_db['is_disabled'] else ''],
-                                  icon=check[0])
+                                          (u'\u0020\u0020\u0020' + SYMBOL_X_SMALL) if gr_from_db['is_disabled'] else ''], icon=check[0])
     return gr_list, group_treedata
 
 
@@ -966,7 +965,7 @@ def make_main_window(ip):
          ],
     ]
     layout = [[sg.Menu([
-        ['Сервер', ['Установить лицензию...', '!Настройки', 'Обновления', 'Очистка БД', ['Частично', 'Полностью']]],
+        ['Сервер', ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства', 'Очистка БД', ['Частично', 'Полностью']]],
         ['Помощь', 'О программе'], ], key='-Menu-', )],
         [sg.Frame('Сервер', [[sg.Column([[sg.Push(),
                                           sg.Button('Старт', key='-Start-',
@@ -1741,7 +1740,17 @@ def make_modify_user_window(user: dict):
                       enable_events=True)]],
                   # size=(300, 140),
                   pad=((8, 0), (10, 10)))],
-        [sg.Frame('Дополнительные разрешения', [
+        # [sg.Push(),
+        #  sg.B(SYMBOL_DOWN_ARROWHEAD,
+        #          # pad=(5, 0),
+        #          disabled_button_color='gray',
+        #          font='Arial 20 bold',
+        #          # size=(5, 1),
+        #          # enable_events=True,
+        #          # mouseover_colors='white',
+        #          k='-hide-roles-'),
+        #  sg.Push()],
+         [sg.Frame('Дополнительные разрешения', [
             [sg.Checkbox('Разрешить индивидуальные вызовы',
                          default=user['en_ind'],
                          enable_events=True,
@@ -1802,6 +1811,7 @@ def make_modify_user_window(user: dict):
                          # default=False,
                          disabled=True if (user['is_admin'] or user['is_gw']) else False,
                          # disabled=True,
+                         pad=(5, (0, 10)),
                          enable_events=True,
                          key='modifyUserRoleMfc'), sg.Push()],
             # [sg.Checkbox('Привязать новое устройство',
@@ -1825,11 +1835,15 @@ def make_modify_user_window(user: dict):
                     sg.Button(button_text='Показать устройство',
                               key='modifyUserShowDevice',
                               disabled=False,
+                              pad=10,
+                              size=26,
                               disabled_button_color='gray'
                               ),
                     sg.Button(button_text='Привязать новое устройство',
                               key='modifyUserFixNewDevice',
                               disabled=True if (user['is_dispatcher'] or user['is_admin']) else False,
+                              pad=10,
+                              size=26,
                               disabled_button_color='gray'
                               )
                     ]
@@ -1864,13 +1878,11 @@ def make_modify_user_window(user: dict):
                      modal=True)
 
 
-def make_device():
-    # dev_list = [['skjfdhksdjh2342jh', 'RG360SN0010', 'Основная', '2.0.9.2.10.2', '90', '28.03.2024 08:55', '00:11:22:33:44:55','195.182.130.39', '28.03.2024 08:59']]
-    dev_list = get_last_device()
-    layout =[[sg.Table(dev_list,
-                       headings=['id устройства','Серийный номер', 'Тип приложения', 'Версия приложения', 'Заряд батареи', 'Инфо о батарее', 'MAC-адрес' ,'IP-адрес', 'Последнее время в сети'],
+def make_devices(dev_l):
+    layout =[[sg.Table(dev_l,
+                       headings=['id', 'Имя', 'c/н', 'Тип ОС', 'Версия ОС', 'Тип приложения', 'Версия', 'Заряд', 'Инфо', 'MAC-адрес' ,'IP-адрес', 'Последнее время в сети'],
                        justification="left",
-                       key='-updates-',
+                       key='-devices-',
                        expand_x=True,
                        enable_click_events=True,
                        enable_events=True,
@@ -1880,11 +1892,66 @@ def make_device():
                        selected_row_colors='black on lightblue',
                        metadata=[],
                        pad=10,
-                       num_rows=1,
+                       # num_rows=1,
                        hide_vertical_scroll=True
                        # col_widths=[15, 15, 15, 15, 15, 15, 15, 15, 15],
                        )
               ]]
+    # treedata_devs = get_all_devices_in_treedata()
+    # layout_treedata = [[sg.Tree(data=treedata_devs,
+    #                             headings=['id', 'Имя'],
+    #                             auto_size_columns=True,
+    #                             select_mode=sg.TABLE_SELECT_MODE_EXTENDED,
+    #                             show_expanded=True,
+    #                             enable_events=True,
+    #                             expand_x=True,
+    #                             expand_y=True)]]
+    return sg.Window('Устройства', layout,
+                     icon=ICON_BASE_64,
+                     # use_ttk_buttons=True,
+                     finalize=True,
+                     # disable_minimize=True,
+                     modal=True
+                     )
+
+
+def make_device(dev_l):
+    layout = [
+        [sg.Column([
+            [sg.Text('id устройства', pad=(0, 5))],
+            [sg.Text('Имя устройства', pad=(0, 5))],
+            [sg.Text('Тип ОС', pad=(0, 5))],
+            [sg.Text('Версия ОС', pad=(0, 5))],
+            [sg.Text('Тип приложения', pad=(0, 5))],
+            [sg.Text('Версия приложения', pad=(0, 5))],
+            [sg.Text('Сер. номер', pad=(0, 5))],
+            [sg.Text('Заряд АКБ, %', pad=(0, 5))],
+            [sg.Text('Инфо о батарее', pad=(0, 5))],
+            [sg.Text('IP адрес', pad=(0, 5))],
+            [sg.Text('MAC адрес', pad=(0, 5))],
+            [sg.Text('В сети', pad=(0, 5))],
+        ], element_justification='right'),
+        sg.Column([
+            [sg.Input(dev_l['deviceIdentifier'], size=25, pad=(0, 5), disabled=True)],
+            [sg.Input(dev_l['deviceName'], size=25, pad=(0, 5), disabled=True)],
+            [sg.Input(dev_l['osType'], size=25, pad=(0, 5), disabled=True)],
+            [sg.Input(dev_l['osVersion'], size=25, pad=(0, 5), disabled=True)],
+            [sg.Input(dev_l['appType'], size=25, pad=(0, 5), disabled=True)],
+            [sg.Input(dev_l['appVersion'], size=25, pad=(0, 5), disabled=True)],
+            [sg.Input(dev_l['serialNumber'], size=25, pad=(0, 5), disabled=True)],
+            [sg.Input(dev_l['battery'], size=25, pad=(0, 5), disabled=True)],
+            [sg.Input(strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev_l['batteryUpdated'])/1000)),
+                      size=25, pad=(0, 5), disabled=True)],
+            [sg.Input(dev_l['ipAddr'], size=25, pad=(0, 5), disabled=True)],
+            [sg.Input(dev_l['macAddr'], size=25, pad=(0, 5), disabled=True)],
+            [sg.Input(strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev_l['lastOnline'])/1000)),
+                      size=25, pad=(0, 5), disabled=True)],
+        ])
+        ],
+        [sg.Push(),
+         sg.Button('Привязать',
+                   key='-fixLastDevice-')]
+    ]
     return sg.Window('Устройство', layout,
                      icon=ICON_BASE_64,
                      # use_ttk_buttons=True,
@@ -2034,7 +2101,7 @@ def set_window_running_server():
                                                              server_status["isReserved"] else status_bar_color))
     window['-StatusBar2-'].update(bar_text2)
     window['-Menu-'].update([
-        ['Сервер', ['Установить лицензию...', 'Настройки', 'Обновления', 'Очистка БД', ['Частично', 'Полностью']]],
+        ['Сервер', ['Установить лицензию...', 'Настройки', 'Обновления', 'Устройства', 'Очистка БД', ['Частично', 'Полностью']]],
         ['Помощь', 'О программе'], ])
     update_free_space(server_status)
     window['online-users'].update(get_online_users(server_status['onlineUserIds']))
@@ -2382,8 +2449,55 @@ def get_all_devices():
         print(f'Не удалось запросить версии - {e}')
         logging.error("Не удалось запросить версии")
         my_popup('Не удалось запросить версии')
-    return devs
+    return get_list_prop(devs)
 
+
+def get_all_devices_in_treedata():
+    try:
+        res = requests.get(BASE_URL_DEVICE +
+                           'getDevices',
+                           headers=HEADER_dict)
+        if res.status_code == 200:
+            print(res.text)
+            devs = json.loads(res.text)
+        else:
+            print(res.status_code)
+    except Exception as e:
+        print(f'Не удалось запросить версии - {e}')
+        logging.error("Не удалось запросить версии")
+        my_popup('Не удалось запросить версии')
+    return get_treedata(devs)
+
+
+def print_chosen_device(val):
+    # print(val)
+    if val['-devices-']:
+        dev_id = val['-devices-'][0]
+        print(dev_id)
+        print(window_devices.key_dict['-devices-'].Values[dev_id])
+        # window_devices.ReturnValuesDictionary['']
+
+def get_treedata(dev_list_of_dict: list):
+    td = sg.TreeData()
+    if dev_list_of_dict:
+        for num, dev in enumerate(dev_list_of_dict):
+            td.Insert(parent=dev['appVersion'], key=dev['deviceIdentifier'], text=dev['deviceName'], values=[dev['deviceIdentifier'] if dev['deviceIdentifier'] else '',
+                                          dev['deviceName'] if dev['deviceName'] else ''])
+            # dev_list.append(dev['deviceIdentifier'] if dev['deviceIdentifier'] else '' )
+            # dev_list.append(dev['deviceName'] if dev['deviceName'] else '' )
+            # dev_list.append(dev['serialNumber'] if dev['serialNumber'] else '' )
+            # dev_list.append(dev['osType'] if dev['osType'] else '' )
+            # dev_list.append(dev['osVersion'] if dev['osVersion'] else '' )
+            # dev_list.append(dev['appType'] if dev['appType'] else '' )
+            # dev_list.append(dev['appVersion'] if dev['appVersion'] else '' )
+            # dev_list.append(dev['battery'] if dev['battery'] else '' )
+            # dev_list.append(strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['batteryUpdated'])/1000))
+            #                 if dev['batteryUpdated'] else '' )
+            # dev_list.append(dev['macAddr'] if dev['macAddr'] else '' )
+            # dev_list.append(dev['ipAddr'] if dev['ipAddr'] else '' )
+            # dev_list.append(strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['lastOnline'])/1000)) if dev['lastOnline'] else '' )
+            # dev_list_of_list.append(dev_list)
+    return td
 
 def get_last_device():
     dev = {}
@@ -2394,14 +2508,81 @@ def get_last_device():
         if res.status_code == 200:
             print(res.text)
             dev = json.loads(res.text)
+        elif res.status_code == 400:
+            if res.text == 'user has no last device':
+                my_popup('У пользователя ещё не было устройств')
+                return []
+            else:
+                print(res.status_code)
         else:
             print(res.status_code)
     except Exception as e:
-        print(f'Не удалось запросить версии - {e}')
-        logging.error("Не удалось запросить версии")
-        my_popup('Не удалось запросить версии')
+        print(f'Не удалось запросить устройство - {e}')
+        logging.error("Не удалось запросить устройство")
+        my_popup('Не удалось запросить устройство')
     return dev
 
+
+def get_list_prop(dev_list_of_dict: list):
+    dev_list = []
+    dev_list_of_list = []
+    if dev_list_of_dict:
+        for dev in dev_list_of_dict:
+            dev_list = []
+            dev_list.append(dev['deviceIdentifier'] if dev['deviceIdentifier'] else '' )
+            dev_list.append(dev['deviceName'] if dev['deviceName'] else '' )
+            dev_list.append(dev['serialNumber'] if dev['serialNumber'] else '' )
+            dev_list.append(client_os(dev['osType']).name if dev['osType'] else '' )
+            dev_list.append(dev['osVersion'] if dev['osVersion'] else '' )
+            dev_list.append(dev['appType'] if dev['appType'] else '' )
+            dev_list.append(dev['appVersion'] if dev['appVersion'] else '' )
+            dev_list.append(dev['battery'] if dev['battery'] else '' )
+            dev_list.append(strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['batteryUpdated'])/1000))
+                            if dev['batteryUpdated'] else '' )
+            dev_list.append(dev['macAddr'] if dev['macAddr'] else '' )
+            dev_list.append(dev['ipAddr'] if dev['ipAddr'] else '' )
+            dev_list.append(strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['lastOnline'])/1000)) if dev['lastOnline'] else '' )
+            dev_list_of_list.append(dev_list)
+    return dev_list_of_list
+
+
+def fixLastDevice(user_id):
+    if user_id:
+        window_confirm = make_confirm_window('Хотите привязать это устройство?')
+        while True:
+            ev_confirm, val_confirm = window_confirm.Read()
+            if ev_confirm == 'okExit':
+                res = False
+                try:
+                    fix_dict = {'UserId': user_id}
+                    res = requests.post(BASE_URL_DEVICE +
+                                        'fixLastDevice',
+                                        json=fix_dict,
+                                        headers=HEADER_dict)
+                    if res.status_code == 200:
+                        window_confirm.close()
+                        print('Устройство привязано')
+                        logging.info('Устройство привязано')
+                        my_popup('Устройство привязано')
+                    else:
+                        window_confirm.close()
+                        print(f'Не удалось привязать устройство - {res.status_code}, {res.text}')
+                        logging.error("Не удалось привязать устройство")
+                        my_popup('Не удалось привязать устройство')
+                except Exception as e:
+                    window_confirm.close()
+                    print(f'Не удалось привязать устройство - {e}')
+                    logging.error("Не удалось привязать устройство")
+                    my_popup('Не удалось привязать устройство')
+            if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
+                break
+            if ev_confirm == 'noExit':
+                window_confirm.close()
+                break
+    else:
+        print(f'Не удалось привязать устройство - нет id пользователя')
+        logging.error("Не удалось привязать устройство - нет id пользователя")
+        my_popup('Не удалось привязать устройство - нет id пользователя')
 
 
 def filter_journal(journal: list):
@@ -3425,7 +3606,8 @@ def parse_cur_lic(lic):
             else "Динамические группы" if feature == "DGNA" \
             else "Удалённое управление терминалами" if feature == "OTAP" \
             else "Длительное прослушивание" if feature == "LongAmbientListening" \
-            else "Контроль пересылки" if feature == "MFC" else "?"
+            else "Контроль пересылки" if feature == "MFC" \
+            else "Авторизация устройств" if feature == "DeviceAuthorization" else "?"
         LICS.append([feature_name, '+', lic['ExpirationDate']])
     return LICS
 
@@ -3851,7 +4033,8 @@ if __name__ == '__main__':
                                             update_users_and_groups()
                                             window['-Menu-'].update([
                                                 ['Сервер',
-                                                 ['Установить лицензию...', 'Настройки', 'Обновления', 'Очистка БД',
+                                                 ['Установить лицензию...', 'Настройки', 'Обновления', 'Устройства',
+                                                  'Очистка БД',
                                                   ['Частично', 'Полностью']]],
                                                 ['Помощь', 'О программе'], ])
                                     if current_db < dict_online['databaseVersion']:  # TODO
@@ -3888,7 +4071,8 @@ if __name__ == '__main__':
                                         server_status['run'] = False
                                         window['-Menu-'].update([
                                             ['Сервер',
-                                             ['Установить лицензию...', '!Настройки', 'Обновления', 'Очистка БД',
+                                             ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства',
+                                              'Очистка БД',
                                               ['Частично', 'Полностью']]],
                                             ['Помощь', 'О программе'], ])
                                 # noinspection PyUnboundLocalVariable
@@ -4031,6 +4215,7 @@ if __name__ == '__main__':
                                     ev_modify_user, val_modify_user = window_modify_user.Read()
                                     print(ev_modify_user, val_modify_user)
                                     modify_fix_device = False
+                                    modify_show_device = False
                                     modify_success = False
                                     if ev_modify_user == sg.WIN_CLOSED or ev_modify_user == 'Exit':
                                         break
@@ -4042,6 +4227,13 @@ if __name__ == '__main__':
                                             or ev_modify_user == 'modifyUserGw'
                                             or ev_modify_user == 'modifyUserAdm'):
                                         set_roles(ev_modify_user)
+                                    # if ev_modify_user == '-hide-roles-':
+                                    #     window_modify_user['modifyUserRoles'].update(
+                                    #         visible=window_modify_user['modifyUserRoles'].metadata == True)
+                                    #     window_modify_user['modifyUserRoles'].metadata = not window_modify_user['modifyUserRoles'].metadata
+                                    #     window_modify_user['-hide-roles-'].update(
+                                    #         text=SYMBOL_UP_ARROWHEAD if window_modify_user[
+                                    #             'modifyUserRoles'].metadata else SYMBOL_DOWN_ARROWHEAD)
                                     if (ev_modify_user == 'modifyUserRoleIndCallEn'
                                             or ev_modify_user == 'modifyUserRoleIndMesEn'
                                             or ev_modify_user == 'modifyUserRoleAllowDelChats'
@@ -4058,12 +4250,30 @@ if __name__ == '__main__':
                                             or ev_modify_user == 'modifyUserRoleMultipleDevices'):
                                         modify_role = True
                                     if ev_modify_user == 'modifyUserShowDevice':
-                                        window_device = make_device()
-                                        while True:
-                                            ev_dev, val_dev = window_device.Read()
-                                            if ev_dev == sg.WIN_CLOSED or ev_dev == 'Выйти':
-                                                window_device.close()
-                                                break
+                                        modify_show_device = True
+                                        last_device = get_last_device()
+                                        if last_device:
+                                            window_device = make_device(last_device)
+                                            while True:
+                                                ev_dev, val_dev = window_device.Read()
+                                                if ev_dev == sg.WIN_CLOSED or ev_dev == 'Выйти':
+                                                    window_device.close()
+                                                    break
+                                                if ev_dev == '-fixLastDevice-':
+                                                    fixLastDevice(user_to_change['id'])
+                                        else:
+                                            pass
+                                    # if ev_modify_user == 'modifyUserShowDevices':
+                                    #     modify_show_device = True
+                                    #     dev_list = []
+                                    #     dev_list.append(get_last_device())
+                                    #     if dev_list != [[]]:
+                                    #         window_device = make_device(dev_list)
+                                    #         while True:
+                                    #             ev_dev, val_dev = window_device.Read()
+                                    #             if ev_dev == sg.WIN_CLOSED or ev_dev == 'Выйти':
+                                    #                 window_device.close()
+                                    #                 break
                                     if ev_modify_user == 'modifyUserFixNewDevice':
                                         # fix_device_error = False
                                         modify_fix_device = True
@@ -4283,7 +4493,7 @@ if __name__ == '__main__':
                                                 window_modify_user.close()
                                             else:
                                                 my_popup("Нет никаких изменений!")
-                                    if not modify_fix_device and not modify_success:
+                                    if not modify_fix_device and not modify_show_device and not modify_success:
                                         window_modify_user['modifyUserButton'].update(disabled=False)
                                         window_modify_user['modifyUserButton'].update(button_color=button_color_2)
                             additional_window = False
@@ -4675,7 +4885,8 @@ if __name__ == '__main__':
                                                     else "Динамические группы" if feature == "DGNA" \
                                                     else "Удалённое управление терминалами" if feature == "OTAP" \
                                                     else "Длительное прослушивание" if feature == "LongAmbientListening" \
-                                                    else "Контроль пересылки" if feature == "MFC" else "?"
+                                                    else "Контроль пересылки" if feature == "MFC" \
+                                                    else "Авторизация устройств" if feature == "DeviceAuthorization" else "?"
                                                 print(feature_name, '+', lics['ExpirationDate'])
                                                 LICS.append([feature_name, '+', lics['ExpirationDate']])
                                             window_add_lic['-lic-'].update(LICS)
@@ -4773,7 +4984,8 @@ if __name__ == '__main__':
                                                 else "Динамические группы" if feature == "DGNA" \
                                                 else "Удалённое управление терминалами" if feature == "OTAP" \
                                                 else "Длительное прослушивание" if feature == "LongAmbientListening" \
-                                                else "Контроль пересылки" if feature == "MFC" else "?"
+                                                else "Контроль пересылки" if feature == "MFC" \
+                                                else "Авторизация устройств" if feature == "DeviceAuthorization" else "?"
                                             print(feature_name, '+', lics['ExpirationDate'])
                                             LICS.append([feature_name, '+', lics['ExpirationDate']])
                                         window_add_lic['-lic-'].update(LICS)
@@ -4869,6 +5081,7 @@ if __name__ == '__main__':
                                                         window['-Menu-'].update([
                                                             ['Сервер',
                                                              ['Установить лицензию...', 'Настройки', 'Обновления',
+                                                              'Устройства',
                                                               'Очистка БД',
                                                               ['Частично', 'Полностью']]],
                                                             ['Помощь', 'О программе'], ])
@@ -5356,6 +5569,16 @@ if __name__ == '__main__':
                                             window_add_update['-upload-apk-'].update(disabled=True, button_color=button_color)
                                         window_add_update['-upload-apk-'].update(disabled=False, button_color=button_color_2)
                             additional_window = False
+                        if event == 'Устройства':
+                            additional_window = True
+                            window_devices = make_devices(get_all_devices())
+                            while True:
+                                ev_devs, val_devs = window_devices.Read()
+                                if ev_devs == sg.WIN_CLOSED or ev_devs == 'Exit':
+                                    break
+                                if ev_devs == '-devices-':
+                                    # print(1)
+                                    print_chosen_device(val_devs)
                         if event == '-AddUser-':
                             """
                             Новая модель с userType
@@ -6346,7 +6569,8 @@ if __name__ == '__main__':
                                                 update_users_and_groups()
                                                 window['-Menu-'].update([
                                                     ['Сервер',
-                                                     ['Установить лицензию...', 'Настройки', 'Обновления', 'Очистка БД',
+                                                     ['Установить лицензию...', 'Настройки', 'Обновления', 'Устройства',
+                                                      'Очистка БД',
                                                       ['Частично', 'Полностью']]],
                                                     ['Помощь', 'О программе'], ])
                                                 update_text = ('Онлайн: ' + str(server_status["online"]) + ', БД: '
@@ -6460,7 +6684,8 @@ if __name__ == '__main__':
                                     window['Apply2'].update(disabled=True)
                                     window['-Menu-'].update([
                                         ['Сервер',
-                                         ['Установить лицензию...', '!Настройки', 'Обновления', 'Очистка БД',
+                                         ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства',
+                                          'Очистка БД',
                                           ['Частично', 'Полностью']]],
                                         ['Помощь', 'О программе'], ])
                                     server_status['run'] = False
