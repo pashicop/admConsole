@@ -195,6 +195,8 @@ def init_db():
     add_users(users)
     add_groups(get_groups_from_server())
     add_user_in_groups(users)
+    orgs = get_all_organizations()
+    # add_orgs(orgs)
 
 
 def create_db():
@@ -239,6 +241,7 @@ def create_db():
                             "fix_device" INTEGER DEFAULT 0,
                             "multiple_devices" INTEGER DEFAULT 0,
                             "priority" INTEGER DEFAULT 1,
+                            "organization_id" TEXT DEFAULT '00000000-0000-0000-0000-000000000000',
                             PRIMARY KEY("id")
                         );
                         CREATE TABLE IF NOT EXISTS "Groups" (
@@ -249,6 +252,11 @@ def create_db():
                             "is_broadcast"	INTEGER DEFAULT 0,
                             "is_emergency"	INTEGER DEFAULT 0,
                             "is_disabled"	INTEGER DEFAULT 0,
+                            PRIMARY KEY("id")
+                        );
+                        CREATE TABLE IF NOT EXISTS "Organizations" (
+                            "id"	TEXT NOT NULL UNIQUE,
+                            "Name"	TEXT NOT NULL UNIQUE,
                             PRIMARY KEY("id")
                         );
                         COMMIT;
@@ -290,7 +298,7 @@ def add_users(users_list):
     for user in users_list:
         is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, enabled_ind_mes, en_del_chats, \
             en_partial_drop, role_changer, screen_shooter, amb_caller, amb_callee, missing_msg_rv, allow_LLA, \
-            allow_LLA_client, mfc, fix_device, multiple_devices, priority = (
+            allow_LLA_client, mfc, fix_device, multiple_devices, priority, organization_id = (
             1 if user["userType"] == 15 or user['previousType'] == 15 else 0,
             1 if user["userType"] == 30 or user['previousType'] == 30 else 0,
             1 if user["userType"] == -1 else 0,
@@ -310,15 +318,16 @@ def add_users(users_list):
             1 if role.mfc.value in user['userRoles'] else 0,
             1 if role.fix_device.value in user['userRoles'] else 0,
             1 if role.multiple_devices.value in user['userRoles'] else 0,
-            user['priority'])
+            user['priority'],
+            user['organizationId'])
         db_insert_user = """insert or replace into Users(id, login, Display_name, is_dispatcher, is_admin, 
             is_blocked, is_gw, previous_type, en_ind, en_ind_mes, en_del_chats, en_partial_drop, role_changer, 
             screen_shooter, amb_caller, amb_callee, missing_msg_rv, allow_LLA, allow_LLA_client, mfc, fix_device, 
-            multiple_devices, priority) Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+            multiple_devices, priority, organization_id) Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         user_data = user['id'], user['login'], user['displayName'], \
             is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, enabled_ind_mes, \
             en_del_chats, en_partial_drop, role_changer, screen_shooter, amb_caller, amb_callee, missing_msg_rv, \
-            allow_LLA, allow_LLA_client, mfc, fix_device, multiple_devices, priority
+            allow_LLA, allow_LLA_client, mfc, fix_device, multiple_devices, priority, organization_id
         cur.execute(db_insert_user, user_data)
     con.commit()
     con.close()
@@ -335,6 +344,18 @@ def add_groups(groups_list):
         Values (?, ?, ?, ?, ?)"""
         group_data = group['id'], group['name'], description, group_type, is_disabled
         cur.execute(db_insert_group, group_data)
+    con.commit()
+    con.close()
+
+
+def add_orgs(orgs_list):
+    con = sqlite3.connect('adm.db')
+    cur = con.cursor()
+    for org in orgs_list:
+        db_insert_org = """insert or replace into Organizations(id, Name) 
+            Values (?, ?)"""
+        org_data = org['id'], org['name']
+        cur.execute(db_insert_org, org_data)
     con.commit()
     con.close()
 
@@ -410,10 +431,12 @@ def drop_db(table):
     if table == 'all':
         db_delete_groups = "delete from Groups"
         db_delete_users = "delete from Users"
+        db_delete_orgs = "delete from Organizations"
         db_delete_users_in_groups = "delete from Users_in_groups"
         db_delete_users_in_groups_seq = "delete from sqlite_sequence where name='Users_in_Groups'"
         cur.execute(db_delete_users)
         cur.execute(db_delete_groups)
+        cur.execute(db_delete_orgs)
         cur.execute(db_delete_users_in_groups)
         cur.execute(db_delete_users_in_groups_seq)
     elif table == 'users':
@@ -422,6 +445,9 @@ def drop_db(table):
     elif table == 'groups':
         db_delete_groups = "delete from Groups"
         cur.execute(db_delete_groups)
+    elif table == 'orgs':
+        db_delete_orgs = "delete from Organizations"
+        cur.execute(db_delete_orgs)
     elif table == 'user_in_groups':
         db_delete_users_in_groups = "delete from Users_in_groups"
         cur.execute(db_delete_users_in_groups)
@@ -464,6 +490,7 @@ def get_users_from_db() -> list[dict]:
                           'fix_device': user[21],
                           'multiple_devices': user[22],
                           'priority': user[23],
+                          'organization_id': user[24],
                           }
         users_for_table.append(user_for_table)
     con.close()
@@ -965,7 +992,7 @@ def make_main_window(ip):
          ],
     ]
     layout = [[sg.Menu([
-        ['Сервер', ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства', 'Очистка БД', ['Частично', 'Полностью']]],
+        ['Сервер', ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства', 'Организации', 'Очистка БД', ['Частично', 'Полностью']]],
         ['Помощь', 'О программе'], ], key='-Menu-', )],
         [sg.Frame('Сервер', [[sg.Column([[sg.Push(),
                                           sg.Button('Старт', key='-Start-',
@@ -1465,7 +1492,6 @@ def make_updates_window():
 
 
 def make_add_update_window(update_info=None):
-    print(update_info)
     layout = [
         [sg.Frame('Обновления мобильного приложения',
                   [
@@ -1699,6 +1725,9 @@ def make_add_user_window():
 
 
 def make_modify_user_window(user: dict):
+    org_name = get_org_by_id(user['organization_id'])
+    org_list = get_all_organizations_list()
+
     layout_modify_user = [
         [sg.Text('Логин'), sg.Push(), sg.Input(disabled=True, pad=((0, 40), (0, 0)),
                                                default_text=user['login'], key='UserModifyLogin')],
@@ -1852,12 +1881,26 @@ def make_modify_user_window(user: dict):
                   key='modifyUserDeviceAutorization',
                   expand_x=True),
          ],
-        [sg.Text('Приоритет'), sg.Input(key='UserModifyPriority',
+        # [sg.Text('Приоритет'), sg.Input(key='UserModifyPriority',
+        #                                 default_text=user['priority'],
+        #                                 size=(4, 1),
+        #                                 disabled=True if user['is_admin'] else False,
+        #                                 enable_events=True,
+        #                                 tooltip='От 0 до 15')],
+        [sg.Column([[sg.Text('Приоритет')],
+                    [sg.Text('Организация')]], element_justification='right'),
+         sg.Column([[sg.Input(key='UserModifyPriority',
                                         default_text=user['priority'],
                                         size=(4, 1),
                                         disabled=True if user['is_admin'] else False,
                                         enable_events=True,
                                         tooltip='От 0 до 15')],
+                    [sg.Combo(org_list, key='UserModifyOrg',
+                                        default_value=org_name if org_name else 'Нет',
+                                        disabled=True if user['is_admin'] else False,
+                                        enable_events=True,
+                                        tooltip='Организация')]],),
+         ],
         [sg.Push(), sg.Checkbox('Заблокирован',
                                 default=user['is_blocked'],
                                 disabled=True if user['is_admin'] else False,
@@ -1907,6 +1950,94 @@ def make_devices(dev_l):
     #                             expand_x=True,
     #                             expand_y=True)]]
     return sg.Window('Устройства', layout,
+                     icon=ICON_BASE_64,
+                     # use_ttk_buttons=True,
+                     finalize=True,
+                     # disable_minimize=True,
+                     modal=True
+                     )
+
+
+def make_organizations(org_l):
+    layout =[[sg.Column([[sg.Image(data=ICON_FILTER_BASE_64_BLUE),
+                          sg.Input(size=(15, 1),
+                                   enable_events=True,
+                                   disabled_readonly_background_color=disabled_input,
+                                   key='-filterOrg-'),
+                          sg.Button('', disabled_button_color='white',
+                                    image_data=ICON_CLEAR_FILTER_BASE_64_BLUE,
+                                    button_color='white',
+                                    tooltip='Очистить фильтр',
+                                    key='-ClearFilterOrg-',
+                                    disabled=True,
+                                    pad=((0, 5), 0))]],
+                        vertical_alignment='bottom'),
+              sg.Push(),
+              sg.Button('', disabled_button_color='white',
+                        image_data=ICON_ADD_BASE_64_BLUE,
+                        button_color='white',
+                        tooltip='Добавить',
+                        key='-AddOrg-',
+                        pad=(4, (0, 3))),
+              sg.Button('', disabled_button_color='white',
+                        disabled=True,
+                        image_data=ICON_MODIFY_BASE_64_BLUE,
+                        button_color='white',
+                        tooltip='Изменить',
+                        key='-EditOrg-',
+                        pad=(5, (0, 3))),
+              sg.Button('', disabled_button_color='white',
+                        disabled=True,
+                        image_data=ICON_DELETE_BASE_64_BLUE,
+                        button_color='white',
+                        tooltip='Удалить',
+                        key='-DelOrg-',
+                        pad=(4, (0, 3)))],
+             [sg.Table(org_l,
+                       headings=['id', 'Имя'],
+                       justification="left",
+                       key='-orgs-',
+                       expand_x=True,
+                       enable_click_events=True,
+                       enable_events=True,
+                       auto_size_columns=True,
+                       visible_column_map=[False, True],
+                       select_mode=sg.TABLE_SELECT_MODE_BROWSE,
+                       selected_row_colors='black on lightblue',
+                       metadata=[],
+                       pad=10,
+                       # num_rows=1,
+                       hide_vertical_scroll=False,
+                       col_widths=[30, 200],
+                       )
+              ]]
+    return sg.Window('Организации', layout,
+                     icon=ICON_BASE_64,
+                     # use_ttk_buttons=True,
+                     finalize=True,
+                     # disable_minimize=True,
+                     modal=True
+                     )
+
+
+def make_add_org_window():
+    layout = [
+        [sg.Column([
+            [sg.Text('Имя', pad=(0, 5))],
+        ], element_justification='right'),
+            sg.Column([
+                [sg.Input('',
+                          size=25,
+                          pad=(0, 5),
+                          key='-OrgName-',
+                          disabled=False)],
+            ])
+        ],
+        [sg.Push(),
+         sg.Button('Создать',
+                   key='-AddOrgConfirm-')]
+    ]
+    return sg.Window('Организация', layout,
                      icon=ICON_BASE_64,
                      # use_ttk_buttons=True,
                      finalize=True,
@@ -2101,7 +2232,7 @@ def set_window_running_server():
                                                              server_status["isReserved"] else status_bar_color))
     window['-StatusBar2-'].update(bar_text2)
     window['-Menu-'].update([
-        ['Сервер', ['Установить лицензию...', 'Настройки', 'Обновления', 'Устройства', 'Очистка БД', ['Частично', 'Полностью']]],
+        ['Сервер', ['Установить лицензию...', 'Настройки', 'Обновления', 'Устройства', 'Организации', 'Очистка БД', ['Частично', 'Полностью']]],
         ['Помощь', 'О программе'], ])
     update_free_space(server_status)
     window['online-users'].update(get_online_users(server_status['onlineUserIds']))
@@ -2449,7 +2580,7 @@ def get_all_devices():
         print(f'Не удалось запросить версии - {e}')
         logging.error("Не удалось запросить версии")
         my_popup('Не удалось запросить версии')
-    return get_list_prop(devs)
+    return get_list_devices(devs)
 
 
 def get_all_devices_in_treedata():
@@ -2467,6 +2598,70 @@ def get_all_devices_in_treedata():
         logging.error("Не удалось запросить версии")
         my_popup('Не удалось запросить версии')
     return get_treedata(devs)
+
+
+def get_all_organizations():
+    orgs = []
+    try:
+        res = requests.get(BASE_URL_ORG +
+                           '/all',
+                           headers=HEADER_dict)
+        if res.status_code == 200:
+            print(res.text)
+            orgs = json.loads(res.text)
+            drop_db('orgs')
+            add_orgs(orgs)
+        else:
+            print(res.status_code)
+    except Exception as e:
+        print(f'Не удалось запросить версии - {e}')
+        logging.error("Не удалось запросить версии")
+        my_popup('Не удалось запросить версии')
+    return get_list_orgs(orgs)
+
+
+def get_list_orgs(org_list_of_dict: list):
+    org_list_of_list = []
+    if org_list_of_dict:
+        for org in org_list_of_dict:
+            org_list = []
+            org_list.append(org['id'] if org['id'] else '')
+            org_list.append(org['name'] if org['name'] else '')
+            org_list_of_list.append(org_list)
+    return org_list_of_list
+
+
+def get_org_by_id(id):
+    con = sqlite3.connect('adm.db')
+    cur = con.cursor()
+    db_query_org = "Select name FROM Organizations WHERE id = '" + id + "'"
+    cur.execute(db_query_org)
+    name = cur.fetchone()[0]
+    con.close()
+    return name
+
+
+def get_id_by_org(org_name):
+    con = sqlite3.connect('adm.db')
+    cur = con.cursor()
+    db_query_org = "Select id FROM Organizations WHERE Name = '" + org_name + "'"
+    cur.execute(db_query_org)
+    id = cur.fetchone()[0]
+    con.close()
+    return id
+
+
+def get_all_organizations_list():
+    con = sqlite3.connect('adm.db')
+    cur = con.cursor()
+    db_query_org = "Select name FROM Organizations "
+    cur.execute(db_query_org)
+    orgs_from_db = cur.fetchall()
+    orgs_for_table = ['Нет']
+    for org_from_db in orgs_from_db:
+        orgs_for_table.append(org_from_db[0])
+    con.close()
+    return orgs_for_table
 
 
 def print_chosen_device(val):
@@ -2523,7 +2718,7 @@ def get_last_device():
     return dev
 
 
-def get_list_prop(dev_list_of_dict: list):
+def get_list_devices(dev_list_of_dict: list):
     dev_list = []
     dev_list_of_list = []
     if dev_list_of_dict:
@@ -2583,6 +2778,32 @@ def fixLastDevice(user_id):
         print(f'Не удалось привязать устройство - нет id пользователя')
         logging.error("Не удалось привязать устройство - нет id пользователя")
         my_popup('Не удалось привязать устройство - нет id пользователя')
+
+
+def add_org(org):
+    # print('1')
+    res = False
+    org_json = {'Name': org['-OrgName-']}
+    try:
+        res = requests.post(BASE_URL_ORG +
+                            '/add',
+                            json=org_json,
+                            headers=HEADER_dict)
+        if res.status_code == 200:
+            orgs_dict = json.loads(res.text)
+            print('Организация добавлена')
+            logging.info('Организация добавлена')
+            my_popup('Организация добавлена')
+            return orgs_dict['id']
+        else:
+            print(f'Организация НЕ добавлена - {res.status_code}, {res.text}')
+            logging.error("Организация НЕ добавлена")
+            my_popup('Организация НЕ добавлена')
+    except Exception as e:
+        print(f'Организация НЕ добавлена - {e}')
+        logging.error("Организация НЕ добавлена")
+        my_popup('Организация НЕ добавлена')
+    return False
 
 
 def filter_journal(journal: list):
@@ -3953,6 +4174,7 @@ if __name__ == '__main__':
                     BASE_URL_SETTINGS = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/settings'
                     BASE_URL_UPDATE = BASE_URL_PROTO + ip + ':' + str(port) + '/api/update/'
                     BASE_URL_DEVICE = BASE_URL_PROTO + ip + ':' + str(port) + '/api/device/'
+                    BASE_URL_ORG = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/org'
                     server_status = check_server(BASE_URL_PING)
                     current_db = server_status['db']
                     if server_status['run']:
@@ -4034,7 +4256,7 @@ if __name__ == '__main__':
                                             window['-Menu-'].update([
                                                 ['Сервер',
                                                  ['Установить лицензию...', 'Настройки', 'Обновления', 'Устройства',
-                                                  'Очистка БД',
+                                                  'Организации', 'Очистка БД',
                                                   ['Частично', 'Полностью']]],
                                                 ['Помощь', 'О программе'], ])
                                     if current_db < dict_online['databaseVersion']:  # TODO
@@ -4072,7 +4294,7 @@ if __name__ == '__main__':
                                         window['-Menu-'].update([
                                             ['Сервер',
                                              ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства',
-                                              'Очистка БД',
+                                              'Организации', 'Очистка БД',
                                               ['Частично', 'Полностью']]],
                                             ['Помощь', 'О программе'], ])
                                 # noinspection PyUnboundLocalVariable
@@ -4350,11 +4572,15 @@ if __name__ == '__main__':
                                             modify_password = False
                                             modify_is_blocked = False
                                             modify_priority = False
+                                            modify_org = False
                                             modify_u_t = False
                                             modify_success = False
                                             if val_modify_user['UserModifyName'] != user_to_change['name']:
                                                 modify_user_dict['displayName'] = val_modify_user['UserModifyName']
                                                 modify_name = True
+                                            if val_modify_user['UserModifyOrg'] != user_to_change['organization_id']:
+                                                modify_user_dict['OrganizationId'] = get_id_by_org(val_modify_user['UserModifyOrg'])
+                                                modify_org = True
                                             if val_modify_user['UserModifyPriority'] != str(user_to_change['priority']):
                                                 modify_user_dict['priority'] = val_modify_user['UserModifyPriority']
                                                 modify_priority = True
@@ -4421,7 +4647,7 @@ if __name__ == '__main__':
                                                 except Exception as e:
                                                     print(f'Не удалось поменять тип абонента - {e}')
                                                     logging.error("Не удалось поменять тип абонента")
-                                            if modify_name or modify_password or modify_priority:
+                                            if modify_name or modify_password or modify_priority or modify_org:
                                                 try:
                                                     res_modify_user = requests.post(BASE_URL + 'updateUser',
                                                                                     json=modify_user_dict,
@@ -4440,6 +4666,10 @@ if __name__ == '__main__':
                                                             logging.info(
                                                                 f"Пользователю {val_modify_user['UserModifyLogin']} "
                                                                 f'изменили приоритет')
+                                                        if modify_org:
+                                                            logging.info(
+                                                                f"Пользователю {val_modify_user['UserModifyLogin']} "
+                                                                f'изменили организацию')
                                                     else:
                                                         logging.error(f'Ошибка изменения пользователя - '
                                                                       f'{res_modify_user.status_code}')
@@ -4484,6 +4714,7 @@ if __name__ == '__main__':
                                                     or modify_is_blocked
                                                     or modify_priority
                                                     or modify_u_t
+                                                    or modify_org
                                                     or modify_role):
                                                 if modify_success:
                                                     update_users()
@@ -5082,6 +5313,7 @@ if __name__ == '__main__':
                                                             ['Сервер',
                                                              ['Установить лицензию...', 'Настройки', 'Обновления',
                                                               'Устройства',
+                                                              'Организации',
                                                               'Очистка БД',
                                                               ['Частично', 'Полностью']]],
                                                             ['Помощь', 'О программе'], ])
@@ -5579,6 +5811,63 @@ if __name__ == '__main__':
                                 if ev_devs == '-devices-':
                                     # print(1)
                                     print_chosen_device(val_devs)
+                            additional_window = False
+                        if event == 'Организации':
+                            additional_window = True
+                            window_organizations = make_organizations(get_all_organizations())
+                            while True:
+                                ev_orgs, val_orgs = window_organizations.Read()
+                                if ev_orgs == sg.WIN_CLOSED or ev_orgs == 'Exit':
+                                    break
+                                if ev_orgs == '-AddOrg-':
+                                    window_add_org = make_add_org_window()
+                                    while True:
+                                        ev_add_org, val_add_org = window_add_org.Read()
+                                        print(ev_add_org, val_add_org)
+                                        if ev_add_org == sg.WIN_CLOSED or ev_add_org == 'Exit':
+                                            break
+                                        if ev_add_org == '-AddOrgConfirm-':
+                                            add_org(val_add_org)
+                                            window_add_org.close()
+                                            window_organizations['-orgs-'].update(get_all_organizations())
+                                            break
+                                if ev_orgs == '-EditUpdate-':
+                                    window_add_update = make_add_update_window(
+                                        window_updates['-updates-'].Values[val_upd['-updates-'][0]])
+                                    while True:
+                                        ev_edit_upd, val_edit_upd = window_add_update.Read()
+                                        print(ev_edit_upd, val_edit_upd)
+                                        if ev_edit_upd == sg.WIN_CLOSED or ev_edit_upd == 'Exit':
+                                            break
+                                        if ev_edit_upd == '-upload-apk-':
+                                            print(
+                                                f"updates - {window_updates['-updates-'].Values[val_upd['-updates-'][0]][0]}")
+                                            update_id = edit_app(
+                                                window_updates['-updates-'].Values[val_upd['-updates-'][0]][0])
+                                            if update_id:
+                                                window_add_update['-ver-'].update('', disabled=True)
+                                                window_add_update['-notes-'].update('', disabled=True)
+                                                window_add_update['-changelog-'].update('', disabled=True)
+                                                window_add_update['-isForced-'].update('', disabled=True)
+                                                window_add_update['-FILENAME-UPDATE-'].update('', disabled=True)
+                                                window_add_update['-type-app-'].update(
+                                                    list(type_app.keys())[list(type_app.values()).index(0)],
+                                                    disabled=True)
+                                                updates_list = get_updates()
+                                                window_updates['-updates-'].update(updates_list)
+                                                window_updates['-EditUpdate-'].update(disabled=True)
+                                                window_updates['-DelUpdate-'].update(disabled=True)
+                                                # after_change = True
+                                                window_add_update.close()
+                                                break
+                                            window_add_update['-upload-apk-'].update(disabled=True,
+                                                                                     button_color=button_color)
+                                        window_add_update['-upload-apk-'].update(disabled=False,
+                                                                                 button_color=button_color_2)
+                                # if ev_orgs == '-devices-':
+                                #     # print(1)
+                                #     print_chosen_device(val_devs)
+                            additional_window = False
                         if event == '-AddUser-':
                             """
                             Новая модель с userType
@@ -6570,7 +6859,7 @@ if __name__ == '__main__':
                                                 window['-Menu-'].update([
                                                     ['Сервер',
                                                      ['Установить лицензию...', 'Настройки', 'Обновления', 'Устройства',
-                                                      'Очистка БД',
+                                                      'Организации', 'Очистка БД',
                                                       ['Частично', 'Полностью']]],
                                                     ['Помощь', 'О программе'], ])
                                                 update_text = ('Онлайн: ' + str(server_status["online"]) + ', БД: '
@@ -6685,7 +6974,7 @@ if __name__ == '__main__':
                                     window['-Menu-'].update([
                                         ['Сервер',
                                          ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства',
-                                          'Очистка БД',
+                                          'Организации', 'Очистка БД',
                                           ['Частично', 'Полностью']]],
                                         ['Помощь', 'О программе'], ])
                                     server_status['run'] = False
