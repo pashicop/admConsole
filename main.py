@@ -498,6 +498,56 @@ def get_users_from_db() -> list[dict]:
     return users_for_table
 
 
+def get_user_list_treedata(users_from_db):
+    con = sqlite3.connect('adm.db')
+    cur = con.cursor()
+    cur.execute('select * from users')
+    users = cur.fetchall()
+    users_for_table = list()
+    td = sg.TreeData()
+    orgs = get_all_organizations_list()
+    for org in orgs:
+        td.Insert(parent='', key=org, text=org, values=[])
+    for user in users:
+        user_for_table = {'login': user[1],
+                          'name': user[3],
+                          'id': user[0],
+                          'is_dispatcher': user[4],
+                          'is_admin': user[5],
+                          'is_blocked': user[6],
+                          'is_gw': user[7],
+                          'previous_type': user[8],
+                          'en_ind': user[9],
+                          'en_ind_mes': user[10],
+                          'en_del_chats': user[11],
+                          'en_partial_drop': user[12],
+                          'role_changer': user[13],
+                          'screen_shooter': user[14],
+                          'amb_caller': user[15],
+                          'amb_callee': user[16],
+                          'missing_msg_rv': user[17],
+                          'allow_LLA': user[18],
+                          'allow_LLA_client': user[19],
+                          'mfc': user[20],
+                          'fix_device': user[21],
+                          'multiple_devices': user[22],
+                          'priority': user[23],
+                          'organization_id': user[24]}
+        td.Insert(parent=get_org_by_id(user_for_table['organization_id']),
+                  key=user_for_table['name'],
+                  text=user_for_table['name'],
+                  values=[user_for_table['id'],
+                          user_for_table['login'],
+                          user_for_table['name'],
+                          user_for_table['is_dispatcher'],
+                          user_for_table['is_admin'],
+                          user_for_table['is_gw'],
+                          user_for_table['is_blocked']]
+                  )
+    con.close()
+    # users_for_table.sort(key=lambda i: i['login'])
+    return td
+
 def get_groups_from_db() -> list[dict]:
     """
     Get groups from DB sorted by group name in list[dict]
@@ -648,6 +698,7 @@ def make_main_window(ip):
     group_list = list()
     treedata = sg.TreeData()
     treedata2 = sg.TreeData()
+    user_list_treedata = get_user_list_treedata(users_from_db)
     label_text = 'Панель администратора ОМЕГА К100 ' + ip + ' Версия ' + version + ', ' + val_login['Логин']
     branch_name = get_branch()
     if branch_name != 'Неизвестно':
@@ -708,6 +759,26 @@ def make_main_window(ip):
                                        button_color='white',
                                        tooltip='Удалить',
                                        key='-DelUser-', pad=(4, (0, 3)))],
+                         # [sg.Tree(user_list_treedata,
+                         #          headings=['id', 'Логин', 'Имя', 'Дисп', 'Адм', 'К500', 'Блок'],
+                         #          col0_width=5,
+                         #          col0_heading="Организация",
+                         #          col_widths=[0, 10, 18, 5, 5, 5, 5],
+                         #          num_rows=10,
+                         #          # size=(450, 300),
+                         #          key='-users-tree-',
+                         #          # row_height=20,
+                         #          visible_column_map=[False, True, True, True, True, True, True],
+                         #          metadata=[],
+                         #          auto_size_columns=False,
+                         #          show_expanded=False,
+                         #          enable_events=True,
+                         #          justification='left',
+                         #          expand_y=True,
+                         #          expand_x=True,
+                         #          select_mode=sg.TABLE_SELECT_MODE_BROWSE,
+                         #          selected_row_colors='black on lightblue',
+                         #          )],
                          [sg.Table(user_list, headings=['id', 'Логин', 'Имя', 'Дисп', 'Адм', 'К500', 'Блок'],
                                    justification="left",
                                    # num_rows=20,
@@ -725,7 +796,8 @@ def make_main_window(ip):
                                    metadata=[],
                                    size=(450, 300),
                                    col_widths=[0, 10, 18, 5, 5, 5, 5],
-                                   )], ],
+                                   )],
+                     ],
                      size=(471, 300),
                      # expand_x=True,
                      expand_y=True,
@@ -1922,40 +1994,55 @@ def make_modify_user_window(user: dict):
 
 
 def make_devices(dev_l):
-    layout =[[sg.Table(dev_l,
-                       headings=['id', 'Имя', 'c/н', 'Тип ОС', 'Версия ОС', 'Тип приложения', 'Версия', 'Заряд', 'Инфо', 'MAC-адрес' ,'IP-адрес', 'Последнее время в сети'],
-                       justification="left",
-                       key='-devices-',
-                       expand_x=True,
-                       enable_click_events=True,
-                       enable_events=True,
-                       auto_size_columns=True,
-                       # visible_column_map=[False, True, True, True, True, True],
-                       select_mode=sg.TABLE_SELECT_MODE_BROWSE,
-                       selected_row_colors='black on lightblue',
-                       metadata=[],
-                       pad=10,
-                       # num_rows=1,
-                       hide_vertical_scroll=True
-                       # col_widths=[15, 15, 15, 15, 15, 15, 15, 15, 15],
-                       )
-              ]]
-    # treedata_devs = get_all_devices_in_treedata()
-    # layout_treedata = [[sg.Tree(data=treedata_devs,
-    #                             headings=['id', 'Имя'],
-    #                             auto_size_columns=True,
-    #                             select_mode=sg.TABLE_SELECT_MODE_EXTENDED,
-    #                             show_expanded=True,
-    #                             enable_events=True,
-    #                             expand_x=True,
-    #                             expand_y=True)]]
-    return sg.Window('Устройства', layout,
+    # layout =[[sg.Table(dev_l,
+    #                    headings=['id', 'Имя', 'c/н', 'Тип ОС', 'Версия ОС', 'Тип приложения', 'Версия', 'Заряд', 'Инфо', 'MAC-адрес' ,'IP-адрес', 'Последнее время в сети'],
+    #                    justification="left",
+    #                    key='-devices-',
+    #                    expand_x=True,
+    #                    enable_click_events=True,
+    #                    enable_events=True,
+    #                    auto_size_columns=True,
+    #                    # visible_column_map=[False, True, True, True, True, True],
+    #                    select_mode=sg.TABLE_SELECT_MODE_BROWSE,
+    #                    selected_row_colors='black on lightblue',
+    #                    metadata=[],
+    #                    pad=10,
+    #                    # num_rows=1,
+    #                    hide_vertical_scroll=True
+    #                    # col_widths=[15, 15, 15, 15, 15, 15, 15, 15, 15],
+    #                    )
+    #           ]]
+    treedata_devs = get_all_devices_in_treedata()
+    layout_treedata = [[sg.Tree(data=treedata_devs,
+                                headings=['id', 'Имя'],
+                                col0_width=20,
+                                col0_heading='Устройство',
+                                def_col_width=30,
+                                max_col_width=30,
+                                visible_column_map=[True, False],
+                                num_rows=20,
+                                justification='left',
+                                # col_widths=[5, 5],
+                                # auto_size_columns=True,
+                                select_mode=sg.TABLE_SELECT_MODE_EXTENDED,
+                                show_expanded=True,
+                                enable_events=True,
+                                # expand_x=True,
+                                expand_y=True)]]
+    return sg.Window('Устройства', layout_treedata,
                      icon=ICON_BASE_64,
                      # use_ttk_buttons=True,
                      finalize=True,
                      # disable_minimize=True,
                      modal=True
                      )
+    # return sg.Window('Устройства', layout,
+    #                  icon=ICON_BASE_64,
+    #                  # use_ttk_buttons=True,
+    #                  finalize=True,
+    #                  # disable_minimize=True,
+    #                  modal=True
+    #                  )
 
 
 def make_organizations(org_l):
@@ -2636,7 +2723,10 @@ def get_org_by_id(id):
     cur = con.cursor()
     db_query_org = "Select name FROM Organizations WHERE id = '" + id + "'"
     cur.execute(db_query_org)
-    name = cur.fetchone()[0]
+    try:
+        name = cur.fetchone()[0]
+    except Exception as e:
+        name = 'Нет'
     con.close()
     return name
 
@@ -2675,9 +2765,11 @@ def print_chosen_device(val):
 def get_treedata(dev_list_of_dict: list):
     td = sg.TreeData()
     if dev_list_of_dict:
-        for num, dev in enumerate(dev_list_of_dict):
-            td.Insert(parent=dev['appVersion'], key=dev['deviceIdentifier'], text=dev['deviceName'], values=[dev['deviceIdentifier'] if dev['deviceIdentifier'] else '',
+        for dev in dev_list_of_dict:
+            td.Insert(parent='', key=dev['deviceIdentifier'], text=dev['deviceName'], values=[dev['deviceIdentifier'] if dev['deviceIdentifier'] else '',
                                           dev['deviceName'] if dev['deviceName'] else ''])
+            for user in dev['userIds']:
+                td.Insert(parent=dev['deviceIdentifier'], key=user, text=get_user_name_by_id_from_db(user), values=['', ''])
             # dev_list.append(dev['deviceIdentifier'] if dev['deviceIdentifier'] else '' )
             # dev_list.append(dev['deviceName'] if dev['deviceName'] else '' )
             # dev_list.append(dev['serialNumber'] if dev['serialNumber'] else '' )
@@ -3668,7 +3760,7 @@ def set_buttons_disabled(param=True):
     window['-filterGroup-'].update(disabled=param)
     window['-hide-online-'].update(disabled=param)
     window['-frame-online-'].update(visible=not window['-frame-online-'].metadata)
-    window['-users-'].update(visible=not param)
+    window['-users-'].update(visible=not param) # для treedata в users убрать
     window['-groups2-'].update(visible=not param)
     window['-TREE-'].update(visible=not param)
     window['-TREE2-'].update(visible=not param)
