@@ -54,6 +54,8 @@ ICON_CLEAR_FILTER_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34A
 ICON_UPDATE_LOG_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgEAYAAAAj6qa3AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAGYktHRAAAAAAAAPlDu38AAAAJcEhZcwAAAGAAAABgAPBrQs8AAAAHdElNRQfnBhQNLSJqPDyqAAAKYklEQVRo3tVZeVxURxL+6s1wCAFRDg+MAdSo8QBhBl0NAZGoSxIRhknEa4OJiAx4rKgRFQJeSNgcchgHJRGVGDlk8PpJPICgLiAYs4oxihckGAQRDxBm5vX+ge/p6rJmvUi+f+ZX3dU1/VVXv67qJrxguDgHbAiaaWVFMS1/kUjNzaWOkhXsSkuLdmLzYt62oaGsbLdMrW5qelHzoWdtUJ6omKQaOGgQ1rOp1O+99xBIVazU05NNQivKhg4lXxRilZlZuwaMEAWnqip0YqYUUlrKVnDJcNy92zjcsEYvz8kpKkpPX7++oeEP4wDXxb67QhscHZmGG8WOxcbCDDOxZ/z4Z+1YVKIeRc3NrJrlISYlhbmxRu2e2Niysp3WanVNzQtzgIvL28eDgkxMaKJRtdRr3Tp6mY2n9YGBSKIpeI3jBD22E29g6a1bZIdDSN+3j/ogkAoPH2YmCOOtf/mFJ+ygHbW1gr4khO/LF1pZ8Wc5CSdzdIQduuOauzstQAoGenpiCHLhL5WKE7HDRUxsbKS77B90ccGCkl3ZoxODNm1qb95KpVKpVEokF4/wy637zpnDaZktp6mo+N0OGFGlVAa/ZWurO6lfLvlao6FoisbHLi6ighe+Y7FXrkCFpVQRGdmQ3ZTC1W/ffn7OvvMJ3i0tT7pCI4f6hgfvt7HR+kjUnOe8eXBjg2hJWBiWoieaX3pJVNyA03BOTeU/tHTT/jM4uKxcnaJO0WrFhfvJ3yOkwceHm8YsaVlODgIwApobNx7rABdnpf+c6717UwJfqD939CjNgxvSbG0hhwKhjMGSglnf2FiTGNPGO9KYmALaTJvp7t0nJfw4DIv3S1RNfuUVyTgKQnpqKs1AAFSenqLCRpaE4RqN3UpJWO0uhSIjIyMjI0Ovl/n524TErF1LVcyNflu0iGUyNYuvqODa+6Ohn0yzCZ9qaspp9Wv032o0InFhL8azg2QcEFC6IvNmskFExPMmLuBEeHZoUvrly/Yx3JRa5dix2MlcMH3DBlHhQ1Kh2MfnUr3eodvVdeuEZpLwibR8+HBR9qBSulpS0m4EyOYoxqpupafTMZjho4AAccW301Y2wd+/9Hrm3uRz2dnPm/DvA5F8sd/mkIZNm3CIcmlZYKDYVUnNLE+hwHbWQD6bNwtbh25iGlXNnv1IBMi6+M0LXTJqlEhcwGn4sm+iojqauOuniuthvdzc5EqlMmSHk5M7c2dRTCLhv7Mq0i2aNYtFsSh8XFYmDpjLf0kX0tIe/mbw3VBDwcXFjziAXCmPzYiLExv+BgMc+uknk/w6Y+voNWs6irhLtcJQ5ebtzb7BTN6nsBCXeJ4KTpxo8rb6su7rxkZKrj8gXX7wIK6RDQ26elUcuJvmI9jUVJSt4AVZUxO7bVnesvPUKfFYkWf5Jaomv/EGYnEYn48cKTrkR/xMW5YsKaACiiadrqMcIGnmfLglly6xRn4Yn1Vfj84og7GlJepwAMdNTCgMznTczQ2Aiin/h6E49jKMysvLhqhnq1O02vsRMBw3MXfyZFEuhR32VVeXqLPKE2UaTUcRF1DSLyMjwbuiwuRs3RKrjd27kyf/Pq10cmoL+VmzhGMQQ/ABPjt1iqWiBWP0+kcMdYEF+hQWCuL9xCKNRsPLywtAGaYDSEUCbDUazABwgbGOdoCA/4zEkyex9t4vAECtBuCND4BRmglFMxaamekspDeMr8lkfAGdpgW9e/M+rcbaTRkZgj1ycVb6B83s3JmT8MzA8MYNoYPfQvVs5cSJZQMy85O7dHwEPC9w9BI/xsjXweGRnin6DEqqquroCT4ryO39eoWMCQmRXVBEhK6aOlVolyKJO6S7YW6OGTwePhK0V568yPijwMVZ6R9qM2QIJDxjA5KSKB6DmR9jI6qUyvmj9+7l0Kf1ZYy7cEEoLlAHHmanT7dVWQ8cJ39WHNK9xaK7dxflUmQhkUji1DK3cadWyx030Xy63rKqqsXVpLrTZltbvoullbZ+2LA27T/Ox+9JwW3l9mNdly5iw78wAZk63ZH63NdTP7l9W4z6HxduqY3feufOw1XUnx1sInsNB/v0ERu+hitGCmU4Y49kgi4uvteCgnr0kFdPPKMqtrTsaAJPjQb6CD29vEQ5C80s4PvvBVF0gFBmchc5pUFxZSVWS07A/No1+VyFZ8jF8nJ5qSJCtT4uzvWcf68Q87FjR1QplfOPdurU0fzag3C8w5g1oPh+ZoswyqSfDxwQRLEalPXzawrZERpKFjSNChISHvcHLJ0lY/rdu+RB/VF85AjZs/epJi+v5Xv9Z5LVavVJ0tAXdD+veNGQuyuaQyKXL0cTplJ9TAxG4xaLbm3VFWkjuRn29ieO5r6emPvrr2IEUCZu0t0HQuVhDGKLEVZXJ+pPphCkGRujJ8bg7JgxrIWq2M21aw2aJVpdbnR0RxF3ZD5sLrOwYNmQYf68eWLHHOZBlV99JRAXmqVt5aRU2vQuudQd8PAAYP9fLa8kUzTm59NsjiPHRYv4WfrlzPfNNwGAMS8vXKdaOjx4MJfOGvneeXkdQ5/IMEkaoHtt40ZsxgDy7NoVJiwVPbRa3XZswRePVrPSO81WlbXXXV3pEuy5nM6dxZ5VCEOnLVuwFAlonjYNvohEmr8/s+Mv8u5lZcffzh6abB0b26asVncM4fuQVytsVMXz58MXWqQpFGKHDY1mr0ZGngjPKk9edvnyw+M4VGIeV/BA6OtQAqurV+1SuKTay4GB7H3swooHVtQa4TRk9WrZCkVflevChR1NXLZQcV0liYjAanwO8/h4oZ3tYV/hzO7dpRlZ5cnvrl3b3niOwIJxty2UAQCX2SbIDx4ULhONIrWHmtf4+2M8W8g+LykRMinKhSPkcXGyfMUxldm2bW2nQteuz5uwcDzL8xT5qvC0NMrHTASvWiXMixWgBkeOHzf2Mw7m+0+ffs8d7SZ0HGpoFcqdnIQGmsnlspj7K96WMd261RqjH24gHTeOfYv+2LN/v6i/EPGYPnmy7iw/qPXXM2dkTYrzoQ7h4a7npoSF7TU3f1rCwkdNbqowDJ05dy77gdPi6Llz4tYUVjwESZSxZ09rksn5ToM9PH7vCxK59lfkhE4IDmZDUclPHTDgjpI7Zq1ctKji3YzMaGptfXiA8MBwqZZPsx4YEYE52Ebnly5FLPahi5GROCHhmGwCw9n9+1k/uk0fFxVhK72DhNOnaQ1/i/+0ro5JJSMkR4monjXpe/XqxarZOk7v4IDbzIbZubtTPPmzHWPH4jDMKMrQUJzIvdtp1OMwfoiLM0EdrLBy5f97c/XUT2NtIfnqq6iQ/IaMZcuwig2DxaRJaKIZqDEweFr7Iu7l8HgHQ1hCVpZuODtKOYsXC9fkT2r2mT+ODhs5oSh0Qs+ekmtSZ36qnx9NgCFe9/ZmK+gSOTg7kzsW44Nu3R4eJ1xhURXscbi6Gn9HNP565gzrROvYwJwcRgY9dKuzssrKv5mlTrmfjzwtnrkDHodRlm1XVS1VlG30kYWFPlniwIVxXEtvSb7Vtpqa9rbe88K/AYtyq+GYk/nhAAAAAElFTkSuQmCC'
 ICON_SAVE_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAEJSURBVHgB7ZZBCoJAFIbfS7tEtGgbbVxobT1CaQdwGRZ0hPQGLaI6RJRHcC0FrVq36hIhNk8IKqQZNTJiPhgc8J/5f58PZgAkJTDscUIDSlCDipEBZAAZQAaQAVSeQOuPWnVF2WGSBNF26YMAhu1OAdC5xvHgGKzP77TcCqiq2qIcCaLXtdwZT6+nGpzTGgVQ4+m5AfabRcjM0y/nhSBzZBqas6d/CFYBb3+hHmAhPF6IV/OIrRHYGhQQ5HKKwkanhwhgMgez2TbIyaR3DTYvYp7qISf6cOKxhsz8DXnNCeEK3HmqREnzQgGyQhQ1L41huQ4N+As+ccMt4iMPo987Db/RB49UXgHJDWyLW9JxL6HiAAAAAElFTkSuQmCC'
 ICON_LEFT_ARROW_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFXSURBVEiJndbLbhMxFIDhT0kGnoYNqKVcciNJuyvP1jeoEOIeoKUtb8St2+7NIk41ScaecSx5dTT/b9nnMkIISjZOcIfQsk9DCErhx/iFx4l4hQt8waBIgEWEP8nAv2G5hncWYI7fOEjEBxH8FdVGrAN8FuGHGfjnePpqJ94CfxXhR4l4Hx/xvQmeFWCKP3iWgX/AJR4kOYmPJxH+IgN/hx85eKMA4wh/mYD38BZXbfAdAUb4i1EG/gbXXeAbAgwjfJyBn+MGD7vA7wV4FOHTzKOf4WcJPISgZ7X68YS5VbXEm9dWzt9i0pI55VdUg8yiJPUOfbzf65EbJKlMWhdYeZrWIHP8wzARH+CTfQqtQZIquHWTK28VNcgiSlItY2A1XMqbXYPkeUaytE+7rkGOrQox1VnX06x84DRIUrOhildVPjJrkJMoeZqR7Df0tyRdfltehxD8B8k8yTaHLwT/AAAAAElFTkSuQmCC'
+ICON_CHANGE_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAACxAAAAsQHGLUmNAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAOdJREFUSInl1SFOA0EUxvFfoSEtu7AJwVYWgeUG3KYCi+AIGBSOU3ABBCGtaQgOT5vgMAQSDIiZJs3CUnbYCuhnZme+N+8/ybw3yyooQ5G6eX2Bv4dx/L5OhVSpjwkusLa6yVul+S7u4niJ95r53nCEp9lCuxTwgocIuMdzAuB1UVCBIW6wVRPwYxUYCaWZV8Rk2Fgm5DT6yU04Dzn7wssj/NeQDrYrvMYg3ynDlfCk7JTNch90MFD/8nIc4xaHQrnjcx90cZAAmB20h815QBNq4RyP2G8y8d9ODieYCj+lpagQSvSf6wOQVilL2RIj8AAAAABJRU5ErkJggg=='
+ICON_CHANGE_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAHTSURBVEiJ3ZQ9SFtRHMXP/+bl5eOlcYndHOuiZokfWwmC1W62NkMHwSlQ03YKglNCXdwcbBQyOHZ5g6BS7WJBKmJJKB1aimtHocWa5NG8vPt3ipiY98IzcckZ77n3/Lgf5wI9r+iTtBZLJPvuul44mePPUoO+sHFG7E11HTAx9/YRCxwy835huH/1rgCyC5ewPjP4oDDyMIlsVnYN0M3wW4DYy2REmN7vYESIsMMMdpXGqPr88s2XD5t/60NKw4QSKqTiNwMRBn4RoeQmX4KrimoYtjsAgFgi2SekcgCQVE1j5nhn69LVLpp06xUV9fyFFLUZAjymEvg4lFgMtVoYnU9rQ4ms6hpQh1jCnAbBq1m03wrirxgZTZ4ftSuhbQ9uQoJMK81+WfA7MEyP9H5ygjg2uajnL4IPynHhE5lm74e+USp7+Gk7SMuiuVF0Pq35KsYegLAi1KkTfe2PLSC+sOAvXQZfCaK2l3dTDITAWCLgm1U1J4u7+Urda+hBrRoIEFOMAVcAIhADYMIAQggCuAZ0fEQAaOz56/cQPCdITJ7q6z8bzPsM7xTQNhxo/otcaPRFahngWbLw+HR7/cxunmMPnMRk5v7/Cwx+3c7ZhveGrgAiFrY4Ehz/8QAAAABJRU5ErkJggg=='
 WARN_FREE_SPACE = 80
 ALARM_FREE_SPACE = 95
 WARN_LIC_DAYS = 30
@@ -1064,7 +1066,7 @@ def make_main_window(ip):
          ],
     ]
     layout = [[sg.Menu([
-        ['Сервер', ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства', 'Организации', 'Очистка БД', ['Частично', 'Полностью']]],
+        ['Сервер', ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства', '!Организации', 'Очистка БД', ['Частично', 'Полностью']]],
         ['Помощь', 'О программе'], ], key='-Menu-', )],
         [sg.Frame('Сервер', [[sg.Column([[sg.Push(),
                                           sg.Button('Старт', key='-Start-',
@@ -1558,7 +1560,7 @@ def make_updates_window():
     return sg.Window('Обновление приложения', layout=layout,
                      icon=ICON_BASE_64,
                      background_color='white',
-                     # use_ttk_buttons=True,
+                     use_ttk_buttons=True,
                      modal=True,
                      finalize=True)
 
@@ -1704,21 +1706,21 @@ def make_add_user_window():
             [sg.Checkbox('Разрешить индивидуальные вызовы',
                          default=True,
                          enable_events=True,
-                         key='addUserIndCallEn'), sg.Push()],
+                         key='addUserRoleIndCallEn'), sg.Push()],
             [sg.Checkbox('Разрешить индивидуальные сообщения',
                          default=True,
                          enable_events=True,
-                         key='addUserIndMesEn'), sg.Push()],
+                         key='addUserRoleIndMesEn'), sg.Push()],
             [sg.Checkbox('Разрешить удалять переписку в чатах',
                          default=False,
                          disabled=True,
                          enable_events=True,
-                         key='addUserAllowDelChats'), sg.Push()],
+                         key='addUserRoleAllowDelChats'), sg.Push()],
             [sg.Checkbox('Разрешить удалять данные БД',
                          default=False,
                          disabled=True,
                          enable_events=True,
-                         key='addUserAllowPartialDrop'), sg.Push()],
+                         key='addUserRoleAllowPartialDrop'), sg.Push()],
             [sg.Checkbox('Разрешить менять роли пользователя',
                          default=False,
                          disabled=True,
@@ -1728,38 +1730,41 @@ def make_add_user_window():
                          default=False,
                          disabled=False,
                          enable_events=True,
-                         key='addUserScreenShooter'), sg.Push()],
+                         key='addUserRoleScreenShooter'), sg.Push()],
             [sg.Checkbox('Разрешить совершать скрытое прослушивание',
                          default=False,
                          disabled=True,
                          enable_events=True,
-                         key='addUserAmbCaller'), sg.Push()],
+                         key='addUserRoleAmbCaller'), sg.Push()],
             [sg.Checkbox('Разрешить принимать скрытое прослушивание',
                          default=False,
                          disabled=False,
                          enable_events=True,
-                         key='addUserAmbCallee'), sg.Push()],
+                         key='addUserRoleAmbCallee'), sg.Push()],
             [sg.Checkbox('Получать пропущенные сообщения',
                          default=False,
                          disabled=False,
                          enable_events=True,
-                         key='addUserMissingMsgRv'), sg.Push()],
+                         key='addUserRoleMissingMsgRv'), sg.Push()],
             [sg.Checkbox('Разрешить долгое скрытое прослушивание',
                          default=False,
                          disabled=True,
                          enable_events=True,
-                         key='addUserAllowLLA'), sg.Push()],
+                         key='addUserRoleAllowLLA'), sg.Push()],
             [sg.Checkbox('Разрешить принимать долгие скрытые прослушивания',
                          default=False,
                          disabled=False,
                          enable_events=True,
-                         key='addUserAllowLLAclient'), sg.Push()],
+                         key='addUserRoleAllowLLAclient'), sg.Push()],
             [sg.Checkbox('Разрешить контроль переписки',
                          default=False,
                          disabled=False,
                          enable_events=True,
-                         key='addUserMfc'), sg.Push()],
-            [sg.Checkbox('Привязать новое устройство',
+                         key='addUserRoleMfc'), sg.Push()]],
+                  pad=((8, 0), (10, 10)),
+                  expand_x=True)],
+            [sg.Frame('Привязка к устройству',
+                      [[sg.Checkbox('Привязать одно устройство',
                          default=False,
                          disabled=False,
                          enable_events=True,
@@ -1768,10 +1773,12 @@ def make_add_user_window():
                          default=False,
                          disabled=False,
                          enable_events=True,
-                         key='addUserMultipleDevices'), sg.Push()],
+                         key='addUserRoleMultipleDevices'), sg.Push()]],
+                      pad=((8, 0), (10, 10)),
+                      key='addUserDeviceAutorization',
+                      expand_x=True
+                      )
         ],
-                  # size=(300, 110),
-                  pad=((8, 0), (10, 10)))],
         [sg.Text('Приоритет'), sg.Input(default_text='0',
                                         key='UserPriority',
                                         size=(4, 1),
@@ -1935,7 +1942,8 @@ def make_modify_user_window(user: dict):
                    [sg.Push(),
                     sg.Button(button_text='Показать устройство',
                               key='modifyUserShowDevice',
-                              disabled=False,
+                              disabled=True if (
+                                            user['is_dispatcher'] or user['is_admin']) else False,
                               pad=10,
                               size=26,
                               disabled_button_color='gray'
@@ -1960,18 +1968,21 @@ def make_modify_user_window(user: dict):
         #                                 enable_events=True,
         #                                 tooltip='От 0 до 15')],
         [sg.Column([[sg.Text('Приоритет')],
-                    [sg.Text('Организация')]], element_justification='right'),
+                    [sg.Text('Организация',
+                             visible=False)]], element_justification='right'),
          sg.Column([[sg.Input(key='UserModifyPriority',
                                         default_text=user['priority'],
                                         size=(4, 1),
                                         disabled=True if user['is_admin'] else False,
                                         enable_events=True,
                                         tooltip='От 0 до 15')],
-                    [sg.Combo(org_list, key='UserModifyOrg',
-                                        default_value=org_name if org_name else 'Нет',
-                                        disabled=True if user['is_admin'] else False,
-                                        enable_events=True,
-                                        tooltip='Организация')]],),
+                    [sg.Combo(org_list,
+                              key='UserModifyOrg',
+                              default_value=org_name if org_name else 'Нет',
+                              disabled=True if user['is_admin'] else False,
+                              visible=False,
+                              enable_events=True,
+                              tooltip='Организация')]],),
          ],
         [sg.Push(), sg.Checkbox('Заблокирован',
                                 default=user['is_blocked'],
@@ -2013,22 +2024,62 @@ def make_devices(dev_l):
     #                    )
     #           ]]
     treedata_devs = get_all_devices_in_treedata()
-    layout_treedata = [[sg.Tree(data=treedata_devs,
-                                headings=['id', 'Имя'],
-                                col0_width=20,
-                                col0_heading='Устройство',
-                                def_col_width=30,
-                                max_col_width=30,
-                                visible_column_map=[True, False],
-                                num_rows=20,
-                                justification='left',
-                                # col_widths=[5, 5],
-                                # auto_size_columns=True,
-                                select_mode=sg.TABLE_SELECT_MODE_EXTENDED,
-                                show_expanded=True,
-                                enable_events=True,
-                                # expand_x=True,
-                                expand_y=True)]]
+    layout_treedata = [
+        [sg.Frame('Устройства', [
+            [sg.Push(),
+             # sg.Button('', disabled_button_color='white',
+             #           image_data=ICON_ADD_BASE_64_BLUE,
+             #           button_color='white',
+             #           tooltip='Добавить',
+             #           border_width=0,
+             #           key='-AddUpdate-',
+             #           pad=(4, (0, 3))),
+             # sg.Button('', disabled_button_color='white',
+             #           disabled=True,
+             #           image_data=ICON_MODIFY_BASE_64_BLUE,
+             #           button_color='white',
+             #           tooltip='Изменить',
+             #           border_width=0,
+             #           key='-EditUpdate-',
+             #           pad=(4, (0, 3))),
+             # sg.Button('', disabled_button_color='white',
+             #           disabled=True,
+             #           image_data=ICON_DELETE_BASE_64_BLUE,
+             #           button_color='white',
+             #           tooltip='Удалить',
+             #           border_width=0,
+             #           key='-DelDev-',
+             #           pad=((4, 10), (0, 3)))
+             sg.Button('', disabled_button_color='white',
+                       disabled=False,
+                       image_data=ICON_CHANGE_BASE_64_BLUE,
+                       button_color='white',
+                       tooltip='Поменять',
+                       border_width=0,
+                       key='-ChangeDevUser-',
+                       pad=((4, 10), (0, 3)))
+                       ],
+            [sg.Tree(data=treedata_devs,
+                     key='-devices-tree-',
+                     headings=['id', 'Имя', 'c/н', 'Тип ОС', 'Версия ОС', 'Тип приложения', 'Версия', 'Заряд', 'Инфо', 'MAC-адрес' ,'IP-адрес', 'Последнее время в сети'],
+                     col0_width=20,
+                     col0_heading='Устройство',
+                     def_col_width=30,
+                     max_col_width=30,
+                     visible_column_map=[True, False, True, True, True, True, True, True, True, True, True, True],
+                     # num_rows=20,
+                     justification='left',
+                     selected_row_colors='black on lightblue',
+                     # col_widths=[5, 5],
+                     # auto_size_columns=True,
+                     select_mode=sg.TABLE_SELECT_MODE_EXTENDED,
+                     show_expanded=True,
+                     enable_events=True,
+                     expand_x=True,
+                     expand_y=True)]
+        ])
+         ]
+    ]
     return sg.Window('Устройства', layout_treedata,
                      icon=ICON_BASE_64,
                      # use_ttk_buttons=True,
@@ -2152,7 +2203,7 @@ def make_device(dev_l):
         sg.Column([
             [sg.Input(dev_l['deviceIdentifier'], size=25, pad=(0, 5), disabled=True)],
             [sg.Input(dev_l['deviceName'], size=25, pad=(0, 5), disabled=True)],
-            [sg.Input(dev_l['osType'], size=25, pad=(0, 5), disabled=True)],
+            [sg.Input(client_os(dev_l['osType']).name, size=25, pad=(0, 5), disabled=True)],
             [sg.Input(dev_l['osVersion'], size=25, pad=(0, 5), disabled=True)],
             [sg.Input(dev_l['appType'], size=25, pad=(0, 5), disabled=True)],
             [sg.Input(dev_l['appVersion'], size=25, pad=(0, 5), disabled=True)],
@@ -2319,7 +2370,7 @@ def set_window_running_server():
                                                              server_status["isReserved"] else status_bar_color))
     window['-StatusBar2-'].update(bar_text2)
     window['-Menu-'].update([
-        ['Сервер', ['Установить лицензию...', 'Настройки', 'Обновления', 'Устройства', 'Организации', 'Очистка БД', ['Частично', 'Полностью']]],
+        ['Сервер', ['Установить лицензию...', 'Настройки', 'Обновления', 'Устройства', '!Организации', 'Очистка БД', ['Частично', 'Полностью']]],
         ['Помощь', 'О программе'], ])
     update_free_space(server_status)
     window['online-users'].update(get_online_users(server_status['onlineUserIds']))
@@ -2670,7 +2721,7 @@ def get_all_devices():
     return get_list_devices(devs)
 
 
-def get_all_devices_in_treedata():
+def get_all_devices_in_treedata(type='dev'):
     try:
         res = requests.get(BASE_URL_DEVICE +
                            'getDevices',
@@ -2684,7 +2735,7 @@ def get_all_devices_in_treedata():
         print(f'Не удалось запросить версии - {e}')
         logging.error("Не удалось запросить версии")
         my_popup('Не удалось запросить версии')
-    return get_treedata(devs)
+    return get_treedata(devs, type)
 
 
 def get_all_organizations():
@@ -2754,36 +2805,101 @@ def get_all_organizations_list():
     return orgs_for_table
 
 
+def clear_devices(us_id):
+    try:
+        res_modify_clear_devices = requests.post(BASE_URL_DEVICE +
+                                               'clearDevices',
+                                               json={'UserId': us_id},
+                                               headers=HEADER_dict)
+        if res_modify_clear_devices.status_code == 200:
+            # modify_success = True
+            # current_db += 1
+            # my_popup('Теперь можно привязать новое устройство')
+            logging.info(
+                f"Пользователю {get_user_name_by_id_from_db(us_id)} "
+                f'очистили все устройства')
+        else:
+            my_popup('Произошла ошибка')
+            logging.error(
+                f"Ошибка при очистке утсройства для "
+                f"пользователя {get_user_name_by_id_from_db(us_id)}")
+        window_confirm.close()
+    except Exception as e:
+        print(f'Не удалось очистить устройства - {e}')
+        logging.error("Не удалось очистить устройства")
+
+
 def print_chosen_device(val):
     # print(val)
-    if val['-devices-']:
-        dev_id = val['-devices-'][0]
+    if val['-devices-tree-']:
+        dev_id = val['-devices-tree-'][0]
         print(dev_id)
-        print(window_devices.key_dict['-devices-'].Values[dev_id])
+        print(window_devices.key_dict['-devices-tree-'].Values[dev_id])
         # window_devices.ReturnValuesDictionary['']
 
-def get_treedata(dev_list_of_dict: list):
+
+# def change_dev_user(type: str):
+
+
+
+def get_treedata(dev_list_of_dict: list, type: str):
     td = sg.TreeData()
     if dev_list_of_dict:
-        for dev in dev_list_of_dict:
-            td.Insert(parent='', key=dev['deviceIdentifier'], text=dev['deviceName'], values=[dev['deviceIdentifier'] if dev['deviceIdentifier'] else '',
-                                          dev['deviceName'] if dev['deviceName'] else ''])
-            for user in dev['userIds']:
-                td.Insert(parent=dev['deviceIdentifier'], key=user, text=get_user_name_by_id_from_db(user), values=['', ''])
-            # dev_list.append(dev['deviceIdentifier'] if dev['deviceIdentifier'] else '' )
-            # dev_list.append(dev['deviceName'] if dev['deviceName'] else '' )
-            # dev_list.append(dev['serialNumber'] if dev['serialNumber'] else '' )
-            # dev_list.append(dev['osType'] if dev['osType'] else '' )
-            # dev_list.append(dev['osVersion'] if dev['osVersion'] else '' )
-            # dev_list.append(dev['appType'] if dev['appType'] else '' )
-            # dev_list.append(dev['appVersion'] if dev['appVersion'] else '' )
-            # dev_list.append(dev['battery'] if dev['battery'] else '' )
-            # dev_list.append(strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['batteryUpdated'])/1000))
-            #                 if dev['batteryUpdated'] else '' )
-            # dev_list.append(dev['macAddr'] if dev['macAddr'] else '' )
-            # dev_list.append(dev['ipAddr'] if dev['ipAddr'] else '' )
-            # dev_list.append(strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['lastOnline'])/1000)) if dev['lastOnline'] else '' )
-            # dev_list_of_list.append(dev_list)
+        if type == 'dev':
+            for dev in dev_list_of_dict:
+                td.Insert(parent='',
+                          key=dev['deviceIdentifier'],
+                          text=dev['deviceName'],
+                          values=[dev['deviceIdentifier'] if dev['deviceIdentifier'] else '',
+                                  dev['deviceName'] if dev['deviceName'] else '',
+                                  dev['serialNumber'] if dev['serialNumber'] else '',
+                                  client_os(dev['osType']).name if dev['osType'] else '',
+                                  dev['osVersion'] if dev['osVersion'] else '',
+                                  dev['appType'] if dev['appType'] else '',
+                                  dev['appVersion'] if dev['appVersion'] else '',
+                                  dev['battery'] if dev['battery'] else '',
+                                  strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['batteryUpdated']) / 1000))
+                                  if dev['batteryUpdated'] else '',
+                                  dev['macAddr'] if dev['macAddr'] else '',
+                                  dev['ipAddr'] if dev['ipAddr'] else '',
+                                  strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['lastOnline']) / 1000))
+                                  if dev['lastOnline'] else ''
+                                  ]
+
+                          )
+                for user in dev['userIds']:
+                    td.Insert(parent=dev['deviceIdentifier'],
+                              key=(user + '.' + dev['deviceIdentifier']),
+                              text=get_user_name_by_id_from_db(user),
+                              values=['', ''])
+        else:
+            users_ids = []
+            for dev in dev_list_of_dict:
+                for user in dev['userIds']:
+                    if user not in users_ids:
+                        users_ids.append(user)
+                        td.Insert(parent='',
+                                  key=user,
+                                  text=get_user_name_by_id_from_db(user),
+                                  values=[''])
+                    td.Insert(parent=user,
+                              key=dev['deviceIdentifier'],
+                              text=dev['deviceName'],
+                              values=[dev['deviceIdentifier'] if dev['deviceIdentifier'] else '',
+                                      dev['deviceName'] if dev['deviceName'] else '',
+                                      dev['serialNumber'] if dev['serialNumber'] else '',
+                                      client_os(dev['osType']).name if dev['osType'] else '',
+                                      dev['osVersion'] if dev['osVersion'] else '',
+                                      dev['appType'] if dev['appType'] else '',
+                                      dev['appVersion'] if dev['appVersion'] else '',
+                                      dev['battery'] if dev['battery'] else '',
+                                      strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['batteryUpdated']) / 1000))
+                                      if dev['batteryUpdated'] else '',
+                                      dev['macAddr'] if dev['macAddr'] else '',
+                                      dev['ipAddr'] if dev['ipAddr'] else '',
+                                      strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['lastOnline']) / 1000))
+                                      if dev['lastOnline'] else ''
+                                      ])
     return td
 
 def get_last_device():
@@ -2851,6 +2967,7 @@ def fixLastDevice(user_id):
                         print('Устройство привязано')
                         logging.info('Устройство привязано')
                         my_popup('Устройство привязано')
+                        return True
                     else:
                         window_confirm.close()
                         print(f'Не удалось привязать устройство - {res.status_code}, {res.text}')
@@ -2870,7 +2987,7 @@ def fixLastDevice(user_id):
         print(f'Не удалось привязать устройство - нет id пользователя')
         logging.error("Не удалось привязать устройство - нет id пользователя")
         my_popup('Не удалось привязать устройство - нет id пользователя')
-
+    return False
 
 def add_org(org):
     # print('1')
@@ -3100,33 +3217,33 @@ def change_role(role: Enum, set_flag, us_id):
 
 
 def get_role_from_key(key: str):
-    if key == 'modifyUserRoleIndCallEn':
+    if key == 'modifyUserRoleIndCallEn' or key == 'addUserRoleIndCallEn':
         return 1
-    elif key == 'modifyUserRoleAllowDelChats':
+    elif key == 'modifyUserRoleAllowDelChats' or key == 'addUserRoleAllowDelChats':
         return 2
-    elif key == 'modifyUserRoleAllowPartialDrop':
+    elif key == 'modifyUserRoleAllowPartialDrop' or key == 'addUserRoleAllowPartialDrop':
         return 3
-    elif key == 'modifyUserRoleIndMesEn':
+    elif key == 'modifyUserRoleIndMesEn' or key == 'addUserRoleIndMesEn':
         return 4
-    elif key == 'modifyUserRoleChanger':
+    elif key == 'modifyUserRoleChanger' or key == 'addUserRoleChanger':
         return 5
-    elif key == 'modifyUserRoleScreenShooter':
+    elif key == 'modifyUserRoleScreenShooter' or key == 'addUserRoleScreenShooter':
         return 6
-    elif key == 'modifyUserRoleAmbCaller':
+    elif key == 'modifyUserRoleAmbCaller' or key == 'addUserRoleAmbCaller':
         return 7
-    elif key == 'modifyUserRoleAmbCallee':
+    elif key == 'modifyUserRoleAmbCallee' or key == 'addUserRoleAmbCallee':
         return 8
-    elif key == 'modifyUserRoleMissingMsgRv':
+    elif key == 'modifyUserRoleMissingMsgRv' or key == 'addUserRoleMissingMsgRv':
         return 9
-    elif key == 'modifyUserRoleAllowLLA':
+    elif key == 'modifyUserRoleAllowLLA' or key == 'addUserRoleAllowLLA':
         return 10
-    elif key == 'modifyUserRoleAllowLLAclient':
+    elif key == 'modifyUserRoleAllowLLAclient' or key == 'addUserRoleAllowLLAclient':
         return 11
-    elif key == 'modifyUserRoleMfc':
+    elif key == 'modifyUserRoleMfc' or key == 'addUserRoleMfc':
         return 12
     # elif key == 'modifyUserRoleFixDevice':
     #     return 13
-    elif key == 'modifyUserRoleMultipleDevices':
+    elif key == 'modifyUserRoleMultipleDevices' or key == 'addUserRoleMultipleDevices':
         return 14
     else:
         return 0
@@ -3139,8 +3256,8 @@ def change_all_roles(us_id, val):
     role_change_error = False
     for par in val:
         if 'Role' in par:
-            role_number = get_role_from_key(par)
             if val[par]:
+                role_number = get_role_from_key(par)
                 add_roles.append(role_number)
     modify_role_add_dict = {'userId': us_id, 'roles': add_roles}
     try:
@@ -4348,7 +4465,7 @@ if __name__ == '__main__':
                                             window['-Menu-'].update([
                                                 ['Сервер',
                                                  ['Установить лицензию...', 'Настройки', 'Обновления', 'Устройства',
-                                                  'Организации', 'Очистка БД',
+                                                  '!Организации', 'Очистка БД',
                                                   ['Частично', 'Полностью']]],
                                                 ['Помощь', 'О программе'], ])
                                     if current_db < dict_online['databaseVersion']:  # TODO
@@ -4386,7 +4503,7 @@ if __name__ == '__main__':
                                         window['-Menu-'].update([
                                             ['Сервер',
                                              ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства',
-                                              'Организации', 'Очистка БД',
+                                              '!Организации', 'Очистка БД',
                                               ['Частично', 'Полностью']]],
                                             ['Помощь', 'О программе'], ])
                                 # noinspection PyUnboundLocalVariable
@@ -4574,7 +4691,11 @@ if __name__ == '__main__':
                                                     window_device.close()
                                                     break
                                                 if ev_dev == '-fixLastDevice-':
-                                                    fixLastDevice(user_to_change['id'])
+                                                    fix_last_device_success = fixLastDevice(user_to_change['id'])
+                                                    if fix_last_device_success:
+                                                        update_users()
+                                                        window_modify_user['modifyUserRoleMultipleDevices'].update(False)
+                                                        window_device.close()
                                         else:
                                             pass
                                     # if ev_modify_user == 'modifyUserShowDevices':
@@ -4598,6 +4719,7 @@ if __name__ == '__main__':
                                             ev_confirm, val_confirm = window_confirm.Read()
                                             if ev_confirm == 'okExit':
                                                 try:
+                                                    clear_devices(user_to_change['id'])
                                                     res_modify_fix_new_dev = requests.post(BASE_URL +
                                                                                                 'allowNewDevice',
                                                                                                 json={'UserId': user_to_change['id']},
@@ -5405,7 +5527,7 @@ if __name__ == '__main__':
                                                             ['Сервер',
                                                              ['Установить лицензию...', 'Настройки', 'Обновления',
                                                               'Устройства',
-                                                              'Организации',
+                                                              '!Организации',
                                                               'Очистка БД',
                                                               ['Частично', 'Полностью']]],
                                                             ['Помощь', 'О программе'], ])
@@ -5752,9 +5874,12 @@ if __name__ == '__main__':
                                                     logging.error(
                                                         f'Ошибка при изменении настроек - {res_update_set.status_code}')
                                                     my_popup("Ошибка при изменении настроек")
+                                                    continue
                                             except Exception as e:
                                                 print(f'Не удалось обновить настройки - {e}')
                                                 logging.error("Не удалось обновить настройки")
+                                                my_popup("Ошибка при изменении настроек")
+                                                continue
                                         ssh_change = False
                                         local_change = False
                                         if val_set['-пинг-таймаут-'] != str(ping_timeout):
@@ -5895,14 +6020,31 @@ if __name__ == '__main__':
                             additional_window = False
                         if event == 'Устройства':
                             additional_window = True
+                            userBased = False
                             window_devices = make_devices(get_all_devices())
                             while True:
                                 ev_devs, val_devs = window_devices.Read()
+                                # print(ev_devs, val_devs)
                                 if ev_devs == sg.WIN_CLOSED or ev_devs == 'Exit':
                                     break
                                 if ev_devs == '-devices-':
                                     # print(1)
                                     print_chosen_device(val_devs)
+                                if ev_devs == '-devices-tree-':
+                                    if val_devs['-devices-tree-']:
+                                        dev_id = val_devs['-devices-tree-'][0]
+                                        print(dev_id)
+                                        # delete_dev_fr
+                                    # print_chosen_device(val_devs)
+                                if ev_devs == '-ChangeDevUser-':
+                                    if not userBased:
+                                        devs_by_user = get_all_devices_in_treedata('user')
+                                        window_devices['-devices-tree-'].update(devs_by_user)
+                                        userBased = True
+                                    else:
+                                        users_by_devs = get_all_devices_in_treedata()
+                                        window_devices['-devices-tree-'].update(users_by_devs)
+                                        userBased = False
                             additional_window = False
                         if event == 'Организации':
                             additional_window = True
@@ -5970,35 +6112,75 @@ if __name__ == '__main__':
                             password_clear = False
                             while True:
                                 ev_add_user, val_add_user = window_add_user.Read()
-                                print(ev_add_user, val_add_user)
+                                # print(ev_add_user, val_add_user)
                                 if ev_add_user == sg.WIN_CLOSED or ev_add_user == 'Exit':
                                     break
                                 elif ev_add_user == 'UserPassword':
                                     window_add_user['showPassword'].update(disabled=False)
                                     window_add_user['showPassword'].update(image_data=ICON_SHOW_BASE_64)
                                 elif ev_add_user == 'user':
-                                    window_add_user['addUserIndCallEn'].update(True, disabled=False)
-                                    window_add_user['addUserIndMesEn'].update(True, disabled=False)
-                                    window_add_user['addUserAllowDelChats'].update(False, disabled=True)
-                                    window_add_user['addUserAllowPartialDrop'].update(False, disabled=True)
+                                    window_add_user['addUserRoleIndCallEn'].update(True, disabled=False)
+                                    window_add_user['addUserRoleIndMesEn'].update(True, disabled=False)
+                                    window_add_user['addUserRoleAllowDelChats'].update(False, disabled=True)
+                                    window_add_user['addUserRoleAllowPartialDrop'].update(False, disabled=True)
+                                    window_add_user['addUserRoleChanger'].update(False, disabled=True)
+                                    window_add_user['addUserRoleScreenShooter'].update(False, disabled=False)
+                                    window_add_user['addUserRoleAmbCaller'].update(False, disabled=True)
+                                    window_add_user['addUserRoleAmbCallee'].update(False, disabled=False)
+                                    window_add_user['addUserRoleMissingMsgRv'].update(False, disabled=False)
+                                    window_add_user['addUserRoleAllowLLA'].update(False, disabled=True)
+                                    window_add_user['addUserRoleAllowLLAclient'].update(False, disabled=False)
+                                    window_add_user['addUserRoleMfc'].update(False, disabled=False)
+                                    window_add_user['addUserFixDevice'].update(False, disabled=False)
+                                    window_add_user['addUserRoleMultipleDevices'].update(False, disabled=False)
                                     window_add_user['UserPriority'].update('0')
                                 elif ev_add_user == 'disp':
-                                    window_add_user['addUserIndCallEn'].update(True, disabled=False)
-                                    window_add_user['addUserIndMesEn'].update(True, disabled=False)
-                                    window_add_user['addUserAllowDelChats'].update(False, disabled=False)
-                                    window_add_user['addUserAllowPartialDrop'].update(False, disabled=False)
+                                    window_add_user['addUserRoleIndCallEn'].update(True, disabled=False)
+                                    window_add_user['addUserRoleIndMesEn'].update(True, disabled=False)
+                                    window_add_user['addUserRoleAllowDelChats'].update(False, disabled=False)
+                                    window_add_user['addUserRoleAllowPartialDrop'].update(False, disabled=False)
+                                    window_add_user['addUserRoleChanger'].update(False, disabled=False)
+                                    window_add_user['addUserRoleScreenShooter'].update(False, disabled=True)
+                                    window_add_user['addUserRoleAmbCaller'].update(False, disabled=False)
+                                    window_add_user['addUserRoleAmbCallee'].update(False, disabled=True)
+                                    window_add_user['addUserRoleMissingMsgRv'].update(False, disabled=False)
+                                    window_add_user['addUserRoleAllowLLA'].update(False, disabled=False)
+                                    window_add_user['addUserRoleAllowLLAclient'].update(False, disabled=True)
+                                    window_add_user['addUserRoleMfc'].update(False, disabled=False)
+                                    window_add_user['addUserFixDevice'].update(False, disabled=True)
+                                    window_add_user['addUserRoleMultipleDevices'].update(False, disabled=True)
                                     window_add_user['UserPriority'].update('10')
                                 elif ev_add_user == 'gw':
-                                    window_add_user['addUserIndCallEn'].update(True, disabled=False)
-                                    window_add_user['addUserIndMesEn'].update(False, disabled=True)
-                                    window_add_user['addUserAllowDelChats'].update(False, disabled=True)
-                                    window_add_user['addUserAllowPartialDrop'].update(False, disabled=True)
+                                    window_add_user['addUserRoleIndCallEn'].update(False, disabled=True)
+                                    window_add_user['addUserRoleIndMesEn'].update(False, disabled=True)
+                                    window_add_user['addUserRoleAllowDelChats'].update(False, disabled=True)
+                                    window_add_user['addUserRoleAllowPartialDrop'].update(False, disabled=True)
+                                    window_add_user['addUserRoleChanger'].update(False, disabled=True)
+                                    window_add_user['addUserRoleScreenShooter'].update(False, disabled=True)
+                                    window_add_user['addUserRoleAmbCaller'].update(False, disabled=True)
+                                    window_add_user['addUserRoleAmbCallee'].update(False, disabled=True)
+                                    window_add_user['addUserRoleMissingMsgRv'].update(False, disabled=True)
+                                    window_add_user['addUserRoleAllowLLA'].update(False, disabled=True)
+                                    window_add_user['addUserRoleAllowLLAclient'].update(False, disabled=True)
+                                    window_add_user['addUserRoleMfc'].update(False, disabled=True)
+                                    window_add_user['addUserFixDevice'].update(False, disabled=False)
+                                    window_add_user['addUserRoleMultipleDevices'].update(False, disabled=False)
                                     window_add_user['UserPriority'].update('5')
                                 elif ev_add_user == 'adm':
-                                    window_add_user['addUserIndCallEn'].update(False, disabled=True)
-                                    window_add_user['addUserIndMesEn'].update(False, disabled=True)
-                                    window_add_user['addUserAllowDelChats'].update(True, disabled=False)
-                                    window_add_user['addUserAllowPartialDrop'].update(True, disabled=False)
+                                    window_add_user['addUserRoleIndCallEn'].update(False, disabled=True)
+                                    window_add_user['addUserRoleIndMesEn'].update(False, disabled=True)
+                                    window_add_user['addUserRoleAllowDelChats'].update(True, disabled=False)
+                                    window_add_user['addUserRoleAllowPartialDrop'].update(True, disabled=False)
+                                    window_add_user['addUserRoleChanger'].update(False, disabled=True)
+                                    window_add_user['addUserRoleScreenShooter'].update(False, disabled=True)
+                                    window_add_user['addUserRoleAmbCaller'].update(False, disabled=True)
+                                    window_add_user['addUserRoleAmbCallee'].update(False, disabled=True)
+                                    window_add_user['addUserRoleMissingMsgRv'].update(False, disabled=True)
+                                    window_add_user['addUserRoleAllowLLA'].update(False, disabled=True)
+                                    window_add_user['addUserRoleAllowLLAclient'].update(False, disabled=True)
+                                    window_add_user['addUserRoleMfc'].update(False, disabled=True)
+                                    window_add_user['addUserFixDevice'].update(False, disabled=True)
+                                    window_add_user['addUserRoleMultipleDevices'].update(False, disabled=True)
                                     window_add_user['UserPriority'].update('15')
                                 elif ev_add_user == 'UserPriority':
                                     if val_add_user['UserPriority'] == '':
@@ -6016,6 +6198,10 @@ if __name__ == '__main__':
                                             window_add_user['UserPriority'].update(background_color=button_color_2)
                                     else:
                                         window_add_user['UserPriority'].update(background_color=button_color_2)
+                                elif ev_add_user == 'addUserFixDevice':
+                                    window_add_user['addUserRoleMultipleDevices'].update(False)
+                                elif ev_add_user == 'addUserRoleMultipleDevices':
+                                    window_add_user['addUserFixDevice'].update(False)
                                 elif ev_add_user == 'showPassword':
                                     if password_clear:
                                         window_add_user['UserPassword'].update(password_char='*')
@@ -6050,105 +6236,37 @@ if __name__ == '__main__':
                                                 elif new_user_type == user_type['admin']:
                                                     logging.info(f"Пользователь {val_add_user['UserLogin']} "
                                                                  f'стал администратором')
-                                                if not val_add_user['addUserIndCallEn']:
-                                                    res_add_user_en_ind = change_role(role.allow_ind_call,
-                                                                                      val_add_user['addUserIndCallEn'],
-                                                                                      res_add_user.text[1:-1])
-                                                    if res_add_user_en_ind:
-                                                        if res_add_user_en_ind.status_code == 200:
+                                                result = change_all_roles(res_add_user.text[1:-1], val_add_user)
+                                                if result:
+                                                    current_db += 1
+                                                    logging.info(f"Пользователю {val_add_user['UserLogin']} "
+                                                                 f'поменяли роли')
+                                                else:
+                                                    logging.error(
+                                                        f"Ошибка при смене ролей "
+                                                        f"пользователю {val_add_user['UserLogin']}")
+                                                if val_add_user['addUserFixDevice']:
+                                                    try:
+                                                        res_add_fix_new_dev = requests.post(BASE_URL +
+                                                                                               'allowNewDevice',
+                                                                                               json={'UserId':
+                                                                                                         res_add_user.text[1:-1]},
+                                                                                               headers=HEADER_dict)
+                                                        if res_add_fix_new_dev.status_code == 200:
+                                                            # modify_success = True
                                                             current_db += 1
-                                                            if val_add_user['addUserIndCallEn']:
-                                                                logging.info(
-                                                                    f"'Пользователю {val_add_user['UserLogin']} "
-                                                                    f'разрешено совершать индивидуальные вызовы')
-                                                            else:
-                                                                logging.info(
-                                                                    f"Пользователю {val_add_user['UserLogin']} "
-                                                                    f'запрещено совершать индивидуальные вызовы')
+                                                            # my_popup('Теперь можно привязать новое устройство')
+                                                            logging.info(
+                                                                f"Пользователю {val_add_user['UserLogin']} "
+                                                                f'можно привязать новое устройство')
                                                         else:
-                                                            if val_add_user['addUserIndCallEn']:
-                                                                logging.error(
-                                                                    f'Ошибка при разрешении индивидуальных вызовов - '
-                                                                    f'{res_add_user_en_ind.status_code}')
-                                                            else:
-                                                                logging.error(
-                                                                    f'Ошибка при запрещении индивидуальных вызовов - '
-                                                                    f'{res_add_user_en_ind.status_code}')
-                                                if not val_add_user['addUserIndMesEn']:
-                                                    res_add_user_en_ind_mes = change_role(role.allow_ind_mes,
-                                                                                          val_add_user[
-                                                                                              'addUserIndMesEn'],
-                                                                                          res_add_user.text[1:-1])
-                                                    if res_add_user_en_ind_mes:
-                                                        if res_add_user_en_ind_mes.status_code == 200:
-                                                            current_db += 1
-                                                            if val_add_user['addUserIndMesEn']:
-                                                                logging.info(
-                                                                    f"'Пользователю {val_add_user['UserLogin']} "
-                                                                    f'разрешено отправлять индивидуальные сообщения')
-                                                            else:
-                                                                logging.info(
-                                                                    f"Пользователю {val_add_user['UserLogin']} "
-                                                                    f'запрещено отправлять индивидуальные сообщения')
-                                                        else:
-                                                            if val_add_user['addUserIndMesEn']:
-                                                                logging.error(
-                                                                    f'Ошибка при разрешении отправления индивидуальных сообщений - '
-                                                                    f'{res_add_user_en_ind_mes.status_code}')
-                                                            else:
-                                                                logging.error(
-                                                                    f'Ошибка при запрещении отправления индивидуальных сообщений - '
-                                                                    f'{res_add_user_en_ind_mes.status_code}')
-                                                if val_add_user['addUserAllowDelChats']:
-                                                    res_add_user_en_del_chats = change_role(role.allow_delete_chats,
-                                                                                            val_add_user[
-                                                                                                'addUserAllowDelChats'],
-                                                                                            res_add_user.text[1:-1])
-                                                    if res_add_user_en_del_chats:
-                                                        if res_add_user_en_del_chats.status_code == 200:
-                                                            current_db += 1
-                                                            if val_add_user['addUserAllowDelChats']:
-                                                                logging.info(
-                                                                    f"'Пользователю {val_add_user['UserLogin']} "
-                                                                    f'разрешено удалять чаты')
-                                                            else:
-                                                                logging.info(
-                                                                    f"Пользователю {val_add_user['UserLogin']} "
-                                                                    f'запрещено удалять чаты')
-                                                        else:
-                                                            if val_add_user['addUserAllowDelChats']:
-                                                                logging.error(
-                                                                    f'Ошибка при разрешении удаления чатов - '
-                                                                    f'{res_add_user_en_del_chats.status_code}')
-                                                            else:
-                                                                logging.error(
-                                                                    f'Ошибка при запрещении удаления чатов - '
-                                                                    f'{res_add_user_en_del_chats.status_code}')
-                                                if val_add_user['addUserAllowPartialDrop']:
-                                                    res_add_user_en_partial_drop = change_role(role.allow_partial_drop,
-                                                                                               val_add_user[
-                                                                                                   'addUserAllowPartialDrop'],
-                                                                                               res_add_user.text[1:-1])
-                                                    if res_add_user_en_partial_drop:
-                                                        if res_add_user_en_partial_drop.status_code == 200:
-                                                            current_db += 1
-                                                            if val_add_user['addUserAllowPartialDrop']:
-                                                                logging.info(
-                                                                    f"'Пользователю {val_add_user['UserLogin']} "
-                                                                    f'разрешено удалять данные БД')
-                                                            else:
-                                                                logging.info(
-                                                                    f"Пользователю {val_add_user['UserLogin']} "
-                                                                    f'запрещено удалять данные БД')
-                                                        else:
-                                                            if val_add_user['addUserAllowPartialDrop']:
-                                                                logging.error(
-                                                                    f'Ошибка при разрешении удаления данных БД - '
-                                                                    f'{res_add_user_en_partial_drop.status_code}')
-                                                            else:
-                                                                logging.error(
-                                                                    f'Ошибка при запрещении удаления данных БД - '
-                                                                    f'{res_add_user_en_partial_drop.status_code}')
+                                                            my_popup('Произошла ошибка')
+                                                            logging.error(
+                                                                f"Ошибка при привязке нового утсройства для "
+                                                                f"пользователя {val_add_user['UserLogin']}")
+                                                    except Exception as e:
+                                                        print(f'Не удалось изменить роли - {e}')
+                                                        logging.error("Не удалось изменить роли")
                                                 if val_add_user['addUserBlock']:
                                                     res_block = block_user(val_add_user['addUserBlock'],
                                                                            res_add_user.text[1:-1])
@@ -6951,7 +7069,7 @@ if __name__ == '__main__':
                                                 window['-Menu-'].update([
                                                     ['Сервер',
                                                      ['Установить лицензию...', 'Настройки', 'Обновления', 'Устройства',
-                                                      'Организации', 'Очистка БД',
+                                                      '!Организации', 'Очистка БД',
                                                       ['Частично', 'Полностью']]],
                                                     ['Помощь', 'О программе'], ])
                                                 update_text = ('Онлайн: ' + str(server_status["online"]) + ', БД: '
@@ -7066,7 +7184,7 @@ if __name__ == '__main__':
                                     window['-Menu-'].update([
                                         ['Сервер',
                                          ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства',
-                                          'Организации', 'Очистка БД',
+                                          '!Организации', 'Очистка БД',
                                           ['Частично', 'Полностью']]],
                                         ['Помощь', 'О программе'], ])
                                     server_status['run'] = False

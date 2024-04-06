@@ -1,0 +1,3 @@
+pyarmor gen main.py
+pyinstaller --distpath pyinstaller/ --clean --onefile -n AdmPanel main.py
+pyarmor gen -O obfdist --pack pyinstaller/AdmPanel main.py # обфусцированный код
