@@ -56,6 +56,8 @@ ICON_SAVE_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIW
 ICON_LEFT_ARROW_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFXSURBVEiJndbLbhMxFIDhT0kGnoYNqKVcciNJuyvP1jeoEOIeoKUtb8St2+7NIk41ScaecSx5dTT/b9nnMkIISjZOcIfQsk9DCErhx/iFx4l4hQt8waBIgEWEP8nAv2G5hncWYI7fOEjEBxH8FdVGrAN8FuGHGfjnePpqJ94CfxXhR4l4Hx/xvQmeFWCKP3iWgX/AJR4kOYmPJxH+IgN/hx85eKMA4wh/mYD38BZXbfAdAUb4i1EG/gbXXeAbAgwjfJyBn+MGD7vA7wV4FOHTzKOf4WcJPISgZ7X68YS5VbXEm9dWzt9i0pI55VdUg8yiJPUOfbzf65EbJKlMWhdYeZrWIHP8wzARH+CTfQqtQZIquHWTK28VNcgiSlItY2A1XMqbXYPkeUaytE+7rkGOrQox1VnX06x84DRIUrOhildVPjJrkJMoeZqR7Df0tyRdfltehxD8B8k8yTaHLwT/AAAAAElFTkSuQmCC'
 ICON_CHANGE_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAACxAAAAsQHGLUmNAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAOdJREFUSInl1SFOA0EUxvFfoSEtu7AJwVYWgeUG3KYCi+AIGBSOU3ABBCGtaQgOT5vgMAQSDIiZJs3CUnbYCuhnZme+N+8/ybw3yyooQ5G6eX2Bv4dx/L5OhVSpjwkusLa6yVul+S7u4niJ95r53nCEp9lCuxTwgocIuMdzAuB1UVCBIW6wVRPwYxUYCaWZV8Rk2Fgm5DT6yU04Dzn7wssj/NeQDrYrvMYg3ynDlfCk7JTNch90MFD/8nIc4xaHQrnjcx90cZAAmB20h815QBNq4RyP2G8y8d9ODieYCj+lpagQSvSf6wOQVilL2RIj8AAAAABJRU5ErkJggg=='
 ICON_CHANGE_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAHTSURBVEiJ3ZQ9SFtRHMXP/+bl5eOlcYndHOuiZokfWwmC1W62NkMHwSlQ03YKglNCXdwcbBQyOHZ5g6BS7WJBKmJJKB1aimtHocWa5NG8vPt3ipiY98IzcckZ77n3/Lgf5wI9r+iTtBZLJPvuul44mePPUoO+sHFG7E11HTAx9/YRCxwy835huH/1rgCyC5ewPjP4oDDyMIlsVnYN0M3wW4DYy2REmN7vYESIsMMMdpXGqPr88s2XD5t/60NKw4QSKqTiNwMRBn4RoeQmX4KrimoYtjsAgFgi2SekcgCQVE1j5nhn69LVLpp06xUV9fyFFLUZAjymEvg4lFgMtVoYnU9rQ4ms6hpQh1jCnAbBq1m03wrirxgZTZ4ftSuhbQ9uQoJMK81+WfA7MEyP9H5ygjg2uajnL4IPynHhE5lm74e+USp7+Gk7SMuiuVF0Pq35KsYegLAi1KkTfe2PLSC+sOAvXQZfCaK2l3dTDITAWCLgm1U1J4u7+Urda+hBrRoIEFOMAVcAIhADYMIAQggCuAZ0fEQAaOz56/cQPCdITJ7q6z8bzPsM7xTQNhxo/otcaPRFahngWbLw+HR7/cxunmMPnMRk5v7/Cwx+3c7ZhveGrgAiFrY4Ehz/8QAAAABJRU5ErkJggg=='
+ICON_EXPAND_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFkSURBVEiJ7ZShT1tRFIe/AyiGLCxQ/gBKLe8hRyDBbpS+NCQNwfM0El4lvp0EAyVNaJdgMVTM7OKWtMkMGKqKXUbS8kOQJhheHzDZT55z7+87V9wDI4Yw/pbDfj6MZheWvnTarvnfBX4+jCQdmNnKXMYjqSSRYBAO9IBHM1tNL/pKIhkqeBHex7QjUTOzHLCWRBIr8PNhIKkC9JAVXb1y1mm7Vjqz/AfjG7CWznq/Oy3Xfi1jLE4w2U39AKrIiq5Rrg3qrlGuISsiTj91Zy7iMkaM+DgW1wyCYPym//nIjEtXL5+87Pn5MHgUG1P3qe2rq6j3WkbsP7jV9FczbYOOvVxYGNS9XFiQVDW09TfV3Xj3CwD8XLgn0yHQB9sx40FSFZiQFF03vpc+JADwNnf3gRLPyw5gwsxKv87L0bC7ibZpp+2a81n/H7AOjEmKXL0SO/mbBAB3LfdzPrtsZtZMGj4iEU+YcpHRJ5ZlsgAAAABJRU5ErkJggg=='
+ICON_COLLAPSE_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFbSURBVEiJ7ZS/S0JRFMe/R52qUZLSPyBz7T3HIqE5Hz4kEHHv7Y09t/6AZ2MtZQhp0Nqig4u3LVBoiYacbI0C9dvweCCBz9cPsMHveA7n+zn3nnsusNC8JX5J0zTDT6PYmQjuVN25mMzpOcscE9mV12ix2bSH0zxCfoBnxgwRFgGea4aV9+KaYeVJVgU8eIsOsj8+gdvp4RGJEwAjQEoi+CBZBRAhad83Tsu/ArgQyyZ5DMC7ioiIlDvXjj2rNhwE8NLtNBMp/R3AHoAQSVvVK76dfwvgQlQ7kUqLiLSCmi/0PxR4yID7XNc2trb7PdX6c4C3CyKys57UEBQSCPBl0cYishvf1BkEMhMwYT6CsESiJiIGgEwQiC9Az1kmyQqAISgFVa9c9XuqG0+mHyHYB5CJp7SHflf1pnn4/qZLg+gNgCooBdVwal5cNZwaKAUQl8uD1Vs/j4Xmr0/ZzJTTxEfPgAAAAABJRU5ErkJggg=='
 WARN_FREE_SPACE = 80
 ALARM_FREE_SPACE = 95
 WARN_LIC_DAYS = 30
@@ -2023,10 +2025,11 @@ def make_devices(dev_l):
     #                    # col_widths=[15, 15, 15, 15, 15, 15, 15, 15, 15],
     #                    )
     #           ]]
-    treedata_devs = get_all_devices_in_treedata()
+    # treedata_devs = get_all_devices_in_treedata()
     layout_treedata = [
         [sg.Frame('Устройства', [
-            [sg.Push(),
+            [
+                # sg.Push(),
              # sg.Button('', disabled_button_color='white',
              #           image_data=ICON_ADD_BASE_64_BLUE,
              #           button_color='white',
@@ -2042,14 +2045,6 @@ def make_devices(dev_l):
              #           border_width=0,
              #           key='-EditUpdate-',
              #           pad=(4, (0, 3))),
-             # sg.Button('', disabled_button_color='white',
-             #           disabled=True,
-             #           image_data=ICON_DELETE_BASE_64_BLUE,
-             #           button_color='white',
-             #           tooltip='Удалить',
-             #           border_width=0,
-             #           key='-DelDev-',
-             #           pad=((4, 10), (0, 3)))
              sg.Button('', disabled_button_color='white',
                        disabled=False,
                        image_data=ICON_CHANGE_BASE_64_BLUE,
@@ -2057,7 +2052,17 @@ def make_devices(dev_l):
                        tooltip='Поменять',
                        border_width=0,
                        key='-ChangeDevUser-',
-                       pad=((4, 10), (0, 3)))
+                       pad=((4, 10), (0, 3))),
+             sg.Button('', disabled_button_color='white',
+                       disabled=False,
+                       image_data=ICON_COLLAPSE_BASE_64_BLUE,
+                       button_color='white',
+                       tooltip='Свернуть',
+                       border_width=0,
+                       metadata='collapse',
+                       key='-СollapseExpandDev-',
+                       pad=((4, 10), (0, 3))
+                       ),
                        ],
             [sg.Tree(data=treedata_devs,
                      key='-devices-tree-',
@@ -2736,6 +2741,10 @@ def get_all_devices_in_treedata(type='dev'):
         logging.error("Не удалось запросить версии")
         my_popup('Не удалось запросить версии')
     return get_treedata(devs, type)
+
+
+def key_to_id(k):
+    return window_devices['-devices-tree-'].KeyToID[k] if k in window_devices['-devices-tree-'].KeyToID else None
 
 
 def get_all_organizations():
@@ -6021,10 +6030,11 @@ if __name__ == '__main__':
                         if event == 'Устройства':
                             additional_window = True
                             userBased = False
-                            window_devices = make_devices(get_all_devices())
+                            treedata_devs = get_all_devices_in_treedata()
+                            window_devices = make_devices(treedata_devs)
                             while True:
                                 ev_devs, val_devs = window_devices.Read()
-                                # print(ev_devs, val_devs)
+                                print(ev_devs, val_devs)
                                 if ev_devs == sg.WIN_CLOSED or ev_devs == 'Exit':
                                     break
                                 if ev_devs == '-devices-':
@@ -6036,6 +6046,28 @@ if __name__ == '__main__':
                                         print(dev_id)
                                         # delete_dev_fr
                                     # print_chosen_device(val_devs)
+                                if ev_devs == '-СollapseExpandDev-':
+                                    if window_devices['-СollapseExpandDev-'].metadata == 'collapse':
+                                        window_devices['-СollapseExpandDev-'].update(image_data=ICON_EXPAND_BASE_64_BLUE)
+                                        if not userBased:
+                                            for key in treedata_devs.tree_dict:
+                                                window_devices['-devices-tree-'].Widget.item(key_to_id(key), open=False)
+                                        else:
+                                            for key in devs_by_user.tree_dict:
+                                                window_devices['-devices-tree-'].Widget.item(key_to_id(key), open=False)
+                                        window_devices['-СollapseExpandDev-'].metadata ='expand'
+                                        window_devices['-СollapseExpandDev-'].TooltipObject.text = 'Развернуть'
+                                    else:
+                                        window_devices['-СollapseExpandDev-'].update(
+                                            image_data=ICON_COLLAPSE_BASE_64_BLUE)
+                                        if not userBased:
+                                            for key in treedata_devs.tree_dict:
+                                                window_devices['-devices-tree-'].Widget.item(key_to_id(key), open=True)
+                                        else:
+                                            for key in devs_by_user.tree_dict:
+                                                window_devices['-devices-tree-'].Widget.item(key_to_id(key), open=True)
+                                        window_devices['-СollapseExpandDev-'].metadata='collapse'
+                                        window_devices['-СollapseExpandDev-'].TooltipObject.text = 'Свернуть'
                                 if ev_devs == '-ChangeDevUser-':
                                     if not userBased:
                                         devs_by_user = get_all_devices_in_treedata('user')
@@ -6045,6 +6077,10 @@ if __name__ == '__main__':
                                         users_by_devs = get_all_devices_in_treedata()
                                         window_devices['-devices-tree-'].update(users_by_devs)
                                         userBased = False
+                                    window_devices['-СollapseExpandDev-'].update(
+                                        image_data=ICON_COLLAPSE_BASE_64_BLUE)
+                                    window_devices['-СollapseExpandDev-'].metadata = 'collapse'
+                                    window_devices['-СollapseExpandDev-'].TooltipObject.text = 'Свернуть'
                             additional_window = False
                         if event == 'Организации':
                             additional_window = True
