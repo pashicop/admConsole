@@ -123,8 +123,8 @@ DEF2 = '1d053666c10241ec97f4b70a168d5060425476a34416ee20c9d9d7629b083292'
 DEF3 = '0b85f52e2913b7299ec0198b5a97029e6c85aea67dec83c685029865881674ae'
 DEF3A = 'adda822db661d29dbf6a00fe86c446df41c9c71bf70b82454c829504a17d847f'
 DEFSSH = '738344928e9d24022d6c7f66f0a200032a66d4524b649553d4261ed23916cb86'
-role = Enum('role', 'allow_ind_call allow_delete_chats allow_partial_drop allow_ind_mes role_changer screen_shooter '
-                    'amb_caller amb_callee missing_msg_rv allow_LLA allow_LLA_client mfc fix_device multiple_devices')
+role = Enum('role', 'role_allow_ind_call role_allow_delete_chats role_allow_partial_drop role_allow_ind_mes role_changer role_screen_shooter '
+                    'role_amb_caller role_amb_callee role_missing_msg_rv role_allow_LLA role_allow_LLA_client role_mfc fix_device role_multiple_devices')
 # type_app = Enum(value='type_app', names={'vBasic': 0, 'vTonal': 1, 'vNoScreen': 2, 'vBox': 3, 'vZteEverlink': 4})
 type_app = {'Основная': 0, 'Тональник': 1, 'Без экрана': 2, 'К500': 3, 'ZTE': 4}
 user_type = {'disabled': -1, 'user': 0, 'box': 1, 'dispatcher': 15, 'admin': 30, 'tm': 100}
@@ -230,20 +230,20 @@ def create_db():
                             "is_blocked"	INTEGER DEFAULT 0,
                             "is_gw"	INTEGER DEFAULT 0,
                             "previous_type"	INTEGER DEFAULT 0,
-                            "en_ind"	INTEGER DEFAULT 1,
-                            "en_ind_mes"	INTEGER DEFAULT 1,
-                            "en_del_chats" INTEGER DEFAULT 0,
-                            "en_partial_drop" INTEGER DEFAULT 0,
+                            "role_en_ind"	INTEGER DEFAULT 1,
+                            "role_en_ind_mes"	INTEGER DEFAULT 1,
+                            "role_en_del_chats" INTEGER DEFAULT 0,
+                            "role_en_partial_drop" INTEGER DEFAULT 0,
                             "role_changer" INTEGER DEFAULT 0,
-                            "screen_shooter" INTEGER DEFAULT 0,
-                            "amb_caller" INTEGER DEFAULT 0,
-                            "amb_callee" INTEGER DEFAULT 0,
-                            "missing_msg_rv" INTEGER DEFAULT 0,
-                            "allow_LLA" INTEGER DEFAULT 0,
-                            "allow_LLA_client" INTEGER DEFAULT 0,
-                            "mfc" INTEGER DEFAULT 0,
+                            "role_screen_shooter" INTEGER DEFAULT 0,
+                            "role_amb_caller" INTEGER DEFAULT 0,
+                            "role_amb_callee" INTEGER DEFAULT 0,
+                            "role_missing_msg_rv" INTEGER DEFAULT 0,
+                            "role_allow_LLA" INTEGER DEFAULT 0,
+                            "role_allow_LLA_client" INTEGER DEFAULT 0,
+                            "role_mfc" INTEGER DEFAULT 0,
                             "fix_device" INTEGER DEFAULT 0,
-                            "multiple_devices" INTEGER DEFAULT 0,
+                            "role_multiple_devices" INTEGER DEFAULT 0,
                             "priority" INTEGER DEFAULT 1,
                             "organization_id" TEXT DEFAULT '00000000-0000-0000-0000-000000000000',
                             PRIMARY KEY("id")
@@ -300,38 +300,38 @@ def add_users(users_list):
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
     for user in users_list:
-        is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, enabled_ind_mes, en_del_chats, \
-            en_partial_drop, role_changer, screen_shooter, amb_caller, amb_callee, missing_msg_rv, allow_LLA, \
-            allow_LLA_client, mfc, fix_device, multiple_devices, priority, organization_id = (
+        is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, enabled_ind_mes, role_en_del_chats, \
+            role_en_partial_drop, role_changer, role_screen_shooter, role_amb_caller, role_amb_callee, role_missing_msg_rv, role_allow_LLA, \
+            role_allow_LLA_client, role_mfc, fix_device, role_multiple_devices, priority, organization_id = (
             1 if user["userType"] == 15 or user['previousType'] == 15 else 0,
             1 if user["userType"] == 30 or user['previousType'] == 30 else 0,
             1 if user["userType"] == -1 else 0,
             1 if user["userType"] == 1 or user['previousType'] == 1 else 0,
             user['previousType'],
-            1 if role.allow_ind_call.value in user["userRoles"] else 0,
-            1 if role.allow_ind_mes.value in user["userRoles"] else 0,
-            1 if role.allow_delete_chats.value in user['userRoles'] else 0,
-            1 if role.allow_partial_drop.value in user['userRoles'] else 0,
+            1 if role.role_allow_ind_call.value in user["userRoles"] else 0,
+            1 if role.role_allow_ind_mes.value in user["userRoles"] else 0,
+            1 if role.role_allow_delete_chats.value in user['userRoles'] else 0,
+            1 if role.role_allow_partial_drop.value in user['userRoles'] else 0,
             1 if role.role_changer.value in user['userRoles'] else 0,
-            1 if role.screen_shooter.value in user['userRoles'] else 0,
-            1 if role.amb_caller.value in user['userRoles'] else 0,
-            1 if role.amb_callee.value in user['userRoles'] else 0,
-            1 if role.missing_msg_rv.value in user['userRoles'] else 0,
-            1 if role.allow_LLA.value in user['userRoles'] else 0,
-            1 if role.allow_LLA_client.value in user['userRoles'] else 0,
-            1 if role.mfc.value in user['userRoles'] else 0,
+            1 if role.role_screen_shooter.value in user['userRoles'] else 0,
+            1 if role.role_amb_caller.value in user['userRoles'] else 0,
+            1 if role.role_amb_callee.value in user['userRoles'] else 0,
+            1 if role.role_missing_msg_rv.value in user['userRoles'] else 0,
+            1 if role.role_allow_LLA.value in user['userRoles'] else 0,
+            1 if role.role_allow_LLA_client.value in user['userRoles'] else 0,
+            1 if role.role_mfc.value in user['userRoles'] else 0,
             1 if role.fix_device.value in user['userRoles'] else 0,
-            1 if role.multiple_devices.value in user['userRoles'] else 0,
+            1 if role.role_multiple_devices.value in user['userRoles'] else 0,
             user['priority'],
             user['organizationId'])
         db_insert_user = """insert or replace into Users(id, login, Display_name, is_dispatcher, is_admin, 
-            is_blocked, is_gw, previous_type, en_ind, en_ind_mes, en_del_chats, en_partial_drop, role_changer, 
-            screen_shooter, amb_caller, amb_callee, missing_msg_rv, allow_LLA, allow_LLA_client, mfc, fix_device, 
-            multiple_devices, priority, organization_id) Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+            is_blocked, is_gw, previous_type, role_en_ind, role_en_ind_mes, role_en_del_chats, role_en_partial_drop, role_changer, 
+            role_screen_shooter, role_amb_caller, role_amb_callee, role_missing_msg_rv, role_allow_LLA, role_allow_LLA_client, role_mfc, fix_device, 
+            role_multiple_devices, priority, organization_id) Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         user_data = user['id'], user['login'], user['displayName'], \
             is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, enabled_ind_mes, \
-            en_del_chats, en_partial_drop, role_changer, screen_shooter, amb_caller, amb_callee, missing_msg_rv, \
-            allow_LLA, allow_LLA_client, mfc, fix_device, multiple_devices, priority, organization_id
+            role_en_del_chats, role_en_partial_drop, role_changer, role_screen_shooter, role_amb_caller, role_amb_callee, role_missing_msg_rv, \
+            role_allow_LLA, role_allow_LLA_client, role_mfc, fix_device, role_multiple_devices, priority, organization_id
         cur.execute(db_insert_user, user_data)
     con.commit()
     con.close()
@@ -479,20 +479,20 @@ def get_users_from_db() -> list[dict]:
                           'is_blocked': user[6],
                           'is_gw': user[7],
                           'previous_type': user[8],
-                          'en_ind': user[9],
-                          'en_ind_mes': user[10],
-                          'en_del_chats': user[11],
-                          'en_partial_drop': user[12],
+                          'role_en_ind': user[9],
+                          'role_en_ind_mes': user[10],
+                          'role_en_del_chats': user[11],
+                          'role_en_partial_drop': user[12],
                           'role_changer': user[13],
-                          'screen_shooter': user[14],
-                          'amb_caller': user[15],
-                          'amb_callee': user[16],
-                          'missing_msg_rv': user[17],
-                          'allow_LLA': user[18],
-                          'allow_LLA_client': user[19],
-                          'mfc': user[20],
+                          'role_screen_shooter': user[14],
+                          'role_amb_caller': user[15],
+                          'role_amb_callee': user[16],
+                          'role_missing_msg_rv': user[17],
+                          'role_allow_LLA': user[18],
+                          'role_allow_LLA_client': user[19],
+                          'role_mfc': user[20],
                           'fix_device': user[21],
-                          'multiple_devices': user[22],
+                          'role_multiple_devices': user[22],
                           'priority': user[23],
                           'organization_id': user[24],
                           }
@@ -521,20 +521,20 @@ def get_user_list_treedata(users_from_db):
                           'is_blocked': user[6],
                           'is_gw': user[7],
                           'previous_type': user[8],
-                          'en_ind': user[9],
-                          'en_ind_mes': user[10],
-                          'en_del_chats': user[11],
-                          'en_partial_drop': user[12],
+                          'role_en_ind': user[9],
+                          'role_en_ind_mes': user[10],
+                          'role_en_del_chats': user[11],
+                          'role_en_partial_drop': user[12],
                           'role_changer': user[13],
-                          'screen_shooter': user[14],
-                          'amb_caller': user[15],
-                          'amb_callee': user[16],
-                          'missing_msg_rv': user[17],
-                          'allow_LLA': user[18],
-                          'allow_LLA_client': user[19],
-                          'mfc': user[20],
+                          'role_screen_shooter': user[14],
+                          'role_amb_caller': user[15],
+                          'role_amb_callee': user[16],
+                          'role_missing_msg_rv': user[17],
+                          'role_allow_LLA': user[18],
+                          'role_allow_LLA_client': user[19],
+                          'role_mfc': user[20],
                           'fix_device': user[21],
-                          'multiple_devices': user[22],
+                          'role_multiple_devices': user[22],
                           'priority': user[23],
                           'organization_id': user[24]}
         td.Insert(parent=get_org_by_id(user_for_table['organization_id']),
@@ -1439,10 +1439,10 @@ def make_settings():
                                             pad=((0, 20), 2),
                                             key='longAmbientCallDuration')],
                                   [sg.Checkbox('Контроль пересылки',
-                                               default=True if settings['mfc'] else False,
+                                               default=True if settings['role_mfc'] else False,
                                                enable_events=True,
                                                pad=(10, 2),
-                                               key='mfc')],
+                                               key='role_mfc')],
                                   [sg.Checkbox('Удалённое программирование терминалов',
                                                default=True if settings['otap'] else False,
                                                enable_events=True,
@@ -1862,22 +1862,22 @@ def make_modify_user_window(user: dict):
         #  sg.Push()],
          [sg.Frame('Дополнительные разрешения', [
             [sg.Checkbox('Разрешить индивидуальные вызовы',
-                         default=user['en_ind'],
+                         default=user['role_en_ind'],
                          enable_events=True,
                          disabled=True if (user['is_admin'] or user['is_gw']) else False,
                          key='modifyUserRoleIndCallEn'), sg.Push()],
             [sg.Checkbox('Разрешить индивидуальные сообщения',
-                         default=user['en_ind_mes'],
+                         default=user['role_en_ind_mes'],
                          enable_events=True,
                          disabled=True if (user['is_admin'] or user['is_gw']) else False,
                          key='modifyUserRoleIndMesEn'), sg.Push()],
             [sg.Checkbox('Разрешить удалять переписку в чатах',
-                         default=user['en_del_chats'],
+                         default=user['role_en_del_chats'],
                          disabled=False if user['is_dispatcher'] else True,
                          enable_events=True,
                          key='modifyUserRoleAllowDelChats'), sg.Push()],
             [sg.Checkbox('Разрешить удалять данные БД',
-                         default=user['en_partial_drop'],
+                         default=user['role_en_partial_drop'],
                          disabled=False if user['is_dispatcher'] else True,
                          enable_events=True,
                          key='modifyUserRoleAllowPartialDrop'), sg.Push()],
@@ -1887,37 +1887,37 @@ def make_modify_user_window(user: dict):
                          enable_events=True,
                          key='modifyUserRoleChanger'), sg.Push()],
             [sg.Checkbox('Разрешить скриншоты',
-                         default=user['screen_shooter'],
+                         default=user['role_screen_shooter'],
                          disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
                          enable_events=True,
                          key='modifyUserRoleScreenShooter'), sg.Push()],
             [sg.Checkbox('Разрешить совершать скрытое прослушивание',
-                         default=user['amb_caller'],
+                         default=user['role_amb_caller'],
                          disabled=False if user['is_dispatcher'] else True,
                          enable_events=True,
                          key='modifyUserRoleAmbCaller'), sg.Push()],
             [sg.Checkbox('Разрешить принимать скрытое прослушивание',
-                         default=user['amb_callee'],
+                         default=user['role_amb_callee'],
                          disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
                          enable_events=True,
                          key='modifyUserRoleAmbCallee'), sg.Push()],
             [sg.Checkbox('Получать пропущенные сообщения',
-                         default=user['missing_msg_rv'],
+                         default=user['role_missing_msg_rv'],
                          disabled=True if (user['is_admin'] or user['is_gw']) else False,
                          enable_events=True,
                          key='modifyUserRoleMissingMsgRv'), sg.Push()],
             [sg.Checkbox('Разрешить долгое скрытое прослушивание',
-                         default=user['allow_LLA'],
+                         default=user['role_allow_LLA'],
                          disabled=False if user['is_dispatcher'] else True,
                          enable_events=True,
                          key='modifyUserRoleAllowLLA'), sg.Push()],
             [sg.Checkbox('Разрешить принимать долгие скрытые прослушивания',
-                         default=user['allow_LLA_client'],
+                         default=user['role_allow_LLA_client'],
                          disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
                          enable_events=True,
                          key='modifyUserRoleAllowLLAclient'), sg.Push()],
             [sg.Checkbox('Разрешить контроль переписки',
-                         default=user['mfc'],
+                         default=user['role_mfc'],
                          # default=False,
                          disabled=True if (user['is_admin'] or user['is_gw']) else False,
                          # disabled=True,
@@ -1936,7 +1936,7 @@ def make_modify_user_window(user: dict):
                   expand_x=True)],
         [sg.Frame('Привязка к устройству',
                   [[sg.Checkbox('Разрешить любые устройства',
-                                default=user['multiple_devices'],
+                                default=user['role_multiple_devices'],
                                 disabled=True if (
                                             user['is_dispatcher'] or user['is_admin']) else False,
                                 enable_events=True,
@@ -2792,13 +2792,17 @@ def get_org_by_id(id):
 
 
 def get_id_by_org(org_name):
-    con = sqlite3.connect('adm.db')
-    cur = con.cursor()
-    db_query_org = "Select id FROM Organizations WHERE Name = '" + org_name + "'"
-    cur.execute(db_query_org)
-    id = cur.fetchone()[0]
-    con.close()
-    return id
+    try:
+        con = sqlite3.connect('adm.db')
+        cur = con.cursor()
+        db_query_org = "Select id FROM Organizations WHERE Name = '" + org_name + "'"
+        cur.execute(db_query_org)
+        id = cur.fetchone()[0]
+        con.close()
+        return id
+    except Exception as e:
+        print({e})
+        return '00000000-0000-0000-0000-000000000000'
 
 
 def get_all_organizations_list():
@@ -3226,33 +3230,33 @@ def change_role(role: Enum, set_flag, us_id):
 
 
 def get_role_from_key(key: str):
-    if key == 'modifyUserRoleIndCallEn' or key == 'addUserRoleIndCallEn':
+    if 'IndCallEn' in key or key == 'role_en_ind':
         return 1
-    elif key == 'modifyUserRoleAllowDelChats' or key == 'addUserRoleAllowDelChats':
+    elif 'AllowDelChats' in key or 'en_del_chats' in key:
         return 2
-    elif key == 'modifyUserRoleAllowPartialDrop' or key == 'addUserRoleAllowPartialDrop':
+    elif 'AllowPartialDrop' in key or 'en_partial_drop' in key:
         return 3
-    elif key == 'modifyUserRoleIndMesEn' or key == 'addUserRoleIndMesEn':
+    elif 'IndMesEn' in key or 'en_ind_mes' in key:
         return 4
-    elif key == 'modifyUserRoleChanger' or key == 'addUserRoleChanger':
+    elif 'RoleChanger' in key or 'changer' in key:
         return 5
-    elif key == 'modifyUserRoleScreenShooter' or key == 'addUserRoleScreenShooter':
+    elif 'ScreenShooter' in key or 'screen_shooter' in key:
         return 6
-    elif key == 'modifyUserRoleAmbCaller' or key == 'addUserRoleAmbCaller':
+    elif 'AmbCaller' in key or 'amb_caller' in key:
         return 7
-    elif key == 'modifyUserRoleAmbCallee' or key == 'addUserRoleAmbCallee':
+    elif 'AmbCallee' in key or 'amb_callee' in key:
         return 8
-    elif key == 'modifyUserRoleMissingMsgRv' or key == 'addUserRoleMissingMsgRv':
+    elif 'MissingMsgRv' in key or 'missing_msg_rv' in key:
         return 9
-    elif key == 'modifyUserRoleAllowLLA' or key == 'addUserRoleAllowLLA':
-        return 10
-    elif key == 'modifyUserRoleAllowLLAclient' or key == 'addUserRoleAllowLLAclient':
+    elif 'AllowLLAclient' in key or 'allow_LLA_client' in key:
         return 11
-    elif key == 'modifyUserRoleMfc' or key == 'addUserRoleMfc':
+    elif 'AllowLLA' in key or 'allow_LLA' in key:
+        return 10
+    elif 'Mfc' in key or 'mfc' in key:
         return 12
     # elif key == 'modifyUserRoleFixDevice':
     #     return 13
-    elif key == 'modifyUserRoleMultipleDevices' or key == 'addUserRoleMultipleDevices':
+    elif 'MultipleDevices' in key or 'multiple_devices' in key:
         return 14
     else:
         return 0
@@ -3264,10 +3268,11 @@ def change_all_roles(us_id, val):
     add_roles = list()
     role_change_error = False
     for par in val:
-        if 'Role' in par:
+        if 'Role'.lower() in par.lower():
             if val[par]:
                 role_number = get_role_from_key(par)
-                add_roles.append(role_number)
+                if role_number:
+                    add_roles.append(role_number)
     modify_role_add_dict = {'userId': us_id, 'roles': add_roles}
     try:
         res_modify_user_change_role = requests.post(BASE_URL +
@@ -4223,37 +4228,37 @@ def set_roles(ev: str):
         print('add')
     else:
         print('modify')
-        window_modify_user['modifyUserRoleIndCallEn'].update(user_to_change['en_ind'],
+        window_modify_user['modifyUserRoleIndCallEn'].update(user_to_change['role_en_ind'],
                                                              disabled=False if ev == 'modifyUserUser' or
                                                                                ev == 'modifyUserDispatcher' else True)
-        window_modify_user['modifyUserRoleAllowDelChats'].update(user_to_change['en_del_chats'],
+        window_modify_user['modifyUserRoleAllowDelChats'].update(user_to_change['role_en_del_chats'],
                                                                  disabled=False if ev == 'modifyUserDispatcher' else True)
-        window_modify_user['modifyUserRoleAllowPartialDrop'].update(user_to_change['en_partial_drop'],
+        window_modify_user['modifyUserRoleAllowPartialDrop'].update(user_to_change['role_en_partial_drop'],
                                                                     disabled=False if ev == 'modifyUserDispatcher' else True)
-        window_modify_user['modifyUserRoleIndMesEn'].update(user_to_change['en_ind_mes'],
+        window_modify_user['modifyUserRoleIndMesEn'].update(user_to_change['role_en_ind_mes'],
                                                             disabled=False if ev == 'modifyUserUser' or
                                                                               ev == 'modifyUserDispatcher' else True)
         window_modify_user['modifyUserRoleChanger'].update(user_to_change['role_changer'],
                                                            disabled=False if ev == 'modifyUserDispatcher' else True)
-        window_modify_user['modifyUserRoleScreenShooter'].update(user_to_change['screen_shooter'],
+        window_modify_user['modifyUserRoleScreenShooter'].update(user_to_change['role_screen_shooter'],
                                                                  disabled=False if ev == 'modifyUserUser' else True)
-        window_modify_user['modifyUserRoleAmbCaller'].update(user_to_change['amb_caller'],
+        window_modify_user['modifyUserRoleAmbCaller'].update(user_to_change['role_amb_caller'],
                                                              disabled=False if ev == 'modifyUserDispatcher' else True)
-        window_modify_user['modifyUserRoleAmbCallee'].update(user_to_change['amb_callee'],
+        window_modify_user['modifyUserRoleAmbCallee'].update(user_to_change['role_amb_callee'],
                                                              disabled=False if ev == 'modifyUserUser' else True)
-        window_modify_user['modifyUserRoleMissingMsgRv'].update(user_to_change['missing_msg_rv'],
+        window_modify_user['modifyUserRoleMissingMsgRv'].update(user_to_change['role_missing_msg_rv'],
                                                                 disabled=False if ev == 'modifyUserUser' or
                                                                                   ev == 'modifyUserDispatcher' else True)
-        window_modify_user['modifyUserRoleAllowLLA'].update(user_to_change['allow_LLA'],
+        window_modify_user['modifyUserRoleAllowLLA'].update(user_to_change['role_allow_LLA'],
                                                             disabled=False if ev == 'modifyUserDispatcher' else True)
-        window_modify_user['modifyUserRoleAllowLLAclient'].update(user_to_change['allow_LLA_client'],
+        window_modify_user['modifyUserRoleAllowLLAclient'].update(user_to_change['role_allow_LLA_client'],
                                                                   disabled=False if ev == 'modifyUserUser' else True)
-        window_modify_user['modifyUserRoleMfc'].update(user_to_change['mfc'],
+        window_modify_user['modifyUserRoleMfc'].update(user_to_change['role_mfc'],
                                                        disabled=False if ev == 'modifyUserUser' or
                                                                          ev == 'modifyUserDispatcher' else True)
         # window_modify_user['modifyUserRoleFixDevice'].update(user_to_change['fix_device'],
         #                                                      disabled=False if ev == 'modifyUserUser' else True)
-        window_modify_user['modifyUserRoleMultipleDevices'].update(user_to_change['multiple_devices'],
+        window_modify_user['modifyUserRoleMultipleDevices'].update(user_to_change['role_multiple_devices'],
                                                                    disabled=False if ev == 'modifyUserUser' or
                                                                    ev == 'modifyUserGw' else True)
 
@@ -4736,6 +4741,7 @@ if __name__ == '__main__':
                                                     if res_modify_fix_new_dev.status_code == 200:
                                                         # modify_success = True
                                                         current_db += 1
+                                                        update_users()
                                                         my_popup('Теперь можно привязать новое устройство')
                                                         logging.info(
                                                             f"Пользователю {val_modify_user['UserModifyLogin']} "
@@ -4801,7 +4807,7 @@ if __name__ == '__main__':
                                             if val_modify_user['UserModifyName'] != user_to_change['name']:
                                                 modify_user_dict['displayName'] = val_modify_user['UserModifyName']
                                                 modify_name = True
-                                            if val_modify_user['UserModifyOrg'] != user_to_change['organization_id']:
+                                            if get_id_by_org(val_modify_user['UserModifyOrg']) != user_to_change['organization_id']:
                                                 modify_user_dict['OrganizationId'] = get_id_by_org(val_modify_user['UserModifyOrg'])
                                                 modify_org = True
                                             if val_modify_user['UserModifyPriority'] != str(user_to_change['priority']):
@@ -4930,13 +4936,10 @@ if __name__ == '__main__':
                                                     print(f'Не удалось обновить данные абонента - {e}')
                                                     logging.error("Не удалось обновить данные абонента")
                                             if (modify_name or modify_password
-                                                    # or modify_is_en_ind
-                                                    # or modify_is_en_ind_mes
-                                                    # or modify_en_del_chats
-                                                    # or modify_en_partial_drop
                                                     or modify_is_blocked
                                                     or modify_priority
                                                     or modify_u_t
+                                                    or modify_fix_device
                                                     or modify_org
                                                     or modify_role):
                                                 if modify_success:
@@ -5851,7 +5854,7 @@ if __name__ == '__main__':
                                                              'dgna': val_set['dgna'],
                                                              'geoData': val_set['geoData'],
                                                              'longAmbientListening': val_set['longAmbientListening'],
-                                                             'mfc': val_set['mfc'],
+                                                             'mfc': val_set['role_mfc'],
                                                              'otap': val_set['otap'],
                                                              'longAmbientCallDuration': val_set[
                                                                  'longAmbientCallDuration'], }
@@ -6469,101 +6472,39 @@ if __name__ == '__main__':
                                                         if res_clone_add_group.status_code == 200:
                                                             current_db += 1
                                                             logging.info(f'Группы для {clone_user_login} добавлены')
-                                                            res_clone_user_en_ind = change_role(role.allow_ind_call,
-                                                                                                user_clone['en_ind'],
-                                                                                                user_from_server)
-                                                            if res_clone_user_en_ind:
-                                                                if res_clone_user_en_ind.status_code == 200:
-                                                                    current_db += 1
-                                                                    if user_clone['en_ind']:
+                                                            result = change_all_roles(user_from_server,
+                                                                                      user_clone)
+                                                            if result:
+                                                                current_db += 1
+                                                                logging.info(
+                                                                    f"Пользователю {clone_user_login} "
+                                                                    f'поменяли роли')
+                                                            else:
+                                                                logging.error(
+                                                                    f"Ошибка при смене ролей "
+                                                                    f"пользователю {clone_user_login}")
+                                                            if user_clone['fix_device']:
+                                                                try:
+                                                                    res_clone_fix_new_dev = requests.post(BASE_URL +
+                                                                                                        'allowNewDevice',
+                                                                                                        json={'UserId':
+                                                                                                                  user_from_server},
+                                                                                                        headers=HEADER_dict)
+                                                                    if res_clone_fix_new_dev.status_code == 200:
+                                                                        # modify_success = True
+                                                                        current_db += 1
+                                                                        # my_popup('Теперь можно привязать новое устройство')
                                                                         logging.info(
-                                                                            f"'Пользователю {clone_user_login} "
-                                                                            f'разрешено совершать индивидуальные вызовы')
+                                                                            f"Пользователю {clone_user_login} "
+                                                                            f'можно привязать новое устройство')
                                                                     else:
-                                                                        logging.info(f"Пользователю {clone_user_login} "
-                                                                                     f'запрещено совершать индивидуальные вызовы')
-                                                                else:
-                                                                    if user_clone['en_ind']:
+                                                                        my_popup('Произошла ошибка')
                                                                         logging.error(
-                                                                            f'Ошибка при разрешении индивидуальных вызовов - '
-                                                                            f'{res_clone_user_en_ind.status_code}')
-                                                                    else:
-                                                                        logging.error(
-                                                                            f'Ошибка при запрещении индивидуальных вызовов - '
-                                                                            f'{res_clone_user_en_ind.status_code}')
-                                                                    clone_res = False
-                                                            res_clone_user_en_ind_mes = change_role(role.allow_ind_mes,
-                                                                                                    user_clone[
-                                                                                                        'en_ind_mes'],
-                                                                                                    user_from_server)
-                                                            if res_clone_user_en_ind_mes:
-                                                                if res_clone_user_en_ind_mes.status_code == 200:
-                                                                    current_db += 1
-                                                                    if user_clone['en_ind_mes']:
-                                                                        logging.info(
-                                                                            f"'Пользователю {clone_user_login} "
-                                                                            f'разрешено отправлять индивидуальные сообщения')
-                                                                    else:
-                                                                        logging.info(f"Пользователю {clone_user_login} "
-                                                                                     f'запрещено отправлять индивидуальные сообщения')
-                                                                else:
-                                                                    if user_clone['en_ind_mes']:
-                                                                        logging.error(
-                                                                            f'Ошибка при разрешении отправления индивидуальных сообщений - '
-                                                                            f'{res_clone_user_en_ind_mes.status_code}')
-                                                                    else:
-                                                                        logging.error(
-                                                                            f'Ошибка при запрещении отправления индивидуальных сообщений - '
-                                                                            f'{res_clone_user_en_ind_mes.status_code}')
-                                                                    clone_res = False
-                                                            res_clone_user_en_del_chats = change_role(
-                                                                role.allow_delete_chats,
-                                                                user_clone['en_del_chats'],
-                                                                user_from_server)
-                                                            if res_clone_user_en_del_chats:
-                                                                if res_clone_user_en_del_chats.status_code == 200:
-                                                                    current_db += 1
-                                                                    if user_clone['en_del_chats']:
-                                                                        logging.info(
-                                                                            f"'Пользователю {clone_user_login} "
-                                                                            f'разрешено удалять чаты')
-                                                                    else:
-                                                                        logging.info(f"Пользователю {clone_user_login} "
-                                                                                     f'запрещено удалять чаты')
-                                                                else:
-                                                                    if user_clone['en_del_chats']:
-                                                                        logging.error(
-                                                                            f'Ошибка при разрешении удаления чатов - '
-                                                                            f'{res_clone_user_en_del_chats.status_code}')
-                                                                    else:
-                                                                        logging.error(
-                                                                            f'Ошибка при запрещении удаления чатов - '
-                                                                            f'{res_clone_user_en_del_chats.status_code}')
-                                                                    clone_res = False
-                                                            res_clone_user_en_partial_drop = change_role(
-                                                                role.allow_partial_drop,
-                                                                user_clone['en_partial_drop'],
-                                                                user_from_server)
-                                                            if res_clone_user_en_partial_drop:
-                                                                if res_clone_user_en_partial_drop.status_code == 200:
-                                                                    current_db += 1
-                                                                    if user_clone['en_partial_drop']:
-                                                                        logging.info(
-                                                                            f"'Пользователю {clone_user_login} "
-                                                                            f'разрешено удалять данные БД')
-                                                                    else:
-                                                                        logging.info(f"Пользователю {clone_user_login} "
-                                                                                     f'запрещено удалять данные БД')
-                                                                else:
-                                                                    if user_clone['en_partial_drop']:
-                                                                        logging.error(
-                                                                            f'Ошибка при разрешении удаления данных БД - '
-                                                                            f'{res_clone_user_en_partial_drop.status_code}')
-                                                                    else:
-                                                                        logging.error(
-                                                                            f'Ошибка при запрещении удаления данных БД - '
-                                                                            f'{res_clone_user_en_partial_drop.status_code}')
-                                                                    clone_res = False
+                                                                            f"Ошибка при привязке нового утсройства для "
+                                                                            f"пользователя {clone_user_login}")
+                                                                except Exception as e:
+                                                                    print(f'Не удалось изменить роли - {e}')
+                                                                    logging.error("Не удалось изменить роли")
                                                             update_users_and_groups()
                                                             window_clone_user.close()
                                                             if clone_res:
