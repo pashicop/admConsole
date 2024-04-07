@@ -1439,10 +1439,10 @@ def make_settings():
                                             pad=((0, 20), 2),
                                             key='longAmbientCallDuration')],
                                   [sg.Checkbox('Контроль пересылки',
-                                               default=True if settings['role_mfc'] else False,
+                                               default=True if settings['mfc'] else False,
                                                enable_events=True,
                                                pad=(10, 2),
-                                               key='role_mfc')],
+                                               key='mfc')],
                                   [sg.Checkbox('Удалённое программирование терминалов',
                                                default=True if settings['otap'] else False,
                                                enable_events=True,
@@ -4712,17 +4712,6 @@ if __name__ == '__main__':
                                                         window_device.close()
                                         else:
                                             pass
-                                    # if ev_modify_user == 'modifyUserShowDevices':
-                                    #     modify_show_device = True
-                                    #     dev_list = []
-                                    #     dev_list.append(get_last_device())
-                                    #     if dev_list != [[]]:
-                                    #         window_device = make_device(dev_list)
-                                    #         while True:
-                                    #             ev_dev, val_dev = window_device.Read()
-                                    #             if ev_dev == sg.WIN_CLOSED or ev_dev == 'Выйти':
-                                    #                 window_device.close()
-                                    #                 break
                                     if ev_modify_user == 'modifyUserFixNewDevice':
                                         # fix_device_error = False
                                         modify_fix_device = True
