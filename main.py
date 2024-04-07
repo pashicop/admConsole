@@ -1068,7 +1068,7 @@ def make_main_window(ip):
          ],
     ]
     layout = [[sg.Menu([
-        ['Сервер', ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства', '!Организации', 'Очистка БД', ['Частично', 'Полностью']]],
+        ['Сервер', ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства', 'Организации', 'Очистка БД', ['Частично', 'Полностью']]],
         ['Помощь', 'О программе'], ], key='-Menu-', )],
         [sg.Frame('Сервер', [[sg.Column([[sg.Push(),
                                           sg.Button('Старт', key='-Start-',
@@ -1680,6 +1680,7 @@ def make_add_update_window(update_info=None):
                      finalize=True)
 
 def make_add_user_window():
+    org_list = get_all_organizations_list()
     layout_add_user = [
         [sg.Text('Логин'), sg.Push(), sg.Input(key='UserLogin', pad=((0, 40), (0, 0)), enable_events=True,
                                                tooltip=('Не меньше' + str(MIN_LEN_LOGIN) + 'и не больше ' +
@@ -1781,11 +1782,21 @@ def make_add_user_window():
                       expand_x=True
                       )
         ],
-        [sg.Text('Приоритет'), sg.Input(default_text='0',
-                                        key='UserPriority',
-                                        size=(4, 1),
-                                        enable_events=True,
-                                        tooltip='От 0 до 15')],
+        [sg.Column([[sg.Text('Приоритет')],
+                    [sg.Text('Организация',
+                              visible=True)]], element_justification='right'),
+         sg.Column([[sg.Input(default_text='0',
+                              key='UserPriority',
+                              size=(4, 1),
+                              enable_events=True,
+                              tooltip='От 0 до 15')],
+                    [sg.Combo(org_list,
+                              key='UserAddOrg',
+                              default_value='Нет',
+                              disabled=False,
+                              visible=True,
+                              enable_events=True,
+                              tooltip='Организация')]],),],
         [sg.Push(), sg.Checkbox('Заблокирован',
                                 default=False,
                                 disabled=False,
@@ -1971,7 +1982,7 @@ def make_modify_user_window(user: dict):
         #                                 tooltip='От 0 до 15')],
         [sg.Column([[sg.Text('Приоритет')],
                     [sg.Text('Организация',
-                             visible=False)]], element_justification='right'),
+                             visible=True)]], element_justification='right'),
          sg.Column([[sg.Input(key='UserModifyPriority',
                                         default_text=user['priority'],
                                         size=(4, 1),
@@ -1982,7 +1993,7 @@ def make_modify_user_window(user: dict):
                               key='UserModifyOrg',
                               default_value=org_name if org_name else 'Нет',
                               disabled=True if user['is_admin'] else False,
-                              visible=False,
+                              visible=True,
                               enable_events=True,
                               tooltip='Организация')]],),
          ],
@@ -2102,26 +2113,28 @@ def make_devices(dev_l):
 
 
 def make_organizations(org_l):
-    layout =[[sg.Column([[sg.Image(data=ICON_FILTER_BASE_64_BLUE),
-                          sg.Input(size=(15, 1),
-                                   enable_events=True,
-                                   disabled_readonly_background_color=disabled_input,
-                                   key='-filterOrg-'),
-                          sg.Button('', disabled_button_color='white',
-                                    image_data=ICON_CLEAR_FILTER_BASE_64_BLUE,
-                                    button_color='white',
-                                    tooltip='Очистить фильтр',
-                                    key='-ClearFilterOrg-',
-                                    disabled=True,
-                                    pad=((0, 5), 0))]],
-                        vertical_alignment='bottom'),
+    layout = [
+        [
+            # sg.Column([[sg.Image(data=ICON_FILTER_BASE_64_BLUE),
+            #               sg.Input(size=(15, 1),
+            #                        enable_events=True,
+            #                        disabled_readonly_background_color=disabled_input,
+            #                        key='-filterOrg-'),
+            #               sg.Button('', disabled_button_color='white',
+            #                         image_data=ICON_CLEAR_FILTER_BASE_64_BLUE,
+            #                         button_color='white',
+            #                         tooltip='Очистить фильтр',
+            #                         key='-ClearFilterOrg-',
+            #                         disabled=True,
+            #                         pad=((0, 5), 0))]],
+            #             vertical_alignment='bottom'),
               sg.Push(),
               sg.Button('', disabled_button_color='white',
                         image_data=ICON_ADD_BASE_64_BLUE,
                         button_color='white',
                         tooltip='Добавить',
                         key='-AddOrg-',
-                        pad=(4, (0, 3))),
+                        pad=((130, 4), (0, 3))),
               sg.Button('', disabled_button_color='white',
                         disabled=True,
                         image_data=ICON_MODIFY_BASE_64_BLUE,
@@ -2143,33 +2156,34 @@ def make_organizations(org_l):
                        expand_x=True,
                        enable_click_events=True,
                        enable_events=True,
-                       auto_size_columns=True,
+                       # auto_size_columns=True,
                        visible_column_map=[False, True],
                        select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                        selected_row_colors='black on lightblue',
                        metadata=[],
                        pad=10,
+
                        # num_rows=1,
                        hide_vertical_scroll=False,
-                       col_widths=[30, 200],
+                       # col_widths=[100, 200],
                        )
               ]]
     return sg.Window('Организации', layout,
                      icon=ICON_BASE_64,
-                     # use_ttk_buttons=True,
+                     use_ttk_buttons=True,
                      finalize=True,
                      # disable_minimize=True,
                      modal=True
                      )
 
 
-def make_add_org_window():
+def make_add_org_window(org_info=None):
     layout = [
         [sg.Column([
             [sg.Text('Имя', pad=(0, 5))],
         ], element_justification='right'),
             sg.Column([
-                [sg.Input('',
+                [sg.Input(default_text=org_info[1] if org_info else '',
                           size=25,
                           pad=(0, 5),
                           key='-OrgName-',
@@ -2177,7 +2191,7 @@ def make_add_org_window():
             ])
         ],
         [sg.Push(),
-         sg.Button('Создать',
+         sg.Button(button_text='Изменить' if org_info else 'Создать',
                    key='-AddOrgConfirm-')]
     ]
     return sg.Window('Организация', layout,
@@ -2375,7 +2389,7 @@ def set_window_running_server():
                                                              server_status["isReserved"] else status_bar_color))
     window['-StatusBar2-'].update(bar_text2)
     window['-Menu-'].update([
-        ['Сервер', ['Установить лицензию...', 'Настройки', 'Обновления', 'Устройства', '!Организации', 'Очистка БД', ['Частично', 'Полностью']]],
+        ['Сервер', ['Установить лицензию...', 'Настройки', 'Обновления', 'Устройства', 'Организации', 'Очистка БД', ['Частично', 'Полностью']]],
         ['Помощь', 'О программе'], ])
     update_free_space(server_status)
     window['online-users'].update(get_online_users(server_status['onlineUserIds']))
@@ -2816,6 +2830,59 @@ def get_all_organizations_list():
         orgs_for_table.append(org_from_db[0])
     con.close()
     return orgs_for_table
+
+
+def update_org(org_id, new_name):
+    res = False
+    json_dict = {'Id': org_id,
+                 'Name': new_name,
+                 }
+    try:
+        res = requests.post(BASE_URL_ORG +
+                            '/update',
+                            json=json_dict,
+                            headers=HEADER_dict)
+        if res.status_code == 200:
+            org_dict = json.loads(res.text)
+            print('Организация обновлена')
+            logging.info('Организация обновлена')
+            my_popup('Организация обновлена')
+            return org_dict['id']
+        else:
+            print(f'Не удалось обновить организацию - {res.status_code}, {res.text}')
+            logging.error("Не удалось обновить организацию")
+            my_popup('Не удалось обновить организацию')
+    except Exception as e:
+        print(f'Не удалось обновить организацию - {e}')
+        logging.error("Не удалось обновить организацию")
+        my_popup('Не удалось обновить организацию')
+    return False
+
+
+def delete_org(id):
+    res = False
+    json_dict = {'Id': id,
+                 }
+    try:
+        res = requests.post(BASE_URL_ORG +
+                            '/delete',
+                            json=json_dict,
+                            headers=HEADER_dict)
+        if res.status_code == 200:
+            org_dict = json.loads(res.text)
+            print('Организация удалена')
+            logging.info('Организация удалена')
+            my_popup('Организация удалена')
+            return org_dict['id']
+        else:
+            print(f'Не удалось удалить организацию - {res.status_code}, {res.text}')
+            logging.error("Не удалось удалить организацию")
+            my_popup('Не удалось удалить организацию')
+    except Exception as e:
+        print(f'Не удалось удалить организацию - {e}')
+        logging.error("Не удалось удалить организацию")
+        my_popup('Не удалось удалить организацию')
+    return False
 
 
 def clear_devices(us_id):
@@ -4479,7 +4546,7 @@ if __name__ == '__main__':
                                             window['-Menu-'].update([
                                                 ['Сервер',
                                                  ['Установить лицензию...', 'Настройки', 'Обновления', 'Устройства',
-                                                  '!Организации', 'Очистка БД',
+                                                  'Организации', 'Очистка БД',
                                                   ['Частично', 'Полностью']]],
                                                 ['Помощь', 'О программе'], ])
                                     if current_db < dict_online['databaseVersion']:  # TODO
@@ -4517,7 +4584,7 @@ if __name__ == '__main__':
                                         window['-Menu-'].update([
                                             ['Сервер',
                                              ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства',
-                                              '!Организации', 'Очистка БД',
+                                              'Организации', 'Очистка БД',
                                               ['Частично', 'Полностью']]],
                                             ['Помощь', 'О программе'], ])
                                 # noinspection PyUnboundLocalVariable
@@ -5528,7 +5595,7 @@ if __name__ == '__main__':
                                                             ['Сервер',
                                                              ['Установить лицензию...', 'Настройки', 'Обновления',
                                                               'Устройства',
-                                                              '!Организации',
+                                                              'Организации',
                                                               'Очистка БД',
                                                               ['Частично', 'Полностью']]],
                                                             ['Помощь', 'О программе'], ])
@@ -6081,6 +6148,10 @@ if __name__ == '__main__':
                                 ev_orgs, val_orgs = window_organizations.Read()
                                 if ev_orgs == sg.WIN_CLOSED or ev_orgs == 'Exit':
                                     break
+                                if ev_orgs == '-orgs-':
+                                    if val_orgs['-orgs-']:
+                                        window_organizations['-EditOrg-'].update(disabled=False)
+                                        window_organizations['-DelOrg-'].update(disabled=False)
                                 if ev_orgs == '-AddOrg-':
                                     window_add_org = make_add_org_window()
                                     while True:
@@ -6093,42 +6164,27 @@ if __name__ == '__main__':
                                             window_add_org.close()
                                             window_organizations['-orgs-'].update(get_all_organizations())
                                             break
-                                if ev_orgs == '-EditUpdate-':
-                                    window_add_update = make_add_update_window(
-                                        window_updates['-updates-'].Values[val_upd['-updates-'][0]])
+                                if ev_orgs == '-DelOrg-':
+                                    org_id = delete_org(window_organizations['-orgs-'].Values[val_orgs['-orgs-'][0]][0])
+                                    if org_id:
+                                        window_organizations['-orgs-'].update(get_all_organizations())
+                                        window_organizations['-EditOrg-'].update(disabled=True)
+                                        window_organizations['-DelOrg-'].update(disabled=True)
+                                if ev_orgs == '-EditOrg-':
+                                    window_add_org = make_add_org_window(
+                                        window_organizations['-orgs-'].Values[val_orgs['-orgs-'][0]])
                                     while True:
-                                        ev_edit_upd, val_edit_upd = window_add_update.Read()
-                                        print(ev_edit_upd, val_edit_upd)
-                                        if ev_edit_upd == sg.WIN_CLOSED or ev_edit_upd == 'Exit':
+                                        ev_edit_org, val_edit_org = window_add_org.Read()
+                                        print(ev_edit_org, val_edit_org)
+                                        if ev_edit_org == sg.WIN_CLOSED or ev_edit_org == 'Exit':
                                             break
-                                        if ev_edit_upd == '-upload-apk-':
-                                            print(
-                                                f"updates - {window_updates['-updates-'].Values[val_upd['-updates-'][0]][0]}")
-                                            update_id = edit_app(
-                                                window_updates['-updates-'].Values[val_upd['-updates-'][0]][0])
-                                            if update_id:
-                                                window_add_update['-ver-'].update('', disabled=True)
-                                                window_add_update['-notes-'].update('', disabled=True)
-                                                window_add_update['-changelog-'].update('', disabled=True)
-                                                window_add_update['-isForced-'].update('', disabled=True)
-                                                window_add_update['-FILENAME-UPDATE-'].update('', disabled=True)
-                                                window_add_update['-type-app-'].update(
-                                                    list(type_app.keys())[list(type_app.values()).index(0)],
-                                                    disabled=True)
-                                                updates_list = get_updates()
-                                                window_updates['-updates-'].update(updates_list)
-                                                window_updates['-EditUpdate-'].update(disabled=True)
-                                                window_updates['-DelUpdate-'].update(disabled=True)
-                                                # after_change = True
-                                                window_add_update.close()
-                                                break
-                                            window_add_update['-upload-apk-'].update(disabled=True,
-                                                                                     button_color=button_color)
-                                        window_add_update['-upload-apk-'].update(disabled=False,
-                                                                                 button_color=button_color_2)
-                                # if ev_orgs == '-devices-':
-                                #     # print(1)
-                                #     print_chosen_device(val_devs)
+                                        if ev_edit_org == '-AddOrgConfirm-':
+                                            org_id = update_org(window_organizations['-orgs-'].Values[val_orgs['-orgs-'][0]][0], val_edit_org['-OrgName-'])
+                                            window_add_org.close()
+                                            if org_id:
+                                                window_organizations['-orgs-'].update(get_all_organizations())
+                                                window_organizations['-EditOrg-'].update(disabled=True)
+                                                window_organizations['-DelOrg-'].update(disabled=True)
                             additional_window = False
                         if event == '-AddUser-':
                             """
@@ -6248,7 +6304,9 @@ if __name__ == '__main__':
                                                          'password': val_add_user['UserPassword'],
                                                          'userType': new_user_type,
                                                          'priority': val_add_user['UserPriority']
-                                                         if val_add_user['UserPriority'] else 1}
+                                                         if val_add_user['UserPriority'] else 0,
+                                                         'OrganizationId': get_id_by_org(val_add_user['UserAddOrg'])
+                                                         }
                                         try:
                                             res_add_user = requests.post(BASE_URL + 'addUser',
                                                                          json=add_user_dict, headers=HEADER_dict)
@@ -7035,7 +7093,7 @@ if __name__ == '__main__':
                                                 window['-Menu-'].update([
                                                     ['Сервер',
                                                      ['Установить лицензию...', 'Настройки', 'Обновления', 'Устройства',
-                                                      '!Организации', 'Очистка БД',
+                                                      'Организации', 'Очистка БД',
                                                       ['Частично', 'Полностью']]],
                                                     ['Помощь', 'О программе'], ])
                                                 update_text = ('Онлайн: ' + str(server_status["online"]) + ', БД: '
@@ -7150,7 +7208,7 @@ if __name__ == '__main__':
                                     window['-Menu-'].update([
                                         ['Сервер',
                                          ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства',
-                                          '!Организации', 'Очистка БД',
+                                          'Организации', 'Очистка БД',
                                           ['Частично', 'Полностью']]],
                                         ['Помощь', 'О программе'], ])
                                     server_status['run'] = False
