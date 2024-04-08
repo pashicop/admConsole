@@ -623,6 +623,26 @@ def get_groups_for_user_from_db(us_id):
     return groups_for_table
 
 
+def get_groups_for_user_from_db_with_org(user):
+    print(user)
+    con = sqlite3.connect('adm.db')
+    cur = con.cursor()
+    db_query_groups_for_user = "Select ug.group_id, g.name, g.description, g.is_disabled FROM Users_in_Groups ug " \
+                               "LEFT JOIN Users u on ug.user_id = u.id " \
+                               "LEFT JOIN Groups g on ug.group_id = g.id WHERE u.id = '" + user['id'] + "'"
+    cur.execute(db_query_groups_for_user)
+    groups = cur.fetchall()
+    groups_for_table = list()
+    for group in groups:
+        group_for_table = {'id': group[0],
+                           'name': group[1],
+                           'desc': group[2],
+                           'is_disabled': group[3]}
+        groups_for_table.append(group_for_table)
+    con.close()
+    return groups_for_table
+
+
 def get_group_name_by_id_from_db(gr_id):
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
@@ -707,6 +727,29 @@ def get_group_list(groups):
     return gr_list, group_treedata
 
 
+def get_group_list_with_org(org_id):
+    group_treedata = sg.TreeData()
+    gr_list = []
+    if groups_from_db:
+        for gr_from_db in groups_from_db:
+            if org_id == gr_from_db['organization_id']:
+                gr_list.append([gr_from_db['id'], gr_from_db['name'], gr_from_db['desc']])
+                if gr_from_db['is_emergency']:
+                    gr_list[-1].append(u'\u0020\u0020\u0020\u2713')
+                else:
+                    gr_list[-1].append('')
+                if gr_from_db['is_disabled']:
+                    gr_list[-1].append(u'\u0020\u0020\u0020' + SYMBOL_X_SMALL)
+                else:
+                    gr_list[-1].append('')
+                group_treedata.insert('', gr_from_db['id'], '',
+                                      values=[gr_from_db['name'],
+                                              gr_from_db['desc'],
+                                              (u'\u0020\u0020\u0020' + SYMBOL_X_SMALL) if gr_from_db[
+                                                  'is_disabled'] else ''], icon=check[0])
+    return gr_list, group_treedata
+
+
 def make_main_window(ip):
     if server_status['run']:
         users_online_text = 'Данные загружаются...'
@@ -716,6 +759,7 @@ def make_main_window(ip):
     group_list = list()
     treedata = sg.TreeData()
     treedata2 = sg.TreeData()
+    gr_treedata = sg.TreeData()
     user_list_treedata = get_user_list_treedata()
     label_text = 'Панель администратора ОМЕГА К100 ' + ip + ' Версия ' + version + ', ' + val_login['Логин']
     branch_name = get_branch()
@@ -832,7 +876,7 @@ def make_main_window(ip):
                 vertical_alignment='bottom')
             ],
                 [
-                    sg.Tree(data=treedata,
+                    sg.Tree(data=gr_treedata,
                             headings=['Имя', 'Описание', 'Блок'],
                             col0_width=5,
                             # col0_heading="",
@@ -4694,7 +4738,7 @@ if __name__ == '__main__':
                             break
                         if event == '-users-tree-':
                             if values['-users-tree-']:
-                                print(values['-users-tree-'][0])
+                                # print(values['-users-tree-'][0])
                                 if filter_status:
                                     # noinspection PyUnboundLocalVariable
                                     selected_user = filtered_users_list_of_dict[values['-users-'][0]]
@@ -4704,6 +4748,7 @@ if __name__ == '__main__':
                                     for user in users_from_db:
                                         if user['id'] == user_id:
                                             selected_user = copy.deepcopy(user)
+                                            print(selected_user)
                                             break
                                 window['Apply'].update(disabled=True)
                                 window['Изменить пользователя'].update(disabled=False)
@@ -4712,6 +4757,39 @@ if __name__ == '__main__':
                                 else:
                                     window['-DelUser-'].update(disabled=False)
                                 window['-CloneUser-'].update(disabled=False)
+                                if get_block_status(selected_user):
+                                    window['-BlockUser-'].update(image_data=ICON_UNBLOCK_BASE_64_BLUE)
+                                    window['-BlockUser-'].TooltipObject.text = 'Разблокировать'
+                                else:
+                                    window['-BlockUser-'].update(image_data=ICON_BLOCK_BASE_64_BLUE)
+                                    window['-BlockUser-'].TooltipObject.text = 'Заблокировать'
+                                window['-BlockUser-'].update(disabled=False)
+                                window['-checkAllGroups-'].update(False, disabled=False)
+                                group_list, treedata = get_group_list_with_org(selected_user['organization_id'])
+                                tree.update(treedata)
+                                groups_for_user = get_groups_for_user_from_db_with_org(selected_user)
+                                group_for_user_ids = []
+                                for group_for_user in groups_for_user:
+                                    group_for_user_ids.append(group_for_user['id'])
+                                all_group_ids = []
+                                for group_from_all in groups_from_db:
+                                    all_group_ids.append(group_from_all['id'])
+                                tree.metadata = []
+                                for group_id_for_tree in all_group_ids:
+                                    if group_id_for_tree in group_for_user_ids:
+                                        tree.metadata.append(group_id_for_tree)
+                                        tree.update(key=group_id_for_tree, icon=check[1])
+                                    else:
+                                        tree.update(key=group_id_for_tree, icon=check[0])
+
+                            else:
+                                window['Apply'].update(disabled=True)
+                                window['Изменить пользователя'].update(disabled=True)
+                                window['-CloneUser-'].update(disabled=True)
+                                window['-BlockUser-'].update(disabled=True)
+                                window['-DelUser-'].update(disabled=True)
+                                window['-checkAllGroups-'].update(disabled=True)
+                                window['-checkAllGroups-'].update(True)
                         if event == '-users-':
                             if values['-users-']:
                                 if filter_status:
