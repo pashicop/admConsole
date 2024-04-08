@@ -246,7 +246,8 @@ def create_db():
                             "role_multiple_devices" INTEGER DEFAULT 0,
                             "priority" INTEGER DEFAULT 1,
                             "organization_id" TEXT DEFAULT '00000000-0000-0000-0000-000000000000',
-                            PRIMARY KEY("id")
+                            PRIMARY KEY("id"),
+                            FOREIGN KEY("organization_id") REFERENCES "Organizations"("id")
                         );
                         CREATE TABLE IF NOT EXISTS "Groups" (
                             "id"	TEXT NOT NULL UNIQUE,
@@ -256,7 +257,9 @@ def create_db():
                             "is_broadcast"	INTEGER DEFAULT 0,
                             "is_emergency"	INTEGER DEFAULT 0,
                             "is_disabled"	INTEGER DEFAULT 0,
-                            PRIMARY KEY("id")
+                            "organization_id" TEXT DEFAULT '00000000-0000-0000-0000-000000000000',
+                            PRIMARY KEY("id"),
+                            FOREIGN KEY("organization_id") REFERENCES "Organizations"("id")
                         );
                         CREATE TABLE IF NOT EXISTS "Organizations" (
                             "id"	TEXT NOT NULL UNIQUE,
@@ -341,12 +344,15 @@ def add_groups(groups_list):
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
     for group in groups_list:
-        description, is_disabled, group_type = '' if group['description'] is None else group['description'], \
-            1 if group['isDisabled'] else 0, \
-            1 if group['groupType'] else 0
-        db_insert_group = """insert or replace into Groups(id, Name, description, is_emergency, is_disabled) 
-        Values (?, ?, ?, ?, ?)"""
-        group_data = group['id'], group['name'], description, group_type, is_disabled
+        description, is_disabled, group_type, organization_id = ('' if group['description'] is None
+                                                                 else group['description'],
+                                                                 1 if group['isDisabled'] else 0,
+                                                                 1 if group['groupType'] else 0,
+                                                                 group['organizationId'])
+
+        db_insert_group = """insert or replace into Groups(id, Name, description, is_emergency, is_disabled, organization_id) 
+        Values (?, ?, ?, ?, ?, ?)"""
+        group_data = group['id'], group['name'], description, group_type, is_disabled, organization_id
         cur.execute(db_insert_group, group_data)
     con.commit()
     con.close()
@@ -513,7 +519,7 @@ def get_user_list_treedata(users_from_db):
     for org in orgs:
         td.Insert(parent='', key=org, text=org, values=[])
     for user in users:
-        user_for_table = {'login': user[1],
+        user_for_td = {'login': user[1],
                           'name': user[3],
                           'id': user[0],
                           'is_dispatcher': user[4],
@@ -537,16 +543,16 @@ def get_user_list_treedata(users_from_db):
                           'role_multiple_devices': user[22],
                           'priority': user[23],
                           'organization_id': user[24]}
-        td.Insert(parent=get_org_by_id(user_for_table['organization_id']),
-                  key=user_for_table['name'],
-                  text=user_for_table['name'],
-                  values=[user_for_table['id'],
-                          user_for_table['login'],
-                          user_for_table['name'],
-                          user_for_table['is_dispatcher'],
-                          user_for_table['is_admin'],
-                          user_for_table['is_gw'],
-                          user_for_table['is_blocked']]
+        td.Insert(parent=get_org_by_id(user_for_td['organization_id']),
+                  key=user_for_td['name'],
+                  text=user_for_td['name'],
+                  values=[user_for_td['id'],
+                          user_for_td['login'],
+                          user_for_td['name'],
+                          user_for_td['is_dispatcher'],
+                          user_for_td['is_admin'],
+                          user_for_td['is_gw'],
+                          user_for_td['is_blocked']]
                   )
     con.close()
     # users_for_table.sort(key=lambda i: i['login'])
@@ -566,7 +572,8 @@ def get_groups_from_db() -> list[dict]:
                            'id': group[0],
                            'desc': group[2],
                            'is_emergency': group[5],
-                           'is_disabled': group[6]}
+                           'is_disabled': group[6],
+                           'organization_id': group[7]}
         groups_for_table.append(group_for_table)
     con.close()
     groups_for_table.sort(key=lambda i: i['name'])
@@ -1819,7 +1826,6 @@ def make_add_user_window():
 def make_modify_user_window(user: dict):
     org_name = get_org_by_id(user['organization_id'])
     org_list = get_all_organizations_list()
-
     layout_modify_user = [
         [sg.Text('Логин'), sg.Push(), sg.Input(disabled=True, pad=((0, 40), (0, 0)),
                                                default_text=user['login'], key='UserModifyLogin')],
@@ -2249,23 +2255,50 @@ def make_device(dev_l):
                      )
 
 def make_modify_group_window(group: dict):
+    org_name = get_org_by_id(group['organization_id'])
+    org_list = get_all_organizations_list()
     layout_modify_group = [
-        [sg.Push(), sg.Text('Имя Группы'),
-         sg.Input(size=(40, 1), default_text=group['name'],
-                  disabled=True,
-                  enable_events=True,
-                  key='GroupModifyName')],
-        [sg.Push(), sg.Text('Описание Группы'),
-         sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3),
-                      default_text=group['desc'],
-                      enable_events=True,
-                      key='GroupModifyDesc')],
+        [sg.Column([[sg.Text('Имя Группы',
+                             pad=0)],
+                    [sg.Text('',
+                             pad=0)],
+                    [sg.Text('Описание Группы',
+                             pad=0)],
+                    [sg.Text('',
+                             pad=0)],
+                    [sg.Text('Организация',
+                             pad=0,
+                             visible=True)]], element_justification='right'),
+         sg.Column([[sg.Input(size=(40, 1),
+                              default_text=group['name'],
+                              disabled=True,
+                              enable_events=True,
+                              key='GroupModifyName')],
+                    [sg.Multiline(enter_submits=True,
+                                  no_scrollbar=True,
+                                  size=(40, 3),
+                                  default_text=group['desc'],
+                                  enable_events=True,
+                                  key='GroupModifyDesc')],
+                    [sg.Combo(org_list,
+                              key='GroupEditOrg',
+                              default_value=org_name if org_name else 'Нет',
+                              disabled=False,
+                              visible=True,
+                              enable_events=True,
+                              tooltip='Организация')]
+                    ], element_justification='left')
+         ],
         [sg.Button(button_text='Очистить чат', key='modifyGroupDelChat'), sg.Push(),
-         sg.Checkbox('Экстренная', default=group['is_emergency'],
+         sg.Checkbox('Экстренная',
+                     default=group['is_emergency'],
                      enable_events=True,
+                     size=15,
+                     pad=(5, (10, 5)),
                      key='GroupModifyEmergency')],
         [sg.Push(), sg.Checkbox('Заблокировать', text_color='red',
                                 enable_events=True,
+                                size=15,
                                 default=group['is_disabled'],
                                 key='GroupModifyBlocked')],
         [sg.Push(), sg.Button(button_text='Изменить',
@@ -2311,21 +2344,46 @@ def make_clone_user_window(user):
 
 
 def make_add_group_window():
+    org_list = get_all_organizations_list()
     layout_add_group = [
-        [sg.Push(), sg.Text('Имя Группы'), sg.Input(size=(40, 1), key='GroupName',
-                                                    enable_events=True,
-                                                    tooltip=('Не больше ' + str(MAX_LEN_GROUPNAME) + ' символов'))],
-        [sg.Push(), sg.Text('Описание Группы'),
-         sg.Multiline(enter_submits=True, no_scrollbar=True, size=(40, 3), key='description',
-                      enable_events=True,
-                      tooltip=('Не больше ' + str(MAX_LEN_GROUPDESC) + ' символов'))],
-        [sg.Push(), sg.Checkbox('Экстренная', key='emergency',
+        [sg.Column([[sg.Text('Имя Группы',
+                             pad=0)],
+                    [sg.Text('',
+                             pad=0)],
+                    [sg.Text('Описание Группы',
+                             pad=0)],
+                    [sg.Text('',
+                             pad=0)],
+                    [sg.Text('Организация',
+                             pad=0,
+                             visible=True)]], element_justification='right'),
+        sg.Column([[sg.Input(size=(40, 1),
+                             key='GroupName',
+                             enable_events=True,
+                             tooltip=('Не больше ' + str(MAX_LEN_GROUPNAME) + ' символов'))],
+                   [sg.Multiline(enter_submits=True,
+                                 no_scrollbar=True,
+                                 size=(40, 3),
+                                 key='description',
+                                 enable_events=True,
+                                 tooltip=('Не больше ' + str(MAX_LEN_GROUPDESC) + ' символов'))],
+                   [sg.Combo(org_list,
+                             key='GroupAddOrg',
+                             default_value='Нет',
+                             disabled=False,
+                             visible=True,
+                             enable_events=True,
+                             tooltip='Организация')]], element_justification='left')],
+        [sg.Push(), sg.Checkbox('Экстренная', 
+                                key='emergency',
+                                size=15,
                                 enable_events=True,
-                                pad=(0, 10))],
+                                pad=(5, (10, 5)))],
         [sg.Push(), sg.Checkbox('Заблокирована',
                                 default=False,
                                 disabled=False,
                                 text_color='red',
+                                size=15,
                                 enable_events=True,
                                 key='addGroupBlock')],
         [sg.Push(), sg.Button(button_text='Добавить', disabled=True, key='addGroupButton',
@@ -5064,6 +5122,7 @@ if __name__ == '__main__':
                                             modify_group_desc = val_modify_group['GroupModifyDesc']
                                             modify_group_emergency = int(val_modify_group['GroupModifyEmergency'])
                                             modify_group_blocked = int(val_modify_group['GroupModifyBlocked'])
+                                            modify_group_organization_id = get_id_by_org(val_modify_group['GroupEditOrg'])
                                             modify_group_dict = {}
                                             modify_group = False
                                             modify_group_is_blocked = False
@@ -5079,6 +5138,9 @@ if __name__ == '__main__':
                                                 modify_group = True
                                             else:
                                                 modify_group_dict['groupType'] = group_to_change['is_emergency']
+                                            if get_id_by_org(val_modify_group['GroupEditOrg']) != group_to_change['organization_id']:
+                                                modify_group_dict['OrganizationId'] = get_id_by_org(val_modify_group['GroupEditOrg'])
+                                                modify_group = True
                                             if modify_group:
                                                 try:
                                                     res_modify_group = requests.post(BASE_URL + 'updateGroup',
@@ -5910,7 +5972,7 @@ if __name__ == '__main__':
                                                              'dgna': val_set['dgna'],
                                                              'geoData': val_set['geoData'],
                                                              'longAmbientListening': val_set['longAmbientListening'],
-                                                             'mfc': val_set['role_mfc'],
+                                                             'mfc': val_set['mfc'],
                                                              'otap': val_set['otap'],
                                                              'longAmbientCallDuration': val_set[
                                                                  'longAmbientCallDuration'], }
@@ -6928,7 +6990,8 @@ if __name__ == '__main__':
                                         new_group_blocked = int(val_add_group['addGroupBlock'])
                                         add_group_dict = {'name': new_group_name,
                                                           'description': new_group_desc,
-                                                          'groupType': new_group_is_emergency}
+                                                          'groupType': new_group_is_emergency,
+                                                          'OrganizationId': get_id_by_org(val_add_group['GroupAddOrg'])}
                                         try:
                                             res_add_user = requests.post(BASE_URL + 'addGroup',
                                                                          json=add_group_dict, headers=HEADER_dict)
