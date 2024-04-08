@@ -58,6 +58,9 @@ ICON_CHANGE_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMA
 ICON_CHANGE_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAHTSURBVEiJ3ZQ9SFtRHMXP/+bl5eOlcYndHOuiZokfWwmC1W62NkMHwSlQ03YKglNCXdwcbBQyOHZ5g6BS7WJBKmJJKB1aimtHocWa5NG8vPt3ipiY98IzcckZ77n3/Lgf5wI9r+iTtBZLJPvuul44mePPUoO+sHFG7E11HTAx9/YRCxwy835huH/1rgCyC5ewPjP4oDDyMIlsVnYN0M3wW4DYy2REmN7vYESIsMMMdpXGqPr88s2XD5t/60NKw4QSKqTiNwMRBn4RoeQmX4KrimoYtjsAgFgi2SekcgCQVE1j5nhn69LVLpp06xUV9fyFFLUZAjymEvg4lFgMtVoYnU9rQ4ms6hpQh1jCnAbBq1m03wrirxgZTZ4ftSuhbQ9uQoJMK81+WfA7MEyP9H5ygjg2uajnL4IPynHhE5lm74e+USp7+Gk7SMuiuVF0Pq35KsYegLAi1KkTfe2PLSC+sOAvXQZfCaK2l3dTDITAWCLgm1U1J4u7+Urda+hBrRoIEFOMAVcAIhADYMIAQggCuAZ0fEQAaOz56/cQPCdITJ7q6z8bzPsM7xTQNhxo/otcaPRFahngWbLw+HR7/cxunmMPnMRk5v7/Cwx+3c7ZhveGrgAiFrY4Ehz/8QAAAABJRU5ErkJggg=='
 ICON_EXPAND_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFkSURBVEiJ7ZShT1tRFIe/AyiGLCxQ/gBKLe8hRyDBbpS+NCQNwfM0El4lvp0EAyVNaJdgMVTM7OKWtMkMGKqKXUbS8kOQJhheHzDZT55z7+87V9wDI4Yw/pbDfj6MZheWvnTarvnfBX4+jCQdmNnKXMYjqSSRYBAO9IBHM1tNL/pKIhkqeBHex7QjUTOzHLCWRBIr8PNhIKkC9JAVXb1y1mm7Vjqz/AfjG7CWznq/Oy3Xfi1jLE4w2U39AKrIiq5Rrg3qrlGuISsiTj91Zy7iMkaM+DgW1wyCYPym//nIjEtXL5+87Pn5MHgUG1P3qe2rq6j3WkbsP7jV9FczbYOOvVxYGNS9XFiQVDW09TfV3Xj3CwD8XLgn0yHQB9sx40FSFZiQFF03vpc+JADwNnf3gRLPyw5gwsxKv87L0bC7ibZpp+2a81n/H7AOjEmKXL0SO/mbBAB3LfdzPrtsZtZMGj4iEU+YcpHRJ5ZlsgAAAABJRU5ErkJggg=='
 ICON_COLLAPSE_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFbSURBVEiJ7ZS/S0JRFMe/R52qUZLSPyBz7T3HIqE5Hz4kEHHv7Y09t/6AZ2MtZQhp0Nqig4u3LVBoiYacbI0C9dvweCCBz9cPsMHveA7n+zn3nnsusNC8JX5J0zTDT6PYmQjuVN25mMzpOcscE9mV12ix2bSH0zxCfoBnxgwRFgGea4aV9+KaYeVJVgU8eIsOsj8+gdvp4RGJEwAjQEoi+CBZBRAhad83Tsu/ArgQyyZ5DMC7ioiIlDvXjj2rNhwE8NLtNBMp/R3AHoAQSVvVK76dfwvgQlQ7kUqLiLSCmi/0PxR4yID7XNc2trb7PdX6c4C3CyKys57UEBQSCPBl0cYishvf1BkEMhMwYT6CsESiJiIGgEwQiC9Az1kmyQqAISgFVa9c9XuqG0+mHyHYB5CJp7SHflf1pnn4/qZLg+gNgCooBdVwal5cNZwaKAUQl8uD1Vs/j4Xmr0/ZzJTTxEfPgAAAAABJRU5ErkJggg=='
+ICON_FOLDER = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
+ICON_FILE = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABU0lEQVQ4y52TzStEURiHn/ecc6XG54JSdlMkNhYWsiILS0lsJaUsLW2Mv8CfIDtr2VtbY4GUEvmIZnKbZsY977Uwt2HcyW1+dTZvt6fn9557BGB+aaNQKBR2ifkbgWR+cX13ubO1svz++niVTA1ArDHDg91UahHFsMxbKWycYsjze4muTsP64vT43v7hSf/A0FgdjQPQWAmco68nB+T+SFSqNUQgcIbN1bn8Z3RwvL22MAvcu8TACFgrpMVZ4aUYcn77BMDkxGgemAGOHIBXxRjBWZMKoCPA2h6qEUSRR2MF6GxUUMUaIUgBCNTnAcm3H2G5YQfgvccYIXAtDH7FoKq/AaqKlbrBj2trFVXfBPAea4SOIIsBeN9kkCwxsNkAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK0xAAAAAElFTkSuQmCC'
+ICON_RADIO = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAJ1AAACdQF32cIiAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAM9JREFUOI3F0bFOQkEQheEvXg1g1CAFJCQ2hprGgthToi2v42toQXgJSgrsbE1ssKCwtCAUSmiAgjEhF7xeK6aZPbO7/5yd5dCRpPQNKvjMCzhO6TvM8JYXcJT34H8ATbzgA32Uo15C6y/AGG084xF1PMXevc2MbrMAdbxH/RJDdFDEyma4V1mAMzSinuA6rF/gJPJ3+hnb8RCdJhjhK3Q1Onft/txewBLTWP8A9sZvtNfICc6zOqZnMI9c27q8xCKvgx4KOA09CDezLBeHjTWGkSHmlMppoQAAAABJRU5ErkJggg=='
 WARN_FREE_SPACE = 80
 ALARM_FREE_SPACE = 95
 WARN_LIC_DAYS = 30
@@ -508,16 +511,17 @@ def get_users_from_db() -> list[dict]:
     return users_for_table
 
 
-def get_user_list_treedata(users_from_db):
+def get_user_list_treedata():
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
     cur.execute('select * from users')
     users = cur.fetchall()
+    con.close()
     users_for_table = list()
     td = sg.TreeData()
     orgs = get_all_organizations_list()
     for org in orgs:
-        td.Insert(parent='', key=org, text=org, values=[])
+        td.Insert(parent='', key=org, text=org, values=[], icon=ICON_FOLDER)
     for user in users:
         user_for_td = {'login': user[1],
                           'name': user[3],
@@ -544,17 +548,20 @@ def get_user_list_treedata(users_from_db):
                           'priority': user[23],
                           'organization_id': user[24]}
         td.Insert(parent=get_org_by_id(user_for_td['organization_id']),
-                  key=user_for_td['name'],
-                  text=user_for_td['name'],
+                  key=(user_for_td['id'] + '.' + user_for_td['organization_id']),
+                  text=user_for_td['login'],
                   values=[user_for_td['id'],
                           user_for_td['login'],
                           user_for_td['name'],
-                          user_for_td['is_dispatcher'],
-                          user_for_td['is_admin'],
-                          user_for_td['is_gw'],
-                          user_for_td['is_blocked']]
+                          u'\u0020\u0020\u0020\u2713' if user_for_td['is_dispatcher'] else '',
+                          u'\u0020\u0020\u0020\u2713' if user_for_td['is_admin'] else '',
+                          u'\u0020\u0020\u0020\u2713' if user_for_td['is_gw'] else '',
+                          (u'\u0020\u0020\u0020' + SYMBOL_X_SMALL) if user_for_td['is_blocked'] else ''],
+                  icon=ICON_RADIO
                   )
-    con.close()
+    for key, node in td.tree_dict.items():
+        children = node.children
+        node.children = sorted(children, key=lambda child:child.text)
     # users_for_table.sort(key=lambda i: i['login'])
     return td
 
@@ -709,7 +716,7 @@ def make_main_window(ip):
     group_list = list()
     treedata = sg.TreeData()
     treedata2 = sg.TreeData()
-    user_list_treedata = get_user_list_treedata(users_from_db)
+    user_list_treedata = get_user_list_treedata()
     label_text = 'Панель администратора ОМЕГА К100 ' + ip + ' Версия ' + version + ', ' + val_login['Логин']
     branch_name = get_branch()
     if branch_name != 'Неизвестно':
@@ -770,44 +777,46 @@ def make_main_window(ip):
                                        button_color='white',
                                        tooltip='Удалить',
                                        key='-DelUser-', pad=(4, (0, 3)))],
-                         # [sg.Tree(user_list_treedata,
-                         #          headings=['id', 'Логин', 'Имя', 'Дисп', 'Адм', 'К500', 'Блок'],
-                         #          col0_width=5,
-                         #          col0_heading="Организация",
-                         #          col_widths=[0, 10, 18, 5, 5, 5, 5],
-                         #          num_rows=10,
-                         #          # size=(450, 300),
-                         #          key='-users-tree-',
-                         #          # row_height=20,
-                         #          visible_column_map=[False, True, True, True, True, True, True],
-                         #          metadata=[],
-                         #          auto_size_columns=False,
-                         #          show_expanded=False,
-                         #          enable_events=True,
-                         #          justification='left',
-                         #          expand_y=True,
-                         #          expand_x=True,
-                         #          select_mode=sg.TABLE_SELECT_MODE_BROWSE,
-                         #          selected_row_colors='black on lightblue',
-                         #          )],
-                         [sg.Table(user_list, headings=['id', 'Логин', 'Имя', 'Дисп', 'Адм', 'К500', 'Блок'],
-                                   justification="left",
-                                   # num_rows=20,
-                                   key='-users-', expand_y=True, expand_x=True,
-                                   enable_click_events=True,
-                                   enable_events=True,
-                                   # row_colors=list_block_user_with_color,
-                                   auto_size_columns=False,
-                                   visible_column_map=[False, True, True, True, True, True, True],
-                                   # right_click_selects=True,
-                                   # right_click_menu=[1, 'Изменить пользователя'],
-                                   select_mode=sg.TABLE_SELECT_MODE_BROWSE,
-                                   selected_row_colors='black on lightblue',
-                                   # auto_size_columns=False,
-                                   metadata=[],
-                                   size=(450, 300),
-                                   col_widths=[0, 10, 18, 5, 5, 5, 5],
-                                   )],
+                         [sg.Tree(user_list_treedata,
+                                  headings=['id', 'Логин', 'Имя', 'Дисп', 'Адм', 'К500', 'Блок'],
+                                  visible_column_map=[False, False, True, True, True, True, True],
+                                  col0_width=15,
+                                  col0_heading="Логин",
+                                  col_widths=[0, 0, 10, 4, 4, 4, 4],
+                                  num_rows=10,
+                                  row_height=16,
+                                  font='default 9',
+                                  # size=(450, 300),
+                                  key='-users-tree-',
+                                  # row_height=20,
+                                  metadata=[],
+                                  auto_size_columns=False,
+                                  show_expanded=True,
+                                  enable_events=True,
+                                  justification='left',
+                                  expand_y=True,
+                                  expand_x=True,
+                                  select_mode=sg.TABLE_SELECT_MODE_BROWSE,
+                                  selected_row_colors='black on lightblue',
+                                  )],
+                         # [sg.Table(user_list, headings=['id', 'Логин', 'Имя', 'Дисп', 'Адм', 'К500', 'Блок'],
+                         #           justification="left",
+                         #           # num_rows=20,
+                         #           key='-users-', expand_y=True, expand_x=True,
+                         #           enable_click_events=True,
+                         #           enable_events=True,
+                         #           # row_colors=list_block_user_with_color,
+                         #           auto_size_columns=False,
+                         #           visible_column_map=[False, True, True, True, True, True, True],
+                         #           # right_click_selects=True,
+                         #           # right_click_menu=[1, 'Изменить пользователя'],
+                         #           select_mode=sg.TABLE_SELECT_MODE_BROWSE,
+                         #           selected_row_colors='black on lightblue',
+                         #           # auto_size_columns=False,
+                         #           metadata=[],
+                         #           size=(450, 300),
+                         #           col_widths=[0, 10, 18, 5, 5, 5, 5],
+                         #           )],
                      ],
                      size=(471, 300),
                      # expand_x=True,
@@ -2931,7 +2940,7 @@ def delete_org(id):
             print('Организация удалена')
             logging.info('Организация удалена')
             my_popup('Организация удалена')
-            return org_dict['id']
+            return org_dict
         else:
             print(f'Не удалось удалить организацию - {res.status_code}, {res.text}')
             logging.error("Не удалось удалить организацию")
@@ -3905,10 +3914,11 @@ def update_users():
             window['-filterUser-'].update(background_color=button_color_2)
         else:
             window['-filterUser-'].update(background_color='lightblue')
-        window['-users-'].update(filtered_users_list)
+        window['-users-tree-'].update(filtered_users_list)
     else:
         user_list, treedata_update_user = get_user_list(users_from_db)
-        window['-users-'].update(user_list)
+        user_td = get_user_list_treedata()
+        window['-users-tree-'].update(user_td)
     window['-TREE2-'].update(treedata_update_user)
 
 
@@ -3957,7 +3967,8 @@ def update_users_and_groups():
             window['-users-'].update(filtered_users_list)
         else:
             user_list, treedata_update_user = get_user_list(users_from_db)
-            window['-users-'].update(user_list)
+            user_td = get_user_list_treedata()
+            window['-users-tree-'].update(user_td)
     if groups_from_db != [[]]:
         group_list, treedata_update_group = get_group_list(groups_from_db)
         if filter_status_group:
@@ -4016,7 +4027,8 @@ def set_buttons_disabled(param=True):
     window['-filterGroup-'].update(disabled=param)
     window['-hide-online-'].update(disabled=param)
     window['-frame-online-'].update(visible=not window['-frame-online-'].metadata)
-    window['-users-'].update(visible=not param) # для treedata в users убрать
+    # window['-users-'].update(visible=not param) # для treedata в users убрать
+    window['-users-tree-'].update(visible=not param)
     window['-groups2-'].update(visible=not param)
     window['-TREE-'].update(visible=not param)
     window['-TREE2-'].update(visible=not param)
@@ -4627,9 +4639,10 @@ if __name__ == '__main__':
                                     window['-StatusBar3-'].update('', background_color=button_color_2)
                                     window['-Start-'].update(disabled=False)
                                     window['-Stop-'].update(disabled=True)
-                                    window['-users-'].update([[]])
-                                    window['-groups2-'].update([[]])
+                                    # window['-users-'].update([[]])
                                     clear_treedata = sg.TreeData()
+                                    window['-groups2-'].update([[]])
+                                    window['-users-tree-'].update(clear_treedata)
                                     window['-TREE-'].update(clear_treedata)
                                     window['-TREE2-'].update(clear_treedata)
                                     set_buttons_disabled()
@@ -4679,6 +4692,26 @@ if __name__ == '__main__':
                         if event == sg.WIN_CLOSED or event == 'Exit':
                             break_flag = True
                             break
+                        if event == '-users-tree-':
+                            if values['-users-tree-']:
+                                print(values['-users-tree-'][0])
+                                if filter_status:
+                                    # noinspection PyUnboundLocalVariable
+                                    selected_user = filtered_users_list_of_dict[values['-users-'][0]]
+                                else:
+                                    user_id = str(values['-users-tree-'][0]).partition('.')[0]
+                                    print(user_id)
+                                    for user in users_from_db:
+                                        if user['id'] == user_id:
+                                            selected_user = copy.deepcopy(user)
+                                            break
+                                window['Apply'].update(disabled=True)
+                                window['Изменить пользователя'].update(disabled=False)
+                                if selected_user['name'] == 'admin':
+                                    window['-DelUser-'].update(disabled=True)
+                                else:
+                                    window['-DelUser-'].update(disabled=False)
+                                window['-CloneUser-'].update(disabled=False)
                         if event == '-users-':
                             if values['-users-']:
                                 if filter_status:
