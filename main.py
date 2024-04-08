@@ -521,7 +521,7 @@ def get_user_list_treedata():
     td = sg.TreeData()
     orgs = get_all_organizations_list()
     for org in orgs:
-        td.Insert(parent='', key=org, text=org, values=[], icon=ICON_FOLDER)
+        td.Insert(parent='', key=get_id_by_org(org), text=org, values=[], icon=ICON_FOLDER)
     for user in users:
         user_for_td = {'login': user[1],
                           'name': user[3],
@@ -547,7 +547,7 @@ def get_user_list_treedata():
                           'role_multiple_devices': user[22],
                           'priority': user[23],
                           'organization_id': user[24]}
-        td.Insert(parent=get_org_by_id(user_for_td['organization_id']),
+        td.Insert(parent=user_for_td['organization_id'],
                   key=(user_for_td['id'] + '.' + user_for_td['organization_id']),
                   text=user_for_td['login'],
                   values=[user_for_td['id'],
@@ -4738,50 +4738,64 @@ if __name__ == '__main__':
                             break
                         if event == '-users-tree-':
                             if values['-users-tree-']:
+                                org_check = False
                                 # print(values['-users-tree-'][0])
                                 if filter_status:
                                     # noinspection PyUnboundLocalVariable
                                     selected_user = filtered_users_list_of_dict[values['-users-'][0]]
                                 else:
-                                    user_id = str(values['-users-tree-'][0]).partition('.')[0]
-                                    print(user_id)
-                                    for user in users_from_db:
-                                        if user['id'] == user_id:
-                                            selected_user = copy.deepcopy(user)
-                                            print(selected_user)
-                                            break
+                                    if '.' in values['-users-tree-'][0]:
+                                        user_id = str(values['-users-tree-'][0]).partition('.')[0]
+                                        print(user_id)
+                                        for user in users_from_db:
+                                            if user['id'] == user_id:
+                                                selected_user = copy.deepcopy(user)
+                                                print(selected_user)
+                                                break
+                                    else:
+                                        org_id = values['-users-tree-'][0]
+                                        org_check = True
                                 window['Apply'].update(disabled=True)
                                 window['Изменить пользователя'].update(disabled=False)
-                                if selected_user['name'] == 'admin':
+                                if not org_check:
+                                    if selected_user['name'] == 'admin':
+                                        window['-DelUser-'].update(disabled=True)
+                                    else:
+                                        window['-DelUser-'].update(disabled=False)
+                                    if get_block_status(selected_user):
+                                        window['-BlockUser-'].update(image_data=ICON_UNBLOCK_BASE_64_BLUE)
+                                        window['-BlockUser-'].TooltipObject.text = 'Разблокировать'
+                                    else:
+                                        window['-BlockUser-'].update(image_data=ICON_BLOCK_BASE_64_BLUE)
+                                        window['-BlockUser-'].TooltipObject.text = 'Заблокировать'
+                                else:
                                     window['-DelUser-'].update(disabled=True)
-                                else:
-                                    window['-DelUser-'].update(disabled=False)
-                                window['-CloneUser-'].update(disabled=False)
-                                if get_block_status(selected_user):
-                                    window['-BlockUser-'].update(image_data=ICON_UNBLOCK_BASE_64_BLUE)
-                                    window['-BlockUser-'].TooltipObject.text = 'Разблокировать'
-                                else:
                                     window['-BlockUser-'].update(image_data=ICON_BLOCK_BASE_64_BLUE)
                                     window['-BlockUser-'].TooltipObject.text = 'Заблокировать'
+                                window['-CloneUser-'].update(disabled=False)
+
                                 window['-BlockUser-'].update(disabled=False)
                                 window['-checkAllGroups-'].update(False, disabled=False)
-                                group_list, treedata = get_group_list_with_org(selected_user['organization_id'])
-                                tree.update(treedata)
-                                groups_for_user = get_groups_for_user_from_db_with_org(selected_user)
-                                group_for_user_ids = []
-                                for group_for_user in groups_for_user:
-                                    group_for_user_ids.append(group_for_user['id'])
-                                all_group_ids = []
-                                for group_from_all in groups_from_db:
-                                    all_group_ids.append(group_from_all['id'])
-                                tree.metadata = []
-                                for group_id_for_tree in all_group_ids:
-                                    if group_id_for_tree in group_for_user_ids:
-                                        tree.metadata.append(group_id_for_tree)
-                                        tree.update(key=group_id_for_tree, icon=check[1])
-                                    else:
-                                        tree.update(key=group_id_for_tree, icon=check[0])
-
+                                if not org_check:
+                                    group_list, treedata = get_group_list_with_org(selected_user['organization_id'])
+                                    tree.update(treedata)
+                                    groups_for_user = get_groups_for_user_from_db_with_org(selected_user)
+                                    group_for_user_ids = []
+                                    for group_for_user in groups_for_user:
+                                        group_for_user_ids.append(group_for_user['id'])
+                                    all_group_ids = []
+                                    for group_from_all in group_list:
+                                        all_group_ids.append(group_from_all[0])
+                                    tree.metadata = []
+                                    for group_id_for_tree in all_group_ids:
+                                        if group_id_for_tree in group_for_user_ids:
+                                            tree.metadata.append(group_id_for_tree)
+                                            tree.update(key=group_id_for_tree, icon=check[1])
+                                        else:
+                                            tree.update(key=group_id_for_tree, icon=check[0])
+                                else:
+                                    group_list, treedata = get_group_list_with_org(org_id)
+                                    tree.update(treedata)
                             else:
                                 window['Apply'].update(disabled=True)
                                 window['Изменить пользователя'].update(disabled=True)
