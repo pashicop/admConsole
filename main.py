@@ -5843,7 +5843,7 @@ if __name__ == '__main__':
                                                              'dgna': val_set['dgna'],
                                                              'geoData': val_set['geoData'],
                                                              'longAmbientListening': val_set['longAmbientListening'],
-                                                             'mfc': val_set['role_mfc'],
+                                                             'mfc': val_set['mfc'],
                                                              'otap': val_set['otap'],
                                                              'longAmbientCallDuration': val_set[
                                                                  'longAmbientCallDuration'], }
