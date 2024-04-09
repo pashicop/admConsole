@@ -248,7 +248,7 @@ def create_db():
                             "fix_device" INTEGER DEFAULT 0,
                             "role_multiple_devices" INTEGER DEFAULT 0,
                             "priority" INTEGER DEFAULT 1,
-                            "organization_id" TEXT DEFAULT '00000000-0000-0000-0000-000000000000',
+                            "organization_id" TEXT DEFAULT '',
                             PRIMARY KEY("id"),
                             FOREIGN KEY("organization_id") REFERENCES "Organizations"("id")
                         );
@@ -260,7 +260,7 @@ def create_db():
                             "is_broadcast"	INTEGER DEFAULT 0,
                             "is_emergency"	INTEGER DEFAULT 0,
                             "is_disabled"	INTEGER DEFAULT 0,
-                            "organization_id" TEXT DEFAULT '00000000-0000-0000-0000-000000000000',
+                            "organization_id" TEXT DEFAULT '',
                             PRIMARY KEY("id"),
                             FOREIGN KEY("organization_id") REFERENCES "Organizations"("id")
                         );
@@ -341,6 +341,29 @@ def add_users(users_list):
         cur.execute(db_insert_user, user_data)
     con.commit()
     con.close()
+
+
+def add_and_set_groups():
+    if not is_org:
+        group_list, treedata = get_group_list_with_org(selected_user['organization_id'])
+        tree.update(treedata)
+        groups_for_user = get_groups_for_user_from_db_with_org(selected_user)
+        group_for_user_ids = []
+        for group_for_user in groups_for_user:
+            group_for_user_ids.append(group_for_user['id'])
+        all_group_ids = []
+        for group_from_all in group_list:
+            all_group_ids.append(group_from_all[0])
+        tree.metadata = []
+        for group_id_for_tree in all_group_ids:
+            if group_id_for_tree in group_for_user_ids:
+                tree.metadata.append(group_id_for_tree)
+                tree.update(key=group_id_for_tree, icon=check[1])
+            else:
+                tree.update(key=group_id_for_tree, icon=check[0])
+    else:
+        group_list, treedata = get_group_list_with_org(org_id)
+        tree.update(treedata)
 
 
 def add_groups(groups_list):
@@ -624,7 +647,7 @@ def get_groups_for_user_from_db(us_id):
 
 
 def get_groups_for_user_from_db_with_org(user):
-    print(user)
+    # print(user)
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
     db_query_groups_for_user = "Select ug.group_id, g.name, g.description, g.is_disabled FROM Users_in_Groups ug " \
@@ -632,15 +655,15 @@ def get_groups_for_user_from_db_with_org(user):
                                "LEFT JOIN Groups g on ug.group_id = g.id WHERE u.id = '" + user['id'] + "'"
     cur.execute(db_query_groups_for_user)
     groups = cur.fetchall()
-    groups_for_table = list()
+    groups_for_tree = list()
     for group in groups:
-        group_for_table = {'id': group[0],
+        group_for_tree = {'id': group[0],
                            'name': group[1],
                            'desc': group[2],
                            'is_disabled': group[3]}
-        groups_for_table.append(group_for_table)
+        groups_for_tree.append(group_for_tree)
     con.close()
-    return groups_for_table
+    return groups_for_tree
 
 
 def get_group_name_by_id_from_db(gr_id):
@@ -665,6 +688,15 @@ def get_user_name_by_id_from_db(us_id):
         user_name = None
     con.close()
     return user_name
+
+
+def get_user_by_id_from_db(user_id):
+    for user in users_from_db:
+        if user['id'] == user_id:
+            selected_user = copy.deepcopy(user)
+            print(selected_user)
+            break
+    return selected_user
 
 
 def get_user_list(users):
@@ -746,7 +778,9 @@ def get_group_list_with_org(org_id):
                                       values=[gr_from_db['name'],
                                               gr_from_db['desc'],
                                               (u'\u0020\u0020\u0020' + SYMBOL_X_SMALL) if gr_from_db[
-                                                  'is_disabled'] else ''], icon=check[0])
+                                                  'is_disabled'] else ''],
+                                      # icon=check[0]
+                                      )
     return gr_list, group_treedata
 
 
@@ -789,7 +823,9 @@ def make_main_window(ip):
                                            key='-ClearFilterUser-',
                                            disabled=True,
                                            pad=((0, 5), 0))]],
-                                 vertical_alignment='bottom'),
+                                 vertical_alignment='bottom',
+                                 visible=False
+                             ),
                              sg.Push(),
                              sg.Button('', disabled_button_color='white',
                                        image_data=ICON_ADD_BASE_64_BLUE,
@@ -2604,6 +2640,16 @@ def check_server(url_ping):
     return status
 
 
+def check_org(id):
+    if id:
+        if '.' in id:
+            return False
+        else:
+            return True
+    else:
+        return False
+
+
 def get_token(url_auth):
     token = ''
     res_auth = ''
@@ -2927,7 +2973,7 @@ def get_id_by_org(org_name):
         return id
     except Exception as e:
         print({e})
-        return '00000000-0000-0000-0000-000000000000'
+        return ''
 
 
 def get_all_organizations_list():
@@ -2936,7 +2982,7 @@ def get_all_organizations_list():
     db_query_org = "Select name FROM Organizations "
     cur.execute(db_query_org)
     orgs_from_db = cur.fetchall()
-    orgs_for_table = ['Нет']
+    orgs_for_table = []
     for org_from_db in orgs_from_db:
         orgs_for_table.append(org_from_db[0])
     con.close()
@@ -3899,7 +3945,7 @@ def find_cyrillic(text: str, alphabet=None) -> bool:
     return not alphabet.isdisjoint(text.lower())
 
 
-def get_user_type(window):
+def get_user_type(window): #TODO
     result = user_type['user']
     if window == 'add_user':
         if val_add_user['disp']:
@@ -3934,6 +3980,9 @@ def get_user_type(window):
             return result
         elif window['is_admin']:
             result = user_type['admin']
+            return result
+        elif window['is_blocked']:
+            result = user_type['disabled']
             return result
     return result
 
@@ -3986,7 +4035,7 @@ def update_groups():
     else:
         group_list, treedata_update_group = get_group_list(groups_from_db)
         window['-groups2-'].update(group_list)
-    window['-TREE-'].update(treedata_update_group)
+    add_and_set_groups()
 
 
 def update_users_and_groups():
@@ -4008,7 +4057,7 @@ def update_users_and_groups():
             global filtered_users_list
             filtered_users_list, treedata_update_user = get_user_list(
                 filtered_users_list_of_dict)
-            window['-users-'].update(filtered_users_list)
+            window['-users-'].update(filtered_users_list) #TODO
         else:
             user_list, treedata_update_user = get_user_list(users_from_db)
             user_td = get_user_list_treedata()
@@ -4607,6 +4656,7 @@ if __name__ == '__main__':
                     filter_journal_error = True
                     filter_journal_critical = True
                     got_server_log = False
+                    selected_user = False
                     ping_timeout = DEF_PING_TM
                     window = make_main_window(ip)
                     tree = window['-TREE-']
@@ -4627,7 +4677,7 @@ if __name__ == '__main__':
                             threading.Thread(target=the_thread, args=[BASE_URL_PING], daemon=True).start()
                             thread_started = True
                         event, values = window.read()
-                        # print(event, type(event), values)
+                        print(event, type(event), values)
                         if event == '-hide-online-':
                             window['-frame-online-'].update(visible=window['-frame-online-'].metadata == True)
                             window['-frame-online-'].metadata = not window['-frame-online-'].metadata
@@ -4738,109 +4788,40 @@ if __name__ == '__main__':
                             break
                         if event == '-users-tree-':
                             if values['-users-tree-']:
-                                org_check = False
-                                # print(values['-users-tree-'][0])
+                                is_org = check_org(values['-users-tree-'][0])
                                 if filter_status:
                                     # noinspection PyUnboundLocalVariable
                                     selected_user = filtered_users_list_of_dict[values['-users-'][0]]
                                 else:
-                                    if '.' in values['-users-tree-'][0]:
-                                        user_id = str(values['-users-tree-'][0]).partition('.')[0]
-                                        print(user_id)
-                                        for user in users_from_db:
-                                            if user['id'] == user_id:
-                                                selected_user = copy.deepcopy(user)
-                                                print(selected_user)
-                                                break
+                                    if not is_org:
+                                        selected_user_id = str(values['-users-tree-'][0]).partition('.')[0]
+                                        selected_user = get_user_by_id_from_db(selected_user_id)
                                     else:
                                         org_id = values['-users-tree-'][0]
-                                        org_check = True
                                 window['Apply'].update(disabled=True)
                                 window['Изменить пользователя'].update(disabled=False)
-                                if not org_check:
+                                if not is_org:
                                     if selected_user['name'] == 'admin':
                                         window['-DelUser-'].update(disabled=True)
+                                        window['-BlockUser-'].update(disabled=True)
                                     else:
                                         window['-DelUser-'].update(disabled=False)
-                                    if get_block_status(selected_user):
-                                        window['-BlockUser-'].update(image_data=ICON_UNBLOCK_BASE_64_BLUE)
-                                        window['-BlockUser-'].TooltipObject.text = 'Разблокировать'
-                                    else:
-                                        window['-BlockUser-'].update(image_data=ICON_BLOCK_BASE_64_BLUE)
-                                        window['-BlockUser-'].TooltipObject.text = 'Заблокировать'
-                                else:
-                                    window['-DelUser-'].update(disabled=True)
-                                    window['-BlockUser-'].update(image_data=ICON_BLOCK_BASE_64_BLUE)
-                                    window['-BlockUser-'].TooltipObject.text = 'Заблокировать'
-                                window['-CloneUser-'].update(disabled=False)
-
-                                window['-BlockUser-'].update(disabled=False)
-                                window['-checkAllGroups-'].update(False, disabled=False)
-                                if not org_check:
-                                    group_list, treedata = get_group_list_with_org(selected_user['organization_id'])
-                                    tree.update(treedata)
-                                    groups_for_user = get_groups_for_user_from_db_with_org(selected_user)
-                                    group_for_user_ids = []
-                                    for group_for_user in groups_for_user:
-                                        group_for_user_ids.append(group_for_user['id'])
-                                    all_group_ids = []
-                                    for group_from_all in group_list:
-                                        all_group_ids.append(group_from_all[0])
-                                    tree.metadata = []
-                                    for group_id_for_tree in all_group_ids:
-                                        if group_id_for_tree in group_for_user_ids:
-                                            tree.metadata.append(group_id_for_tree)
-                                            tree.update(key=group_id_for_tree, icon=check[1])
+                                        window['-BlockUser-'].update(disabled=False)
+                                        if get_block_status(selected_user):
+                                            window['-BlockUser-'].update(image_data=ICON_UNBLOCK_BASE_64_BLUE)
+                                            window['-BlockUser-'].TooltipObject.text = 'Разблокировать'
                                         else:
-                                            tree.update(key=group_id_for_tree, icon=check[0])
+                                            window['-BlockUser-'].update(image_data=ICON_BLOCK_BASE_64_BLUE)
+                                            window['-BlockUser-'].TooltipObject.text = 'Заблокировать'
+                                    window['-checkAllGroups-'].update(False, disabled=False)
+                                    window['-CloneUser-'].update(disabled=False)
                                 else:
-                                    group_list, treedata = get_group_list_with_org(org_id)
-                                    tree.update(treedata)
-                            else:
-                                window['Apply'].update(disabled=True)
-                                window['Изменить пользователя'].update(disabled=True)
-                                window['-CloneUser-'].update(disabled=True)
-                                window['-BlockUser-'].update(disabled=True)
-                                window['-DelUser-'].update(disabled=True)
-                                window['-checkAllGroups-'].update(disabled=True)
-                                window['-checkAllGroups-'].update(True)
-                        if event == '-users-':
-                            if values['-users-']:
-                                if filter_status:
-                                    # noinspection PyUnboundLocalVariable
-                                    selected_user = filtered_users_list_of_dict[values['-users-'][0]]
-                                else:
-                                    selected_user = users_from_db[values['-users-'][0]]
-                                window['Apply'].update(disabled=True)
-                                window['Изменить пользователя'].update(disabled=False)
-                                if selected_user['name'] == 'admin':
                                     window['-DelUser-'].update(disabled=True)
-                                else:
-                                    window['-DelUser-'].update(disabled=False)
-                                window['-CloneUser-'].update(disabled=False)
-                                if get_block_status(selected_user):
-                                    window['-BlockUser-'].update(image_data=ICON_UNBLOCK_BASE_64_BLUE)
-                                    window['-BlockUser-'].TooltipObject.text = 'Разблокировать'
-                                else:
                                     window['-BlockUser-'].update(image_data=ICON_BLOCK_BASE_64_BLUE)
                                     window['-BlockUser-'].TooltipObject.text = 'Заблокировать'
-                                window['-BlockUser-'].update(disabled=False)
-                                window['-checkAllGroups-'].update(disabled=False)
-                                window['-checkAllGroups-'].update(False)
-                                groups_for_user = get_groups_for_user_from_db(selected_user['id'])
-                                group_for_user_ids = []
-                                for group_for_user in groups_for_user:
-                                    group_for_user_ids.append(group_for_user['id'])
-                                all_group_ids = []
-                                for group_from_all in groups_from_db:
-                                    all_group_ids.append(group_from_all['id'])
-                                tree.metadata = []
-                                for group_id_for_tree in all_group_ids:
-                                    if group_id_for_tree in group_for_user_ids:
-                                        tree.metadata.append(group_id_for_tree)
-                                        tree.update(key=group_id_for_tree, icon=check[1])
-                                    else:
-                                        tree.update(key=group_id_for_tree, icon=check[0])
+                                    window['-checkAllGroups-'].update(False, disabled=True)
+                                    window['-CloneUser-'].update(disabled=True)
+                                add_and_set_groups()
                             else:
                                 window['Apply'].update(disabled=True)
                                 window['Изменить пользователя'].update(disabled=True)
@@ -4849,6 +4830,51 @@ if __name__ == '__main__':
                                 window['-DelUser-'].update(disabled=True)
                                 window['-checkAllGroups-'].update(disabled=True)
                                 window['-checkAllGroups-'].update(True)
+                        # if event == '-users-':
+                        #     if values['-users-']:
+                        #         if filter_status:
+                        #             # noinspection PyUnboundLocalVariable
+                        #             selected_user = filtered_users_list_of_dict[values['-users-'][0]]
+                        #         else:
+                        #             selected_user = users_from_db[values['-users-'][0]]
+                        #         window['Apply'].update(disabled=True)
+                        #         window['Изменить пользователя'].update(disabled=False)
+                        #         if selected_user['name'] == 'admin':
+                        #             window['-DelUser-'].update(disabled=True)
+                        #         else:
+                        #             window['-DelUser-'].update(disabled=False)
+                        #         window['-CloneUser-'].update(disabled=False)
+                        #         if get_block_status(selected_user):
+                        #             window['-BlockUser-'].update(image_data=ICON_UNBLOCK_BASE_64_BLUE)
+                        #             window['-BlockUser-'].TooltipObject.text = 'Разблокировать'
+                        #         else:
+                        #             window['-BlockUser-'].update(image_data=ICON_BLOCK_BASE_64_BLUE)
+                        #             window['-BlockUser-'].TooltipObject.text = 'Заблокировать'
+                        #         window['-BlockUser-'].update(disabled=False)
+                        #         window['-checkAllGroups-'].update(disabled=False)
+                        #         window['-checkAllGroups-'].update(False)
+                        #         groups_for_user = get_groups_for_user_from_db(selected_user['id'])
+                        #         group_for_user_ids = []
+                        #         for group_for_user in groups_for_user:
+                        #             group_for_user_ids.append(group_for_user['id'])
+                        #         all_group_ids = []
+                        #         for group_from_all in groups_from_db:
+                        #             all_group_ids.append(group_from_all['id'])
+                        #         tree.metadata = []
+                        #         for group_id_for_tree in all_group_ids:
+                        #             if group_id_for_tree in group_for_user_ids:
+                        #                 tree.metadata.append(group_id_for_tree)
+                        #                 tree.update(key=group_id_for_tree, icon=check[1])
+                        #             else:
+                        #                 tree.update(key=group_id_for_tree, icon=check[0])
+                        #     else:
+                        #         window['Apply'].update(disabled=True)
+                        #         window['Изменить пользователя'].update(disabled=True)
+                        #         window['-CloneUser-'].update(disabled=True)
+                        #         window['-BlockUser-'].update(disabled=True)
+                        #         window['-DelUser-'].update(disabled=True)
+                        #         window['-checkAllGroups-'].update(disabled=True)
+                        #         window['-checkAllGroups-'].update(True)
                         if event == '-groups2-':
                             if values['-groups2-']:
                                 if filter_status_group:
@@ -4894,14 +4920,23 @@ if __name__ == '__main__':
                             Новая модель с userType
                             """
                             additional_window = True
-                            if not values['-users-']:
+                            if not values['-users-tree-']:
                                 my_popup('Не выбран пользователь')
                             else:
                                 users_from_db = get_users_from_db()
                                 if filter_status:
                                     user_to_change = filtered_users_list_of_dict[values['-users-'][0]]
                                 else:
-                                    user_to_change = users_from_db[values['-users-'][0]]
+                                    if not is_org:
+                                        selected_user_id = str(values['-users-tree-'][0]).partition('.')[0]
+                                        print(selected_user_id)
+                                        for user in users_from_db:
+                                            if user['id'] == selected_user_id:
+                                                user_to_change = copy.deepcopy(user)
+                                                print(user_to_change)
+                                                break
+                                    else:
+                                        org_id = values['-users-tree-'][0]
                                 window_modify_user = make_modify_user_window(user_to_change)
                                 window_modify_user.Element('UserModifyName').SetFocus()
                                 password_clear = False
@@ -5373,15 +5408,17 @@ if __name__ == '__main__':
                                         break
                             additional_window = False
                         if event == '-TREE-' and values['-TREE-'] != []:
-                            group_id = values['-TREE-'][0]
-                            if group_id in tree.metadata:
-                                tree.metadata.remove(group_id)
-                                tree.update(key=group_id, icon=check[0])
-                            else:
-                                tree.metadata.append(group_id)
-                                tree.update(key=group_id, icon=check[1])
-                            window['Apply'].update(disabled=False)
-                            window['Apply'].SetFocus()
+                            is_org = check_org(values['-users-tree-'][0])
+                            if not is_org:
+                                group_id = values['-TREE-'][0]
+                                if group_id in tree.metadata:
+                                    tree.metadata.remove(group_id)
+                                    tree.update(key=group_id, icon=check[0])
+                                else:
+                                    tree.metadata.append(group_id)
+                                    tree.update(key=group_id, icon=check[1])
+                                window['Apply'].update(disabled=False)
+                                window['Apply'].SetFocus()
                         if event == '-TREE2-' and values['-TREE2-'] != []:
                             user_id = values['-TREE2-'][0]
                             if user_id in tree2.metadata:
@@ -5394,61 +5431,62 @@ if __name__ == '__main__':
                             window['Apply2'].SetFocus()
                         if event == "Apply":
                             additional_window = True
-                            if not values['-users-']:
+                            if not values['-users-tree-']:
                                 print(f"Не выбран пользователь")
                                 my_popup('Не выбран пользователь')
                             else:
                                 add_group = False
                                 del_group = False
-                                if filter_status:
-                                    chosen_login = filtered_users_list_of_dict[values['-users-'][0]]
-                                else:
-                                    chosen_login = users_from_db[values['-users-'][0]]
-                                current_groups = get_groups_for_user_from_db(chosen_login['id'])
-                                current_groups_ids = []
-                                for cur_gr in current_groups:
-                                    current_groups_ids.append(cur_gr['id'])
-                                add_del_dict = {'UserIds': [chosen_login['id']], 'addGroupIds': [],
-                                                'removeGroupIds': []}
-                                for gr_id in tree.metadata:
-                                    if gr_id in current_groups_ids:
-                                        print(f"Пользователь уже в группе {get_group_name_by_id_from_db(gr_id)}")
-                                    else:
-                                        print(f"Пользователя нужно добавить в группу "
-                                              f"{get_group_name_by_id_from_db(gr_id)}")
-                                        add_del_dict['addGroupIds'] += [gr_id]
-                                        add_group = True
-                                for gr_id in current_groups_ids:
-                                    if gr_id in tree.metadata:
-                                        print(f'Пользователь уже в группе {get_group_name_by_id_from_db(gr_id)}')
-                                    else:
-                                        print(f"У пользователя нужно удалить группу "
-                                              f"{get_group_name_by_id_from_db(gr_id)}")
-                                        add_del_dict['removeGroupIds'] += [gr_id]
-                                        del_group = True
-                                if add_group or del_group:
-                                    print(add_del_dict)
-                                    try:
-                                        res_add_del = requests.post(BASE_URL + 'changeUserGroups', json=add_del_dict,
-                                                                    headers=HEADER_dict)
-                                        if res_add_del.status_code == 200:
-                                            current_db += 1
-                                            logging.info(f'Добавление и удаление групп выполнено для '
-                                                         f'{chosen_login["name"]}')
-                                            add_del_groups_to_user_after_apply(add_del_dict)
-                                            add_del_text = 'Изменение групп для ' + chosen_login['name'] + ' выполнено'
-                                            my_popup(add_del_text)
-                                            window['Apply'].update(disabled=True)
+                                # if filter_status:
+                                #     chosen_login = filtered_users_list_of_dict[values['-users-'][0]]
+                                # else:
+                                #     chosen_login = users_from_db[values['-users-'][0]]
+                                if not is_org:
+                                    current_groups = get_groups_for_user_from_db(selected_user_id)
+                                    current_groups_ids = []
+                                    for cur_gr in current_groups:
+                                        current_groups_ids.append(cur_gr['id'])
+                                    add_del_dict = {'UserIds': [selected_user_id], 'addGroupIds': [],
+                                                    'removeGroupIds': []}
+                                    for gr_id in tree.metadata:
+                                        if gr_id in current_groups_ids:
+                                            print(f"Пользователь уже в группе {get_group_name_by_id_from_db(gr_id)}")
                                         else:
-                                            logging.error(f'Добавление и удаление групп НЕ выполнено '
-                                                          f'для {chosen_login["name"]} - {res_add_del.status_code}')
-                                            my_popup("Добавление не выполнено")
-                                    except Exception as e:
-                                        print(f"Запрос вызвал ошибку! {e}")
-                                        logging.warning(f"Запрос вызвал ошибку!")
-                                else:
-                                    my_popup('Нет изменений')
-                                    window["Apply"].update(disabled=True)
+                                            print(f"Пользователя нужно добавить в группу "
+                                                  f"{get_group_name_by_id_from_db(gr_id)}")
+                                            add_del_dict['addGroupIds'] += [gr_id]
+                                            add_group = True
+                                    for gr_id in current_groups_ids:
+                                        if gr_id in tree.metadata:
+                                            print(f'Пользователь уже в группе {get_group_name_by_id_from_db(gr_id)}')
+                                        else:
+                                            print(f"У пользователя нужно удалить группу "
+                                                  f"{get_group_name_by_id_from_db(gr_id)}")
+                                            add_del_dict['removeGroupIds'] += [gr_id]
+                                            del_group = True
+                                    if add_group or del_group:
+                                        print(add_del_dict)
+                                        try:
+                                            res_add_del = requests.post(BASE_URL + 'changeUserGroups', json=add_del_dict,
+                                                                        headers=HEADER_dict)
+                                            if res_add_del.status_code == 200:
+                                                current_db += 1
+                                                logging.info(f'Добавление и удаление групп выполнено для '
+                                                             f'{get_user_name_by_id_from_db(selected_user_id)}')
+                                                add_del_groups_to_user_after_apply(add_del_dict)
+                                                add_del_text = 'Изменение групп для ' + get_user_name_by_id_from_db(selected_user_id) + ' выполнено'
+                                                my_popup(add_del_text)
+                                                window['Apply'].update(disabled=True)
+                                            else:
+                                                logging.error(f'Добавление и удаление групп НЕ выполнено '
+                                                              f'для {get_user_name_by_id_from_db(selected_user_id)} - {res_add_del.status_code}')
+                                                my_popup("Добавление не выполнено")
+                                        except Exception as e:
+                                            print(f"Запрос вызвал ошибку! {e}")
+                                            logging.warning(f"Запрос вызвал ошибку!")
+                                    else:
+                                        my_popup('Нет изменений')
+                                        window["Apply"].update(disabled=True)
                             additional_window = False
                         if event == "Apply2":
                             additional_window = True
@@ -5719,9 +5757,9 @@ if __name__ == '__main__':
                                         window_add_lic.close()
                                         set_buttons_disabled()
                                         window.Element('-Start-').SetFocus()
-                                        window['-users-'].update([[]])
                                         window['-groups2-'].update([[]])
                                         clear_treedata = sg.TreeData()
+                                        window['-users-tree-'].update(clear_treedata)
                                         window['-TREE-'].update(clear_treedata)
                                         window['-TREE2-'].update(clear_treedata)
                                         window.refresh()
@@ -6564,8 +6602,8 @@ if __name__ == '__main__':
                                                                     f'Ошибка при разблокировании пользователя - '
                                                                     f'{res_block.status_code}')
                                                 update_users()
-                                                window_add_user.close()
                                                 my_popup("Пользователь добавлен!")
+                                                window_add_user.close()
                                             else:
                                                 logging.error(f"Пользователь {val_add_user['UserLogin']} НЕ добавлен - "
                                                               f'{res_add_user.status_code}')
@@ -6579,19 +6617,22 @@ if __name__ == '__main__':
                             additional_window = False
                         if event == '-DelUser-':
                             additional_window = True
-                            if not values['-users-']:
+                            if not values['-users-tree-']:
+                                print(f"Не выбран пользователь")
                                 my_popup('Не выбран пользователь')
                             else:
-                                if filter_status:
-                                    del_user = filtered_users_list_of_dict[values['-users-'][0]]
-                                else:
-                                    del_user = users_from_db[values['-users-'][0]]
-                                if del_user['login'] == 'admin':
+                                # if filter_status:
+                                #     del_user = filtered_users_list_of_dict[values['-users-'][0]]
+                                # else:
+                                #     del_user = users_from_db[values['-users-'][0]]
+                                selected_user_id = str(values['-users-tree-'][0]).partition('.')[0]
+                                selected_user = get_user_by_id_from_db(selected_user_id)
+                                if selected_user['login'] == 'admin':
                                     my_popup("Нельзя удалить пользователя admin")
                                 else:
                                     window_del_user = make_confirm_window('Вы уверены, '
-                                                                          'что хотите удалить пользователя ' + del_user[
-                                                                              'login'] + '?')
+                                                                          'что хотите удалить пользователя ' + selected_user[
+                                                                              'name'] + '?')
                                     while True:
                                         ev_del_user, val_del_user = window_del_user.Read()
                                         if ev_del_user == sg.WIN_CLOSED or ev_del_user == 'Exit':
@@ -6602,35 +6643,31 @@ if __name__ == '__main__':
                                         if ev_del_user == 'okExit':
                                             try:
                                                 res_del_user = requests.post(BASE_URL + 'deleteUser',
-                                                                             json=del_user, headers=HEADER_dict)
+                                                                             json=selected_user, headers=HEADER_dict)
                                                 if res_del_user.status_code == 200:
                                                     current_db += 1
-                                                    logging.info(f'Пользователь {del_user["name"]} удалён')
+                                                    logging.info(f'Пользователь {selected_user["name"]} удалён')
                                                     drop_db('users')
-                                                    add_users(get_users_from_server())
-                                                    users_from_db = get_users_from_db()
-                                                    users_from_db.sort(key=lambda i: i['login'])
-                                                    user_list, treedata_update_user = get_user_list(
-                                                        users_from_db)  # TODO
-                                                    del_users_in_groups_after_delete_user(del_user['id'])
-                                                    if filter_status:
-                                                        search_str = values['-filterUser-']
-                                                        filtered_users = filter(
-                                                            lambda x: search_str.lower() in x['login'].lower() or
-                                                                      search_str.lower() in x['name'].lower(),
-                                                            users_from_db)
-                                                        filtered_users_list_of_dict = list(filtered_users)
-                                                        filtered_users_list, treedata_update_user = get_user_list(
-                                                            filtered_users_list_of_dict)
-                                                        if not filtered_users_list:
-                                                            window['-filterUser-'].update(
-                                                                background_color=button_color_2)
-                                                        window['-users-'].update(filtered_users_list)
-                                                    else:
-                                                        window['-users-'].update(user_list)
-                                                    window['-TREE2-'].update(treedata_update_user)
-                                                    window_del_user.close()
+                                                    update_users()
+                                                    # if filter_status:
+                                                    #     search_str = values['-filterUser-']
+                                                    #     filtered_users = filter(
+                                                    #         lambda x: search_str.lower() in x['login'].lower() or
+                                                    #                   search_str.lower() in x['name'].lower(),
+                                                    #         users_from_db)
+                                                    #     filtered_users_list_of_dict = list(filtered_users)
+                                                    #     filtered_users_list, treedata_update_user = get_user_list(
+                                                    #         filtered_users_list_of_dict)
+                                                    #     if not filtered_users_list:
+                                                    #         window['-filterUser-'].update(
+                                                    #             background_color=button_color_2)
+                                                    #     window['-users-'].update(filtered_users_list)
+                                                    # else:
+                                                    #     window['-users-'].update(user_list)
+
+                                                    # window['-TREE2-'].update(treedata_update_user)
                                                     my_popup("Пользователь удалён!")
+                                                    window_del_user.close()
                                                     break
                                                 else:
                                                     logging.error(f'Пользователь {del_user["name"]} НЕ удалён')
@@ -6641,14 +6678,17 @@ if __name__ == '__main__':
                             additional_window = False
                         if event == '-CloneUser-':
                             additional_window = True
-                            if not values['-users-']:
+                            if not values['-users-tree-']:
+                                print(f"Не выбран пользователь")
                                 my_popup('Не выбран пользователь')
                             else:
-                                if filter_status:
-                                    user_clone = filtered_users_list_of_dict[values['-users-'][0]]
-                                else:
-                                    user_clone = users_from_db[values['-users-'][0]]
-                                window_clone_user = make_clone_user_window(user_clone['name'])
+                                # if filter_status:
+                                #     user_clone = filtered_users_list_of_dict[values['-users-'][0]]
+                                # else:
+                                #     user_clone = users_from_db[values['-users-'][0]]
+                                selected_user_id = str(values['-users-tree-'][0]).partition('.')[0]
+                                selected_user = get_user_by_id_from_db(selected_user_id)
+                                window_clone_user = make_clone_user_window(selected_user['name'])
                                 window_clone_user.Element('CloneUserLogin').SetFocus()
                                 password_clear = False
                                 while True:
@@ -6680,8 +6720,9 @@ if __name__ == '__main__':
                                             clone_user_dict = {'login': clone_user_login,
                                                                'displayName': clone_user_name,
                                                                'password': clone_user_password,
-                                                               'userType': get_user_type(user_clone),
-                                                               'priority': user_clone['priority']
+                                                               'userType': get_user_type(selected_user),
+                                                               'priority': selected_user['priority'],
+                                                               'OrganizationId': selected_user['organization_id']
                                                                }
                                             try:
                                                 res_clone_user = requests.post(BASE_URL + 'addUser',
@@ -6689,8 +6730,8 @@ if __name__ == '__main__':
                                                                                headers=HEADER_dict)
                                                 if res_clone_user.status_code == 200:
                                                     current_db += 1
-                                                    logging.info(f'Новый пользователь {clone_user_login} клонирован')
-                                                    original_groups = get_groups_for_user_from_db(user_clone['id'])
+                                                    logging.info(f"Новый пользователь {selected_user['name']} клонирован")
+                                                    original_groups = get_groups_for_user_from_db_with_org(selected_user)
                                                     original_groups_ids = []
                                                     for or_gr in original_groups:
                                                         original_groups_ids.append(or_gr['id'])
@@ -6707,7 +6748,7 @@ if __name__ == '__main__':
                                                             current_db += 1
                                                             logging.info(f'Группы для {clone_user_login} добавлены')
                                                             result = change_all_roles(user_from_server,
-                                                                                      user_clone)
+                                                                                                  selected_user)
                                                             if result:
                                                                 current_db += 1
                                                                 logging.info(
@@ -6717,7 +6758,7 @@ if __name__ == '__main__':
                                                                 logging.error(
                                                                     f"Ошибка при смене ролей "
                                                                     f"пользователю {clone_user_login}")
-                                                            if user_clone['fix_device']:
+                                                            if selected_user['fix_device']:
                                                                 try:
                                                                     res_clone_fix_new_dev = requests.post(BASE_URL +
                                                                                                         'allowNewDevice',
@@ -6740,12 +6781,13 @@ if __name__ == '__main__':
                                                                     print(f'Не удалось изменить роли - {e}')
                                                                     logging.error("Не удалось изменить роли")
                                                             update_users_and_groups()
-                                                            window_clone_user.close()
+
                                                             if clone_res:
                                                                 my_popup("Пользователь клонирован!")
                                                             else:
                                                                 my_popup("Пользователь клонирован с ошибками!")
-                                                            break
+                                                            window_clone_user.close()
+                                                            # break
                                                         else:
                                                             logging.error(f'Добавление групп для {clone_user_login} '
                                                                           f'НЕ выполнено - {res_clone_add_group.status_code}')
@@ -6762,64 +6804,76 @@ if __name__ == '__main__':
                             additional_window = False
                         if event == '-BlockUser-':
                             additional_window = True
-                            if not values['-users-']:
+                            if not values['-users-tree-']:
+                                print(f"Не выбран пользователь")
                                 my_popup('Не выбран пользователь')
                             else:
-                                users_from_db = get_users_from_db()
+                                is_org = check_org(values['-users-tree-'][0])
                                 if filter_status:
-                                    user_to_change = filtered_users_list_of_dict[values['-users-'][0]]
+                                    # noinspection PyUnboundLocalVariable
+                                    selected_user = filtered_users_list_of_dict[values['-users-'][0]]
                                 else:
-                                    user_to_change = users_from_db[values['-users-'][0]]
-                                block_status = get_block_status(user_to_change)
-                                print(block_status)
-                                if block_status is not None:
-                                    if not block_status:
-                                        confirm_text = 'Вы уверены, что хотите заблокировать пользователя '
+                                    if not is_org:
+                                        selected_user_id = str(values['-users-tree-'][0]).partition('.')[0]
+                                        print(selected_user_id)
+                                        for user in users_from_db:
+                                            if user['id'] == selected_user_id:
+                                                selected_user = copy.deepcopy(user)
+                                                print(selected_user)
+                                                break
                                     else:
-                                        confirm_text = 'Вы уверены, что хотите разблокировать пользователя '
-                                    window_block_user = make_confirm_window(confirm_text +
-                                                                            user_to_change['name']
-                                                                            + '?')
-                                    while True:
-                                        ev_block_user, val_block_user = window_block_user.Read()
-                                        if ev_block_user == sg.WIN_CLOSED or ev_block_user == 'Exit':
-                                            break
-                                        if ev_block_user == 'noExit':
-                                            window_block_user.close()
-                                            break
-                                        if ev_block_user == 'okExit':
-                                            try:
-                                                res_block = block_user(not block_status,
-                                                                       user_to_change['id'])
-                                                if res_block:
-                                                    if res_block.status_code == 200:
-                                                        current_db += 1
-                                                        if not block_status:
-                                                            logging.info(f"Пользователь "
-                                                                         f"{user_to_change['name']}"
-                                                                         f' заблокирован')
-                                                        else:
-                                                            logging.info(f"Пользователь "
-                                                                         f"{user_to_change['name']}"
-                                                                         f' разблокирован')
-                                                    else:
-                                                        if not block_status:
-                                                            logging.error(
-                                                                f'Ошибка при блокировании пользователя - '
-                                                                f'{res_block.status_code}')
-                                                        else:
-                                                            logging.error(
-                                                                f'Ошибка при разблокировании пользователя - '
-                                                                f'{res_block.status_code}')
+                                        org_id = values['-users-tree-'][0]
+                                if not is_org:
+                                    block_status = get_block_status(selected_user)
+                                    print(block_status)
+                                    if block_status is not None:
+                                        if not block_status:
+                                            confirm_text = 'Вы уверены, что хотите заблокировать пользователя '
+                                        else:
+                                            confirm_text = 'Вы уверены, что хотите разблокировать пользователя '
+                                        window_block_user = make_confirm_window(confirm_text +
+                                                                                selected_user['name']
+                                                                                + '?')
+                                        while True:
+                                            ev_block_user, val_block_user = window_block_user.Read()
+                                            if ev_block_user == sg.WIN_CLOSED or ev_block_user == 'Exit':
+                                                break
+                                            if ev_block_user == 'noExit':
                                                 window_block_user.close()
-                                                update_users()
-                                                if block_status:
-                                                    my_popup("Пользователь разблокирован!")
-                                                else:
-                                                    my_popup("Пользователь заблокирован!")
-                                            except Exception as e:
-                                                print(f'Не удалось заблокировать пользователя - {e}')
-                                                logging.error("Не удалось заблокировать пользователя")
+                                                break
+                                            if ev_block_user == 'okExit':
+                                                try:
+                                                    res_block = block_user(not block_status,
+                                                                           selected_user['id'])
+                                                    if res_block:
+                                                        if res_block.status_code == 200:
+                                                            current_db += 1
+                                                            if not block_status:
+                                                                logging.info(f"Пользователь "
+                                                                             f"{selected_user['name']}"
+                                                                             f' заблокирован')
+                                                            else:
+                                                                logging.info(f"Пользователь "
+                                                                             f"{selected_user['name']}"
+                                                                             f' разблокирован')
+                                                        else:
+                                                            if not block_status:
+                                                                logging.error(
+                                                                    f'Ошибка при блокировании пользователя - '
+                                                                    f'{res_block.status_code}')
+                                                            else:
+                                                                logging.error(
+                                                                    f'Ошибка при разблокировании пользователя - '
+                                                                    f'{res_block.status_code}')
+                                                    update_users()
+                                                    if block_status:
+                                                        my_popup("Пользователь разблокирован!")
+                                                    else:
+                                                        my_popup("Пользователь заблокирован!")
+                                                    window_block_user.close()
+                                                except Exception as e:
+                                                    print(f'Не удалось заблокировать пользователя - {e}')
+                                                    logging.error("Не удалось заблокировать пользователя")
                             additional_window = False
                         if event == '-BlockGroup-':
                             additional_window = True
@@ -7138,9 +7192,9 @@ if __name__ == '__main__':
                                                                     f'Ошибка при блокировании группы - '
                                                                     f'{res_block.status_code}')
                                                 update_groups()
-                                                window_add_group.close()
                                                 my_popup("Группа добавлена!")
-                                                break
+                                                window_add_group.close()
+                                                # break
                                             else:
                                                 logging.error(f'Группа {new_group_name} НЕ добавлена')
                                                 my_popup("Группа не добавлена!")
@@ -7385,7 +7439,8 @@ if __name__ == '__main__':
                                     window['-StatusBar3-'].update('', background_color=button_color_2)
                                     window['-Start-'].update(disabled=False)
                                     window['-Stop-'].update(disabled=True)
-                                    window['-users-'].update([[]])
+                                    # window['-users-'].update([[]])
+                                    window['-users-tree-'].update(visible=False)
                                     window['-groups2-'].update([[]])
                                     clear_treedata = sg.TreeData()
                                     window['-TREE-'].update(clear_treedata)
@@ -7482,7 +7537,8 @@ if __name__ == '__main__':
                             window['countLogsServer'].update(count_string)
                             window['rowLimitServer'].update('Лимит ' + str(LOG_DEPTH) + ' строк')
                         if event == '-checkAllGroups-':
-                            if not values['-users-']:
+                            if not values['-users-tree-']:
+                                print(f"Не выбран пользователь")
                                 my_popup('Не выбран пользователь')
                                 window['-checkAllGroups-'].update(False)
                             else:
@@ -7490,10 +7546,13 @@ if __name__ == '__main__':
                                     # noinspection PyTypeChecker
                                     user_id = filtered_users_list_of_dict[values['-users-'][0]]['id']
                                 else:
-                                    user_id = users_from_db[values['-users-'][0]]['id']
+                                    selected_user_id = str(values['-users-tree-'][0]).partition('.')[0]
+                                    # selected_user = get_user_by_id_from_db(selected_user_id)
+                                group_list, treedata = get_group_list_with_org(selected_user['organization_id'])
+                                tree.update(treedata)
                                 all_group_ids = []
-                                for group_from_all in groups_from_db:
-                                    all_group_ids.append(group_from_all['id'])
+                                for group_from_all in group_list:
+                                    all_group_ids.append(group_from_all[0])
                                 tree.metadata = []
                                 if values['-checkAllGroups-']:
                                     for group_id_for_tree in all_group_ids:
