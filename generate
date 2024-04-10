@@ -1,3 +1,8 @@
 pyarmor gen main.py
 pyinstaller --distpath pyinstaller/ --clean --onefile -n AdmPanel main.py
 pyarmor gen -O obfdist --pack pyinstaller/AdmPanel main.py # обфусцированный код
+
+win:
+pyinstaller.exe -w --distpath pyinstaller/ --clean --onedir -n AdmPanel -i .\logo.ico main.py
+pyinstaller.exe -w --distpath pyinstaller/onefile --clean --onefile -n AdmPanel -i .\logo.ico main.py
+pyinstaller 6.5.0
