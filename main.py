@@ -826,6 +826,16 @@ def make_main_window(ip):
                                  vertical_alignment='bottom',
                                  visible=False
                              ),
+                             sg.Button('', disabled_button_color='white',
+                                       disabled=False,
+                                       image_data=ICON_COLLAPSE_BASE_64_BLUE,
+                                       button_color='white',
+                                       tooltip='Свернуть',
+                                       border_width=0,
+                                       metadata='collapse',
+                                       key='-СollapseExpandUser-',
+                                       pad=((4, 10), (0, 3))
+                                       ),
                              sg.Push(),
                              sg.Button('', disabled_button_color='white',
                                        image_data=ICON_ADD_BASE_64_BLUE,
@@ -2914,8 +2924,9 @@ def get_all_devices_in_treedata(type='dev'):
     return get_treedata(devs, type)
 
 
-def key_to_id(k):
-    return window_devices['-devices-tree-'].KeyToID[k] if k in window_devices['-devices-tree-'].KeyToID else None
+def key_to_id(k, win):
+    # return window_devices['-devices-tree-'].KeyToID[k] if k in window_devices['-devices-tree-'].KeyToID else None
+    return win.KeyToID[k] if k in win.KeyToID else None
 
 
 def get_all_organizations():
@@ -4127,6 +4138,33 @@ def set_buttons_disabled(param=True):
     window['-TREE2-'].update(visible=not param)
 
 
+def set_disabled_user_modify():
+    window_modify_user['UserModifyName'].update(disabled=True)
+    window_modify_user['userModifyPassword'].update(disabled=True)
+    window_modify_user['showModifyPassword'].update(disabled=True)
+    window_modify_user['modifyUserUser'].update(disabled=True)
+    window_modify_user['modifyUserDispatcher'].update(disabled=True)
+    window_modify_user['modifyUserGw'].update(disabled=True)
+    window_modify_user['modifyUserAdm'].update(disabled=True)
+    window_modify_user['modifyUserRoleIndCallEn'].update(disabled=True)
+    window_modify_user['modifyUserRoleAllowDelChats'].update(disabled=True)
+    window_modify_user['modifyUserRoleAllowPartialDrop'].update(disabled=True)
+    window_modify_user['modifyUserRoleIndMesEn'].update(disabled=True)
+    window_modify_user['modifyUserRoleChanger'].update(disabled=True)
+    window_modify_user['modifyUserRoleScreenShooter'].update(disabled=True)
+    window_modify_user['modifyUserRoleAmbCaller'].update(disabled=True)
+    window_modify_user['modifyUserRoleAmbCallee'].update(disabled=True)
+    window_modify_user['modifyUserRoleMissingMsgRv'].update(disabled=True)
+    window_modify_user['modifyUserRoleAllowLLA'].update(disabled=True)
+    window_modify_user['modifyUserRoleAllowLLAclient'].update(disabled=True)
+    window_modify_user['modifyUserRoleMfc'].update(disabled=True)
+    window_modify_user['modifyUserRoleMultipleDevices'].update(disabled=True)
+    window_modify_user['modifyUserShowDevice'].update(disabled=True)
+    window_modify_user['modifyUserFixNewDevice'].update(disabled=True)
+    window_modify_user['UserModifyPriority'].update(disabled=True)
+    window_modify_user['UserModifyOrg'].update(disabled=True)
+
+
 def get_ssh_connection(pwd=SSH_PWD):
     global SSH_LOGIN, SSH_PWD, SSH_PORT
     try:
@@ -4799,8 +4837,8 @@ if __name__ == '__main__':
                                     else:
                                         org_id = values['-users-tree-'][0]
                                 window['Apply'].update(disabled=True)
-                                window['Изменить пользователя'].update(disabled=False)
                                 if not is_org:
+                                    window['Изменить пользователя'].update(disabled=False)
                                     if selected_user['name'] == 'admin':
                                         window['-DelUser-'].update(disabled=True)
                                         window['-BlockUser-'].update(disabled=True)
@@ -4821,6 +4859,7 @@ if __name__ == '__main__':
                                     window['-BlockUser-'].TooltipObject.text = 'Заблокировать'
                                     window['-checkAllGroups-'].update(False, disabled=True)
                                     window['-CloneUser-'].update(disabled=True)
+                                    window['Изменить пользователя'].update(disabled=True)
                                 add_and_set_groups()
                             else:
                                 window['Apply'].update(disabled=True)
@@ -4829,7 +4868,22 @@ if __name__ == '__main__':
                                 window['-BlockUser-'].update(disabled=True)
                                 window['-DelUser-'].update(disabled=True)
                                 window['-checkAllGroups-'].update(disabled=True)
-                                window['-checkAllGroups-'].update(True)
+                                # window['-checkAllGroups-'].update(True)
+                        if event == '-СollapseExpandUser-':
+                            user_list_treedata = get_user_list_treedata()
+                            if window['-СollapseExpandUser-'].metadata == 'collapse':
+                                window['-СollapseExpandUser-'].update(image_data=ICON_EXPAND_BASE_64_BLUE)
+                                for key in user_list_treedata.tree_dict:
+                                    window['-users-tree-'].Widget.item(key_to_id(key, window['-users-tree-']), open=False)
+                                window['-СollapseExpandUser-'].metadata = 'expand'
+                                window['-СollapseExpandUser-'].TooltipObject.text = 'Развернуть'
+                            else:
+                                window['-СollapseExpandUser-'].update(
+                                    image_data=ICON_COLLAPSE_BASE_64_BLUE)
+                                for key in user_list_treedata.tree_dict:
+                                    window['-users-tree-'].Widget.item(key_to_id(key, window['-users-tree-']), open=True)
+                                window['-СollapseExpandUser-'].metadata = 'collapse'
+                                window['-СollapseExpandUser-'].TooltipObject.text = 'Свернуть'
                         # if event == '-users-':
                         #     if values['-users-']:
                         #         if filter_status:
@@ -4938,12 +4992,13 @@ if __name__ == '__main__':
                                     else:
                                         org_id = values['-users-tree-'][0]
                                 window_modify_user = make_modify_user_window(user_to_change)
+                                if get_user_type(user_to_change) == -1:
+                                    set_disabled_user_modify()
                                 window_modify_user.Element('UserModifyName').SetFocus()
                                 password_clear = False
                                 modify_role = False
                                 while True:
                                     ev_modify_user, val_modify_user = window_modify_user.Read()
-                                    print(ev_modify_user, val_modify_user)
                                     modify_fix_device = False
                                     modify_show_device = False
                                     modify_success = False
@@ -5127,7 +5182,7 @@ if __name__ == '__main__':
                                                             logging.error(
                                                                 f'Ошибка при разблокировании пользователя - '
                                                                 f'{res_block.status_code}')
-                                            if get_user_type(user_to_change) != modify_user_type:
+                                            if (get_user_type(user_to_change) != -1) and (get_user_type(user_to_change) != modify_user_type):
                                                 modify_u_t = True
                                                 modify_user_type_dict = {'userType': modify_user_type,
                                                                          'userId': user_to_change['id']}
@@ -6335,10 +6390,10 @@ if __name__ == '__main__':
                                         window_devices['-СollapseExpandDev-'].update(image_data=ICON_EXPAND_BASE_64_BLUE)
                                         if not userBased:
                                             for key in treedata_devs.tree_dict:
-                                                window_devices['-devices-tree-'].Widget.item(key_to_id(key), open=False)
+                                                window_devices['-devices-tree-'].Widget.item(key_to_id(key, window_devices['-devices-tree-']), open=False)
                                         else:
                                             for key in devs_by_user.tree_dict:
-                                                window_devices['-devices-tree-'].Widget.item(key_to_id(key), open=False)
+                                                window_devices['-devices-tree-'].Widget.item(key_to_id(key, window_devices['-devices-tree-']), open=False)
                                         window_devices['-СollapseExpandDev-'].metadata ='expand'
                                         window_devices['-СollapseExpandDev-'].TooltipObject.text = 'Развернуть'
                                     else:
@@ -6346,10 +6401,10 @@ if __name__ == '__main__':
                                             image_data=ICON_COLLAPSE_BASE_64_BLUE)
                                         if not userBased:
                                             for key in treedata_devs.tree_dict:
-                                                window_devices['-devices-tree-'].Widget.item(key_to_id(key), open=True)
+                                                window_devices['-devices-tree-'].Widget.item(key_to_id(key, window_devices['-devices-tree-']), open=True)
                                         else:
                                             for key in devs_by_user.tree_dict:
-                                                window_devices['-devices-tree-'].Widget.item(key_to_id(key), open=True)
+                                                window_devices['-devices-tree-'].Widget.item(key_to_id(key, window_devices['-devices-tree-']), open=True)
                                         window_devices['-СollapseExpandDev-'].metadata='collapse'
                                         window_devices['-СollapseExpandDev-'].TooltipObject.text = 'Свернуть'
                                 if ev_devs == '-ChangeDevUser-':
@@ -6388,6 +6443,7 @@ if __name__ == '__main__':
                                             add_org(val_add_org)
                                             window_add_org.close()
                                             window_organizations['-orgs-'].update(get_all_organizations())
+                                            update_users()
                                             break
                                 if ev_orgs == '-DelOrg-':
                                     org_id = delete_org(window_organizations['-orgs-'].Values[val_orgs['-orgs-'][0]][0])
