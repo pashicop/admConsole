@@ -271,7 +271,7 @@ def create_db():
                         );
                         CREATE TABLE IF NOT EXISTS "Groups" (
                             "id"	TEXT NOT NULL UNIQUE,
-                            "Name"	TEXT NOT NULL UNIQUE,
+                            "Name"	TEXT NOT NULL,
                             "description"	TEXT DEFAULT NULL,
                             "priority"	INTEGER DEFAULT 0,
                             "is_broadcast"	INTEGER DEFAULT 0,
@@ -6472,6 +6472,7 @@ if __name__ == '__main__':
                                         window_organizations['-orgs-'].update(get_all_organizations())
                                         window_organizations['-EditOrg-'].update(disabled=True)
                                         window_organizations['-DelOrg-'].update(disabled=True)
+                                        update_users()
                                 if ev_orgs == '-EditOrg-':
                                     window_add_org = make_add_org_window(
                                         window_organizations['-orgs-'].Values[val_orgs['-orgs-'][0]])
@@ -6487,6 +6488,7 @@ if __name__ == '__main__':
                                                 window_organizations['-orgs-'].update(get_all_organizations())
                                                 window_organizations['-EditOrg-'].update(disabled=True)
                                                 window_organizations['-DelOrg-'].update(disabled=True)
+                                                update_users()
                             additional_window = False
                         if event == '-AddUser-':
                             """
