@@ -2180,7 +2180,7 @@ def make_devices(dev_l):
                        pad=((4, 10), (0, 3))
                        ),
                        ],
-            [sg.Tree(data=treedata_devs,
+            [sg.Tree(data=dev_l,
                      key='-devices-tree-',
                      headings=['id', 'Имя', 'c/н', 'Тип ОС', 'Версия ОС', 'Тип приложения', 'Версия', 'Заряд', 'Инфо', 'MAC-адрес' ,'IP-адрес', 'Последнее время в сети'],
                      col0_width=20,
@@ -3097,7 +3097,7 @@ def get_treedata(dev_list_of_dict: list, type: str):
             for dev in dev_list_of_dict:
                 td.Insert(parent='',
                           key=dev['deviceIdentifier'],
-                          text=dev['deviceName'],
+                          text=dev['deviceName'] if dev['deviceName'] else dev['deviceIdentifier'],
                           values=[dev['deviceIdentifier'] if dev['deviceIdentifier'] else '',
                                   dev['deviceName'] if dev['deviceName'] else '',
                                   dev['serialNumber'] if dev['serialNumber'] else '',
@@ -3132,7 +3132,7 @@ def get_treedata(dev_list_of_dict: list, type: str):
                                   values=[''])
                     td.Insert(parent=user,
                               key=dev['deviceIdentifier'],
-                              text=dev['deviceName'],
+                              text=dev['deviceName'] if dev['deviceName'] else dev['deviceIdentifier'],
                               values=[dev['deviceIdentifier'] if dev['deviceIdentifier'] else '',
                                       dev['deviceName'] if dev['deviceName'] else '',
                                       dev['serialNumber'] if dev['serialNumber'] else '',
