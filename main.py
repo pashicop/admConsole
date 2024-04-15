@@ -57,10 +57,18 @@ ICON_LEFT_ARROW_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNC
 ICON_CHANGE_BASE_64 = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAACxAAAAsQHGLUmNAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAOdJREFUSInl1SFOA0EUxvFfoSEtu7AJwVYWgeUG3KYCi+AIGBSOU3ABBCGtaQgOT5vgMAQSDIiZJs3CUnbYCuhnZme+N+8/ybw3yyooQ5G6eX2Bv4dx/L5OhVSpjwkusLa6yVul+S7u4niJ95r53nCEp9lCuxTwgocIuMdzAuB1UVCBIW6wVRPwYxUYCaWZV8Rk2Fgm5DT6yU04Dzn7wssj/NeQDrYrvMYg3ynDlfCk7JTNch90MFD/8nIc4xaHQrnjcx90cZAAmB20h815QBNq4RyP2G8y8d9ODieYCj+lpagQSvSf6wOQVilL2RIj8AAAAABJRU5ErkJggg=='
 ICON_CHANGE_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAHTSURBVEiJ3ZQ9SFtRHMXP/+bl5eOlcYndHOuiZokfWwmC1W62NkMHwSlQ03YKglNCXdwcbBQyOHZ5g6BS7WJBKmJJKB1aimtHocWa5NG8vPt3ipiY98IzcckZ77n3/Lgf5wI9r+iTtBZLJPvuul44mePPUoO+sHFG7E11HTAx9/YRCxwy835huH/1rgCyC5ewPjP4oDDyMIlsVnYN0M3wW4DYy2REmN7vYESIsMMMdpXGqPr88s2XD5t/60NKw4QSKqTiNwMRBn4RoeQmX4KrimoYtjsAgFgi2SekcgCQVE1j5nhn69LVLpp06xUV9fyFFLUZAjymEvg4lFgMtVoYnU9rQ4ms6hpQh1jCnAbBq1m03wrirxgZTZ4ftSuhbQ9uQoJMK81+WfA7MEyP9H5ygjg2uajnL4IPynHhE5lm74e+USp7+Gk7SMuiuVF0Pq35KsYegLAi1KkTfe2PLSC+sOAvXQZfCaK2l3dTDITAWCLgm1U1J4u7+Urda+hBrRoIEFOMAVcAIhADYMIAQggCuAZ0fEQAaOz56/cQPCdITJ7q6z8bzPsM7xTQNhxo/otcaPRFahngWbLw+HR7/cxunmMPnMRk5v7/Cwx+3c7ZhveGrgAiFrY4Ehz/8QAAAABJRU5ErkJggg=='
 ICON_EXPAND_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFkSURBVEiJ7ZShT1tRFIe/AyiGLCxQ/gBKLe8hRyDBbpS+NCQNwfM0El4lvp0EAyVNaJdgMVTM7OKWtMkMGKqKXUbS8kOQJhheHzDZT55z7+87V9wDI4Yw/pbDfj6MZheWvnTarvnfBX4+jCQdmNnKXMYjqSSRYBAO9IBHM1tNL/pKIhkqeBHex7QjUTOzHLCWRBIr8PNhIKkC9JAVXb1y1mm7Vjqz/AfjG7CWznq/Oy3Xfi1jLE4w2U39AKrIiq5Rrg3qrlGuISsiTj91Zy7iMkaM+DgW1wyCYPym//nIjEtXL5+87Pn5MHgUG1P3qe2rq6j3WkbsP7jV9FczbYOOvVxYGNS9XFiQVDW09TfV3Xj3CwD8XLgn0yHQB9sx40FSFZiQFF03vpc+JADwNnf3gRLPyw5gwsxKv87L0bC7ibZpp+2a81n/H7AOjEmKXL0SO/mbBAB3LfdzPrtsZtZMGj4iEU+YcpHRJ5ZlsgAAAABJRU5ErkJggg=='
+ICON_EXPAND_32_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAHmSURBVFiF7Za/axNhGMc/T1NDizqKaDO4CG1vk+TqZgQdioLS3hX8B1ySWXDR6+ieZO5gFy8/sDg4XoQuuQidEikOWZLF2VpCe49DcyCh4HsJuHjf7eH9vs/389wL73uQ6n9XZp7NtlP2bq3mH4z6YfufA9hO2VPVtyJSvL1WYFaImQDi8LieByIxwFT4GDgHMiJSXFm3NSlEIoDpcFVxRXUfEQdYBB4mhTAGuCy826wcjL6F31dWC19nhVgwMRWL3iKqhThchO1us3IQr4et2mcRXC6OBKDguq7RcEamwSCIlu/cbyxfYV2E15169dO0Z9gLj3OWfQSydLJwYyfwa2cmvVOlSpVKTI2W62Wv6o/9CN5369WPl3nyTnkTjV5eu37yItjbOzXpa3QTuq6b+RlJC3gusJWz7KNhLzz+02M7pacoLUGss3H23t2bTz4MBkH0t95Gb4Hv++cKXyZlVpVG3ik9i9fzTnlTFR/IAkSqnSDwjK5i4yMAsLfKr1T03aQcq7ADMhbVJrAEoKpet1nbNe2ZCACgsF16A8QB8euXBRCR3U694iXpl/iPaNQP27m1jV8Ijyf7M3AxedioGk8+MwDAsN85zFn2KfAoDk/y2ecGABj2wsOctSEi0p5l8lSpYv0Gs0TP/S5ZbeUAAAAASUVORK5CYII='
 ICON_COLLAPSE_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFbSURBVEiJ7ZS/S0JRFMe/R52qUZLSPyBz7T3HIqE5Hz4kEHHv7Y09t/6AZ2MtZQhp0Nqig4u3LVBoiYacbI0C9dvweCCBz9cPsMHveA7n+zn3nnsusNC8JX5J0zTDT6PYmQjuVN25mMzpOcscE9mV12ix2bSH0zxCfoBnxgwRFgGea4aV9+KaYeVJVgU8eIsOsj8+gdvp4RGJEwAjQEoi+CBZBRAhad83Tsu/ArgQyyZ5DMC7ioiIlDvXjj2rNhwE8NLtNBMp/R3AHoAQSVvVK76dfwvgQlQ7kUqLiLSCmi/0PxR4yID7XNc2trb7PdX6c4C3CyKys57UEBQSCPBl0cYishvf1BkEMhMwYT6CsESiJiIGgEwQiC9Az1kmyQqAISgFVa9c9XuqG0+mHyHYB5CJp7SHflf1pnn4/qZLg+gNgCooBdVwal5cNZwaKAUQl8uD1Vs/j4Xmr0/ZzJTTxEfPgAAAAABJRU5ErkJggg=='
+ICON_COLLAPSE_32_BASE_64_BLUE = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAGlSURBVFiF7ZbBSgJRFIb/M84UErkNe4CIFkFomAUxEUErF4oLkxYFuRiUNj2ArxC1ctEqaSG4ECqFitmFC2kViA+QtG2R0oz3tplRM4OZUYtgvs3APZfz/+fM5Z4LuLj8J4IxJRGIpvw/xQPRlD8YUxJ2cgpWN67GlCMCXQokqSuR9PxgPBQ5nhNIuiNQPhhT0mM1IMtZEZwOjP0LosTv+zsRiKb8TNJVAEsAiDjtyXJWtJKbrDpd3j+ZmX5v3QDYNJYaukZbU/B0mKQ/GOIAx6PgFXar+bO3sRoAgFAy42MtVgYhbCzVje+iE3HbBoChnYBTcUcGhppwKO7YwBcTHJJT8ZEJJTO+UDLj+3VhFxeTcRxCy8NomDhrdyqsxcqjmHB0D5jiAK0B+N2L6Ju4iUMTtn5Bdxj1xOswBxIhzNrsdiNyODsRA93Ke5OwoWu0LWiiDODZWFv/EL0VO2fC8oNksHLGNfmpdP5SLZ2+Mq7toK8TvMWu4/G4Z2wGVDWrk4ALAAxG5bVirmnGa8Vcs68TnINfFQqFjpXctpjEo9TF5c/5BEWtuhiat6hyAAAAAElFTkSuQmCC'
 ICON_FOLDER = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
 ICON_FILE = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABU0lEQVQ4y52TzStEURiHn/ecc6XG54JSdlMkNhYWsiILS0lsJaUsLW2Mv8CfIDtr2VtbY4GUEvmIZnKbZsY977Uwt2HcyW1+dTZvt6fn9557BGB+aaNQKBR2ifkbgWR+cX13ubO1svz++niVTA1ArDHDg91UahHFsMxbKWycYsjze4muTsP64vT43v7hSf/A0FgdjQPQWAmco68nB+T+SFSqNUQgcIbN1bn8Z3RwvL22MAvcu8TACFgrpMVZ4aUYcn77BMDkxGgemAGOHIBXxRjBWZMKoCPA2h6qEUSRR2MF6GxUUMUaIUgBCNTnAcm3H2G5YQfgvccYIXAtDH7FoKq/AaqKlbrBj2trFVXfBPAea4SOIIsBeN9kkCwxsNkAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK0xAAAAAElFTkSuQmCC'
-ICON_RADIO = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAJ1AAACdQF32cIiAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAM9JREFUOI3F0bFOQkEQheEvXg1g1CAFJCQ2hprGgthToi2v42toQXgJSgrsbE1ssKCwtCAUSmiAgjEhF7xeK6aZPbO7/5yd5dCRpPQNKvjMCzhO6TvM8JYXcJT34H8ATbzgA32Uo15C6y/AGG084xF1PMXevc2MbrMAdbxH/RJDdFDEyma4V1mAMzSinuA6rF/gJPJ3+hnb8RCdJhjhK3Q1Onft/txewBLTWP8A9sZvtNfICc6zOqZnMI9c27q8xCKvgx4KOA09CDezLBeHjTWGkSHmlMppoQAAAABJRU5ErkJggg=='
+ICON_RADIO_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAJ1AAACdQF32cIiAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAM9JREFUOI3F0bFOQkEQheEvXg1g1CAFJCQ2hprGgthToi2v42toQXgJSgrsbE1ssKCwtCAUSmiAgjEhF7xeK6aZPbO7/5yd5dCRpPQNKvjMCzhO6TvM8JYXcJT34H8ATbzgA32Uo15C6y/AGG084xF1PMXevc2MbrMAdbxH/RJDdFDEyma4V1mAMzSinuA6rF/gJPJ3+hnb8RCdJhjhK3Q1Onft/txewBLTWP8A9sZvtNfICc6zOqZnMI9c27q8xCKvgx4KOA09CDezLBeHjTWGkSHmlMppoQAAAABJRU5ErkJggg=='
+ICON_RADIO_RED_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAJ1AAACdQF32cIiAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAUJJREFUOI3NkT9LQlEYxn/vuVe995qKkFYUDUU1pBBNDQ4NUUNDS0RTX6Dv0NLSUNRXaIigpcZoiJaoIBqNcJGCQEKXMPXaPbdJMFH7s9Szvc/znt97znvgX2nWNjOrltr8yRnVXPR4ei5tGAu/BrQo8h2A2Wq8grMdi9wEYAwkf+1Wtw4r7hEQAqaBq46AGtgzISexnwxOPorPoFLx9YLay3lkb113CEgDJeCh7RNMMZUXVMknU3DCAYohg6xtDIyYahkIAM9AquMOwoYqZ8QgqgQRwRFY1IqYSBSwgDhQ6LqDXlHsljTHlmbJhVFfGtEFMA9cdgUApLQwXPaJijTbL8BBa2/bb7wTzcnaOOeWtIs7Aypa1zUwoQVO80xVNQBvmvdOgE8jEtC/ErZ3+pQRbnhF36uc1fXGfa2W+/I6f6IPoghQeehuO1kAAAAASUVORK5CYII='
+ICON_RADIO_BLACK_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAJ1AAACdQF32cIiAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAMpJREFUOI3N0k9LQkEUBfBfr39uEgwK3bSrhdqiQj9EK1Fc2XcN3LoQoU3LIIIECZIgCMGFN3i+9Jk7D1xm7hnuOZyZYddQQ2ubgYNMX93WMck5O/mPwH6mr6GEq6hqCL3iGM3YrxVo4gUdtFHBAIe4QwOTqJUREnzjGh8o4xQ3IfKGenYgjSme8IkZfjDEHgoR710OurFe4AGXKf4MvRDbKADFNfwSsv/gF7fhPsZjnuOqS0zwjCOMNhj9yXOOe3yluAL6Fs+7g5gDQzEbqjwDFmIAAAAASUVORK5CYII='
+ICON_RADIO_BLACK_24_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAOwAAADsAEnxA+tAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAVtJREFUSInt1D1LXFEQxvGf75iI6HYRDATTRBTBRtNYSBoLIY0fIGIKJdoIqcRS0C8g1jZaiI0SSBO1sBZtDEkrEiUaBcWoqMU5wiK77r2rdj5wudx5hvnPZeYcnlWkmjCKyocWKs0T/4RNdD0V4BLHqHgqwKOpvID/EoN4JcxjDd9wnRRw3x9k0I0lLGAGp5hAdVbeG3xNC3iBt5jCHGaxgh5M4kvM68QQLtCSBpDBPEbi92/8REd8zlCLf9hBGXrTAPaxFzs+j8XahO16H2HvsI061KAqDeB/fC/HnENsxU5XI7Qa7TjAEU7SAG41FbtuFWbyHT+y/Cu8Fs7LYq4ChdZ0Dx9i8QP8veNv4A8+CnNKDSDs/K97/F1M5zOTnORajGMgQW5RgD7hHDQq4nZNAljCZ2FTzrPiia+LXBpGcx6vBGNoSFKoJE+8HP2oz+GVCdfGehLAswrqBgbIPmhmYfYCAAAAAElFTkSuQmCC'
+ICON_RADIO_BLACK_32_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAATrAAAE6wHYKlsNAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAeFJREFUWIXt1TtoVFEQxvHfJhok4gMf0ULQaIJRsLAQLBREhICFlYqIiILY2wlWgoiFjYXPWAghxQY0VtpI+ihEfICFEjAq4gNEMIWLbizmFMsS93FvYhD2ay73nBm+P3PmzKGllmprFQ5j8VwZtNXZv4rluDxfAHALK+cTYE71XwKsQx8WzQbAggbjluE8ejGBX9iAEi6ltWqtx3v8zgNYxEaMohsd2IV9WIIVuJbWKtWDg7iYxxxGMIjOZDKB55jEGxwVxziA1SlnM/oT2HVsqWVQrwd6MJQAhjCGhXiGdziL7biAMymnA8dF6e/jZB6AKTwS0/AbduAlupJBCafwVvQEvEAZD8WxdecB+Cgabq0YRk+wCV/SfkmMa2ivyPuKadG803kASun7GD/EeU5iaVrvTHtQqADpwxrRMzVvQaNz4AFe44OoxFQy/CxGdaUOYBiHxDUfnQ2AMo5gPBl34RWO4XtV7Ah+4rZoxsEGPWZUsYnY4ar/E6Jpa6rRSZhFdxoJyvIW9GJbhrwZ1WwF9uI0PokOv5IXoNkK9OOcmHp78prTfAWKuCmu4cC/ACiIKpXT/zj2i+lYroptl0H1AO7iBu4l05nUht14mgWgUD/EVuz0d9iyeIDGsgC01NIfRSdauFFNr44AAAAASUVORK5CYII='
+ICON_DISPATCHER_32_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAA7AAAAOwBeShxvQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAMLSURBVFiFrddbiJVVFAfw39EMG4fGLG1OF3uaCJMso8mcyqQg7AI9RtFLED0ZmCi9FEVFUdENiuhNeuulmigjpyKLLLq/RBlhN7B6GLo4pqljD2sd5zic+b796fxhc75v7bXW/n97r7X2Oi3N0MLVuA1LcCDl8/AHXsJYQ5/FWIJX8ADaPebPwIN4NXVnFQvFly3P5035/k6OsZQtxAX5PjCbBJ7FlbgU7+IGse0dzMONeA/DWItnZmvxfrwmtn0MJ1foDogdGcTrWFDnfG4BgbX4G9fjaeyq0N2P73AHvkYffqhyPqeAwFn4Gefh0wq9W3EVPsEy/IQz65yfUECgD7/gUI+5k7Aat4s0vBmnYxITSf64CZwjvm4Ib4uAmxDnuxc7cD++x3zcmaROwwcF/muxVQTXaAObUZGSW+sUS2LgAP5qsHgHf5qqlMdF4EQ8hVMaLL5IVMxv6hRLYuBzcb7DDQi0RD2ojYESAv/gR+wUUf1rygdFRSSKzu/5vFTUgu2lTOvQxhbsw7l4P+Wr8CQO4mLcnfItogx/UUKgCQZwL14UN98tpi6jm0RaPoeNTZyW7MB0XIcX8KE4lpaoEZeLGlCberOBUREDIzkGNasTR1AShNMxX6TZbzk6WJRz+5o4K6kD3RjBGxg3FXTyeTznVjdxWBcD/SLa2+LiuQh7RPfzGHanXhub8XjafIl/c/7jtGlEYBAP4VSRz7vFbTgX68VOMHU9X5K/H4nuqaPbxhpxU97n6CObEeeL1Foxw/yjojW7B0/gYXEbrsIjM9hcmD6X1S2+IBUXV+gMiUrX3RntStlQhd3i9N3XLZzekm0QeVxVxcbxrSjR/4l+YQLP47MKu71pc604qp54S3lmrMNXOdYV2szBm92C7jrQEk3lZKGzlbgr7UaUVcBJ0SO0cLjDqIN+FenSA5eJBnSHCMBS7Mm1TCdwhFUB+sRu7RdxcEjBf4DEYV3p37QSdrDG0c3GdlxxLI6OlcA12Nb1vi1ljdEdhAfFWb5cYDeMs3vIlhbYrsy1wP8mf55qEtryLgAAAABJRU5ErkJggg=='
+ICON_DISPATCHER_16_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFBSURBVDiNjdI7S5xREAbgZ12vLOI9aKNCtLBJNKawkJSxtLKw0R9gIXZWqW3TWNgIFv4ALdOmCyJYaBpDSKMEk0UUFS/R4pvV5fOQdWBgzjvvec/MmSlI2xu8w1WcW7CDvTyxmLg8glE04CawJnTjGifV5PqEwDgasYHbwBowh/f4XkvgDpdxuYgJTOIivGYL8xjGKwzhJ7Yxg158qVXBDb5hPYcfoCtPrksIHFZVNhBeqXbtJS38wwe8xUe8xmlwn42xkBCo2LKsfxjESoqU+gNoRTu+xnk0sLP/VVCHaTSjFOT+yP0KgXPZdm7JWn0UKGABm/gb2CLaIj7F54g7MYtV3Fden5LNuNo68Cm8I5frk33w4xg7cZwjlfEjvJzLHYmdqAikptGN3/iDnkS+wNMUSrJVrbYx7Ee8hN1cvgQPYm83Z9Vif40AAAAASUVORK5CYII='
 WARN_FREE_SPACE = 80
 ALARM_FREE_SPACE = 95
 WARN_LIC_DAYS = 30
@@ -580,7 +588,7 @@ def get_user_list_treedata():
                           u'\u0020\u0020\u0020\u2713' if user_for_td['is_admin'] else '',
                           u'\u0020\u0020\u0020\u2713' if user_for_td['is_gw'] else '',
                           (u'\u0020\u0020\u0020' + SYMBOL_X_SMALL) if user_for_td['is_blocked'] else ''],
-                  icon=ICON_RADIO
+                  icon=ICON_DISPATCHER_16_BASE64 if user_for_td['is_dispatcher'] else ICON_RADIO_BASE64
                   )
     for key, node in td.tree_dict.items():
         children = node.children
@@ -828,7 +836,7 @@ def make_main_window(ip):
                              ),
                              sg.Button('', disabled_button_color='white',
                                        disabled=False,
-                                       image_data=ICON_COLLAPSE_BASE_64_BLUE,
+                                       image_data=ICON_COLLAPSE_32_BASE_64_BLUE,
                                        button_color='white',
                                        tooltip='Свернуть',
                                        border_width=0,
@@ -2171,7 +2179,7 @@ def make_devices(dev_l):
                        pad=((4, 10), (0, 3))),
              sg.Button('', disabled_button_color='white',
                        disabled=False,
-                       image_data=ICON_COLLAPSE_BASE_64_BLUE,
+                       image_data=ICON_COLLAPSE_32_BASE_64_BLUE,
                        button_color='white',
                        tooltip='Свернуть',
                        border_width=0,
@@ -4872,14 +4880,14 @@ if __name__ == '__main__':
                         if event == '-СollapseExpandUser-':
                             user_list_treedata = get_user_list_treedata()
                             if window['-СollapseExpandUser-'].metadata == 'collapse':
-                                window['-СollapseExpandUser-'].update(image_data=ICON_EXPAND_BASE_64_BLUE)
+                                window['-СollapseExpandUser-'].update(image_data=ICON_EXPAND_32_BASE_64_BLUE)
                                 for key in user_list_treedata.tree_dict:
                                     window['-users-tree-'].Widget.item(key_to_id(key, window['-users-tree-']), open=False)
                                 window['-СollapseExpandUser-'].metadata = 'expand'
                                 window['-СollapseExpandUser-'].TooltipObject.text = 'Развернуть'
                             else:
                                 window['-СollapseExpandUser-'].update(
-                                    image_data=ICON_COLLAPSE_BASE_64_BLUE)
+                                    image_data=ICON_COLLAPSE_32_BASE_64_BLUE)
                                 for key in user_list_treedata.tree_dict:
                                     window['-users-tree-'].Widget.item(key_to_id(key, window['-users-tree-']), open=True)
                                 window['-СollapseExpandUser-'].metadata = 'collapse'
@@ -6387,7 +6395,7 @@ if __name__ == '__main__':
                                     # print_chosen_device(val_devs)
                                 if ev_devs == '-СollapseExpandDev-':
                                     if window_devices['-СollapseExpandDev-'].metadata == 'collapse':
-                                        window_devices['-СollapseExpandDev-'].update(image_data=ICON_EXPAND_BASE_64_BLUE)
+                                        window_devices['-СollapseExpandDev-'].update(image_data=ICON_EXPAND_32_BASE_64_BLUE)
                                         if not userBased:
                                             for key in treedata_devs.tree_dict:
                                                 window_devices['-devices-tree-'].Widget.item(key_to_id(key, window_devices['-devices-tree-']), open=False)
@@ -6398,7 +6406,7 @@ if __name__ == '__main__':
                                         window_devices['-СollapseExpandDev-'].TooltipObject.text = 'Развернуть'
                                     else:
                                         window_devices['-СollapseExpandDev-'].update(
-                                            image_data=ICON_COLLAPSE_BASE_64_BLUE)
+                                            image_data=ICON_COLLAPSE_32_BASE_64_BLUE)
                                         if not userBased:
                                             for key in treedata_devs.tree_dict:
                                                 window_devices['-devices-tree-'].Widget.item(key_to_id(key, window_devices['-devices-tree-']), open=True)
@@ -6417,7 +6425,7 @@ if __name__ == '__main__':
                                         window_devices['-devices-tree-'].update(users_by_devs)
                                         userBased = False
                                     window_devices['-СollapseExpandDev-'].update(
-                                        image_data=ICON_COLLAPSE_BASE_64_BLUE)
+                                        image_data=ICON_COLLAPSE_32_BASE_64_BLUE)
                                     window_devices['-СollapseExpandDev-'].metadata = 'collapse'
                                     window_devices['-СollapseExpandDev-'].TooltipObject.text = 'Свернуть'
                             additional_window = False
