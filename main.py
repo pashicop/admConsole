@@ -2761,15 +2761,15 @@ def get_version():
 
 def get_app_version_and_type_from_filename(filename: str):
     version = ''
-    if '_a.apk' in filename:
+    if '_a' in filename:
         type = type_app['Основная']
-    elif '_t.apk' in filename:
+    elif '_t' in filename:
         type = type_app['Тональник']
-    elif '_ns.apk' in filename:
+    elif '_ns' in filename:
         type = type_app['Без экрана']
-    elif 'box' in filename:
+    elif '_b' in filename:
         type = type_app['К500']
-    elif 'ZTE' in filename:
+    elif '_z' in filename:
         type = type_app['ZTE']
     else:
         type = type = type_app['Основная']
