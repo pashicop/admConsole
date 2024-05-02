@@ -85,6 +85,8 @@ ICON_ADMIN_BLOCK_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAABQAAAAQCAQAAAC8EZeQAAAACXBI
 # ICON_GW_16x20_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAABQAAAAQCAQAAAC8EZeQAAAACXBIWXMAAAsTAAALEwEAmpwYAAAHSWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDggNzkuMTY0MDM2LCAyMDE5LzA4LzEzLTAxOjA2OjU3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjEuMCAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDI0LTA0LTE1VDE2OjQ5OjM4KzAzOjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDI0LTA0LTE1VDE3OjQ4OjU5KzAzOjAwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyNC0wNC0xNVQxNzo0ODo1OSswMzowMCIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6YmQyMjBlZDMtNGZjYi01MDQ3LWIzMTAtMWZjZTVkNTNmYjEwIiB4bXBNTTpEb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6OWYzNTQ5YTItYzQzZi02MjRjLWE0MjktM2IwM2RiN2YxNjVkIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6YWE1ODJjM2ItZTY1ZS1lODQzLWEwMTctNzk2MmZiM2FiZDRlIiBwaG90b3Nob3A6Q29sb3JNb2RlPSIxIiBwaG90b3Nob3A6SUNDUHJvZmlsZT0iRG90IEdhaW4gMjUlIj4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDphYTU4MmMzYi1lNjVlLWU4NDMtYTAxNy03OTYyZmIzYWJkNGUiIHN0RXZ0OndoZW49IjIwMjQtMDQtMTVUMTY6NDk6MzgrMDM6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMS4wIChXaW5kb3dzKSIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NTJkNmM4MjQtMzUwMy0yYjRkLTgwOGUtZTFkYTQ2YzdkZjMzIiBzdEV2dDp3aGVuPSIyMDI0LTA0LTE1VDE2OjU4OjEyKzAzOjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjEuMCAoV2luZG93cykiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOmJkMjIwZWQzLTRmY2ItNTA0Ny1iMzEwLTFmY2U1ZDUzZmIxMCIgc3RFdnQ6d2hlbj0iMjAyNC0wNC0xNVQxNzo0ODo1OSswMzowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDIxLjAgKFdpbmRvd3MpIiBzdEV2dDpjaGFuZ2VkPSIvIi8+IDwvcmRmOlNlcT4gPC94bXBNTTpIaXN0b3J5PiA8cGhvdG9zaG9wOkRvY3VtZW50QW5jZXN0b3JzPiA8cmRmOkJhZz4gPHJkZjpsaT54bXAuZGlkOmFhNTgyYzNiLWU2NWUtZTg0My1hMDE3LTc5NjJmYjNhYmQ0ZTwvcmRmOmxpPiA8L3JkZjpCYWc+IDwvcGhvdG9zaG9wOkRvY3VtZW50QW5jZXN0b3JzPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Ph4CiHgAAABYSURBVCiRrZLBCgAgCENd9P+/vA5RaSkZ5CUczzElUHJVkpwPgvYNQQIUAYlz2HHV2ENGyGXt4Zt2rHqqR/ZXKLswOtBq1SZZnVUmuPsFGcNjqsrf8fvvaePTGiH0WWYLAAAAAElFTkSuQmCC'
 ICON_GW5_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAABQAAAAQCAQAAAC8EZeQAAAACXBIWXMAAAsTAAALEwEAmpwYAAAHSWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDggNzkuMTY0MDM2LCAyMDE5LzA4LzEzLTAxOjA2OjU3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjEuMCAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDI0LTA0LTE1VDE2OjQ5OjM4KzAzOjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDI0LTA0LTE2VDExOjMzOjU2KzAzOjAwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyNC0wNC0xNlQxMTozMzo1NiswMzowMCIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OWIxNWMzOTgtOGQyYS0yNjQyLWE5N2YtOGFmYjI1NWVhZmU0IiB4bXBNTTpEb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6ODZhMzdlNzItNjcxOS03MjQ5LWJkMWItYjJhOGI4Njc1ZDJlIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6YWE1ODJjM2ItZTY1ZS1lODQzLWEwMTctNzk2MmZiM2FiZDRlIiBwaG90b3Nob3A6Q29sb3JNb2RlPSIxIiBwaG90b3Nob3A6SUNDUHJvZmlsZT0iRG90IEdhaW4gMjUlIj4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDphYTU4MmMzYi1lNjVlLWU4NDMtYTAxNy03OTYyZmIzYWJkNGUiIHN0RXZ0OndoZW49IjIwMjQtMDQtMTVUMTY6NDk6MzgrMDM6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMS4wIChXaW5kb3dzKSIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NTJkNmM4MjQtMzUwMy0yYjRkLTgwOGUtZTFkYTQ2YzdkZjMzIiBzdEV2dDp3aGVuPSIyMDI0LTA0LTE1VDE2OjU4OjEyKzAzOjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjEuMCAoV2luZG93cykiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjliMTVjMzk4LThkMmEtMjY0Mi1hOTdmLThhZmIyNTVlYWZlNCIgc3RFdnQ6d2hlbj0iMjAyNC0wNC0xNlQxMTozMzo1NiswMzowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDIxLjAgKFdpbmRvd3MpIiBzdEV2dDpjaGFuZ2VkPSIvIi8+IDwvcmRmOlNlcT4gPC94bXBNTTpIaXN0b3J5PiA8cGhvdG9zaG9wOkRvY3VtZW50QW5jZXN0b3JzPiA8cmRmOkJhZz4gPHJkZjpsaT54bXAuZGlkOmFhNTgyYzNiLWU2NWUtZTg0My1hMDE3LTc5NjJmYjNhYmQ0ZTwvcmRmOmxpPiA8L3JkZjpCYWc+IDwvcGhvdG9zaG9wOkRvY3VtZW50QW5jZXN0b3JzPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PoPz/YQAAABaSURBVCiRrVJBDsAgCKOG/3+5HoxxHagsWS8ELE1tAK2GVuTlRFDrlkiAZiARlxPVJ+2DR9j120O5rOhzYzqL/UDTdj2DOvXlQl29Zx7d5In5IUpBPcffr6cD6dMaIZAQIcAAAAAASUVORK5CYII='
 ICON_GW5_BLOCK_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAABQAAAAQCAQAAAC8EZeQAAAACXBIWXMAAAsTAAALEwEAmpwYAAAMemlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDggNzkuMTY0MDM2LCAyMDE5LzA4LzEzLTAxOjA2OjU3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIDIxLjAgKFdpbmRvd3MpIiB4bXA6Q3JlYXRlRGF0ZT0iMjAyNC0wNC0xNVQxNjo0OTozOCswMzowMCIgeG1wOk1ldGFkYXRhRGF0ZT0iMjAyNC0wNC0xNlQxODowMToxMiswMzowMCIgeG1wOk1vZGlmeURhdGU9IjIwMjQtMDQtMTZUMTg6MDE6MTIrMDM6MDAiIGRjOmZvcm1hdD0iaW1hZ2UvcG5nIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjRkOTQ4MmJkLWE3MzMtZDU0Mi1iZjcwLTA1NTM2MzkxZDBmNSIgeG1wTU06RG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOmJhMzkzOWQ5LTJhZWUtOWE0OC1iMjc3LWZkNGU1Mzg0MTc5YiIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOmFhNTgyYzNiLWU2NWUtZTg0My1hMDE3LTc5NjJmYjNhYmQ0ZSIgcGhvdG9zaG9wOkNvbG9yTW9kZT0iMSIgcGhvdG9zaG9wOklDQ1Byb2ZpbGU9IkRvdCBHYWluIDI1JSI+IDx4bXBNTTpIaXN0b3J5PiA8cmRmOlNlcT4gPHJkZjpsaSBzdEV2dDphY3Rpb249ImNyZWF0ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6YWE1ODJjM2ItZTY1ZS1lODQzLWEwMTctNzk2MmZiM2FiZDRlIiBzdEV2dDp3aGVuPSIyMDI0LTA0LTE1VDE2OjQ5OjM4KzAzOjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjEuMCAoV2luZG93cykiLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjUyZDZjODI0LTM1MDMtMmI0ZC04MDhlLWUxZGE0NmM3ZGYzMyIgc3RFdnQ6d2hlbj0iMjAyNC0wNC0xNVQxNjo1ODoxMiswMzowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDIxLjAgKFdpbmRvd3MpIiBzdEV2dDpjaGFuZ2VkPSIvIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo2NDQzYWZlOC0yNGZmLTg4NDItYWE1Yi02N2M1Y2I5OTFkOGMiIHN0RXZ0OndoZW49IjIwMjQtMDQtMTZUMTE6MzQ6NTYrMDM6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMS4wIChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY29udmVydGVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJmcm9tIGltYWdlL3BuZyB0byBhcHBsaWNhdGlvbi92bmQuYWRvYmUucGhvdG9zaG9wIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJkZXJpdmVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJjb252ZXJ0ZWQgZnJvbSBpbWFnZS9wbmcgdG8gYXBwbGljYXRpb24vdm5kLmFkb2JlLnBob3Rvc2hvcCIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NmU3ODdkNTctMmRiYS00OTQ2LWIyM2QtNWRiYTBmM2JhNjU4IiBzdEV2dDp3aGVuPSIyMDI0LTA0LTE2VDExOjM0OjU2KzAzOjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjEuMCAoV2luZG93cykiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjZmZTA1N2JlLTMyMWYtMTc0ZS04ZGM1LTc0ZjU0ZWI4YmRjNCIgc3RFdnQ6d2hlbj0iMjAyNC0wNC0xNlQxODowMToxMiswMzowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDIxLjAgKFdpbmRvd3MpIiBzdEV2dDpjaGFuZ2VkPSIvIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJjb252ZXJ0ZWQiIHN0RXZ0OnBhcmFtZXRlcnM9ImZyb20gYXBwbGljYXRpb24vdm5kLmFkb2JlLnBob3Rvc2hvcCB0byBpbWFnZS9wbmciLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249ImRlcml2ZWQiIHN0RXZ0OnBhcmFtZXRlcnM9ImNvbnZlcnRlZCBmcm9tIGFwcGxpY2F0aW9uL3ZuZC5hZG9iZS5waG90b3Nob3AgdG8gaW1hZ2UvcG5nIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo0ZDk0ODJiZC1hNzMzLWQ1NDItYmY3MC0wNTUzNjM5MWQwZjUiIHN0RXZ0OndoZW49IjIwMjQtMDQtMTZUMTg6MDE6MTIrMDM6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMS4wIChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8L3JkZjpTZXE+IDwveG1wTU06SGlzdG9yeT4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NmZlMDU3YmUtMzIxZi0xNzRlLThkYzUtNzRmNTRlYjhiZGM0IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjZlNzg3ZDU3LTJkYmEtNDk0Ni1iMjNkLTVkYmEwZjNiYTY1OCIgc3RSZWY6b3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOmFhNTgyYzNiLWU2NWUtZTg0My1hMDE3LTc5NjJmYjNhYmQ0ZSIvPiA8cGhvdG9zaG9wOkRvY3VtZW50QW5jZXN0b3JzPiA8cmRmOkJhZz4gPHJkZjpsaT54bXAuZGlkOmFhNTgyYzNiLWU2NWUtZTg0My1hMDE3LTc5NjJmYjNhYmQ0ZTwvcmRmOmxpPiA8L3JkZjpCYWc+IDwvcGhvdG9zaG9wOkRvY3VtZW50QW5jZXN0b3JzPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Ptnf9I4AAABgSURBVCiRrZJLDoAwCEQfhjt5/52calxpf9S0ibMDJvNJMLGGY5GXE0MBBFHZ2ZULCEMYwPlp/dK2Mzrz2s/FNhVpsiiZKYq9vQC1Wy8pKti48yROWs9nhx7Lre3377kB27QVRIFFa7IAAAAASUVORK5CYII='
+ICON_PLAY_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAIFSURBVFiF7ZbPSxRhGMe/z7vKgl7yEIEdDAVJkSB0x6P/QQdnDx38dQllx3CIID0V3SQicNslCArtpOOuHsRbh1JYnHGpLiKCRQch6tJpQ1vfx4MarL677c6+6xzqe3ze53m/n/f7zgwD/OsiVTFijg8AeABwK4BNEB57i4m3FwJgRGNDzDSr6F2Rh8LOLsd3dQKEzhaaO4w3AK4oettJ8OjVzt7Gpq6ejR9b3oEOAKGodZToDwM82SDFjmFawyhyhZXo3AYR0+IKxrNSSDvrJNf9AqgSqEDcLSS9j5jWws1+q8XPDlUmUKAcET0JUf10xnn2q9yhKhMoUAMzP8zLgx0jGhtCmc+HzgQKxfQOIWl7TvJjqTadCRSKuA+SsoZpzfXemlC91jUGONmfgUFZn9+O9MdGggA41SUQve6JWreDAjgWYypQAALaAwUA8DlQAAaeBgWwz+B7m6nEq7MLdbV2JsY6hcTohhPfUq3XMoGfANnujct9xcyB2iWwUicOxzLOiz2kSjfqBtgjxl03nVgqd0DXFeQBzOQEX6/EHNCTwCcw3/HSSc/PcDUJ5IgweU187/ZrDqgTkPgLGAGrvxmxD6nEV9evcwmALwDaivR/A5Ptpp/PV+n7R6qTnvtcAmCAXobDstPTaA4U+W8zzPExBt8H0AxChiAeuYvxNZ3G/3WqI2Z2nhWNyE9nAAAAAElFTkSuQmCC'
+ICON_STOP_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAC3SURBVFiF7dc9CgIxEEDhN1EQtBERca29jHdY8QSWio0/4FG29DweQbewsVFBcMdCNiwKdgmIM1VIQt7XBv59pFwMR9NGp1lsFUlBk0C5XKXIbtJb7nebO0C9PHrFmYGGaQOgiajMm3pSYAHg/BGMA5bfZ1IuXGWzHxHgW+7brRhjAAMYwAAGMIABDGAAA1QAkkfsHj4AKkUWry++5X9G50tt1W49ECRFGYTpckTJrq67DvL+T84TxKYnTN/X+rAAAAAASUVORK5CYII='
 WARN_FREE_SPACE = 80
 ALARM_FREE_SPACE = 95
 WARN_LIC_DAYS = 30
@@ -371,20 +373,21 @@ def add_and_set_groups():
     if not is_org:
         group_list, treedata = get_group_list_with_org(selected_user['organization_id'])
         tree.update(treedata)
-        groups_for_user = get_groups_for_user_from_db_with_org(selected_user)
-        group_for_user_ids = []
-        for group_for_user in groups_for_user:
-            group_for_user_ids.append(group_for_user['id'])
-        all_group_ids = []
-        for group_from_all in group_list:
-            all_group_ids.append(group_from_all[0])
-        tree.metadata = []
-        for group_id_for_tree in all_group_ids:
-            if group_id_for_tree in group_for_user_ids:
-                tree.metadata.append(group_id_for_tree)
-                tree.update(key=group_id_for_tree, icon=check[1])
-            else:
-                tree.update(key=group_id_for_tree, icon=check[0])
+        if not selected_user['is_admin']:
+            groups_for_user = get_groups_for_user_from_db_with_org(selected_user)
+            group_for_user_ids = []
+            for group_for_user in groups_for_user:
+                group_for_user_ids.append(group_for_user['id'])
+            all_group_ids = []
+            for group_from_all in group_list:
+                all_group_ids.append(group_from_all[0])
+            tree.metadata = []
+            for group_id_for_tree in all_group_ids:
+                if group_id_for_tree in group_for_user_ids:
+                    tree.metadata.append(group_id_for_tree)
+                    tree.update(key=group_id_for_tree, icon=check[1])
+                else:
+                    tree.update(key=group_id_for_tree, icon=check[0])
     else:
         group_list, treedata = get_group_list_with_org(org_id)
         tree.update(treedata)
@@ -900,10 +903,10 @@ def make_main_window(ip):
                                        key='-DelUser-', pad=(4, (0, 3)))],
                          [sg.Tree(user_list_treedata,
                                   headings=['id', 'Логин', 'Имя', 'Дисп', 'Адм', 'К500', 'Блок'],
-                                  visible_column_map=[False, False, True, True, True, True, True],
+                                  visible_column_map=[False, False, True, False, False, False, False],
                                   col0_width=15,
                                   col0_heading="Логин",
-                                  col_widths=[0, 0, 10, 4, 4, 4, 4],
+                                  # col_widths=[0, 0, 10, 4, 4, 4, 4],
                                   num_rows=10,
                                   row_height=16,
                                   font='default 9',
@@ -1208,15 +1211,21 @@ def make_main_window(ip):
         ['Сервер', ['Установить лицензию...', '!Настройки', 'Обновления', 'Устройства', 'Организации', 'Очистка БД', ['Частично', 'Полностью']]],
         ['Помощь', 'О программе'], ], key='-Menu-', )],
         [sg.Frame('Сервер', [[sg.Column([[sg.Push(),
-                                          sg.Button('Старт', key='-Start-',
-                                                    disabled_button_color='gray',
-                                                    size=8,
-                                                    pad=((20, 10), (5, 10))),
-                                          sg.Button('Стоп', key='-Stop-',
-                                                    disabled_button_color='gray',
-                                                    size=8,
+                                          sg.Button('', key='-Start-',
+                                                    disabled_button_color='white',
+                                                    button_color='white',
+                                                    image_data=ICON_PLAY_BASE64,
+                                                    # size=8,
+                                                    tooltip='Старт',
+                                                    pad=((10, 5), (5, 10))),
+                                          sg.Button('', key='-Stop-',
+                                                    disabled_button_color='white',
+                                                    button_color='white',
+                                                    # size=8,
+                                                    image_data=ICON_STOP_BASE64,
+                                                    tooltip='Стоп',
                                                     # image_data=DEFAULT_BASE64_LOADING_GIF,
-                                                    pad=((10, 20), (5, 10))),
+                                                    pad=((5, 10), (5, 10))),
                                           sg.Push()]], vertical_alignment='center')]]
                   # size=(200, 80),
                   ),
@@ -2772,7 +2781,7 @@ def get_app_version_and_type_from_filename(filename: str):
     elif '_z' in filename:
         type = type_app['ZTE']
     else:
-        type = type = type_app['Основная']
+        type = type_app['Основная']
     filename = filename.rstrip('.apk')
     for word in filename[::-1]:
         if word.isdigit() or word == '.':
@@ -4747,7 +4756,7 @@ if __name__ == '__main__':
                             threading.Thread(target=the_thread, args=[BASE_URL_PING], daemon=True).start()
                             thread_started = True
                         event, values = window.read()
-                        print(event, type(event), values)
+                        # print(event, type(event), values)
                         if event == '-hide-online-':
                             window['-frame-online-'].update(visible=window['-frame-online-'].metadata == True)
                             window['-frame-online-'].metadata = not window['-frame-online-'].metadata
@@ -4883,11 +4892,14 @@ if __name__ == '__main__':
                                         else:
                                             window['-BlockUser-'].update(image_data=ICON_BLOCK_BASE_64_BLUE)
                                             window['-BlockUser-'].TooltipObject.text = 'Заблокировать'
-                                    window['-checkAllGroups-'].update(False, disabled=False)
+                                    if selected_user['is_admin']:
+                                        window['-checkAllGroups-'].update(False, disabled=True)
+                                    else:
+                                        window['-checkAllGroups-'].update(False, disabled=False)
                                     window['-CloneUser-'].update(disabled=False)
                                 else:
                                     window['-DelUser-'].update(disabled=True)
-                                    window['-BlockUser-'].update(image_data=ICON_BLOCK_BASE_64_BLUE)
+                                    window['-BlockUser-'].update(image_data=ICON_BLOCK_BASE_64_BLUE, disabled=True)
                                     window['-BlockUser-'].TooltipObject.text = 'Заблокировать'
                                     window['-checkAllGroups-'].update(False, disabled=True)
                                     window['-CloneUser-'].update(disabled=True)
@@ -5497,15 +5509,16 @@ if __name__ == '__main__':
                         if event == '-TREE-' and values['-TREE-'] != []:
                             is_org = check_org(values['-users-tree-'][0])
                             if not is_org:
-                                group_id = values['-TREE-'][0]
-                                if group_id in tree.metadata:
-                                    tree.metadata.remove(group_id)
-                                    tree.update(key=group_id, icon=check[0])
-                                else:
-                                    tree.metadata.append(group_id)
-                                    tree.update(key=group_id, icon=check[1])
-                                window['Apply'].update(disabled=False)
-                                window['Apply'].SetFocus()
+                                if not selected_user['is_admin']:
+                                    group_id = values['-TREE-'][0]
+                                    if group_id in tree.metadata:
+                                        tree.metadata.remove(group_id)
+                                        tree.update(key=group_id, icon=check[0])
+                                    else:
+                                        tree.metadata.append(group_id)
+                                        tree.update(key=group_id, icon=check[1])
+                                    window['Apply'].update(disabled=False)
+                                    window['Apply'].SetFocus()
                         if event == '-TREE2-' and values['-TREE2-'] != []:
                             user_id = values['-TREE2-'][0]
                             if user_id in tree2.metadata:
