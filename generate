@@ -1,6 +1,14 @@
 pyarmor gen main.py
-pyinstaller --distpath pyinstaller/ --clean --onefile -n AdmPanel main.py
-pyarmor gen -O obfdist --pack pyinstaller/AdmPanel main.py # обфусцированный код
+
+#pyinstaller --distpath pyinstaller/ --clean --onefile -n AdmPanel main.py
+
+#pyarmor gen -O obfdist --pack pyinstaller/AdmPanel main.py # обфусцированный код
+#pyarmor gen --pack pyinstaller/AdmPanel_orgs_new main.py
+
+## if pyarmor >= 8.5.4 then only pyarmor need to generate bundle pyinstaller < 6.0.0
+pyarmor gen -O obfdist --pack FC main.py # onefile + clean
+pyarmor gen -O obfdistdir --pack DC main.py # onedir + clean
+
 
 win:
 pyinstaller.exe -w --distpath pyinstaller/ --clean --onedir -n AdmPanel -i .\logo.ico main.py
