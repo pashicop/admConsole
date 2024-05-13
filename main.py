@@ -1272,8 +1272,10 @@ def make_credential_window():
 
 
 def make_settings():
+    result = False
     settings = get_settings(BASE_URL_SETTINGS)
     if settings:
+        result = True
         tab1_layout = [
             [sg.Frame('Таймауты',
                       [
@@ -1410,13 +1412,14 @@ def make_settings():
         ]
     else:
         layout_settings = [
-            [sg.Push(), sg.Text('Настройки недоступны', justification='center', size=60), sg.Push()],
+            [sg.Push(), sg.Text('', justification='center', size=60), sg.Push()],
             [sg.Push(), sg.Button('Выйти', key='-Exit-set-'), sg.Push()]
         ]
-    return sg.Window('Настройки', layout_settings, icon=ICON_BASE_64, background_color='white',
+    return (sg.Window('Настройки', layout_settings, icon=ICON_BASE_64, background_color='white',
                      modal=True,
                      # size=(500, 400),
-                     finalize=True)
+                     finalize=True), 
+            result)
 
 
 def make_apply_set():
@@ -2965,19 +2968,19 @@ def get_list_devices(dev_list_of_dict: list):
     if dev_list_of_dict:
         for dev in dev_list_of_dict:
             dev_list = []
-            dev_list.append(dev['deviceIdentifier'] if dev['deviceIdentifier'] else '' )
-            dev_list.append(dev['deviceName'] if dev['deviceName'] else '' )
-            dev_list.append(dev['serialNumber'] if dev['serialNumber'] else '' )
-            dev_list.append(client_os(dev['osType']).name if dev['osType'] else '' )
-            dev_list.append(dev['osVersion'] if dev['osVersion'] else '' )
-            dev_list.append(dev['appType'] if dev['appType'] else '' )
-            dev_list.append(dev['appVersion'] if dev['appVersion'] else '' )
-            dev_list.append(dev['battery'] if dev['battery'] else '' )
+            dev_list.append(dev['deviceIdentifier'] if dev['deviceIdentifier'] else '')
+            dev_list.append(dev['deviceName'] if dev['deviceName'] else '')
+            dev_list.append(dev['serialNumber'] if dev['serialNumber'] else '')
+            dev_list.append(client_os(dev['osType']).name if dev['osType'] else '')
+            dev_list.append(dev['osVersion'] if dev['osVersion'] else '')
+            dev_list.append(dev['appType'] if dev['appType'] else '')
+            dev_list.append(dev['appVersion'] if dev['appVersion'] else '')
+            dev_list.append(dev['battery'] if dev['battery'] else '')
             dev_list.append(strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['batteryUpdated'])/1000))
-                            if dev['batteryUpdated'] else '' )
-            dev_list.append(dev['macAddr'] if dev['macAddr'] else '' )
-            dev_list.append(dev['ipAddr'] if dev['ipAddr'] else '' )
-            dev_list.append(strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['lastOnline'])/1000)) if dev['lastOnline'] else '' )
+                            if dev['batteryUpdated'] else '')
+            dev_list.append(dev['macAddr'] if dev['macAddr'] else '')
+            dev_list.append(dev['ipAddr'] if dev['ipAddr'] else '')
+            dev_list.append(strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['lastOnline'])/1000)) if dev['lastOnline'] else '')
             dev_list_of_list.append(dev_list)
     return dev_list_of_list
 
@@ -3021,6 +3024,7 @@ def fixLastDevice(user_id):
         logging.error("Не удалось привязать устройство - нет id пользователя")
         my_popup('Не удалось привязать устройство - нет id пользователя')
     return False
+
 
 def add_org(org):
     # print('1')
@@ -5882,257 +5886,261 @@ if __name__ == '__main__':
                             additional_window = False
                         if event == 'Настройки':
                             additional_window = True
-                            window_settings = make_settings()
+                            window_settings, is_good = make_settings()
                             # timeout = 0
-                            change_settings_by_post = False
-                            while True:
-                                counter = 0
-                                window_settings['-Progress-Bar-'].update_bar(counter)
-                                ev_set, val_set = window_settings.Read()
-                                print(f'{ev_set}, {val_set}')
-                                if ev_set == sg.WIN_CLOSED or ev_set == '-Exit-set-':
-                                    window_settings.close()
-                                    break
-                                elif ev_set == '-Индивидуальный-таймаут-' \
-                                        or ev_set == '-Групповой-таймаут-' \
-                                        or ev_set == '-таймаут-окончания-' \
-                                        or ev_set == '-таймаут-тонового-сигнала-' \
-                                        or ev_set == '-таймаут-прослушивания-' \
-                                        or ev_set == '-пинг-таймаут-':
-                                    if val_set[ev_set].isdigit():
-                                        window_settings[ev_set].update(
-                                            background_color=omega_theme['INPUT'])
-                                        if 0 < int(val_set[ev_set]) <= MAX_CALL_TM:
+                            if is_good:
+                                change_settings_by_post = False
+                                while True:
+                                    counter = 0
+                                    window_settings['-Progress-Bar-'].update_bar(counter)
+                                    ev_set, val_set = window_settings.Read()
+                                    print(f'{ev_set}, {val_set}')
+                                    if ev_set == sg.WIN_CLOSED or ev_set == '-Exit-set-':
+                                        window_settings.close()
+                                        break
+                                    elif ev_set == '-Индивидуальный-таймаут-' \
+                                            or ev_set == '-Групповой-таймаут-' \
+                                            or ev_set == '-таймаут-окончания-' \
+                                            or ev_set == '-таймаут-тонового-сигнала-' \
+                                            or ev_set == '-таймаут-прослушивания-' \
+                                            or ev_set == '-пинг-таймаут-':
+                                        if val_set[ev_set].isdigit():
                                             window_settings[ev_set].update(
-                                                background_color=omega_theme['INPUT'],
-                                                text_color=omega_theme['TEXT'])
-                                        else:
-                                            window_settings[ev_set].update(background_color=button_color_2)
-                                    else:
-                                        window_settings[ev_set].update(background_color=button_color_2)
-                                    counter = 0
-                                    window_settings['-Progress-Bar-'].update_bar(counter)
-                                    window_settings['-OK-set-'].update(disabled=False)
-                                    window_settings['-OK-set-'].update(button_color=button_color_2)
-                                    change_settings_by_post = True
-                                elif ev_set == '-Макс-аудио-порт-' \
-                                        or ev_set == '-Мин-аудио-порт-':
-                                    if val_set[ev_set].isdigit():
-                                        window_settings[ev_set].update(
-                                            background_color=omega_theme['INPUT'])
-                                        if 1024 < int(val_set[ev_set]) <= 65535:
-                                            window_settings[ev_set].update(
-                                                background_color=omega_theme['INPUT'],
-                                                text_color=omega_theme['TEXT'])
-                                        else:
-                                            window_settings[ev_set].update(background_color=button_color_2)
-                                    else:
-                                        window_settings[ev_set].update(background_color=button_color_2)
-                                    counter = 0
-                                    window_settings['-Progress-Bar-'].update_bar(counter)
-                                    window_settings['-OK-set-'].update(disabled=False)
-                                    window_settings['-OK-set-'].update(button_color=button_color_2)
-                                    change_settings_by_post = True
-                                elif ev_set == '-глубина-сервера-':
-                                    if val_set[ev_set].isdigit():
-                                        window_settings[ev_set].update(
-                                            background_color=omega_theme['INPUT'])
-                                        if 0 < int(val_set[ev_set]) <= MAX_DEPTH_LOG:
-                                            window_settings[ev_set].update(
-                                                background_color=omega_theme['INPUT'],
-                                                text_color=omega_theme['TEXT'])
-                                        else:
-                                            window_settings[ev_set].update(background_color=button_color_2)
-                                    else:
-                                        window_settings[ev_set].update(background_color=button_color_2)
-                                    counter = 0
-                                    window_settings['-Progress-Bar-'].update_bar(counter)
-                                    window_settings['-OK-set-'].update(disabled=False)
-                                    window_settings['-OK-set-'].update(button_color=button_color_2)
-                                elif ev_set == '-порт-ssh-':
-                                    if val_set[ev_set].isdigit():
-                                        window_settings[ev_set].update(
-                                            background_color=omega_theme['INPUT'])
-                                        if 0 < int(val_set[ev_set]) <= MAX_AUDIO_PORT:
-                                            window_settings[ev_set].update(
-                                                background_color=omega_theme['INPUT'],
-                                                text_color=omega_theme['TEXT'])
-                                        else:
-                                            window_settings[ev_set].update(background_color=button_color_2)
-                                    else:
-                                        window_settings[ev_set].update(background_color=button_color_2)
-                                    counter = 0
-                                    window_settings['-Progress-Bar-'].update_bar(counter)
-                                    window_settings['-OK-set-'].update(disabled=False)
-                                    window_settings['-OK-set-'].update(button_color=button_color_2)
-                                elif ev_set == '-пароль-ssh-':
-                                    window_settings[ev_set].update(
-                                        background_color=omega_theme['INPUT'])
-                                    counter = 0
-                                    window_settings['-Progress-Bar-'].update_bar(counter)
-                                    window_settings['-OK-set-'].update(disabled=False)
-                                    window_settings['-OK-set-'].update(button_color=button_color_2)
-                                elif ev_set == '-логин-ssh-':
-                                    window_settings[ev_set].update(
-                                        background_color=omega_theme['INPUT'])
-                                    counter = 0
-                                    window_settings['-Progress-Bar-'].update_bar(counter)
-                                    window_settings['-OK-set-'].update(disabled=False)
-                                    window_settings['-OK-set-'].update(button_color=button_color_2)
-                                elif ev_set == '-auto-del-':
-                                    if val_set[ev_set].isdigit():
-                                        window_settings[ev_set].update(
-                                            background_color=omega_theme['INPUT'])
-                                        if MIN_DEL_DAYS <= int(val_set[ev_set]) <= MAX_DEL_DAYS:
-                                            window_settings[ev_set].update(
-                                                background_color=omega_theme['INPUT'],
-                                                text_color=omega_theme['TEXT'])
-                                        else:
-                                            window_settings[ev_set].update(background_color=button_color_2)
-                                    else:
-                                        window_settings[ev_set].update(background_color=button_color_2)
-                                    counter = 0
-                                    window_settings['-Progress-Bar-'].update_bar(counter)
-                                    window_settings['-OK-set-'].update(disabled=False)
-                                    window_settings['-OK-set-'].update(button_color=button_color_2)
-                                elif ev_set == 'ambientListening' \
-                                        or ev_set == 'deviceAuthorization' \
-                                        or ev_set == 'dgna' \
-                                        or ev_set == 'geoData' \
-                                        or ev_set == 'longAmbientListening' \
-                                        or ev_set == 'otap' \
-                                        or ev_set == 'longAmbientCallDuration' \
-                                        or ev_set == 'mfc':
-                                    if ev_set == 'longAmbientListening':
-                                        window_settings['longAmbientCallDuration'].update(disabled=(False if val_set['longAmbientListening'] else True))
-                                    if ev_set == 'longAmbientCallDuration':
-                                        if val_set['longAmbientCallDuration'].isdigit():
-                                            window_settings['longAmbientCallDuration'].update(
                                                 background_color=omega_theme['INPUT'])
-                                            if 0 < int(val_set['longAmbientCallDuration']) <= MAX_LA_TM:
-                                                window_settings['longAmbientCallDuration'].update(
+                                            if 0 < int(val_set[ev_set]) <= MAX_CALL_TM:
+                                                window_settings[ev_set].update(
                                                     background_color=omega_theme['INPUT'],
                                                     text_color=omega_theme['TEXT'])
                                             else:
+                                                window_settings[ev_set].update(background_color=button_color_2)
+                                        else:
+                                            window_settings[ev_set].update(background_color=button_color_2)
+                                        counter = 0
+                                        window_settings['-Progress-Bar-'].update_bar(counter)
+                                        window_settings['-OK-set-'].update(disabled=False)
+                                        window_settings['-OK-set-'].update(button_color=button_color_2)
+                                        change_settings_by_post = True
+                                    elif ev_set == '-Макс-аудио-порт-' \
+                                            or ev_set == '-Мин-аудио-порт-':
+                                        if val_set[ev_set].isdigit():
+                                            window_settings[ev_set].update(
+                                                background_color=omega_theme['INPUT'])
+                                            if 1024 < int(val_set[ev_set]) <= 65535:
+                                                window_settings[ev_set].update(
+                                                    background_color=omega_theme['INPUT'],
+                                                    text_color=omega_theme['TEXT'])
+                                            else:
+                                                window_settings[ev_set].update(background_color=button_color_2)
+                                        else:
+                                            window_settings[ev_set].update(background_color=button_color_2)
+                                        counter = 0
+                                        window_settings['-Progress-Bar-'].update_bar(counter)
+                                        window_settings['-OK-set-'].update(disabled=False)
+                                        window_settings['-OK-set-'].update(button_color=button_color_2)
+                                        change_settings_by_post = True
+                                    elif ev_set == '-глубина-сервера-':
+                                        if val_set[ev_set].isdigit():
+                                            window_settings[ev_set].update(
+                                                background_color=omega_theme['INPUT'])
+                                            if 0 < int(val_set[ev_set]) <= MAX_DEPTH_LOG:
+                                                window_settings[ev_set].update(
+                                                    background_color=omega_theme['INPUT'],
+                                                    text_color=omega_theme['TEXT'])
+                                            else:
+                                                window_settings[ev_set].update(background_color=button_color_2)
+                                        else:
+                                            window_settings[ev_set].update(background_color=button_color_2)
+                                        counter = 0
+                                        window_settings['-Progress-Bar-'].update_bar(counter)
+                                        window_settings['-OK-set-'].update(disabled=False)
+                                        window_settings['-OK-set-'].update(button_color=button_color_2)
+                                    elif ev_set == '-порт-ssh-':
+                                        if val_set[ev_set].isdigit():
+                                            window_settings[ev_set].update(
+                                                background_color=omega_theme['INPUT'])
+                                            if 0 < int(val_set[ev_set]) <= MAX_AUDIO_PORT:
+                                                window_settings[ev_set].update(
+                                                    background_color=omega_theme['INPUT'],
+                                                    text_color=omega_theme['TEXT'])
+                                            else:
+                                                window_settings[ev_set].update(background_color=button_color_2)
+                                        else:
+                                            window_settings[ev_set].update(background_color=button_color_2)
+                                        counter = 0
+                                        window_settings['-Progress-Bar-'].update_bar(counter)
+                                        window_settings['-OK-set-'].update(disabled=False)
+                                        window_settings['-OK-set-'].update(button_color=button_color_2)
+                                    elif ev_set == '-пароль-ssh-':
+                                        window_settings[ev_set].update(
+                                            background_color=omega_theme['INPUT'])
+                                        counter = 0
+                                        window_settings['-Progress-Bar-'].update_bar(counter)
+                                        window_settings['-OK-set-'].update(disabled=False)
+                                        window_settings['-OK-set-'].update(button_color=button_color_2)
+                                    elif ev_set == '-логин-ssh-':
+                                        window_settings[ev_set].update(
+                                            background_color=omega_theme['INPUT'])
+                                        counter = 0
+                                        window_settings['-Progress-Bar-'].update_bar(counter)
+                                        window_settings['-OK-set-'].update(disabled=False)
+                                        window_settings['-OK-set-'].update(button_color=button_color_2)
+                                    elif ev_set == '-auto-del-':
+                                        if val_set[ev_set].isdigit():
+                                            window_settings[ev_set].update(
+                                                background_color=omega_theme['INPUT'])
+                                            if MIN_DEL_DAYS <= int(val_set[ev_set]) <= MAX_DEL_DAYS:
+                                                window_settings[ev_set].update(
+                                                    background_color=omega_theme['INPUT'],
+                                                    text_color=omega_theme['TEXT'])
+                                            else:
+                                                window_settings[ev_set].update(background_color=button_color_2)
+                                        else:
+                                            window_settings[ev_set].update(background_color=button_color_2)
+                                        counter = 0
+                                        window_settings['-Progress-Bar-'].update_bar(counter)
+                                        window_settings['-OK-set-'].update(disabled=False)
+                                        window_settings['-OK-set-'].update(button_color=button_color_2)
+                                    elif ev_set == 'ambientListening' \
+                                            or ev_set == 'deviceAuthorization' \
+                                            or ev_set == 'dgna' \
+                                            or ev_set == 'geoData' \
+                                            or ev_set == 'longAmbientListening' \
+                                            or ev_set == 'otap' \
+                                            or ev_set == 'longAmbientCallDuration' \
+                                            or ev_set == 'mfc':
+                                        if ev_set == 'longAmbientListening':
+                                            window_settings['longAmbientCallDuration'].update(disabled=(False if val_set['longAmbientListening'] else True))
+                                        if ev_set == 'longAmbientCallDuration':
+                                            if val_set['longAmbientCallDuration'].isdigit():
+                                                window_settings['longAmbientCallDuration'].update(
+                                                    background_color=omega_theme['INPUT'])
+                                                if 0 < int(val_set['longAmbientCallDuration']) <= MAX_LA_TM:
+                                                    window_settings['longAmbientCallDuration'].update(
+                                                        background_color=omega_theme['INPUT'],
+                                                        text_color=omega_theme['TEXT'])
+                                                else:
+                                                    window_settings['longAmbientCallDuration'].update(
+                                                        background_color=button_color_2)
+                                            else:
                                                 window_settings['longAmbientCallDuration'].update(
                                                     background_color=button_color_2)
-                                        else:
-                                            window_settings['longAmbientCallDuration'].update(
-                                                background_color=button_color_2)
-                                    print(f'change_settings_by_post - {change_settings_by_post}')
-                                    change_settings_by_post = True
-                                    print(f'change_settings_by_post - {change_settings_by_post}')
-                                    counter = 0
-                                    window_settings['-Progress-Bar-'].update_bar(counter)
-                                    window_settings['-OK-set-'].update(disabled=False)
-                                    window_settings['-OK-set-'].update(button_color=button_color_2)
-                                elif ev_set == '-OK-set-':
-                                    if validate('settings'):
                                         print(f'change_settings_by_post - {change_settings_by_post}')
-                                        if change_settings_by_post:
-                                            settings_dict = {'privateCallTimeout': val_set['-Индивидуальный-таймаут-'],
-                                                             'groupCallTimeout': val_set['-Групповой-таймаут-'],
-                                                             'finalizeCallTimeout': val_set['-таймаут-окончания-'],
-                                                             'tonalTimeout': val_set[
-                                                                 '-таймаут-тонового-сигнала-'],
-                                                             'ambientCallDuration': val_set['-таймаут-прослушивания-'],
-                                                             'autoCleanDays': val_set['-auto-del-'],
-                                                             'udpPortsRange': val_set['-Мин-аудио-порт-'] + '-' +
-                                                                              val_set[
-                                                                                  '-Макс-аудио-порт-'],
-                                                             'ambientListening': val_set['ambientListening'],
-                                                             'deviceAuthorization': val_set['deviceAuthorization'],
-                                                             'dgna': val_set['dgna'],
-                                                             'geoData': val_set['geoData'],
-                                                             'longAmbientListening': val_set['longAmbientListening'],
-                                                             'mfc': val_set['mfc'],
-                                                             'otap': val_set['otap'],
-                                                             'longAmbientCallDuration': val_set[
-                                                                 'longAmbientCallDuration'], }
-                                            try:
-                                                res_update_set = requests.post(BASE_URL_SETTINGS,
-                                                                               json=settings_dict,
-                                                                               headers=HEADER_dict)
-                                                if res_update_set.status_code == 200:
-                                                    current_db += 1
-                                                    logging.info(
-                                                        f"Настройки изменены: "
-                                                        f"Инд. вызов - {settings_dict['privateCallTimeout']}, "
-                                                        f"Гр. вызов - {settings_dict['groupCallTimeout']}, "
-                                                        f"Таймаут окончания вызова - {settings_dict['finalizeCallTimeout']}, "
-                                                        f"Тональный вызов - {settings_dict['tonalTimeout']}, "
-                                                        f"Скрытое прослушивание, сек - {settings_dict['ambientCallDuration']}, "
-                                                        f"Удаление данных старше - {settings_dict['autoCleanDays']}, "
-                                                        f"Аудио порты - {settings_dict['udpPortsRange']}, "
-                                                        f"Скрытое прослушивание - {settings_dict['ambientListening']}, "
-                                                        f"Авторизация устройств - {settings_dict['deviceAuthorization']}, "
-                                                        f"Динамические группы - {settings_dict['dgna']}, "
-                                                        f"Геопозиционирование - {settings_dict['geoData']}, "
-                                                        f"Долгое скрытое прослушивание - {settings_dict['longAmbientListening']}, "
-                                                        f"Контроль пересылки - {settings_dict['mfc']}, "
-                                                        f"Удалённое программирование терминалов - {settings_dict['otap']}, "
-                                                        f"Макс время прослушивания - {settings_dict['longAmbientCallDuration']}, "
-                                                    )
-                                                else:
-                                                    logging.error(
-                                                        f'Ошибка при изменении настроек - {res_update_set.status_code}')
+                                        change_settings_by_post = True
+                                        print(f'change_settings_by_post - {change_settings_by_post}')
+                                        counter = 0
+                                        window_settings['-Progress-Bar-'].update_bar(counter)
+                                        window_settings['-OK-set-'].update(disabled=False)
+                                        window_settings['-OK-set-'].update(button_color=button_color_2)
+                                    elif ev_set == '-OK-set-':
+                                        if validate('settings'):
+                                            print(f'change_settings_by_post - {change_settings_by_post}')
+                                            if change_settings_by_post:
+                                                settings_dict = {'privateCallTimeout': val_set['-Индивидуальный-таймаут-'],
+                                                                 'groupCallTimeout': val_set['-Групповой-таймаут-'],
+                                                                 'finalizeCallTimeout': val_set['-таймаут-окончания-'],
+                                                                 'tonalTimeout': val_set[
+                                                                     '-таймаут-тонового-сигнала-'],
+                                                                 'ambientCallDuration': val_set['-таймаут-прослушивания-'],
+                                                                 'autoCleanDays': val_set['-auto-del-'],
+                                                                 'udpPortsRange': val_set['-Мин-аудио-порт-'] + '-' +
+                                                                                  val_set[
+                                                                                      '-Макс-аудио-порт-'],
+                                                                 'ambientListening': val_set['ambientListening'],
+                                                                 'deviceAuthorization': val_set['deviceAuthorization'],
+                                                                 'dgna': val_set['dgna'],
+                                                                 'geoData': val_set['geoData'],
+                                                                 'longAmbientListening': val_set['longAmbientListening'],
+                                                                 'mfc': val_set['mfc'],
+                                                                 'otap': val_set['otap'],
+                                                                 'longAmbientCallDuration': val_set[
+                                                                     'longAmbientCallDuration'], }
+                                                try:
+                                                    res_update_set = requests.post(BASE_URL_SETTINGS,
+                                                                                   json=settings_dict,
+                                                                                   headers=HEADER_dict)
+                                                    if res_update_set.status_code == 200:
+                                                        current_db += 1
+                                                        logging.info(
+                                                            f"Настройки изменены: "
+                                                            f"Инд. вызов - {settings_dict['privateCallTimeout']}, "
+                                                            f"Гр. вызов - {settings_dict['groupCallTimeout']}, "
+                                                            f"Таймаут окончания вызова - {settings_dict['finalizeCallTimeout']}, "
+                                                            f"Тональный вызов - {settings_dict['tonalTimeout']}, "
+                                                            f"Скрытое прослушивание, сек - {settings_dict['ambientCallDuration']}, "
+                                                            f"Удаление данных старше - {settings_dict['autoCleanDays']}, "
+                                                            f"Аудио порты - {settings_dict['udpPortsRange']}, "
+                                                            f"Скрытое прослушивание - {settings_dict['ambientListening']}, "
+                                                            f"Авторизация устройств - {settings_dict['deviceAuthorization']}, "
+                                                            f"Динамические группы - {settings_dict['dgna']}, "
+                                                            f"Геопозиционирование - {settings_dict['geoData']}, "
+                                                            f"Долгое скрытое прослушивание - {settings_dict['longAmbientListening']}, "
+                                                            f"Контроль пересылки - {settings_dict['mfc']}, "
+                                                            f"Удалённое программирование терминалов - {settings_dict['otap']}, "
+                                                            f"Макс время прослушивания - {settings_dict['longAmbientCallDuration']}, "
+                                                        )
+                                                    else:
+                                                        logging.error(
+                                                            f'Ошибка при изменении настроек - {res_update_set.status_code}')
+                                                        my_popup("Ошибка при изменении настроек")
+                                                        continue
+                                                except Exception as e:
+                                                    print(f'Не удалось обновить настройки - {e}')
+                                                    logging.error("Не удалось обновить настройки")
                                                     my_popup("Ошибка при изменении настроек")
                                                     continue
-                                            except Exception as e:
-                                                print(f'Не удалось обновить настройки - {e}')
-                                                logging.error("Не удалось обновить настройки")
-                                                my_popup("Ошибка при изменении настроек")
-                                                continue
-                                        ssh_change = False
-                                        local_change = False
-                                        if val_set['-пинг-таймаут-'] != str(ping_timeout):
-                                            ping_timeout = int(val_set['-пинг-таймаут-'])
-                                            local_change = True
-                                        if val_set['-глубина-сервера-'] != str(LOG_DEPTH):
-                                            LOG_DEPTH = int(val_set['-глубина-сервера-'])
-                                            local_change = True
-                                        if val_set['-порт-ssh-'] != str(SSH_PORT) or \
-                                                val_set['-логин-ssh-'] != SSH_LOGIN or \
-                                                val_set['-пароль-ssh-'] != SSH_PWD:
-                                            SSH_PORT_OLD = copy.deepcopy(SSH_PORT)
-                                            SSH_LOGIN_OLD = copy.deepcopy(SSH_LOGIN)
-                                            SSH_PORT = int(val_set['-порт-ssh-'])
-                                            SSH_LOGIN = val_set['-логин-ssh-']
-                                            SSH_PWD = val_set['-пароль-ssh-']
-                                            ssh_change = True
-                                        if ssh_change:
-                                            try:
-                                                ssh, remotepath = get_ssh_connection(val_set['-пароль-ssh-'])
-                                                window_settings['-логин-ssh-'].update(SSH_LOGIN)
-                                                window_settings['-порт-ssh-'].update(SSH_PORT)
-                                                change_config_file('ssh')
-                                            except Exception as e:
-                                                print(f'{e}')
-                                                # noinspection PyUnboundLocalVariable
-                                                val_set['-логин-ssh-'] = SSH_LOGIN_OLD
-                                                # noinspection PyUnboundLocalVariable
-                                                val_set['-порт-ssh-'] = SSH_PORT_OLD
-                                                SSH_LOGIN = copy.deepcopy(SSH_LOGIN_OLD)
-                                                SSH_PORT = copy.deepcopy(SSH_PORT_OLD)
-                                                window_settings['-логин-ssh-'].update(SSH_LOGIN_OLD)
-                                                window_settings['-порт-ssh-'].update(SSH_PORT_OLD)
-                                                window_settings['-пароль-ssh-'].update('')
-                                                if not local_change and not change_settings_by_post:
-                                                    window_settings['-OK-set-'].update(disabled=True)
-                                                    window_settings['-OK-set-'].update(button_color=button_color)
-                                                    continue
-                                        disable_input(window_settings)
-                                        counter = 0
-                                        while counter < 11:
-                                            counter += 5
-                                            sleep(0.5)
-                                            window_settings['-Progress-Bar-'].update_bar(counter)
-                                        enable_input(window_settings)
-                                        window_settings['-OK-set-'].update(disabled=True)
-                                        window_settings['-OK-set-'].update(button_color=button_color)
-                                        my_popup("Настройки изменены")
-                                        continue
-                            window_settings.close()
+                                            ssh_change = False
+                                            local_change = False
+                                            if val_set['-пинг-таймаут-'] != str(ping_timeout):
+                                                ping_timeout = int(val_set['-пинг-таймаут-'])
+                                                local_change = True
+                                            if val_set['-глубина-сервера-'] != str(LOG_DEPTH):
+                                                LOG_DEPTH = int(val_set['-глубина-сервера-'])
+                                                local_change = True
+                                            if val_set['-порт-ssh-'] != str(SSH_PORT) or \
+                                                    val_set['-логин-ssh-'] != SSH_LOGIN or \
+                                                    val_set['-пароль-ssh-'] != SSH_PWD:
+                                                SSH_PORT_OLD = copy.deepcopy(SSH_PORT)
+                                                SSH_LOGIN_OLD = copy.deepcopy(SSH_LOGIN)
+                                                SSH_PORT = int(val_set['-порт-ssh-'])
+                                                SSH_LOGIN = val_set['-логин-ssh-']
+                                                SSH_PWD = val_set['-пароль-ssh-']
+                                                ssh_change = True
+                                            if ssh_change:
+                                                try:
+                                                    ssh, remotepath = get_ssh_connection(val_set['-пароль-ssh-'])
+                                                    window_settings['-логин-ssh-'].update(SSH_LOGIN)
+                                                    window_settings['-порт-ssh-'].update(SSH_PORT)
+                                                    change_config_file('ssh')
+                                                except Exception as e:
+                                                    print(f'{e}')
+                                                    # noinspection PyUnboundLocalVariable
+                                                    val_set['-логин-ssh-'] = SSH_LOGIN_OLD
+                                                    # noinspection PyUnboundLocalVariable
+                                                    val_set['-порт-ssh-'] = SSH_PORT_OLD
+                                                    SSH_LOGIN = copy.deepcopy(SSH_LOGIN_OLD)
+                                                    SSH_PORT = copy.deepcopy(SSH_PORT_OLD)
+                                                    window_settings['-логин-ssh-'].update(SSH_LOGIN_OLD)
+                                                    window_settings['-порт-ssh-'].update(SSH_PORT_OLD)
+                                                    window_settings['-пароль-ssh-'].update('')
+                                                    if not local_change and not change_settings_by_post:
+                                                        window_settings['-OK-set-'].update(disabled=True)
+                                                        window_settings['-OK-set-'].update(button_color=button_color)
+                                                        continue
+                                            disable_input(window_settings)
+                                            counter = 0
+                                            while counter < 11:
+                                                counter += 5
+                                                sleep(0.5)
+                                                window_settings['-Progress-Bar-'].update_bar(counter)
+                                            enable_input(window_settings)
+                                            window_settings['-OK-set-'].update(disabled=True)
+                                            window_settings['-OK-set-'].update(button_color=button_color)
+                                            my_popup("Настройки изменены")
+                                            continue
+                                window_settings.close()
+                            else:
+                                my_popup('Настройки недоступны')
+                                window_settings.close()
                             additional_window = False
                         if event == 'Обновления':
                             additional_window = True
@@ -6304,10 +6312,10 @@ if __name__ == '__main__':
                                 if ev_orgs == '-DelOrg-':
                                     org_id = delete_org(window_organizations['-orgs-'].Values[val_orgs['-orgs-'][0]][0])
                                     if org_id:
-                                        window_organizations['-orgs-'].update(get_orgs_from_db_list())
                                         window_organizations['-EditOrg-'].update(disabled=True)
                                         window_organizations['-DelOrg-'].update(disabled=True)
                                         update_all()
+                                        window_organizations['-orgs-'].update(get_orgs_from_db_list())
                                 if ev_orgs == '-EditOrg-':
                                     window_add_org = make_add_org_window(
                                         window_organizations['-orgs-'].Values[val_orgs['-orgs-'][0]])
@@ -6320,10 +6328,10 @@ if __name__ == '__main__':
                                             org_id = update_org(window_organizations['-orgs-'].Values[val_orgs['-orgs-'][0]][0], val_edit_org['-OrgName-'])
                                             window_add_org.close()
                                             if org_id:
-                                                window_organizations['-orgs-'].update(get_orgs_from_db_list())
                                                 window_organizations['-EditOrg-'].update(disabled=True)
                                                 window_organizations['-DelOrg-'].update(disabled=True)
                                                 update_all()
+                                                window_organizations['-orgs-'].update(get_orgs_from_db_list())
                             additional_window = False
                         if event == '-AddUser-':
                             """
