@@ -459,7 +459,7 @@ def get_groups_for_user_from_db_with_org(user):
 def get_users_for_group_from_db_with_org(group):
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
-    db_query_users_for_group = "Select ug.group_id, g.name, g.description, g.is_disabled FROM Users_in_Groups ug " \
+    db_query_users_for_group = "Select ug.user_id, u.Login, u.Display_name, u.is_blocked FROM Users_in_Groups ug " \
                                "LEFT JOIN Users u on ug.user_id = u.id " \
                                "LEFT JOIN Groups g on ug.group_id = g.id WHERE g.id = '" + group['id'] + "'"
     cur.execute(db_query_users_for_group)
@@ -3793,6 +3793,17 @@ def update_all():
     window['-groups-tree-'].update(group_td)
     window['-TREE-'].update(treedata_empty)
 
+
+def update_users():
+    user_td, treedata_update_user = get_user_list_treedata_full()
+    window['-users-tree-'].update(user_td)
+
+
+def update_groups():
+    group_td, treedata_update_group = get_group_list_treedata_full()
+    window['-groups-tree-'].update(group_td)
+
+
 # def update_users():
 #     users_from_server = get_users_from_server(BASE_URL, HEADER_dict)
 #     add_users(users_from_server)
@@ -4579,7 +4590,7 @@ if __name__ == '__main__':
                                     window['-Stop-'].update(disabled=True)
                                     # window['-users-'].update([[]])
                                     clear_treedata = sg.TreeData()
-                                    window['-groups2-'].update([[]])
+                                    window['-groups-tree-'].update(clear_treedata)
                                     window['-users-tree-'].update(clear_treedata)
                                     window['-TREE-'].update(clear_treedata)
                                     window['-TREE2-'].update(clear_treedata)
@@ -5110,7 +5121,7 @@ if __name__ == '__main__':
                             else:
                                 groups_from_db = get_groups_from_db()
                                 if filter_status_group:
-                                    group_to_change = filtered_groups_list_of_dict[values['-groups2-'][0]]
+                                    group_to_change = filtered_groups_list_of_dict[values['-groups-tree-'][0]]
                                 else:
                                     if not is_org:
                                         selected_group_id = str(values['-groups-tree-'][0]).partition('.')[0]
@@ -5258,39 +5269,39 @@ if __name__ == '__main__':
                                         window_modify_group['modifyGroupButton'].update(disabled=False)
                                         window_modify_group['modifyGroupButton'].update(button_color=button_color_2)
                             additional_window = False
-                        if event == 'Очистить чат':
-                            additional_window = True
-                            if not values['-groups2-']:
-                                my_popup('Не выбрана группа')
-                            else:
-                                window_confirm = make_confirm_window('Вы уверены, что хотите очистить чат?')
-                                while True:
-                                    ev_confirm, val_confirm = window_confirm.Read()
-                                    if ev_confirm == 'okExit':
-                                        group_to_change = groups_from_db[values['-groups2-'][0]]
-                                        modify_group_del_chat_dict = {'GroupId': group_to_change['id']}
-                                        try:
-                                            res_modify_group_del_chat = requests.post(BASE_URL + 'clearGroupMessages',
-                                                                                      json=modify_group_del_chat_dict,
-                                                                                      headers=HEADER_dict)
-                                            if res_modify_group_del_chat.status_code == 200:
-                                                current_db += 1
-                                                logging.info(f"Группу {group_to_change['name']} почистили")
-                                                my_popup("Чат группы очищен")
-                                            else:
-                                                logging.error(f'ошибка очищения группы - '
-                                                              f'{res_modify_group_del_chat.status_code}')
-                                                my_popup("Ошибка при очистке групп!")
-                                        except Exception as e:
-                                            print(f'Не удалось очистить чат - {e}')
-                                            logging.error("Не удалось очистить чат")
-                                        window_confirm.close()
-                                    if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
-                                        break
-                                    if ev_confirm == 'noExit':
-                                        window_confirm.close()
-                                        break
-                            additional_window = False
+                        # if event == 'Очистить чат':
+                        #     additional_window = True
+                        #     if not values['-groups2-']:
+                        #         my_popup('Не выбрана группа')
+                        #     else:
+                        #         window_confirm = make_confirm_window('Вы уверены, что хотите очистить чат?')
+                        #         while True:
+                        #             ev_confirm, val_confirm = window_confirm.Read()
+                        #             if ev_confirm == 'okExit':
+                        #                 group_to_change = groups_from_db[values['-groups2-'][0]]
+                        #                 modify_group_del_chat_dict = {'GroupId': group_to_change['id']}
+                        #                 try:
+                        #                     res_modify_group_del_chat = requests.post(BASE_URL + 'clearGroupMessages',
+                        #                                                               json=modify_group_del_chat_dict,
+                        #                                                               headers=HEADER_dict)
+                        #                     if res_modify_group_del_chat.status_code == 200:
+                        #                         current_db += 1
+                        #                         logging.info(f"Группу {group_to_change['name']} почистили")
+                        #                         my_popup("Чат группы очищен")
+                        #                     else:
+                        #                         logging.error(f'ошибка очищения группы - '
+                        #                                       f'{res_modify_group_del_chat.status_code}')
+                        #                         my_popup("Ошибка при очистке групп!")
+                        #                 except Exception as e:
+                        #                     print(f'Не удалось очистить чат - {e}')
+                        #                     logging.error("Не удалось очистить чат")
+                        #                 window_confirm.close()
+                        #             if ev_confirm == sg.WIN_CLOSED or ev_confirm == 'Exit':
+                        #                 break
+                        #             if ev_confirm == 'noExit':
+                        #                 window_confirm.close()
+                        #                 break
+                        #     additional_window = False
                         if event == '-TREE-' and values['-TREE-'] != []:
                             is_org = check_org(values['-users-tree-'][0])
                             if not is_org:
@@ -5363,6 +5374,7 @@ if __name__ == '__main__':
                                                 add_del_groups_to_user_after_apply(add_del_dict)
                                                 add_del_text = 'Изменение групп для ' + get_user_name_by_id_from_db(selected_user_id) + ' выполнено'
                                                 my_popup(add_del_text)
+                                                update_groups()
                                                 window['Apply'].update(disabled=True)
                                             else:
                                                 logging.error(f'Добавление и удаление групп НЕ выполнено '
@@ -5432,6 +5444,7 @@ if __name__ == '__main__':
                                             add_del_text = 'Изменение пользователей для ' + \
                                                            group_id['name'] + ' выполнено'
                                             my_popup(add_del_text)
+                                            update_users()
                                             window['Apply2'].update(disabled=True)
                                         else:
                                             logging.error(
@@ -5654,8 +5667,8 @@ if __name__ == '__main__':
                                         window_add_lic.close()
                                         set_buttons_disabled()
                                         window.Element('-Start-').SetFocus()
-                                        window['-groups2-'].update([[]])
                                         clear_treedata = sg.TreeData()
+                                        window['-groups-tree-'].update(clear_treedata)
                                         window['-users-tree-'].update(clear_treedata)
                                         window['-TREE-'].update(clear_treedata)
                                         window['-TREE2-'].update(clear_treedata)
@@ -7346,7 +7359,7 @@ if __name__ == '__main__':
                                     window['-Stop-'].update(disabled=True)
                                     # window['-users-'].update([[]])
                                     window['-users-tree-'].update(visible=False)
-                                    window['-groups2-'].update([[]])
+                                    window['-groups-tree-'].update(visible=False)
                                     clear_treedata = sg.TreeData()
                                     window['-TREE-'].update(clear_treedata)
                                     window['-TREE2-'].update(clear_treedata)

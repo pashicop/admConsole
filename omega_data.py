@@ -399,7 +399,7 @@ def get_user_list_treedata() -> sg.TreeData:
     return td
 
 
-#groups
+# groups
 def get_groups_from_db() -> list[dict]:
     """
     Get groups from DB sorted by group name in list[dict]
@@ -441,6 +441,8 @@ def get_group_by_id_from_db(group_id) -> dict:
     group_for_table = get_group_dict(group)
     con.close()
     return group_for_table
+
+
 def get_group_name_by_id_from_db(gr_id) -> dict:
     """
     Get group from DB in dict
@@ -595,19 +597,6 @@ def get_orgs_from_db_list_names() -> list:
     con.close()
     orgs_list.sort()
     return orgs_list
-
-
-# def get_all_organizations_list():
-#     con = sqlite3.connect('adm.db')
-#     cur = con.cursor()
-#     db_query_org = "Select name FROM Organizations "
-#     cur.execute(db_query_org)
-#     orgs_from_db = cur.fetchall()
-#     orgs_for_table = []
-#     for org_from_db in orgs_from_db:
-#         orgs_for_table.append(org_from_db[0])
-#     con.close()
-#     return orgs_for_table
 
 
 def get_id_by_org(name):
