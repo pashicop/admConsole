@@ -157,7 +157,7 @@ sg.theme_add_new('OmegaTheme', omega_theme)
 sg.theme('OmegaTheme')
 # OMEGA THEME end
 current_db = 0
-version = '2.0.4'
+version = '2.0.5'
 
 
 def get_branch():
@@ -279,9 +279,9 @@ def add_orgs(orgs_list):
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
     for org in orgs_list:
-        db_insert_org = """insert or replace into Organizations(id, Name) 
-            Values (?, ?)"""
-        org_data = org['id'], org['name']
+        db_insert_org = """insert or replace into Organizations(id, Name, LoginPort) 
+            Values (?, ?, ?)"""
+        org_data = org['id'], org['name'], org['loginPort']
         cur.execute(db_insert_org, org_data)
     con.commit()
     con.close()
@@ -2101,14 +2101,14 @@ def make_organizations():
                         key='-DelOrg-',
                         pad=(4, (0, 3)))],
              [sg.Table(orgs_list,
-                       headings=['id', 'Имя'],
+                       headings=['id', 'Имя', 'Порт'],
                        justification="left",
                        key='-orgs-',
                        expand_x=True,
                        enable_click_events=True,
                        enable_events=True,
                        # auto_size_columns=True,
-                       visible_column_map=[False, True],
+                       visible_column_map=[False, True, True],
                        select_mode=sg.TABLE_SELECT_MODE_BROWSE,
                        selected_row_colors='black on lightblue',
                        metadata=[],
@@ -2131,6 +2131,7 @@ def make_add_org_window(org_info=None):
     layout = [
         [sg.Column([
             [sg.Text('Имя', pad=(0, 5))],
+            [sg.Text('Порт', pad=(0, 5))],
         ], element_justification='right'),
             sg.Column([
                 [sg.Input(default_text=org_info[1] if org_info else '',
@@ -2138,6 +2139,11 @@ def make_add_org_window(org_info=None):
                           pad=(0, 5),
                           key='-OrgName-',
                           disabled=False)],
+                [sg.Input(default_text=org_info[2] if org_info else str(get_org_max_port() + 1),
+                          size=25,
+                          pad=(0, 5),
+                          key='-OrgPort-',
+                          disabled=False)]
             ])
         ],
         [sg.Push(),
@@ -2788,10 +2794,11 @@ def get_org_by_id(id):
         return 'Нет'
 
 
-def update_org(org_id, new_name):
+def update_org(org_id, org):
     res = False
     json_dict = {'Id': org_id,
-                 'Name': new_name,
+                 'Name': org['-OrgName-'],
+                 'LoginPort': org['-OrgPort-'],
                  }
     try:
         res = requests.post(BASE_URL_ORG +
@@ -3029,7 +3036,10 @@ def fixLastDevice(user_id):
 def add_org(org):
     # print('1')
     res = False
-    org_json = {'Name': org['-OrgName-']}
+    org_json = {
+        'Name': org['-OrgName-'],
+        'LoginPort': org['-OrgPort-'],
+    }
     try:
         res = requests.post(BASE_URL_ORG +
                             '/add',
@@ -6303,12 +6313,14 @@ if __name__ == '__main__':
                                         if ev_add_org == sg.WIN_CLOSED or ev_add_org == 'Exit':
                                             break
                                         if ev_add_org == '-AddOrgConfirm-':
-                                            add_org(val_add_org)
-                                            window_add_org.close()
-                                            update_all()
-                                            window_organizations['-orgs-'].update(get_orgs_from_db_list())
-                                            # update_users()
-                                            break
+                                            if val_add_org['-OrgName-'] and 1024 < int(val_add_org['-OrgPort-']) < 65535:
+                                                add_org(val_add_org)
+                                                window_add_org.close()
+                                                update_all()
+                                                window_organizations['-orgs-'].update(get_orgs_from_db_list())
+                                                break
+                                            else:
+                                                my_popup('Введите корректные данные')
                                 if ev_orgs == '-DelOrg-':
                                     org_id = delete_org(window_organizations['-orgs-'].Values[val_orgs['-orgs-'][0]][0])
                                     if org_id:
@@ -6325,7 +6337,7 @@ if __name__ == '__main__':
                                         if ev_edit_org == sg.WIN_CLOSED or ev_edit_org == 'Exit':
                                             break
                                         if ev_edit_org == '-AddOrgConfirm-':
-                                            org_id = update_org(window_organizations['-orgs-'].Values[val_orgs['-orgs-'][0]][0], val_edit_org['-OrgName-'])
+                                            org_id = update_org(window_organizations['-orgs-'].Values[val_orgs['-orgs-'][0]][0], val_edit_org)
                                             window_add_org.close()
                                             if org_id:
                                                 window_organizations['-EditOrg-'].update(disabled=True)
