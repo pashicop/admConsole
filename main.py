@@ -1349,7 +1349,8 @@ def make_settings():
                                     enable_events=True)],
                           [sg.Push(), sg.Text('Таймаут отключения пользователей (сек)'),
                            sg.Input(size=20, key='-keep-alive-',
-                                    default_text=settings['pingTimeout'],
+                                    default_text=settings['pingTimeout'] if 'pingTimeout' in settings else 0,
+                                    disabled=False if 'pingTimeout' in settings else True,
                                     enable_events=True)],
                       ], expand_x=True)
              ],
