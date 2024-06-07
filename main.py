@@ -157,7 +157,7 @@ sg.theme_add_new('OmegaTheme', omega_theme)
 sg.theme('OmegaTheme')
 # OMEGA THEME end
 current_db = 0
-version = '2.0.6'
+version = '2.0.7'
 
 
 def get_branch():
@@ -1346,6 +1346,10 @@ def make_settings():
                            sg.Input(size=20, key='-пароль-ssh-',
                                     default_text=SSH_PWD,
                                     password_char='*',
+                                    enable_events=True)],
+                          [sg.Push(), sg.Text('Таймаут отключения пользователей (сек)'),
+                           sg.Input(size=20, key='-keep-alive-',
+                                    default_text=settings['pingTimeout'],
                                     enable_events=True)],
                       ], expand_x=True)
              ],
@@ -5913,7 +5917,8 @@ if __name__ == '__main__':
                                             or ev_set == '-таймаут-окончания-' \
                                             or ev_set == '-таймаут-тонового-сигнала-' \
                                             or ev_set == '-таймаут-прослушивания-' \
-                                            or ev_set == '-пинг-таймаут-':
+                                            or ev_set == '-пинг-таймаут-' \
+                                            or ev_set == '-keep-alive-':
                                         if val_set[ev_set].isdigit():
                                             window_settings[ev_set].update(
                                                 background_color=omega_theme['INPUT'])
@@ -6063,7 +6068,8 @@ if __name__ == '__main__':
                                                                  'mfc': val_set['mfc'],
                                                                  'otap': val_set['otap'],
                                                                  'longAmbientCallDuration': val_set[
-                                                                     'longAmbientCallDuration'], }
+                                                                     'longAmbientCallDuration'],
+                                                                 'pingTimeout': val_set['-keep-alive-']}
                                                 try:
                                                     res_update_set = requests.post(BASE_URL_SETTINGS,
                                                                                    json=settings_dict,
