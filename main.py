@@ -157,7 +157,7 @@ sg.theme_add_new('OmegaTheme', omega_theme)
 sg.theme('OmegaTheme')
 # OMEGA THEME end
 current_db = 0
-version = '2.0.7'
+version = '2.0.8'
 
 
 def get_branch():
@@ -2895,8 +2895,8 @@ def get_treedata(dev_list_of_dict: list, type: str):
         if type == 'dev':
             for dev in dev_list_of_dict:
                 td.Insert(parent='',
-                          key=dev['deviceIdentifier'],
-                          text=dev['deviceName'] if dev['deviceName'] else dev['deviceIdentifier'],
+                          key=dev['deviceIdentifier'] if dev['deviceIdentifier'] else 'Неизвестно',
+                          text=dev['deviceName'] if dev['deviceName'] else dev['deviceIdentifier'] if dev['deviceIdentifier'] else 'Неизвестно',
                           values=[dev['deviceIdentifier'] if dev['deviceIdentifier'] else '',
                                   dev['deviceName'] if dev['deviceName'] else '',
                                   dev['serialNumber'] if dev['serialNumber'] else '',
@@ -2930,8 +2930,8 @@ def get_treedata(dev_list_of_dict: list, type: str):
                                   text=get_user_name_by_id_from_db(user),
                                   values=[''])
                     td.Insert(parent=user,
-                              key=dev['deviceIdentifier'],
-                              text=dev['deviceName'] if dev['deviceName'] else dev['deviceIdentifier'],
+                              key=dev['deviceIdentifier'] if dev['deviceIdentifier'] else 'Неизвестно',
+                              text=dev['deviceName'] if dev['deviceName'] else dev['deviceIdentifier'] if dev['deviceIdentifier'] else 'Неизвестно',
                               values=[dev['deviceIdentifier'] if dev['deviceIdentifier'] else '',
                                       dev['deviceName'] if dev['deviceName'] else '',
                                       dev['serialNumber'] if dev['serialNumber'] else '',
