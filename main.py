@@ -4229,23 +4229,28 @@ def get_journal_with_types(journal: list):
     count_all = 0
     unset_row = False
     final_list = list()
-    default_types = ['info', 'warn', 'fail']
+    default_types = ['info:', ' INF]', 'warn:', ' WRN]', 'fail:', ' ERR]']
     string_types = list()
     if filter_journal_info_server:
-        string_types.append('info')
+        string_types.append('info:')
+        string_types.append(' INF]')
     if filter_journal_warn_server:
-        string_types.append('warn')
+        string_types.append('warn:')
+        string_types.append(' WRN]')
     if filter_journal_fail_server:
-        string_types.append('fail')
-    raw: str
+        string_types.append('fail:')
+        string_types.append(' ERR]')
+    # raw: str
     for i, raw in enumerate(journal):
-        if raw.startswith(tuple(string_types)):
+        # if raw.startswith(tuple(string_types)):
+        if any(x in raw for x in string_types):
             count += 1
             count_all += 1
             unset_row = False
             final_list.append(str(count).ljust(6) + ' ' + raw)
         else:
-            if raw.startswith(tuple(set(default_types) - set(string_types))):
+            # if raw.startswith(tuple(set(default_types) - set(string_types))):
+            if any(x in raw for x in (set(default_types) - set(string_types))):
                 unset_row = True
                 count_all += 1
             else:
