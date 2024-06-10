@@ -4442,8 +4442,9 @@ if __name__ == '__main__':
                 if re.search('^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+', parsed_url.hostname):
                     ip = ipaddress.ip_address(parsed_url.hostname).exploded
                 else:
-                    print(socket.gethostbyname(parsed_url.hostname))
-                    ip = socket.gethostbyname(parsed_url.hostname)
+                    # print(socket.gethostbyname(parsed_url.hostname))
+                    # ip = socket.gethostbyname(parsed_url.hostname)
+                    ip = parsed_url.hostname
                 host_ok = True
                 if parsed_url.port:
                     port = parsed_url.port
@@ -4498,15 +4499,22 @@ if __name__ == '__main__':
                     https_on = True if val_login['https_on'] else False
                     if https_on:
                         BASE_URL_PROTO = 'https://'  # TODO
+                        BASE_URL = BASE_URL_PROTO + ip + '/api/admin/'
+                        BASE_URL_PING = BASE_URL_PROTO + ip + '/api/ping'
+                        BASE_URL_AUTH = BASE_URL_PROTO + ip + '/api/auth'
+                        BASE_URL_SETTINGS = BASE_URL_PROTO + ip + '/api/admin/settings'
+                        BASE_URL_UPDATE = BASE_URL_PROTO + ip + '/api/update/'
+                        BASE_URL_DEVICE = BASE_URL_PROTO + ip + '/api/device/'
+                        BASE_URL_ORG = BASE_URL_PROTO + ip + '/api/admin/org'
                     else:
                         BASE_URL_PROTO = 'http://'
-                    BASE_URL = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/'
-                    BASE_URL_PING = BASE_URL_PROTO + ip + ':' + str(port) + '/api/ping'
-                    BASE_URL_AUTH = BASE_URL_PROTO + ip + ':' + str(port) + '/api/auth'
-                    BASE_URL_SETTINGS = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/settings'
-                    BASE_URL_UPDATE = BASE_URL_PROTO + ip + ':' + str(port) + '/api/update/'
-                    BASE_URL_DEVICE = BASE_URL_PROTO + ip + ':' + str(port) + '/api/device/'
-                    BASE_URL_ORG = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/org'
+                        BASE_URL = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/'
+                        BASE_URL_PING = BASE_URL_PROTO + ip + ':' + str(port) + '/api/ping'
+                        BASE_URL_AUTH = BASE_URL_PROTO + ip + ':' + str(port) + '/api/auth'
+                        BASE_URL_SETTINGS = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/settings'
+                        BASE_URL_UPDATE = BASE_URL_PROTO + ip + ':' + str(port) + '/api/update/'
+                        BASE_URL_DEVICE = BASE_URL_PROTO + ip + ':' + str(port) + '/api/device/'
+                        BASE_URL_ORG = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/org'
                     server_status = check_server(BASE_URL_PING)
                     current_db = server_status['db']
                     if server_status['run']:
