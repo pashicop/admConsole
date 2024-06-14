@@ -2036,7 +2036,7 @@ def make_devices(dev_l):
                      def_col_width=30,
                      max_col_width=30,
                      visible_column_map=[True, False, True, True, True, True, True, True, True, True, True, True],
-                     # num_rows=20,
+                     num_rows=35,
                      justification='left',
                      selected_row_colors='black on lightblue',
                      # col_widths=[5, 5],
