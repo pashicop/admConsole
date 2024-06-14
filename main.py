@@ -1099,7 +1099,7 @@ def make_login_window():
     if not os.path.exists(PATH_LOG):
         os.mkdir(PATH_LOG)
     # global active_config
-    config_app = {"ip": "", "login": "", "ssh_login": "", "ssh_port": ""}
+    config_app = {"ip": "", "login": "", "https": "", "ssh_login": "", "ssh_port": ""}
     if os.path.isfile(Path(Path.cwd(), 'config', 'app.json')):
         # print(os.stat(Path(Path.cwd(), 'config', 'app.json')).st_size)
         try:
@@ -1153,7 +1153,7 @@ def make_login_window():
                                  default=True,
                                  enable_events=True,
                                  key='remember_credentials'), sg.Push(),
-                     sg.Checkbox('https', default=False, key='https_on')],
+                     sg.Checkbox('https', default=config_app['https'], key='https_on')],
                     [sg.Push(background_color='white'),
                      sg.Button('Вход', key="OK button", size=10,
                                bind_return_key=True),
@@ -4316,12 +4316,14 @@ def change_config_file(mode):
                 if mode == 'auth':
                     config_app['ip'] = val_login['ip']
                     config_app['login'] = val_login['Логин']
+                    config_app['https'] = val_login['https_on']
                 elif mode == 'ssh':
                     config_app['ssh_login'] = SSH_LOGIN
                     config_app['ssh_port'] = SSH_PORT
                 elif mode == 'all':
                     config_app['ip'] = val_login['ip']
                     config_app['login'] = val_login['Логин']
+                    config_app['https'] = val_login['https_on']
                     config_app['ssh_login'] = SSH_LOGIN
                     config_app['ssh_port'] = SSH_PORT
             with open(Path(Path.cwd(), 'config', 'app.json'), 'w') as f_app_config:
