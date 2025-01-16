@@ -103,6 +103,8 @@ MIN_CALL_END_TM = 1
 MAX_CALL_END_TM = 10
 MIN_TONAL_CALL_END_TM = 3
 MAX_TONAL_CALL_END_TM = 60
+MIN_MAX_FILESIZE_MB = 5
+MAX_MAX_FILESIZE_MB = 100
 MIN_AMB_LIST_TM = 3
 MAX_AMB_LIST_TM = 90
 MIN_AUDIO_PORT = 1025
@@ -1351,6 +1353,11 @@ def make_settings():
                            sg.Input(size=20, key='-keep-alive-',
                                     default_text=settings['pingTimeout'] if 'pingTimeout' in settings else 0,
                                     disabled=False if 'pingTimeout' in settings else True,
+                                    enable_events=True)],
+                          [sg.Push(), sg.Text('Максимальный размер передаваемого файла (МБ)'),
+                           sg.Input(size=20, key='-maxFileSizeBytes-',
+                                    default_text=round(int(settings['maxFileSizeBytes'])/1024/1024, 1) if 'maxFileSizeBytes' in settings else 0,
+                                    disabled=False if 'maxFileSizeBytes' in settings else True,
                                     enable_events=True)],
                       ], expand_x=True)
              ],
@@ -3614,6 +3621,17 @@ def validate(window: str):
                 MAX_TONAL_CALL_END_TM) + " секунд"))
             window_settings.Element('-таймаут-тонового-сигнала-').SetFocus()
             window_settings['-таймаут-тонового-сигнала-'].update(background_color=button_color_2,
+                                                                 text_color=omega_theme['BACKGROUND'])
+            return False
+        if MIN_MAX_FILESIZE_MB <= float(val_set['-maxFileSizeBytes-']) <= MAX_MAX_FILESIZE_MB:
+            window_settings['-maxFileSizeBytes-'].update(background_color=omega_theme['BACKGROUND'],
+                                                                 text_color=omega_theme['TEXT'])
+        else:
+            my_popup(("Максимальный размер передаваемого файла должен быть не менее " + str(
+                MIN_MAX_FILESIZE_MB) + " и не более " + str(
+                MAX_MAX_FILESIZE_MB) + " мегабайт"))
+            window_settings.Element('-maxFileSizeBytes-').SetFocus()
+            window_settings['-maxFileSizeBytes-'].update(background_color=button_color_2,
                                                                  text_color=omega_theme['BACKGROUND'])
             return False
         if val_set['-таймаут-прослушивания-'].isnumeric() and MIN_AMB_LIST_TM <= int(
@@ -5951,6 +5969,43 @@ if __name__ == '__main__':
                                         window_settings['-OK-set-'].update(disabled=False)
                                         window_settings['-OK-set-'].update(button_color=button_color_2)
                                         change_settings_by_post = True
+                                    elif ev_set == '-пинг-таймаут-' \
+                                            or ev_set == '-keep-alive-':
+                                        if val_set[ev_set].isdigit():
+                                            window_settings[ev_set].update(
+                                                background_color=omega_theme['INPUT'])
+                                            if 0 < int(val_set[ev_set]):
+                                                window_settings[ev_set].update(
+                                                    background_color=omega_theme['INPUT'],
+                                                    text_color=omega_theme['TEXT'])
+                                            else:
+                                                window_settings[ev_set].update(background_color=button_color_2)
+                                        else:
+                                            window_settings[ev_set].update(background_color=button_color_2)
+                                        counter = 0
+                                        window_settings['-Progress-Bar-'].update_bar(counter)
+                                        window_settings['-OK-set-'].update(disabled=False)
+                                        window_settings['-OK-set-'].update(button_color=button_color_2)
+                                        change_settings_by_post = True
+                                    elif ev_set == '-maxFileSizeBytes-':
+                                        reg_exp = '^[0-9]+(\.[0-9])?'
+                                        if re.fullmatch(reg_exp, val_set[ev_set]):
+                                            window_settings[ev_set].update(
+                                                background_color=omega_theme['INPUT'])
+                                            if 0 < float(val_set[ev_set]):
+                                                window_settings[ev_set].update(
+                                                    background_color=omega_theme['INPUT'],
+                                                    text_color=omega_theme['TEXT'])
+                                            else:
+                                                window_settings[ev_set].update(background_color=button_color_2)
+                                        else:
+                                            window_settings[ev_set].update(background_color=button_color_2)
+                                        counter = 0
+                                        window_settings['-Progress-Bar-'].update_bar(counter)
+                                        window_settings['-OK-set-'].update(disabled=False)
+                                        window_settings['-OK-set-'].update(button_color=button_color_2)
+                                        change_settings_by_post = True
+
                                     elif ev_set == '-Макс-аудио-порт-' \
                                             or ev_set == '-Мин-аудио-порт-':
                                         if val_set[ev_set].isdigit():
@@ -6072,6 +6127,7 @@ if __name__ == '__main__':
                                                                  'tonalTimeout': val_set[
                                                                      '-таймаут-тонового-сигнала-'],
                                                                  'ambientCallDuration': val_set['-таймаут-прослушивания-'],
+                                                                 'maxFileSizeBytes': int(float(val_set['-maxFileSizeBytes-'])*1024*1024),
                                                                  'autoCleanDays': val_set['-auto-del-'],
                                                                  'udpPortsRange': val_set['-Мин-аудио-порт-'] + '-' +
                                                                                   val_set[
