@@ -4,6 +4,7 @@ import sqlite3
 import logging
 from main import my_popup, check
 import PySimpleGUI as sg
+from pathlib import Path
 
 
 SYMBOL_X_SMALL = '✗'
@@ -77,6 +78,7 @@ def create_db():
                                 "role_multiple_devices" INTEGER DEFAULT 0,
                                 "priority" INTEGER DEFAULT 1,
                                 "organization_id" TEXT DEFAULT '',
+                                "profile_picture_id" TEXT DEFAULT '',
                                 PRIMARY KEY("id"),
                                 FOREIGN KEY("organization_id") REFERENCES "Organizations"("id")
                             );
@@ -254,6 +256,7 @@ def get_user_dict(user):
             'role_multiple_devices': user[22],
             'priority': user[23],
             'organization_id': user[24],
+            'profile_picture_id': user[25],
             }
 
 
@@ -616,3 +619,35 @@ def get_id_by_org(name):
     except Exception as e:
         print(f'{e}')
         return ''
+
+
+def get_user_pic(url, header, pic_id):
+    if pic_id == '00000000-0000-0000-0000-000000000000':
+        return False
+    else:
+        try:
+            json_pic_id = {"id": pic_id}
+            res = requests.post(url, headers=header, stream=True, json=json_pic_id)
+            if res:
+                if res.status_code == 200:
+                    # path=Path(Path.cwd())
+                    with open(Path(Path.cwd(), 'user_pic.jpg'), 'wb') as f:
+                        for chunk in res.iter_content(chunk_size=1024):
+                            f.write(chunk)
+                    return True
+                else:
+                    print(f'Не удалось скачать аватар - {res.status_code}')
+                    logging.error(f"Не удалось скачать аватар - {res.status_code}")
+                    my_popup(f'Не удалось скачать аватар - {res.status_code}')
+                    return False
+            else:
+                print(f'Не удалось запросить аватар - нет ответа от сервера')
+                logging.error("Не удалось запросить аватар - нет ответа от сервера")
+                my_popup('Не удалось запросить аватар - нет ответа от сервера')
+                return False
+        except Exception as e:
+            print(f'Не удалось запросить аватар - {e}')
+            logging.error("Не удалось запросить аватар")
+            my_popup('Не удалось запросить аватар')
+            return False
+

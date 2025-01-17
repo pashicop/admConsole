@@ -67,6 +67,7 @@ ICON_GW5_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAABQAAAAQCAQAAAC8EZeQAAAACXBIWXMAAAsT
 ICON_GW5_BLOCK_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAABQAAAAQCAQAAAC8EZeQAAAACXBIWXMAAAsTAAALEwEAmpwYAAAMemlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDggNzkuMTY0MDM2LCAyMDE5LzA4LzEzLTAxOjA2OjU3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIDIxLjAgKFdpbmRvd3MpIiB4bXA6Q3JlYXRlRGF0ZT0iMjAyNC0wNC0xNVQxNjo0OTozOCswMzowMCIgeG1wOk1ldGFkYXRhRGF0ZT0iMjAyNC0wNC0xNlQxODowMToxMiswMzowMCIgeG1wOk1vZGlmeURhdGU9IjIwMjQtMDQtMTZUMTg6MDE6MTIrMDM6MDAiIGRjOmZvcm1hdD0iaW1hZ2UvcG5nIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjRkOTQ4MmJkLWE3MzMtZDU0Mi1iZjcwLTA1NTM2MzkxZDBmNSIgeG1wTU06RG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOmJhMzkzOWQ5LTJhZWUtOWE0OC1iMjc3LWZkNGU1Mzg0MTc5YiIgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOmFhNTgyYzNiLWU2NWUtZTg0My1hMDE3LTc5NjJmYjNhYmQ0ZSIgcGhvdG9zaG9wOkNvbG9yTW9kZT0iMSIgcGhvdG9zaG9wOklDQ1Byb2ZpbGU9IkRvdCBHYWluIDI1JSI+IDx4bXBNTTpIaXN0b3J5PiA8cmRmOlNlcT4gPHJkZjpsaSBzdEV2dDphY3Rpb249ImNyZWF0ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6YWE1ODJjM2ItZTY1ZS1lODQzLWEwMTctNzk2MmZiM2FiZDRlIiBzdEV2dDp3aGVuPSIyMDI0LTA0LTE1VDE2OjQ5OjM4KzAzOjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjEuMCAoV2luZG93cykiLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjUyZDZjODI0LTM1MDMtMmI0ZC04MDhlLWUxZGE0NmM3ZGYzMyIgc3RFdnQ6d2hlbj0iMjAyNC0wNC0xNVQxNjo1ODoxMiswMzowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDIxLjAgKFdpbmRvd3MpIiBzdEV2dDpjaGFuZ2VkPSIvIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo2NDQzYWZlOC0yNGZmLTg4NDItYWE1Yi02N2M1Y2I5OTFkOGMiIHN0RXZ0OndoZW49IjIwMjQtMDQtMTZUMTE6MzQ6NTYrMDM6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMS4wIChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY29udmVydGVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJmcm9tIGltYWdlL3BuZyB0byBhcHBsaWNhdGlvbi92bmQuYWRvYmUucGhvdG9zaG9wIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJkZXJpdmVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJjb252ZXJ0ZWQgZnJvbSBpbWFnZS9wbmcgdG8gYXBwbGljYXRpb24vdm5kLmFkb2JlLnBob3Rvc2hvcCIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NmU3ODdkNTctMmRiYS00OTQ2LWIyM2QtNWRiYTBmM2JhNjU4IiBzdEV2dDp3aGVuPSIyMDI0LTA0LTE2VDExOjM0OjU2KzAzOjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjEuMCAoV2luZG93cykiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjZmZTA1N2JlLTMyMWYtMTc0ZS04ZGM1LTc0ZjU0ZWI4YmRjNCIgc3RFdnQ6d2hlbj0iMjAyNC0wNC0xNlQxODowMToxMiswMzowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDIxLjAgKFdpbmRvd3MpIiBzdEV2dDpjaGFuZ2VkPSIvIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJjb252ZXJ0ZWQiIHN0RXZ0OnBhcmFtZXRlcnM9ImZyb20gYXBwbGljYXRpb24vdm5kLmFkb2JlLnBob3Rvc2hvcCB0byBpbWFnZS9wbmciLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249ImRlcml2ZWQiIHN0RXZ0OnBhcmFtZXRlcnM9ImNvbnZlcnRlZCBmcm9tIGFwcGxpY2F0aW9uL3ZuZC5hZG9iZS5waG90b3Nob3AgdG8gaW1hZ2UvcG5nIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo0ZDk0ODJiZC1hNzMzLWQ1NDItYmY3MC0wNTUzNjM5MWQwZjUiIHN0RXZ0OndoZW49IjIwMjQtMDQtMTZUMTg6MDE6MTIrMDM6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMS4wIChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8L3JkZjpTZXE+IDwveG1wTU06SGlzdG9yeT4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NmZlMDU3YmUtMzIxZi0xNzRlLThkYzUtNzRmNTRlYjhiZGM0IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjZlNzg3ZDU3LTJkYmEtNDk0Ni1iMjNkLTVkYmEwZjNiYTY1OCIgc3RSZWY6b3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOmFhNTgyYzNiLWU2NWUtZTg0My1hMDE3LTc5NjJmYjNhYmQ0ZSIvPiA8cGhvdG9zaG9wOkRvY3VtZW50QW5jZXN0b3JzPiA8cmRmOkJhZz4gPHJkZjpsaT54bXAuZGlkOmFhNTgyYzNiLWU2NWUtZTg0My1hMDE3LTc5NjJmYjNhYmQ0ZTwvcmRmOmxpPiA8L3JkZjpCYWc+IDwvcGhvdG9zaG9wOkRvY3VtZW50QW5jZXN0b3JzPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Ptnf9I4AAABgSURBVCiRrZJLDoAwCEQfhjt5/52calxpf9S0ibMDJvNJMLGGY5GXE0MBBFHZ2ZULCEMYwPlp/dK2Mzrz2s/FNhVpsiiZKYq9vQC1Wy8pKti48yROWs9nhx7Lre3377kB27QVRIFFa7IAAAAASUVORK5CYII='
 ICON_PLAY_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAIFSURBVFiF7ZbPSxRhGMe/z7vKgl7yEIEdDAVJkSB0x6P/QQdnDx38dQllx3CIID0V3SQicNslCArtpOOuHsRbh1JYnHGpLiKCRQch6tJpQ1vfx4MarL677c6+6xzqe3ze53m/n/f7zgwD/OsiVTFijg8AeABwK4BNEB57i4m3FwJgRGNDzDSr6F2Rh8LOLsd3dQKEzhaaO4w3AK4oettJ8OjVzt7Gpq6ejR9b3oEOAKGodZToDwM82SDFjmFawyhyhZXo3AYR0+IKxrNSSDvrJNf9AqgSqEDcLSS9j5jWws1+q8XPDlUmUKAcET0JUf10xnn2q9yhKhMoUAMzP8zLgx0jGhtCmc+HzgQKxfQOIWl7TvJjqTadCRSKuA+SsoZpzfXemlC91jUGONmfgUFZn9+O9MdGggA41SUQve6JWreDAjgWYypQAALaAwUA8DlQAAaeBgWwz+B7m6nEq7MLdbV2JsY6hcTohhPfUq3XMoGfANnujct9xcyB2iWwUicOxzLOiz2kSjfqBtgjxl03nVgqd0DXFeQBzOQEX6/EHNCTwCcw3/HSSc/PcDUJ5IgweU187/ZrDqgTkPgLGAGrvxmxD6nEV9evcwmALwDaivR/A5Ptpp/PV+n7R6qTnvtcAmCAXobDstPTaA4U+W8zzPExBt8H0AxChiAeuYvxNZ3G/3WqI2Z2nhWNyE9nAAAAAElFTkSuQmCC'
 ICON_STOP_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAC3SURBVFiF7dc9CgIxEEDhN1EQtBERca29jHdY8QSWio0/4FG29DweQbewsVFBcMdCNiwKdgmIM1VIQt7XBv59pFwMR9NGp1lsFUlBk0C5XKXIbtJb7nebO0C9PHrFmYGGaQOgiajMm3pSYAHg/BGMA5bfZ1IuXGWzHxHgW+7brRhjAAMYwAAGMIABDGAAA1QAkkfsHj4AKkUWry++5X9G50tt1W49ECRFGYTpckTJrq67DvL+T84TxKYnTN/X+rAAAAAASUVORK5CYII='
+ICON_DEF_USER_PIC = b'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'
 WARN_FREE_SPACE = 80
 ALARM_FREE_SPACE = 95
 WARN_LIC_DAYS = 30
@@ -224,7 +225,8 @@ def add_users(users_list):
     for user in users_list:
         is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, enabled_ind_mes, role_en_del_chats, \
             role_en_partial_drop, role_changer, role_screen_shooter, role_amb_caller, role_amb_callee, role_missing_msg_rv, role_allow_LLA, \
-            role_allow_LLA_client, role_mfc, fix_device, role_multiple_devices, priority, organization_id = (
+            role_allow_LLA_client, role_mfc, fix_device, role_multiple_devices, priority, organization_id, \
+            profile_picture_id = (
             1 if user["userType"] == 15 or user['previousType'] == 15 else 0,
             1 if user["userType"] == 30 or user['previousType'] == 30 else 0,
             1 if user["userType"] == -1 else 0,
@@ -245,15 +247,16 @@ def add_users(users_list):
             1 if role.fix_device.value in user['userRoles'] else 0,
             1 if role.role_multiple_devices.value in user['userRoles'] else 0,
             user['priority'],
-            user['organizationId'])
+            user['organizationId'],
+            user['profilePictureId'])
         db_insert_user = """insert or replace into Users(id, login, Display_name, is_dispatcher, is_admin, 
             is_blocked, is_gw, previous_type, role_en_ind, role_en_ind_mes, role_en_del_chats, role_en_partial_drop, role_changer, 
             role_screen_shooter, role_amb_caller, role_amb_callee, role_missing_msg_rv, role_allow_LLA, role_allow_LLA_client, role_mfc, fix_device, 
-            role_multiple_devices, priority, organization_id) Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+            role_multiple_devices, priority, organization_id, profile_picture_id) Values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
         user_data = user['id'], user['login'], user['displayName'], \
             is_dispatcher, is_admin, is_blocked, is_gw, previous_type, enabled_ind, enabled_ind_mes, \
             role_en_del_chats, role_en_partial_drop, role_changer, role_screen_shooter, role_amb_caller, role_amb_callee, role_missing_msg_rv, \
-            role_allow_LLA, role_allow_LLA_client, role_mfc, fix_device, role_multiple_devices, priority, organization_id
+            role_allow_LLA, role_allow_LLA_client, role_mfc, fix_device, role_multiple_devices, priority, organization_id, profile_picture_id
         cur.execute(db_insert_user, user_data)
     con.commit()
     con.close()
@@ -1778,6 +1781,15 @@ def make_add_user_window():
 def make_modify_user_window(user: dict):
     org_name = get_org_by_id(user['organization_id'])
     org_list = get_orgs_from_db_list_names()
+    user_pic = get_user_pic(BASE_URL_USER_PIC, HEADER_dict, user['profile_picture_id'])
+    if user_pic:
+        try:
+            im = Image.open(Path(Path.cwd(), 'user_pic.jpg'))
+            im.thumbnail((64, 64), Image.Resampling.LANCZOS)
+            im.save(Path(Path.cwd(), 'user_pic.png'))
+        except IOError as e:
+            print('Не могу открыть файл с аватаром')
+            logging.error('Не могу открыть файл с аватаром')
     layout_modify_user = [
         [sg.Text('Логин'), sg.Push(), sg.Input(disabled=True, pad=((0, 40), (0, 0)),
                                                default_text=user['login'], key='UserModifyLogin')],
@@ -1818,7 +1830,12 @@ def make_modify_user_window(user: dict):
                       disabled=True,
                       enable_events=True)]],
                   # size=(300, 140),
-                  pad=((8, 0), (10, 10)))],
+                  pad=((8, 0), (10, 10))),
+         sg.Frame('Аватар', [
+             [sg.B('Сменить'), sg.Push(), sg.Image(filename=Path(Path.cwd(), 'user_pic.png')) if user_pic else sg.Image(data=ICON_DEF_USER_PIC)],
+              # ],
+             [sg.T(user['profile_picture_id'],)]
+         ])],
         # [sg.Push(),
         #  sg.B(SYMBOL_DOWN_ARROWHEAD,
         #          # pad=(5, 0),
@@ -4526,6 +4543,7 @@ if __name__ == '__main__':
                         BASE_URL_UPDATE = BASE_URL_PROTO + ip + ':' + str(port) + '/api/update/'
                         BASE_URL_DEVICE = BASE_URL_PROTO + ip + ':' + str(port) + '/api/device/'
                         BASE_URL_ORG = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/org'
+                        BASE_URL_USER_PIC = BASE_URL_PROTO + ip + ':' + str(port) + '/api/file/download'
                     else:
                         BASE_URL_PROTO = 'http://'
                         BASE_URL = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/'
@@ -4535,6 +4553,7 @@ if __name__ == '__main__':
                         BASE_URL_UPDATE = BASE_URL_PROTO + ip + ':' + str(port) + '/api/update/'
                         BASE_URL_DEVICE = BASE_URL_PROTO + ip + ':' + str(port) + '/api/device/'
                         BASE_URL_ORG = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/org'
+                        BASE_URL_USER_PIC = BASE_URL_PROTO + ip + ':' + str(port) + '/api/file/download'
                     server_status = check_server(BASE_URL_PING)
                     current_db = server_status['db']
                     if server_status['run']:
