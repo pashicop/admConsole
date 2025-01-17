@@ -268,15 +268,16 @@ def add_groups(groups_list):
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
     for group in groups_list:
-        description, is_disabled, group_type, organization_id = ('' if group['description'] is None
-                                                                 else group['description'],
-                                                                 1 if group['isDisabled'] else 0,
-                                                                 1 if group['groupType'] else 0,
-                                                                 group['organizationId'])
+        description, is_disabled, group_type, organization_id, \
+            profile_picture_id = ('' if group['description'] is None else group['description'],
+                                  1 if group['isDisabled'] else 0,
+                                  1 if group['groupType'] else 0,
+                                  group['organizationId'],
+                                  group['profilePictureId'])
 
-        db_insert_group = """insert or replace into Groups(id, Name, description, is_emergency, is_disabled, organization_id) 
-        Values (?, ?, ?, ?, ?, ?)"""
-        group_data = group['id'], group['name'], description, group_type, is_disabled, organization_id
+        db_insert_group = """insert or replace into Groups(id, Name, description, is_emergency, is_disabled, organization_id, 'profile_picture_id') 
+        Values (?, ?, ?, ?, ?, ?, ?)"""
+        group_data = group['id'], group['name'], description, group_type, is_disabled, organization_id, profile_picture_id
         cur.execute(db_insert_group, group_data)
     con.commit()
     con.close()
@@ -1783,8 +1784,8 @@ def make_add_user_window():
 def make_modify_user_window(user: dict):
     # TODO delete update
     # update_all()
-    print(user)
-    print(user['profile_picture_id'])
+    # print(user)
+    # print(user['profile_picture_id'])
     org_name = get_org_by_id(user['organization_id'])
     org_list = get_orgs_from_db_list_names()
     user_pic = get_user_pic(BASE_URL_USER_PIC, HEADER_dict, user['profile_picture_id'])
@@ -2263,6 +2264,16 @@ def make_device(dev_l):
 def make_modify_group_window(group: dict):
     org_name = get_org_by_id(group['organization_id'])
     org_list = get_orgs_from_db_list_names()
+    print(group['profile_picture_id'])
+    group_pic = get_group_pic(BASE_URL_USER_PIC, HEADER_dict, group['profile_picture_id'])
+    if group_pic:
+        try:
+            im = Image.open(Path(Path.cwd(), 'group_pic.jpg'))
+            im.thumbnail((64, 64), Image.Resampling.LANCZOS)
+            im.save(Path(Path.cwd(), 'group_pic.png'))
+        except IOError as e:
+            print('Не могу открыть файл с аватаром')
+            logging.error('Не могу открыть файл с аватаром')
     layout_modify_group = [
         [sg.Column([[sg.Text('Имя Группы',
                              pad=0)],
@@ -2307,6 +2318,32 @@ def make_modify_group_window(group: dict):
                                 size=15,
                                 default=group['is_disabled'],
                                 key='GroupModifyBlocked')],
+        [sg.Frame('Аватар', [
+             [sg.Image(filename=Path(Path.cwd(), 'group_pic.png'), pad=10) if group_pic \
+                  else sg.Image(data=ICON_DEF_USER_PIC, pad=10),
+             sg.Push(),
+             sg.Column([[
+             #     sg.Button(button_text='Сменить',
+             #            key='modifyUserPic',
+             #            pad=5,
+             #            size=15,
+             #            disabled_button_color='gray')
+             # ],[
+                 sg.FileBrowse('Сменить',
+                               # target='-User-pic-',
+                               disabled=False,
+                               key='modifyGroupPic',
+                               pad=5,
+                               size=15,
+                               initial_folder='../',
+                               enable_events=True,
+                               file_types=(("Изображение", "*.jpg"),))
+             ]], vertical_alignment='top'),]
+             # [sg.T(user['profile_picture_id']
+                   ],
+                  expand_x=True,
+                  expand_y=True,
+                  pad=((8, 0), (10, 10)))],
         [sg.Push(), sg.Button(button_text='Изменить',
                               disabled=True,
                               disabled_button_color='gray',
@@ -5257,6 +5294,7 @@ if __name__ == '__main__':
                                 if group_to_change['is_disabled']:
                                     set_disabled_group_modify()
                                 window_modify_group.Element('GroupModifyName').SetFocus()
+                                modify_change_gr_pic = False
                                 while True:
                                     ev_modify_group, val_modify_group = window_modify_group.Read()
                                     if ev_modify_group == sg.WIN_CLOSED or ev_modify_group == 'Exit':
@@ -5291,6 +5329,13 @@ if __name__ == '__main__':
                                             if ev_confirm == 'noExit':
                                                 window_confirm.close()
                                                 break
+                                    elif ev_modify_group == 'modifyGroupPic':
+                                        modify_change_gr_pic = upload_group_pic(BASE_URL_USER_PIC_UPLOAD, HEADER_dict, val_modify_group['modifyGroupPic'])
+                                        if modify_change_gr_pic:
+                                            gr_pic_id = modify_change_gr_pic['id']
+                                            print(gr_pic_id)
+                                            window_modify_group['modifyGroupButton'].update(disabled=False)
+                                            window_modify_group['modifyGroupButton'].update(button_color=button_color_2)
                                     elif ev_modify_group == 'modifyGroupButton':
                                         if validate('modify_group'):
                                             modify_group_name = val_modify_group['GroupModifyName']
@@ -5301,6 +5346,7 @@ if __name__ == '__main__':
                                             modify_group_dict = {}
                                             modify_group = False
                                             modify_group_is_blocked = False
+                                            modify_group_pic = False
                                             modify_group_dict['id'] = group_to_change['id']
                                             if modify_group_name != group_to_change['name']:
                                                 modify_group_dict['name'] = modify_group_name
@@ -5377,10 +5423,16 @@ if __name__ == '__main__':
                                                                 f'ошибка - {res_modify_group_is_disabled.status_code}')
                                                     except Exception as e:
                                                         print(f'Не удалось разблокировать абонента - {e}')
-                                                        logging.error("Не удалось разблокироватьбонента")
-                                            if modify_group or modify_group_is_blocked:
+                                                        logging.error("Не удалось разблокировать абонента")
+                                            if modify_change_gr_pic:
+                                                modify_gr_pic = change_group_pic(BASE_URL +
+                                                                             'changeGroupProfilePicture',
+                                                                             HEADER_dict,
+                                                                             group_to_change["id"],
+                                                                             gr_pic_id)
+                                            if modify_group or modify_group_is_blocked or modify_gr_pic:
                                                 window_modify_group.close()
-                                                if modify_group_success:
+                                                if modify_group_success or modify_gr_pic:
                                                     update_all()
                                                     my_popup("Группа изменена!")
                                             else:

@@ -93,6 +93,7 @@ def create_db():
                                 "is_emergency"	INTEGER DEFAULT 0,
                                 "is_disabled"	INTEGER DEFAULT 0,
                                 "organization_id" TEXT DEFAULT '',
+                                "profile_picture_id" TEXT DEFAULT '',
                                 PRIMARY KEY("id"),
                                 FOREIGN KEY("organization_id") REFERENCES "Organizations"("id")
                             );
@@ -268,7 +269,8 @@ def get_group_dict(group):
             'desc': group[2],
             'is_emergency': group[5],
             'is_disabled': group[6],
-            'organization_id': group[7]
+            'organization_id': group[7],
+            'profile_picture_id': group[8]
             }
 
 
@@ -422,12 +424,7 @@ def get_groups_from_db() -> list[dict]:
     groups = cur.fetchall()
     groups_for_table = list()
     for group in groups:
-        group_for_table = {'name': group[1],
-                           'id': group[0],
-                           'desc': group[2],
-                           'is_emergency': group[5],
-                           'is_disabled': group[6],
-                           'organization_id': group[7]}
+        group_for_table = get_group_dict(group)
         groups_for_table.append(group_for_table)
     con.close()
     groups_for_table.sort(key=lambda i: i['name'])
@@ -697,6 +694,99 @@ def change_user_pic(url, header, user_id, pic_id):
                 # path=Path(Path.cwd())
                 print('Аватар пользователя изменён')
                 logging.info('Аватар пользователя изменён')
+                # my_popup('Аватар пользователя изменён')
+                return True
+            else:
+                print(f'Не удалось скачать аватар - {res.status_code}')
+                logging.error(f"Не удалось скачать аватар - {res.status_code}")
+                my_popup(f'Не удалось скачать аватар - {res.status_code}')
+                return False
+        else:
+            print(f'Не удалось запросить аватар - нет ответа от сервера')
+            logging.error("Не удалось запросить аватар - нет ответа от сервера")
+            my_popup('Не удалось запросить аватар - нет ответа от сервера')
+            return False
+    except Exception as e:
+        print(f'Не удалось запросить аватар - {e}')
+        logging.error("Не удалось запросить аватар")
+        my_popup('Не удалось запросить аватар')
+        return False
+
+
+def get_group_pic(url, header, pic_id):
+    if pic_id == '00000000-0000-0000-0000-000000000000':
+        return False
+    else:
+        try:
+            json_pic_id = {"id": pic_id}
+            res = requests.post(url, headers=header, stream=True, json=json_pic_id)
+            if res:
+                if res.status_code == 200:
+                    # path=Path(Path.cwd())
+                    with open(Path(Path.cwd(), 'group_pic.jpg'), 'wb') as f:
+                        for chunk in res.iter_content(chunk_size=1024):
+                            f.write(chunk)
+                    return True
+                else:
+                    print(f'Не удалось скачать аватар - {res.status_code}')
+                    logging.error(f"Не удалось скачать аватар - {res.status_code}")
+                    my_popup(f'Не удалось скачать аватар - {res.status_code}')
+                    return False
+            else:
+                print(f'Не удалось запросить аватар - нет ответа от сервера')
+                logging.error("Не удалось запросить аватар - нет ответа от сервера")
+                my_popup('Не удалось запросить аватар - нет ответа от сервера')
+                return False
+        except Exception as e:
+            print(f'Не удалось запросить аватар - {e}')
+            logging.error("Не удалось запросить аватар")
+            my_popup('Не удалось запросить аватар')
+            return False
+
+
+def upload_group_pic(url, header, pic_path):
+    res = False
+    try:
+        im = Image.open(pic_path)
+        im.thumbnail((64, 64), Image.Resampling.LANCZOS)
+        im.save(Path(Path.cwd(), 'new_group_pic.png'))
+    except IOError as e:
+        print('Не могу открыть файл с аватаром')
+        logging.error('Не могу открыть файл с аватаром')
+    with open(Path(Path.cwd(), 'new_group_pic.png'), "rb") as file:
+        files = {str(uuid.uuid4()): file}
+        # files = {'file': '123'}
+        try:
+            res = requests.post(url,
+                                files=files,
+                                headers=header)
+            if res.status_code == 200:
+                group_pic_dict = json.loads(res.text)
+                print('Аватар загружен на сервер')
+                logging.info('Аватар загружен на сервер')
+                # my_popup('Аватар загружен на сервер')
+                return group_pic_dict
+            else:
+                print(f'Не удалось загрузить аватар - {res.status_code}, {res.text}')
+                logging.error("Не удалось загрузить аватар")
+                my_popup('Не удалось загрузить аватар')
+        except Exception as e:
+            print(f'Не удалось загрузить аватар - {e}')
+            logging.error("Не удалось загрузить аватар")
+            my_popup('Не удалось загрузить аватар')
+    return False
+
+
+def change_group_pic(url, header, group_id, pic_id):
+    try:
+        json_change_pic = {"groupId": group_id,
+                           "fileId": pic_id}
+        res = requests.post(url, headers=header, json=json_change_pic)
+        if res:
+            if res.status_code == 200:
+                # path=Path(Path.cwd())
+                print('Аватар группы изменён')
+                logging.info('Аватар группы изменён')
                 # my_popup('Аватар пользователя изменён')
                 return True
             else:
