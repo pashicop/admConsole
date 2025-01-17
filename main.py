@@ -1839,8 +1839,12 @@ def make_modify_user_window(user: dict):
                   # size=(300, 140),
                   pad=((8, 0), (10, 10))),
          sg.Frame('Аватар', [
-             [sg.Image(filename=Path(Path.cwd(), 'user_pic.png'), pad=10) if user_pic \
-                  else sg.Image(data=ICON_DEF_USER_PIC, pad=10),
+             [sg.Image(filename=Path(Path.cwd(), 'user_pic.png'),
+                       key='-user-image-',
+                       pad=10) if user_pic \
+                  else sg.Image(data=ICON_DEF_USER_PIC,
+                                key='-user-def-image-',
+                                pad=10),
              sg.Push(),
              sg.Column([[
              #     sg.Button(button_text='Сменить',
@@ -2319,8 +2323,12 @@ def make_modify_group_window(group: dict):
                                 default=group['is_disabled'],
                                 key='GroupModifyBlocked')],
         [sg.Frame('Аватар', [
-             [sg.Image(filename=Path(Path.cwd(), 'group_pic.png'), pad=10) if group_pic \
-                  else sg.Image(data=ICON_DEF_USER_PIC, pad=10),
+             [sg.Image(filename=Path(Path.cwd(), 'group_pic.png'),
+                       key='-group-image-',
+                       pad=10) if group_pic \
+                  else sg.Image(data=ICON_DEF_USER_PIC,
+                                key='-group-def-image-',
+                                pad=10),
              sg.Push(),
              sg.Column([[
              #     sg.Button(button_text='Сменить',
@@ -5009,6 +5017,15 @@ if __name__ == '__main__':
                                         modify_change_pic = upload_user_pic(BASE_URL_USER_PIC_UPLOAD, HEADER_dict, val_modify_user['modifyUserPic'])
                                         if modify_change_pic:
                                             user_pic_id = modify_change_pic['id']
+                                            # print('Пытаемся обновить')
+                                            if user_to_change['profile_picture_id'] != '00000000-0000-0000-0000-000000000000':
+                                                window_modify_user['-user-image-'].update(filename=Path(Path.cwd(), 'new_user_pic.png'))
+                                            else:
+                                                window_modify_user['-user-def-image-'].update(
+                                                    filename=Path(Path.cwd(), 'new_user_pic.png'))
+                                            # print('Пытаемся обновить..')
+                                            # window_modify_user.refresh()
+                                            # print('Пытаемся обновить....')
                                     if ev_modify_user == 'modifyUserShowDevice':
                                         modify_show_device = True
                                         last_device = get_last_device()
@@ -5333,7 +5350,14 @@ if __name__ == '__main__':
                                         modify_change_gr_pic = upload_group_pic(BASE_URL_USER_PIC_UPLOAD, HEADER_dict, val_modify_group['modifyGroupPic'])
                                         if modify_change_gr_pic:
                                             gr_pic_id = modify_change_gr_pic['id']
-                                            print(gr_pic_id)
+                                            # print(gr_pic_id)
+                                            if group_to_change[
+                                                'profile_picture_id'] != '00000000-0000-0000-0000-000000000000':
+                                                window_modify_group['-group-image-'].update(
+                                                    filename=Path(Path.cwd(), 'new_group_pic.png'))
+                                            else:
+                                                window_modify_group['-group-def-image-'].update(
+                                                    filename=Path(Path.cwd(), 'new_group_pic.png'))
                                             window_modify_group['modifyGroupButton'].update(disabled=False)
                                             window_modify_group['modifyGroupButton'].update(button_color=button_color_2)
                                     elif ev_modify_group == 'modifyGroupButton':
