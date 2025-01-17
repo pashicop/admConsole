@@ -1781,6 +1781,10 @@ def make_add_user_window():
 
 
 def make_modify_user_window(user: dict):
+    # TODO delete update
+    # update_all()
+    print(user)
+    print(user['profile_picture_id'])
     org_name = get_org_by_id(user['organization_id'])
     org_list = get_orgs_from_db_list_names()
     user_pic = get_user_pic(BASE_URL_USER_PIC, HEADER_dict, user['profile_picture_id'])
@@ -4903,6 +4907,8 @@ if __name__ == '__main__':
                             if not values['-users-tree-']:
                                 my_popup('Не выбран пользователь')
                             else:
+                                # TODO delete update
+                                update_all()
                                 users_from_db = get_users_from_db()
                                 if filter_status:
                                     user_to_change = filtered_users_list_of_dict[values['-users-'][0]]
@@ -4928,7 +4934,6 @@ if __name__ == '__main__':
                                     ev_modify_user, val_modify_user = window_modify_user.Read()
                                     modify_fix_device = False
                                     modify_show_device = False
-
                                     modify_success = False
                                     modify_pic = False
                                     if ev_modify_user == sg.WIN_CLOSED or ev_modify_user == 'Exit':
