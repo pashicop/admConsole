@@ -24,6 +24,8 @@ import sys
 from enum import Enum
 import re
 from datetime import date, datetime
+
+from PyInstaller.lib.modulegraph.modulegraph import header
 from omega_data import *
 
 PATH_CONFIG = Path(Path.cwd(), 'config')
@@ -1832,10 +1834,31 @@ def make_modify_user_window(user: dict):
                   # size=(300, 140),
                   pad=((8, 0), (10, 10))),
          sg.Frame('Аватар', [
-             [sg.B('Сменить'), sg.Push(), sg.Image(filename=Path(Path.cwd(), 'user_pic.png')) if user_pic else sg.Image(data=ICON_DEF_USER_PIC)],
-              # ],
-             [sg.T(user['profile_picture_id'],)]
-         ])],
+             [sg.Image(filename=Path(Path.cwd(), 'user_pic.png'), pad=10) if user_pic \
+                  else sg.Image(data=ICON_DEF_USER_PIC, pad=10),
+             sg.Push(),
+             sg.Column([[
+             #     sg.Button(button_text='Сменить',
+             #            key='modifyUserPic',
+             #            pad=5,
+             #            size=15,
+             #            disabled_button_color='gray')
+             # ],[
+                 sg.FileBrowse('Сменить',
+                               # target='-User-pic-',
+                               disabled=False,
+                               key='modifyUserPic',
+                               pad=5,
+                               size=15,
+                               initial_folder='../',
+                               enable_events=True,
+                               file_types=(("Изображение", "*.jpg"),))
+             ]], vertical_alignment='top'),]
+             # [sg.T(user['profile_picture_id']
+                   ],
+                  expand_x=True,
+                  expand_y=True,
+                  pad=((8, 0), (10, 10)))],
         # [sg.Push(),
         #  sg.B(SYMBOL_DOWN_ARROWHEAD,
         #          # pad=(5, 0),
@@ -4544,6 +4567,8 @@ if __name__ == '__main__':
                         BASE_URL_DEVICE = BASE_URL_PROTO + ip + ':' + str(port) + '/api/device/'
                         BASE_URL_ORG = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/org'
                         BASE_URL_USER_PIC = BASE_URL_PROTO + ip + ':' + str(port) + '/api/file/download'
+                        BASE_URL_USER_PIC_UPLOAD = BASE_URL_PROTO + ip + ':' + str(port) + '/api/file/uploadProfilePicture'
+                        BASE_URL_USER_PIC_UPLOAD = BASE_URL_PROTO + ip + ':' + str(port) + '/api/file/uploadProfilePicture'
                     else:
                         BASE_URL_PROTO = 'http://'
                         BASE_URL = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/'
@@ -4554,6 +4579,7 @@ if __name__ == '__main__':
                         BASE_URL_DEVICE = BASE_URL_PROTO + ip + ':' + str(port) + '/api/device/'
                         BASE_URL_ORG = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/org'
                         BASE_URL_USER_PIC = BASE_URL_PROTO + ip + ':' + str(port) + '/api/file/download'
+                        BASE_URL_USER_PIC_UPLOAD = BASE_URL_PROTO + ip + ':' + str(port) + '/api/file/uploadProfilePicture'
                     server_status = check_server(BASE_URL_PING)
                     current_db = server_status['db']
                     if server_status['run']:
@@ -4897,11 +4923,14 @@ if __name__ == '__main__':
                                 window_modify_user.Element('UserModifyName').SetFocus()
                                 password_clear = False
                                 modify_role = False
+                                modify_change_pic = False
                                 while True:
                                     ev_modify_user, val_modify_user = window_modify_user.Read()
                                     modify_fix_device = False
                                     modify_show_device = False
+
                                     modify_success = False
+                                    modify_pic = False
                                     if ev_modify_user == sg.WIN_CLOSED or ev_modify_user == 'Exit':
                                         break
                                     if ev_modify_user == 'userModifyPassword':
@@ -4934,6 +4963,10 @@ if __name__ == '__main__':
                                             # or ev_modify_user == 'modifyUserRoleFixDevice'
                                             or ev_modify_user == 'modifyUserRoleMultipleDevices'):
                                         modify_role = True
+                                    if ev_modify_user == 'modifyUserPic':
+                                        modify_change_pic = upload_user_pic(BASE_URL_USER_PIC_UPLOAD, HEADER_dict, val_modify_user['modifyUserPic'])
+                                        if modify_change_pic:
+                                            user_pic_id = modify_change_pic['id']
                                     if ev_modify_user == 'modifyUserShowDevice':
                                         modify_show_device = True
                                         last_device = get_last_device()
@@ -5032,7 +5065,11 @@ if __name__ == '__main__':
                                             modify_priority = False
                                             modify_org = False
                                             modify_u_t = False
+                                            modify_pic = False
                                             modify_success = False
+                                            if modify_change_pic:
+                                                # modify_user_dict['profilePictureId'] = user_pic_id
+                                                pass
                                             if val_modify_user['UserModifyName'] != user_to_change['name']:
                                                 modify_user_dict['displayName'] = val_modify_user['UserModifyName']
                                                 modify_name = True
@@ -5164,14 +5201,21 @@ if __name__ == '__main__':
                                                 except Exception as e:
                                                     print(f'Не удалось обновить данные абонента - {e}')
                                                     logging.error("Не удалось обновить данные абонента")
+                                            if modify_change_pic:
+                                                modify_pic = change_user_pic(BASE_URL +
+                                                                             'changeUserProfilePicture',
+                                                                             HEADER_dict,
+                                                                             user_to_change["id"],
+                                                                             user_pic_id)
                                             if (modify_name or modify_password
                                                     or modify_is_blocked
                                                     or modify_priority
                                                     or modify_u_t
                                                     or modify_fix_device
                                                     or modify_org
-                                                    or modify_role):
-                                                if modify_success:
+                                                    or modify_role
+                                                    or modify_pic):
+                                                if modify_success or modify_pic:
                                                     update_all()
                                                     my_popup("Пользователь изменён!")
                                                 else:
@@ -5179,7 +5223,7 @@ if __name__ == '__main__':
                                                 window_modify_user.close()
                                             else:
                                                 my_popup("Нет никаких изменений!")
-                                    if not modify_fix_device and not modify_show_device and not modify_success:
+                                    if not modify_fix_device and not modify_show_device and not modify_success and not modify_pic:
                                         window_modify_user['modifyUserButton'].update(disabled=False)
                                         window_modify_user['modifyUserButton'].update(button_color=button_color_2)
                             additional_window = False

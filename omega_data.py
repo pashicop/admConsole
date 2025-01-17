@@ -5,6 +5,8 @@ import logging
 from main import my_popup, check
 import PySimpleGUI as sg
 from pathlib import Path
+import uuid
+from PIL import Image
 
 
 SYMBOL_X_SMALL = '✗'
@@ -651,3 +653,64 @@ def get_user_pic(url, header, pic_id):
             my_popup('Не удалось запросить аватар')
             return False
 
+
+def upload_user_pic(url, header, pic_path):
+    res = False
+    try:
+        im = Image.open(pic_path)
+        im.thumbnail((64, 64), Image.Resampling.LANCZOS)
+        im.save(Path(Path.cwd(), 'new_user_pic.png'))
+    except IOError as e:
+        print('Не могу открыть файл с аватаром')
+        logging.error('Не могу открыть файл с аватаром')
+    with open(Path(Path.cwd(), 'new_user_pic.png'), "rb") as file:
+        files = {str(uuid.uuid4()): file}
+        # files = {'file': '123'}
+        try:
+            res = requests.post(url,
+                                files=files,
+                                headers=header)
+            if res.status_code == 200:
+                user_pic_dict = json.loads(res.text)
+                print('Аватар загружен на сервер')
+                logging.info('Аватар загружен на сервер')
+                # my_popup('Аватар загружен на сервер')
+                return user_pic_dict
+            else:
+                print(f'Не удалось загрузить аватар - {res.status_code}, {res.text}')
+                logging.error("Не удалось загрузить аватар")
+                my_popup('Не удалось загрузить аватар')
+        except Exception as e:
+            print(f'Не удалось загрузить аватар - {e}')
+            logging.error("Не удалось загрузить аватар")
+            my_popup('Не удалось загрузить аватар')
+    return False
+
+
+def change_user_pic(url, header, user_id, pic_id):
+    try:
+        json_change_pic = {"userId": user_id,
+                           "fileId": pic_id}
+        res = requests.post(url, headers=header, json=json_change_pic)
+        if res:
+            if res.status_code == 200:
+                # path=Path(Path.cwd())
+                print('Аватар пользователя изменён')
+                logging.info('Аватар пользователя изменён')
+                # my_popup('Аватар пользователя изменён')
+                return True
+            else:
+                print(f'Не удалось скачать аватар - {res.status_code}')
+                logging.error(f"Не удалось скачать аватар - {res.status_code}")
+                my_popup(f'Не удалось скачать аватар - {res.status_code}')
+                return False
+        else:
+            print(f'Не удалось запросить аватар - нет ответа от сервера')
+            logging.error("Не удалось запросить аватар - нет ответа от сервера")
+            my_popup('Не удалось запросить аватар - нет ответа от сервера')
+            return False
+    except Exception as e:
+        print(f'Не удалось запросить аватар - {e}')
+        logging.error("Не удалось запросить аватар")
+        my_popup('Не удалось запросить аватар')
+        return False
