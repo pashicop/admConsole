@@ -1768,15 +1768,16 @@ def make_add_user_window():
                                 text_color='red',
                                 enable_events=True,
                                 key='addUserBlock')],
-        [sg.Push(), sg.Button(button_text='Добавить', key='addUserButton',
+        [sg.Push(), sg.Button(button_text='Добавить',
+                              key='addUserButton',
                               disabled=True,
                               disabled_button_color='gray')]
     ]
-    return sg.Window('Добавить пользователя', layout_add_user,
+    return sg.Window('Добавить пользователя',
+                     layout_add_user,
                      icon=ICON_BASE_64,
                      use_ttk_buttons=True,
                      finalize=True,
-                     # disable_minimize=True,
                      modal=True
                      )
 
@@ -2388,10 +2389,16 @@ def make_clone_user_window(user):
                    button_color='#ffffff',
                    image_data=ICON_BLANK_BASE_64,
                    disabled=True)],
-        [sg.Push(), sg.Ok(button_text='Клонировать', key='cloneUserButton')]
+        [sg.Push(), sg.Ok(button_text='Клонировать',
+                          key='cloneUserButton',
+                          disabled=True)]
     ]
-    return sg.Window(('Клонировать пользователя ' + user), layout_clone_user, icon=ICON_BASE_64, use_ttk_buttons=True,
-                     finalize=True, modal=True)
+    return sg.Window(('Клонировать пользователя ' + user),
+                     layout_clone_user,
+                     icon=ICON_BASE_64,
+                     use_ttk_buttons=True,
+                     finalize=True,
+                     modal=True)
 
 
 def make_add_group_window():
@@ -6850,12 +6857,12 @@ if __name__ == '__main__':
                                     ev_clone_user, val_clone_user = window_clone_user.Read()
                                     if ev_clone_user == sg.WIN_CLOSED or ev_clone_user == 'Exit':
                                         break
-                                    if ev_clone_user == 'CloneUserPassword':
+                                    elif ev_clone_user == 'CloneUserPassword':
                                         window_clone_user['CloneUserShowPassword'].update(
                                             image_data=ICON_SHOW_BASE_64)
                                         window_clone_user['CloneUserShowPassword'].update(
                                             disabled=False)
-                                    if ev_clone_user == 'CloneUserShowPassword':
+                                    elif ev_clone_user == 'CloneUserShowPassword':
                                         if password_clear:
                                             window_clone_user['CloneUserPassword'].update(password_char='*')
                                             window_clone_user['CloneUserShowPassword'].update(
@@ -6866,7 +6873,7 @@ if __name__ == '__main__':
                                             window_clone_user['CloneUserShowPassword'].update(
                                                 image_data=ICON_HIDE_BASE_64)
                                             password_clear = True
-                                    if ev_clone_user == 'cloneUserButton':
+                                    elif ev_clone_user == 'cloneUserButton':
                                         if validate('clone_user'):
                                             clone_user_login, \
                                                 clone_user_name, \
@@ -6955,6 +6962,9 @@ if __name__ == '__main__':
                                             except Exception as e:
                                                 print(f'Не удалось создать абонента - {e}')
                                                 logging.error("Не удалось создать абонента")
+                                    else:
+                                        window_clone_user['cloneUserButton'].update(disabled=False)
+                                        window_clone_user['cloneUserButton'].update(button_color=button_color_2)
                             additional_window = False
                         if event == '-BlockUser-':
                             additional_window = True
