@@ -1457,16 +1457,24 @@ def make_get_id(srv_id):
                      finalize=True)
 
 
-def make_updates_window():
+def make_updates_window(upd_td):
     server_ver = get_version()
     # update_list = get_updates()
-    update_list = get_updates_in_dict()
-    upd_td = get_treedata_updates(update_list)
     layout = [
         [sg.Text('Версия сервера: ' + server_ver)],
         [sg.Frame('Обновления мобильного приложения',
                   [
                       [
+                          sg.Button('', disabled_button_color='white',
+                                    disabled=False,
+                                    image_data=ICON_COLLAPSE_32_BASE_64_BLUE,
+                                    button_color='white',
+                                    tooltip='Свернуть',
+                                    border_width=0,
+                                    metadata='collapse',
+                                    key='-СollapseExpandUpd-',
+                                    pad=((4, 10), (0, 3))
+                                    ),
                           sg.Push(),
                           sg.Button('', disabled_button_color='white',
                                     image_data=ICON_ADD_BASE_64_BLUE,
@@ -6387,7 +6395,9 @@ if __name__ == '__main__':
                             additional_window = False
                         if event == 'Обновления':
                             additional_window = True
-                            window_updates = make_updates_window()
+                            update_dict = get_updates_in_dict()
+                            upd_treedata = get_treedata_updates(update_dict)
+                            window_updates = make_updates_window(upd_treedata)
                             # after_change = False
                             while True:
                                 ev_upd, val_upd = window_updates.Read()
@@ -6400,6 +6410,20 @@ if __name__ == '__main__':
                                     if val_upd['-updates-']:
                                         window_updates['-EditUpdate-'].update(disabled=False)
                                         window_updates['-DelUpdate-'].update(disabled=False)
+                                if ev_upd == '-СollapseExpandUpd-':
+                                    if window_updates['-СollapseExpandUpd-'].metadata == 'collapse':
+                                        window_updates['-СollapseExpandUpd-'].update(image_data=ICON_EXPAND_32_BASE_64_BLUE)
+                                        for key in upd_treedata.tree_dict:
+                                            window_updates['-updates-tree-'].Widget.item(key_to_id(key, window_updates['-updates-tree-']), open=False)
+                                        window_updates['-СollapseExpandUpd-'].metadata = 'expand'
+                                        window_updates['-СollapseExpandUpd-'].TooltipObject.text = 'Развернуть'
+                                    else:
+                                        window_updates['-СollapseExpandUpd-'].update(
+                                            image_data=ICON_COLLAPSE_32_BASE_64_BLUE)
+                                        for key in upd_treedata.tree_dict:
+                                            window_updates['-updates-tree-'].Widget.item(key_to_id(key, window_updates['-updates-tree-']), open=True)
+                                        window_updates['-СollapseExpandUpd-'].metadata='collapse'
+                                        window_updates['-СollapseExpandUpd-'].TooltipObject.text = 'Свернуть'
                                 if ev_upd == '-DelUpdate-':
                                     del_update(update_id)
                                     updates_list = get_updates()
