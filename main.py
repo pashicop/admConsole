@@ -70,6 +70,7 @@ ICON_GW5_BLOCK_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAABQAAAAQCAQAAAC8EZeQAAAACXBIWX
 ICON_PLAY_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAIFSURBVFiF7ZbPSxRhGMe/z7vKgl7yEIEdDAVJkSB0x6P/QQdnDx38dQllx3CIID0V3SQicNslCArtpOOuHsRbh1JYnHGpLiKCRQch6tJpQ1vfx4MarL677c6+6xzqe3ze53m/n/f7zgwD/OsiVTFijg8AeABwK4BNEB57i4m3FwJgRGNDzDSr6F2Rh8LOLsd3dQKEzhaaO4w3AK4oettJ8OjVzt7Gpq6ejR9b3oEOAKGodZToDwM82SDFjmFawyhyhZXo3AYR0+IKxrNSSDvrJNf9AqgSqEDcLSS9j5jWws1+q8XPDlUmUKAcET0JUf10xnn2q9yhKhMoUAMzP8zLgx0jGhtCmc+HzgQKxfQOIWl7TvJjqTadCRSKuA+SsoZpzfXemlC91jUGONmfgUFZn9+O9MdGggA41SUQve6JWreDAjgWYypQAALaAwUA8DlQAAaeBgWwz+B7m6nEq7MLdbV2JsY6hcTohhPfUq3XMoGfANnujct9xcyB2iWwUicOxzLOiz2kSjfqBtgjxl03nVgqd0DXFeQBzOQEX6/EHNCTwCcw3/HSSc/PcDUJ5IgweU187/ZrDqgTkPgLGAGrvxmxD6nEV9evcwmALwDaivR/A5Ptpp/PV+n7R6qTnvtcAmCAXobDstPTaA4U+W8zzPExBt8H0AxChiAeuYvxNZ3G/3WqI2Z2nhWNyE9nAAAAAElFTkSuQmCC'
 ICON_STOP_BASE64 = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAC3SURBVFiF7dc9CgIxEEDhN1EQtBERca29jHdY8QSWio0/4FG29DweQbewsVFBcMdCNiwKdgmIM1VIQt7XBv59pFwMR9NGp1lsFUlBk0C5XKXIbtJb7nebO0C9PHrFmYGGaQOgiajMm3pSYAHg/BGMA5bfZ1IuXGWzHxHgW+7brRhjAAMYwAAGMIABDGAAA1QAkkfsHj4AKkUWry++5X9G50tt1W49ECRFGYTpckTJrq67DvL+T84TxKYnTN/X+rAAAAAASUVORK5CYII='
 ICON_DEF_USER_PIC = b'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'
+ICON_DEF_GROUP_PIC = b'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'
 WARN_FREE_SPACE = 80
 ALARM_FREE_SPACE = 95
 WARN_LIC_DAYS = 30
@@ -2224,7 +2225,7 @@ def make_device(dev_l):
 def make_modify_group_window(group: dict):
     org_name = get_org_by_id(group['organization_id'])
     org_list = get_orgs_from_db_list_names()
-    print(group['profile_picture_id'])
+    # print(group['profile_picture_id'])
     group_pic = get_group_pic(BASE_URL_USER_PIC, HEADER_dict, group['profile_picture_id'])
     if group_pic:
         try:
@@ -2279,20 +2280,7 @@ def make_modify_group_window(group: dict):
                                 default=group['is_disabled'],
                                 key='GroupModifyBlocked')],
         [sg.Frame('Аватар', [
-             [sg.Image(filename=Path(Path.cwd(), 'group_pic.png'),
-                       key='-group-image-',
-                       pad=10) if group_pic \
-                  else sg.Image(data=ICON_DEF_USER_PIC,
-                                key='-group-def-image-',
-                                pad=10),
-             sg.Push(),
-             sg.Column([[
-             #     sg.Button(button_text='Сменить',
-             #            key='modifyUserPic',
-             #            pad=5,
-             #            size=15,
-             #            disabled_button_color='gray')
-             # ],[
+             [sg.Column([[
                  sg.FileBrowse('Сменить',
                                # target='-User-pic-',
                                disabled=False,
@@ -2302,7 +2290,15 @@ def make_modify_group_window(group: dict):
                                initial_folder='../',
                                enable_events=True,
                                file_types=(("Изображение", "*.jpg"),))
-             ]], vertical_alignment='top'),]
+             ]], vertical_alignment='top'),
+             sg.Push(),
+             sg.Image(filename=Path(Path.cwd(), 'group_pic.png'),
+                      key='-group-image-',
+                      pad=10) if group_pic \
+                 else sg.Image(data=ICON_DEF_GROUP_PIC,
+                               key='-group-def-image-',
+                               pad=10)
+             ,]
                    ],
                   expand_x=True,
                   expand_y=True,
@@ -2398,6 +2394,25 @@ def make_add_group_window():
                                 size=15,
                                 enable_events=True,
                                 key='addGroupBlock')],
+        [sg.Frame('Аватар', [[sg.Column([[
+                 sg.FileBrowse('Загрузить',
+                               # target='-User-pic-',
+                               disabled=False,
+                               key='AddGroupPic',
+                               pad=5,
+                               size=15,
+                               initial_folder='../',
+                               enable_events=True,
+                               file_types=(("Изображение", "*.jpg"),))
+             ]], vertical_alignment='top'),
+             sg.Push(),
+             sg.Image(data=ICON_DEF_GROUP_PIC,
+                      key='-add-group-def-image-',
+                      pad=10)
+             , ]],
+                  expand_x=True,
+                  expand_y=True,
+                  pad=((8, 0), (10, 10)))],
         [sg.Push(), sg.Button(button_text='Добавить', disabled=True, key='addGroupButton',
                               disabled_button_color='gray')]
     ]
@@ -7351,11 +7366,22 @@ if __name__ == '__main__':
                             additional_window = True
                             window_add_group = make_add_group_window()
                             window_add_group.Element('GroupName').SetFocus()
+                            add_gr_pic = False
                             while True:
                                 ev_add_group, val_add_group = window_add_group.Read()
                                 print(ev_add_group, val_add_group)
                                 if ev_add_group == sg.WIN_CLOSED or ev_add_group == 'Exit':
                                     break
+                                elif ev_add_group == 'AddGroupPic':
+                                    add_gr_pic = upload_group_pic(BASE_URL_USER_PIC_UPLOAD, HEADER_dict,
+                                                                            val_add_group['AddGroupPic'])
+                                    if add_gr_pic:
+                                        gr_pic_id = add_gr_pic['id']
+                                        # print(gr_pic_id)
+                                        window_add_group['-add-group-def-image-'].update(
+                                                filename=Path(Path.cwd(), 'new_group_pic.png'))
+                                        window_add_group['addGroupButton'].update(disabled=False)
+                                        window_add_group['addGroupButton'].update(button_color=button_color_2)
                                 elif ev_add_group == 'addGroupButton':
                                     if validate('add_group'):
                                         new_group_name = val_add_group['GroupName']
@@ -7367,13 +7393,13 @@ if __name__ == '__main__':
                                                           'groupType': new_group_is_emergency,
                                                           'OrganizationId': get_id_by_org(val_add_group['GroupAddOrg'])}
                                         try:
-                                            res_add_user = requests.post(BASE_URL + 'addGroup',
+                                            res_add_group = requests.post(BASE_URL + 'addGroup',
                                                                          json=add_group_dict, headers=HEADER_dict)
-                                            if res_add_user.status_code == 200:
+                                            if res_add_group.status_code == 200:
                                                 current_db += 1
                                                 logging.info(f'Группа {new_group_name} добавлена')
                                                 if val_add_group['addGroupBlock']:
-                                                    res_block = block_group(new_group_blocked, res_add_user.text[1:-1])
+                                                    res_block = block_group(new_group_blocked, res_add_group.text[1:-1])
                                                     if res_block:
                                                         if res_block.status_code == 200:
                                                             current_db += 1
@@ -7386,6 +7412,18 @@ if __name__ == '__main__':
                                                                 logging.error(
                                                                     f'Ошибка при блокировании группы - '
                                                                     f'{res_block.status_code}')
+                                                if add_gr_pic:
+                                                    res_add_gr_pic = change_group_pic(BASE_URL +
+                                                                                     'changeGroupProfilePicture',
+                                                                                     HEADER_dict,
+                                                                                     res_add_group.text[1:-1],
+                                                                                     gr_pic_id)
+                                                    if res_add_gr_pic:
+                                                        print(f'Аватар добавлен')
+                                                        logging.info('Аватар добавлен')
+                                                    else:
+                                                        print(f'Аватар НЕ добавлен')
+                                                        logging.warning('Аватар добавлен')
                                                 update_all()
                                                 my_popup("Группа добавлена!")
                                                 window_add_group.close()
