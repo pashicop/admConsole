@@ -1501,7 +1501,7 @@ def make_updates_window(upd_td):
                                     pad=((4, 10), (0, 3)))],
                       [sg.Tree(data=upd_td,
                                key='-updates-tree-',
-                               headings=['id', 'Обязательное', 'Изменения', 'Описание'],
+                               headings=['id', 'Обязательное', 'Изменения', 'Комментарии'],
                                col0_width=20,
                                col0_heading='Обновление',
                                # def_col_width=30,
@@ -1544,6 +1544,7 @@ def make_updates_window(upd_td):
 
 
 def make_add_update_window(update_info=None):
+    print(update_info)
     layout = [
         [sg.Frame('Обновления мобильного приложения',
                   [
@@ -1578,7 +1579,7 @@ def make_add_update_window(update_info=None):
                                size=17,
                                justification='right',
                                pad=(0, 5)),
-                       sg.Input(default_text=update_info[2] if update_info else '',
+                       sg.Input(default_text=update_info['version'] if update_info else '',
                                 size=30,
                                 key='-ver-',
                                 enable_events=True,
@@ -1593,7 +1594,9 @@ def make_add_update_window(update_info=None):
                                ),
                        sg.Combo(list(type_app),
                                 size=28,
-                                default_value=update_info[1] if update_info else list(type_app.keys())[list(type_app.values()).index(0)],
+                                default_value=list(type_app.keys())[list(type_app.values()).index(update_info['type'])] \
+                                    if update_info else \
+                                    list(type_app.keys())[list(type_app.values()).index(0)],
                                 disabled=False if update_info else True,
                                 enable_events=True,
                                 key='-type-app-',
@@ -1602,7 +1605,7 @@ def make_add_update_window(update_info=None):
                        ],
                       [sg.Push(),
                        sg.Checkbox('Обязательное',
-                                   default=True if update_info and update_info[3] == 'Да' else False,
+                                   default=True if update_info and update_info['force'] is True else False,
                                    enable_events=True,
                                    disabled=False if update_info else True,
                                    key='-isForced-',
@@ -1619,7 +1622,8 @@ def make_add_update_window(update_info=None):
                                     pad=((11, 109), 5),
                                     no_scrollbar=True,
                                     enable_events=True,
-                                    default_text=update_info[4] if update_info else '',
+                                    default_text='' if update_info and update_info['notes'] is None \
+                                        else update_info['notes'] if update_info else '',
                                     key='-notes-',
                                     disabled=False if update_info else True,
                                     ),
@@ -1635,7 +1639,8 @@ def make_add_update_window(update_info=None):
                                     pad=((10, 10), (5, 10)),
                                     no_scrollbar=True,
                                     enable_events=True,
-                                    default_text=str(update_info[5]).replace(' | ', '\n') if update_info else '',
+                                    default_text='' if update_info and update_info['changelog'] is None \
+                                        else str(update_info['changelog']).replace(' | ', '\n') if update_info else '',
                                     key='-changelog-',
                                     disabled=False if update_info else True,
                                     ),
@@ -2782,15 +2787,21 @@ def get_updates_in_dict():
     return updates_dict
 
 
-def get_update_id_from_table():
-    id = ''
-    print(val_upd)
-    if val_upd['-updates-']:
-        index_upd = val_upd['-updates-'][0]
-        print(val_upd['-updates-'][0])
-        id = window_updates['-updates-'].Values[index_upd][0]
-        print(window_updates['-updates-'].Values[index_upd][0])
-    return id
+def get_info_update(upd_list_of_dict, id):
+    for update in upd_list_of_dict:
+        if update['id'] == id:
+            return update
+    return False
+
+# def get_update_id_from_table():
+#     id = ''
+#     print(val_upd)
+#     if val_upd['-updates-']:
+#         index_upd = val_upd['-updates-'][0]
+#         print(val_upd['-updates-'][0])
+#         id = window_updates['-updates-'].Values[index_upd][0]
+#         print(window_updates['-updates-'].Values[index_upd][0])
+#     return id
 
 
 def del_update(id):
@@ -2965,13 +2976,13 @@ def clear_devices(us_id):
         logging.error("Не удалось очистить устройства")
 
 
-def print_chosen_device(val):
-    # print(val)
-    if val['-devices-tree-']:
-        dev_id = val['-devices-tree-'][0]
-        print(dev_id)
-        print(window_devices.key_dict['-devices-tree-'].Values[dev_id])
-        # window_devices.ReturnValuesDictionary['']
+# def print_chosen_device(val):
+#     # print(val)
+#     if val['-devices-tree-']:
+#         dev_id = val['-devices-tree-'][0]
+#         print(dev_id)
+#         print(window_devices.key_dict['-devices-tree-'].Values[dev_id])
+#         # window_devices.ReturnValuesDictionary['']
 
 
 # def change_dev_user(type: str):
@@ -6401,15 +6412,20 @@ if __name__ == '__main__':
                             # after_change = False
                             while True:
                                 ev_upd, val_upd = window_updates.Read()
-                                # print(ev_upd, val_upd)
+                                print(ev_upd, val_upd)
                                 if ev_upd == sg.WIN_CLOSED or ev_upd == 'Exit':
                                     break
-                                if ev_upd == '-updates-':
-                                    print(val_upd)
-                                    update_id = get_update_id_from_table()
-                                    if val_upd['-updates-']:
+                                if ev_upd == '-updates-tree-':
+                                    if val_upd['-updates-tree-']:
+                                        upd_id = val_upd['-updates-tree-'][0]
+                                        print(upd_id)
+                                    if upd_id not in type_app.values():
+                                        upd_dict = get_info_update(update_dict, upd_id)
                                         window_updates['-EditUpdate-'].update(disabled=False)
                                         window_updates['-DelUpdate-'].update(disabled=False)
+                                    else:
+                                        window_updates['-EditUpdate-'].update(disabled=True)
+                                        window_updates['-DelUpdate-'].update(disabled=True)
                                 if ev_upd == '-СollapseExpandUpd-':
                                     if window_updates['-СollapseExpandUpd-'].metadata == 'collapse':
                                         window_updates['-СollapseExpandUpd-'].update(image_data=ICON_EXPAND_32_BASE_64_BLUE)
@@ -6425,9 +6441,9 @@ if __name__ == '__main__':
                                         window_updates['-СollapseExpandUpd-'].metadata='collapse'
                                         window_updates['-СollapseExpandUpd-'].TooltipObject.text = 'Свернуть'
                                 if ev_upd == '-DelUpdate-':
-                                    del_update(update_id)
-                                    updates_list = get_updates()
-                                    window_updates['-updates-'].update(updates_list)
+                                    del_update(upd_id)
+                                    upd_treedata = get_treedata_updates(get_updates_in_dict())
+                                    window_updates['-updates-tree-'].update(upd_treedata)
                                     window_updates['-EditUpdate-'].update(disabled=True)
                                     window_updates['-DelUpdate-'].update(disabled=True)
                                     # after_change = True
@@ -6461,8 +6477,9 @@ if __name__ == '__main__':
                                                 window_add_update['-isForced-'].update('', disabled=True)
                                                 window_add_update['-FILENAME-UPDATE-'].update('', disabled=True)
                                                 window_add_update['-type-app-'].update(list(type_app.keys())[list(type_app.values()).index(0)], disabled=True)
-                                                updates_list = get_updates()
-                                                window_updates['-updates-'].update(updates_list)
+                                                update_dict = get_updates_in_dict()
+                                                upd_treedata = get_treedata_updates(update_dict)
+                                                window_updates['-updates-tree-'].update(upd_treedata)
                                                 window_updates['-EditUpdate-'].update(disabled=True)
                                                 window_updates['-DelUpdate-'].update(disabled=True)
                                                 # after_change = True
@@ -6470,15 +6487,14 @@ if __name__ == '__main__':
                                                 break
                                             window_add_update['-upload-apk-'].update(disabled=True, button_color=button_color)
                                 if ev_upd == '-EditUpdate-':
-                                    window_add_update = make_add_update_window(window_updates['-updates-'].Values[val_upd['-updates-'][0]])
+                                    window_add_update = make_add_update_window(upd_dict)
                                     while True:
                                         ev_edit_upd, val_edit_upd = window_add_update.Read()
                                         print(ev_edit_upd, val_edit_upd)
                                         if ev_edit_upd == sg.WIN_CLOSED or ev_edit_upd == 'Exit':
                                             break
                                         if ev_edit_upd == '-upload-apk-':
-                                            print(f"updates - {window_updates['-updates-'].Values[val_upd['-updates-'][0]][0]}")
-                                            update_id = edit_app(window_updates['-updates-'].Values[val_upd['-updates-'][0]][0])
+                                            update_id = edit_app(upd_id)
                                             if update_id:
                                                 window_add_update['-ver-'].update('', disabled=True)
                                                 window_add_update['-notes-'].update('', disabled=True)
@@ -6486,8 +6502,9 @@ if __name__ == '__main__':
                                                 window_add_update['-isForced-'].update('', disabled=True)
                                                 window_add_update['-FILENAME-UPDATE-'].update('', disabled=True)
                                                 window_add_update['-type-app-'].update(list(type_app.keys())[list(type_app.values()).index(0)], disabled=True)
-                                                updates_list = get_updates()
-                                                window_updates['-updates-'].update(updates_list)
+                                                update_dict = get_updates_in_dict()
+                                                upd_treedata = get_treedata_updates(update_dict)
+                                                window_updates['-updates-tree-'].update(upd_treedata)
                                                 window_updates['-EditUpdate-'].update(disabled=True)
                                                 window_updates['-DelUpdate-'].update(disabled=True)
                                                 # after_change = True
@@ -6506,9 +6523,9 @@ if __name__ == '__main__':
                                 print(ev_devs, val_devs)
                                 if ev_devs == sg.WIN_CLOSED or ev_devs == 'Exit':
                                     break
-                                if ev_devs == '-devices-':
-                                    # print(1)
-                                    print_chosen_device(val_devs)
+                                # if ev_devs == '-devices-':
+                                #     # print(1)
+                                #     print_chosen_device(val_devs)
                                 if ev_devs == '-devices-tree-':
                                     if val_devs['-devices-tree-']:
                                         dev_id = val_devs['-devices-tree-'][0]
