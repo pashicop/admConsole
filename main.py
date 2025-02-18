@@ -162,7 +162,7 @@ sg.theme_add_new('OmegaTheme', omega_theme)
 sg.theme('OmegaTheme')
 # OMEGA THEME end
 current_db = 0
-version = '2.0.8'
+version = '2.1.0'
 
 
 def get_branch():
@@ -1458,29 +1458,15 @@ def make_get_id(srv_id):
 
 
 def make_updates_window():
-    # update_list = [['2.0.9.2.9.1', 'Основная']]
     server_ver = get_version()
-    update_list = get_updates()
+    # update_list = get_updates()
+    update_list = get_updates_in_dict()
+    upd_td = get_treedata_updates(update_list)
     layout = [
         [sg.Text('Версия сервера: ' + server_ver)],
         [sg.Frame('Обновления мобильного приложения',
                   [
                       [
-                          # sg.Column([[
-                          # sg.Image(data=ICON_FILTER_BASE_64_BLUE),
-                          # sg.Input(size=(15, 1),
-                          #          enable_events=True,
-                          #          disabled_readonly_background_color=disabled_input,
-                          #          key='-filterUpdate-'),
-                          # sg.Button('', disabled_button_color='white',
-                          #           image_data=ICON_CLEAR_FILTER_BASE_64_BLUE,
-                          #           button_color='white',
-                          #           border_width=0,
-                          #           tooltip='Очистить фильтр',
-                          #           key='-ClearFilterUpdate-',
-                          #           disabled=True,
-                          #           pad=((0, 5), 0))]],
-                          # vertical_alignment='bottom'),
                           sg.Push(),
                           sg.Button('', disabled_button_color='white',
                                     image_data=ICON_ADD_BASE_64_BLUE,
@@ -1505,22 +1491,39 @@ def make_updates_window():
                                     border_width=0,
                                     key='-DelUpdate-',
                                     pad=((4, 10), (0, 3)))],
-                      [sg.Table(update_list,
-                                headings=['id','Тип', 'Версия', 'Обязательное', 'Описание', 'Изменения'],
-                                justification="left",
-                                key='-updates-',
-                                expand_x=True,
-                                enable_click_events=True,
-                                enable_events=True,
-                                auto_size_columns=False,
-                                visible_column_map=[False, True, True, True, True, True],
-                                select_mode=sg.TABLE_SELECT_MODE_BROWSE,
-                                selected_row_colors='black on lightblue',
-                                metadata=[],
-                                pad=(10, 5),
-                                col_widths=[10, 10, 10, 12, 15, 30],
-                                )
-                       ],
+                      [sg.Tree(data=upd_td,
+                               key='-updates-tree-',
+                               headings=['id', 'Обязательное', 'Изменения', 'Описание'],
+                               col0_width=20,
+                               col0_heading='Обновление',
+                               # def_col_width=30,
+                               # max_col_width=30,
+                               col_widths=[10,10,20,20],
+                               visible_column_map=[False, True, True, True],
+                               num_rows=20,
+                               justification='left',
+                               selected_row_colors='black on lightblue',
+                               select_mode=sg.TABLE_SELECT_MODE_EXTENDED,
+                               show_expanded=True,
+                               enable_events=True,
+                               expand_x=True,
+                               expand_y=True)]
+                      # [sg.Table(update_list,
+                      #           headings=['id','Тип', 'Версия', 'Обязательное', 'Описание', 'Изменения'],
+                      #           justification="left",
+                      #           key='-updates-',
+                      #           expand_x=True,
+                      #           enable_click_events=True,
+                      #           enable_events=True,
+                      #           auto_size_columns=False,
+                      #           visible_column_map=[False, True, True, True, True, True],
+                      #           select_mode=sg.TABLE_SELECT_MODE_BROWSE,
+                      #           selected_row_colors='black on lightblue',
+                      #           metadata=[],
+                      #           pad=(10, 5),
+                      #           col_widths=[10, 10, 10, 12, 15, 30],
+                      #           )
+                      #  ],
 
                   ])
          ]]
@@ -2028,44 +2031,9 @@ def make_modify_user_window(user: dict):
 
 
 def make_devices(dev_l):
-    # layout =[[sg.Table(dev_l,
-    #                    headings=['id', 'Имя', 'c/н', 'Тип ОС', 'Версия ОС', 'Тип приложения', 'Версия', 'Заряд', 'Инфо', 'MAC-адрес' ,'IP-адрес', 'Последнее время в сети'],
-    #                    justification="left",
-    #                    key='-devices-',
-    #                    expand_x=True,
-    #                    enable_click_events=True,
-    #                    enable_events=True,
-    #                    auto_size_columns=True,
-    #                    # visible_column_map=[False, True, True, True, True, True],
-    #                    select_mode=sg.TABLE_SELECT_MODE_BROWSE,
-    #                    selected_row_colors='black on lightblue',
-    #                    metadata=[],
-    #                    pad=10,
-    #                    # num_rows=1,
-    #                    hide_vertical_scroll=True
-    #                    # col_widths=[15, 15, 15, 15, 15, 15, 15, 15, 15],
-    #                    )
-    #           ]]
-    # treedata_devs = get_all_devices_in_treedata()
     layout_treedata = [
         [sg.Frame('Устройства', [
             [
-                # sg.Push(),
-             # sg.Button('', disabled_button_color='white',
-             #           image_data=ICON_ADD_BASE_64_BLUE,
-             #           button_color='white',
-             #           tooltip='Добавить',
-             #           border_width=0,
-             #           key='-AddUpdate-',
-             #           pad=(4, (0, 3))),
-             # sg.Button('', disabled_button_color='white',
-             #           disabled=True,
-             #           image_data=ICON_MODIFY_BASE_64_BLUE,
-             #           button_color='white',
-             #           tooltip='Изменить',
-             #           border_width=0,
-             #           key='-EditUpdate-',
-             #           pad=(4, (0, 3))),
              sg.Button('', disabled_button_color='white',
                        disabled=False,
                        image_data=ICON_CHANGE_BASE_64_BLUE,
@@ -2113,13 +2081,6 @@ def make_devices(dev_l):
                      # disable_minimize=True,
                      modal=True
                      )
-    # return sg.Window('Устройства', layout,
-    #                  icon=ICON_BASE_64,
-    #                  # use_ttk_buttons=True,
-    #                  finalize=True,
-    #                  # disable_minimize=True,
-    #                  modal=True
-    #                  )
 
 
 def make_organizations():
@@ -2794,7 +2755,23 @@ def get_updates():
         print(f'Не удалось запросить версии - {e}')
         logging.error("Не удалось запросить версии")
         my_popup('Не удалось запросить версии')
-    return sorted(updates, key=lambda upd: upd[1])
+    return sorted(updates, key=lambda upd: upd[2], reverse=True)
+
+
+def get_updates_in_dict():
+    updates = []
+    try:
+        res = requests.get(BASE_URL_UPDATE +
+                            'info',
+                            headers=HEADER_dict)
+        if res.status_code == 200:
+            print(res.text)
+            updates_dict = json.loads(res.text)
+    except Exception as e:
+        print(f'Не удалось запросить версии - {e}')
+        logging.error("Не удалось запросить версии")
+        my_popup('Не удалось запросить версии')
+    return updates_dict
 
 
 def get_update_id_from_table():
@@ -3052,6 +3029,33 @@ def get_treedata(dev_list_of_dict: list, type: str):
                                       if dev['lastOnline'] else ''
                                       ])
     return td
+
+
+
+def get_treedata_updates(upd_list_of_dict: list):
+    td = sg.TreeData()
+    registered_types = set()
+    if upd_list_of_dict:
+        for upd in upd_list_of_dict:
+            if upd['type'] not in registered_types:
+                td.Insert(parent='',
+                          key=upd['type'],
+                          text=list(type_app.keys())[list(type_app.values()).index(upd['type'])],
+                          values=['']
+                          )
+                registered_types.add(upd['type'])
+            td.Insert(parent=upd['type'],
+                      key=upd['id'],
+                      text=upd['version'],
+                      values=[
+                          upd['id'] if upd['id'] else '',
+                          'Да' if upd['force'] else 'Нет',
+                          upd['changelog'] if upd['changelog'] else '',
+                          upd['notes'] if upd['notes'] else '',
+                      ])
+    return td
+
+
 
 def get_last_device():
     dev = {}
