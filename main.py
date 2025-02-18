@@ -220,7 +220,6 @@ def init_db():
     groups_from_db = get_groups_from_db()
 
 
-
 def add_users(users_list):
     con = sqlite3.connect('adm.db')
     cur = con.cursor()
@@ -352,7 +351,6 @@ def add_and_set_users():
     else:
         user_list, treedata = get_user_list_with_org(org_id)
         tree2.update(treedata)
-
 
 
 def add_del_groups_to_user_after_apply(groups_for_user_dict):
@@ -1129,6 +1127,7 @@ def make_login_window():
     else:
         active_config = False
         ip_config = ''
+    # noinspection PyTypeChecker
     layout_login = [[sg.Text("Адрес сервера", background_color='white'),
                      sg.Push(background_color='white'),
                      sg.Input(
@@ -1460,6 +1459,7 @@ def make_get_id(srv_id):
 def make_updates_window(upd_td):
     server_ver = get_version()
     # update_list = get_updates()
+    # noinspection PyTypeChecker
     layout = [
         [sg.Text('Версия сервера: ' + server_ver)],
         [sg.Frame('Обновления мобильного приложения',
@@ -1506,7 +1506,7 @@ def make_updates_window(upd_td):
                                col0_heading='Обновление',
                                # def_col_width=30,
                                # max_col_width=30,
-                               col_widths=[10,10,20,20],
+                               col_widths=[10, 10, 20, 20],
                                visible_column_map=[False, True, True, True],
                                num_rows=20,
                                justification='left',
@@ -1545,6 +1545,7 @@ def make_updates_window(upd_td):
 
 def make_add_update_window(update_info=None):
     print(update_info)
+    # noinspection PyTypeChecker
     layout = [
         [sg.Frame('Обновления мобильного приложения',
                   [
@@ -1659,6 +1660,7 @@ def make_add_update_window(update_info=None):
                      # use_ttk_buttons=True,
                      modal=True,
                      finalize=True)
+
 
 def make_add_user_window():
     org_list = get_orgs_from_db_list_names()
@@ -1864,12 +1866,6 @@ def make_modify_user_window(user: dict):
                                 pad=10),
              sg.Push(),
              sg.Column([[
-             #     sg.Button(button_text='Сменить',
-             #            key='modifyUserPic',
-             #            pad=5,
-             #            size=15,
-             #            disabled_button_color='gray')
-             # ],[
                  sg.FileBrowse('Сменить',
                                # target='-User-pic-',
                                disabled=False,
@@ -1880,21 +1876,10 @@ def make_modify_user_window(user: dict):
                                enable_events=True,
                                file_types=(("Изображение", "*.jpg"),))
              ]], vertical_alignment='top'),]
-             # [sg.T(user['profile_picture_id']
                    ],
                   expand_x=True,
                   expand_y=True,
                   pad=((8, 0), (10, 10)))],
-        # [sg.Push(),
-        #  sg.B(SYMBOL_DOWN_ARROWHEAD,
-        #          # pad=(5, 0),
-        #          disabled_button_color='gray',
-        #          font='Arial 20 bold',
-        #          # size=(5, 1),
-        #          # enable_events=True,
-        #          # mouseover_colors='white',
-        #          k='-hide-roles-'),
-        #  sg.Push()],
          [sg.Frame('Дополнительные разрешения', [
             [sg.Checkbox('Разрешить индивидуальные вызовы',
                          default=user['role_en_ind'],
@@ -1958,14 +1943,9 @@ def make_modify_user_window(user: dict):
                          # disabled=True,
                          pad=(5, (0, 10)),
                          enable_events=True,
-                         key='modifyUserRoleMfc'), sg.Push()],
-            # [sg.Checkbox('Привязать новое устройство',
-            #              default=user['fix_device'],
-            #              disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
-            #              enable_events=True,
-            #              key='modifyUserRoleFixDevice'), sg.Push()],
-        ],
-                  # size=(300, 110),
+                         key='modifyUserRoleMfc'),
+             sg.Push()]
+         ],
                   pad=((8, 0), (10, 10)),
                   key='modifyUserRoles',
                   expand_x=True)],
@@ -2068,7 +2048,7 @@ def make_devices(dev_l):
                        ],
             [sg.Tree(data=dev_l,
                      key='-devices-tree-',
-                     headings=['id', 'Имя', 'c/н', 'Тип ОС', 'Версия ОС', 'Тип приложения', 'Версия', 'Заряд', 'Инфо', 'MAC-адрес' ,'IP-адрес', 'Последнее время в сети'],
+                     headings=['id', 'Имя', 'c/н', 'Тип ОС', 'Версия ОС', 'Тип приложения', 'Версия', 'Заряд', 'Инфо', 'MAC-адрес', 'IP-адрес', 'Последнее время в сети'],
                      col0_width=20,
                      col0_heading='Устройство',
                      def_col_width=30,
@@ -2240,6 +2220,7 @@ def make_device(dev_l):
                      modal=True
                      )
 
+
 def make_modify_group_window(group: dict):
     org_name = get_org_by_id(group['organization_id'])
     org_list = get_orgs_from_db_list_names()
@@ -2322,7 +2303,6 @@ def make_modify_group_window(group: dict):
                                enable_events=True,
                                file_types=(("Изображение", "*.jpg"),))
              ]], vertical_alignment='top'),]
-             # [sg.T(user['profile_picture_id']
                    ],
                   expand_x=True,
                   expand_y=True,
@@ -2715,7 +2695,7 @@ def upload_app(app_path: str):
             print(f'Не удалось загрузить приложение - {e}')
             logging.error("Не удалось загрузить приложение")
             my_popup('Не удалось загрузить приложение')
-    return False
+    return res
 
 
 def edit_app(update_info_id):
@@ -2745,7 +2725,7 @@ def edit_app(update_info_id):
         print(f'Не удалось изменить обновление - {e}')
         logging.error("Не удалось изменить обновление")
         my_popup('Не удалось изменить обновление')
-    return False
+    return res
 
 
 def get_updates():
@@ -2772,7 +2752,7 @@ def get_updates():
 
 
 def get_updates_in_dict():
-    updates = []
+    updates_dict = {}
     try:
         res = requests.get(BASE_URL_UPDATE +
                             'info',
@@ -2862,7 +2842,8 @@ def get_all_devices():
     return get_list_devices(devs)
 
 
-def get_all_devices_in_treedata(type='dev'):
+def get_all_devices_in_treedata(dev_type='dev'):
+    devs = []
     try:
         res = requests.get(BASE_URL_DEVICE +
                            'getDevices',
@@ -2876,7 +2857,7 @@ def get_all_devices_in_treedata(type='dev'):
         print(f'Не удалось запросить версии - {e}')
         logging.error("Не удалось запросить версии")
         my_popup('Не удалось запросить версии')
-    return get_treedata(devs, type)
+    return get_treedata(devs, dev_type)
 
 
 def key_to_id(k, win):
@@ -2988,7 +2969,6 @@ def clear_devices(us_id):
 # def change_dev_user(type: str):
 
 
-
 def get_treedata(dev_list_of_dict: list, type: str):
     td = sg.TreeData()
     if dev_list_of_dict:
@@ -3050,7 +3030,6 @@ def get_treedata(dev_list_of_dict: list, type: str):
     return td
 
 
-
 def get_treedata_updates(upd_list_of_dict: list):
     td = sg.TreeData()
     registered_types = set()
@@ -3073,7 +3052,6 @@ def get_treedata_updates(upd_list_of_dict: list):
                           upd['notes'] if upd['notes'] else '',
                       ])
     return td
-
 
 
 def get_last_device():
@@ -3101,7 +3079,7 @@ def get_last_device():
 
 
 def get_list_devices(dev_list_of_dict: list):
-    dev_list = []
+    # dev_list = []
     dev_list_of_list = []
     if dev_list_of_dict:
         for dev in dev_list_of_dict:
@@ -3897,7 +3875,7 @@ def find_cyrillic(text: str, alphabet=None) -> bool:
     return not alphabet.isdisjoint(text.lower())
 
 
-def get_user_type(window): #TODO
+def get_user_type(window):  #TODO
     result = user_type['user']
     if window == 'add_user':
         if val_add_user['disp']:
@@ -4647,7 +4625,7 @@ if __name__ == '__main__':
                         BASE_URL_ORG = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/org'
                         BASE_URL_USER_PIC = BASE_URL_PROTO + ip + ':' + str(port) + '/api/file/download'
                         BASE_URL_USER_PIC_UPLOAD = BASE_URL_PROTO + ip + ':' + str(port) + '/api/file/uploadProfilePicture'
-                        BASE_URL_USER_PIC_UPLOAD = BASE_URL_PROTO + ip + ':' + str(port) + '/api/file/uploadProfilePicture'
+                        # BASE_URL_USER_PIC_UPLOAD = BASE_URL_PROTO + ip + ':' + str(port) + '/api/file/uploadProfilePicture'
                     else:
                         BASE_URL_PROTO = 'http://'
                         BASE_URL = BASE_URL_PROTO + ip + ':' + str(port) + '/api/admin/'
@@ -5381,8 +5359,7 @@ if __name__ == '__main__':
                                         if modify_change_gr_pic:
                                             gr_pic_id = modify_change_gr_pic['id']
                                             # print(gr_pic_id)
-                                            if group_to_change[
-                                                'profile_picture_id'] != '00000000-0000-0000-0000-000000000000':
+                                            if group_to_change['profile_picture_id'] != '00000000-0000-0000-0000-000000000000':
                                                 window_modify_group['-group-image-'].update(
                                                     filename=Path(Path.cwd(), 'new_group_pic.png'))
                                             else:
@@ -6438,7 +6415,7 @@ if __name__ == '__main__':
                                             image_data=ICON_COLLAPSE_32_BASE_64_BLUE)
                                         for key in upd_treedata.tree_dict:
                                             window_updates['-updates-tree-'].Widget.item(key_to_id(key, window_updates['-updates-tree-']), open=True)
-                                        window_updates['-СollapseExpandUpd-'].metadata='collapse'
+                                        window_updates['-СollapseExpandUpd-'].metadata = 'collapse'
                                         window_updates['-СollapseExpandUpd-'].TooltipObject.text = 'Свернуть'
                                 if ev_upd == '-DelUpdate-':
                                     del_update(upd_id)
@@ -6541,7 +6518,7 @@ if __name__ == '__main__':
                                         else:
                                             for key in devs_by_user.tree_dict:
                                                 window_devices['-devices-tree-'].Widget.item(key_to_id(key, window_devices['-devices-tree-']), open=False)
-                                        window_devices['-СollapseExpandDev-'].metadata ='expand'
+                                        window_devices['-СollapseExpandDev-'].metadata = 'expand'
                                         window_devices['-СollapseExpandDev-'].TooltipObject.text = 'Развернуть'
                                     else:
                                         window_devices['-СollapseExpandDev-'].update(
@@ -6552,7 +6529,7 @@ if __name__ == '__main__':
                                         else:
                                             for key in devs_by_user.tree_dict:
                                                 window_devices['-devices-tree-'].Widget.item(key_to_id(key, window_devices['-devices-tree-']), open=True)
-                                        window_devices['-СollapseExpandDev-'].metadata='collapse'
+                                        window_devices['-СollapseExpandDev-'].metadata = 'collapse'
                                         window_devices['-СollapseExpandDev-'].TooltipObject.text = 'Свернуть'
                                 if ev_devs == '-ChangeDevUser-':
                                     if not userBased:
@@ -7430,16 +7407,17 @@ if __name__ == '__main__':
                                 my_popup('Не выбрана группа')
                             else:
                                 groups_from_db = get_groups_from_db()
+                                del_group = {}
                                 if filter_status_group:
                                     del_group = filtered_groups_list_of_dict[values['-groups-tree-'][0]]
                                 else:
                                     if not is_org:
                                         selected_group_id = str(values['-groups-tree-'][0]).partition('.')[0]
-                                        print(selected_group_id)
+                                        # print(selected_group_id)
                                         for group in groups_from_db:
                                             if group['id'] == selected_group_id:
                                                 del_group = copy.deepcopy(group)
-                                                print(del_group)
+                                                # print(del_group)
                                                 break
                                     else:
                                         org_id = values['-groups-tree-'][0]
