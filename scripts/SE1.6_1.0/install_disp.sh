@@ -34,7 +34,7 @@ fi
 printf '\n##### Устанавливаем необходимые пакеты! ######\n'
 sudo apt-get update >> ~/install_disp_log.txt 2>&1 &&
 sudo apt-get -y install openssh-server >> ~/install_disp_log.txt 2>&1 &&
-sudo apt-get -y install xorgxrdp xrdp >> ~/install_disp_log.txt 2>&1
+sudo apt-get -y install xorgxrdp xrdp sshpass >> ~/install_disp_log.txt 2>&1
 if [[ $? == 0 ]]
   then printf '\n##### Пакеты установлены! ######\n'
   else printf '\n##### Проблемы с установкой пакетов #####\n'
