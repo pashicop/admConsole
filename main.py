@@ -1688,7 +1688,27 @@ def make_add_user_window():
             [sg.Radio('Диспетчер', key='disp', group_id='u_type', enable_events=True)],
             [sg.Radio('Концентратор К500', key='gw', group_id='u_type', enable_events=True)],
             [sg.Radio('Администратор', key='adm', group_id='u_type', enable_events=True)]],
-                  pad=((8, 0), (10, 10)))],
+                  pad=((8, 0), (10, 10))),
+        sg.Frame('Аватар', [
+            [sg.Image(data=ICON_DEF_USER_PIC,
+                               key='-add-user-def-image-',
+                               pad=10),
+             sg.Push(),
+             sg.Column([[
+                 sg.FileBrowse('Загрузить',
+                               # target='-User-pic-',
+                               disabled=False,
+                               key='addUserPic',
+                               pad=5,
+                               size=15,
+                               initial_folder='../',
+                               enable_events=True,
+                               file_types=(("Изображение", "*.jpg"),))
+             ]], vertical_alignment='top'), ]
+        ],
+                 expand_x=True,
+                 expand_y=True,
+                 pad=((8, 0), (10, 10)))],
         [sg.Frame('Дополнительные разрешения', [
             [sg.Checkbox('Разрешить индивидуальные вызовы',
                          default=True,
@@ -2302,7 +2322,7 @@ def make_modify_group_window(group: dict):
                    ],
                   expand_x=True,
                   expand_y=True,
-                  pad=((8, 0), (10, 10)))],
+                  pad=((0, 8), (10, 10)))],
         [sg.Push(), sg.Button(button_text='Изменить',
                               disabled=True,
                               disabled_button_color='gray',
@@ -2412,7 +2432,7 @@ def make_add_group_window():
              , ]],
                   expand_x=True,
                   expand_y=True,
-                  pad=((8, 0), (10, 10)))],
+                  pad=((0, 8), (10, 10)))],
         [sg.Push(), sg.Button(button_text='Добавить', disabled=True, key='addGroupButton',
                               disabled_button_color='gray')]
     ]
@@ -5014,13 +5034,6 @@ if __name__ == '__main__':
                                             or ev_modify_user == 'modifyUserGw'
                                             or ev_modify_user == 'modifyUserAdm'):
                                         set_roles(ev_modify_user)
-                                    # if ev_modify_user == '-hide-roles-':
-                                    #     window_modify_user['modifyUserRoles'].update(
-                                    #         visible=window_modify_user['modifyUserRoles'].metadata == True)
-                                    #     window_modify_user['modifyUserRoles'].metadata = not window_modify_user['modifyUserRoles'].metadata
-                                    #     window_modify_user['-hide-roles-'].update(
-                                    #         text=SYMBOL_UP_ARROWHEAD if window_modify_user[
-                                    #             'modifyUserRoles'].metadata else SYMBOL_DOWN_ARROWHEAD)
                                     if (ev_modify_user == 'modifyUserRoleIndCallEn'
                                             or ev_modify_user == 'modifyUserRoleIndMesEn'
                                             or ev_modify_user == 'modifyUserRoleAllowDelChats'
@@ -6619,6 +6632,7 @@ if __name__ == '__main__':
                             window_add_user = make_add_user_window()
                             window_add_user.Element('UserLogin').SetFocus()
                             password_clear = False
+                            add_user_pic = False
                             while True:
                                 ev_add_user, val_add_user = window_add_user.Read()
                                 # print(ev_add_user, val_add_user)
@@ -6691,6 +6705,13 @@ if __name__ == '__main__':
                                     window_add_user['addUserFixDevice'].update(False, disabled=True)
                                     window_add_user['addUserRoleMultipleDevices'].update(False, disabled=True)
                                     window_add_user['UserPriority'].update('15')
+                                elif ev_add_user == 'addUserPic':
+                                    add_user_pic = upload_user_pic(BASE_URL_USER_PIC_UPLOAD, HEADER_dict,
+                                                                        val_add_user['addUserPic'])
+                                    if add_user_pic:
+                                        user_pic_id = add_user_pic['id']
+                                        window_add_user['-add-user-def-image-'].update(
+                                                filename=Path(Path.cwd(), 'new_user_pic.png'))
                                 elif ev_add_user == 'UserPriority':
                                     if val_add_user['UserPriority'] == '':
                                         window_add_user['UserPriority'].update(background_color=omega_theme['INPUT'],
@@ -6801,6 +6822,18 @@ if __name__ == '__main__':
                                                                 logging.error(
                                                                     f'Ошибка при разблокировании пользователя - '
                                                                     f'{res_block.status_code}')
+                                                if add_user_pic:
+                                                    res_add_user_pic = change_user_pic(BASE_URL +
+                                                                                 'changeUserProfilePicture',
+                                                                                 HEADER_dict,
+                                                                                 res_add_user.text[1:-1],
+                                                                                 user_pic_id)
+                                                    if res_add_user_pic:
+                                                        print(f'Аватар добавлен')
+                                                        logging.info('Аватар добавлен')
+                                                    else:
+                                                        print(f'Аватар НЕ добавлен')
+                                                        logging.warning('Аватар добавлен')
                                                 update_all()
                                                 my_popup("Пользователь добавлен!")
                                                 window_add_user.close()
