@@ -163,7 +163,7 @@ sg.theme_add_new('OmegaTheme', omega_theme)
 sg.theme('OmegaTheme')
 # OMEGA THEME end
 current_db = 0
-version = '2.1.0'
+version = '2.1.1'
 
 
 def get_branch():
