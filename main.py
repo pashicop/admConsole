@@ -163,7 +163,7 @@ sg.theme_add_new('OmegaTheme', omega_theme)
 sg.theme('OmegaTheme')
 # OMEGA THEME end
 current_db = 0
-version = '2.1.1'
+version = '2.1.2'
 
 
 def get_branch():
@@ -2335,16 +2335,6 @@ def make_modify_group_window(group: dict):
     return win
 
 
-def make_del_user_window(user):
-    delete_text = 'Вы уверены, что хотите удалить пользователя ' + user + '?'
-    layout_del_user = [
-        [sg.Text(delete_text)],
-        [sg.Button('Да', key="okDel"), sg.Button('Нет', key='noDel')]
-    ]
-    return sg.Window('Удалить пользователя', layout_del_user, icon=ICON_BASE_64, use_ttk_buttons=True,
-                     finalize=True, modal=True)
-
-
 def make_clone_user_window(user):
     layout_clone_user = [
         [sg.Text('Логин'), sg.Push(), sg.Input(key='CloneUserLogin', pad=((0, 40), (0, 0)), enable_events=True,
@@ -2787,7 +2777,7 @@ def get_updates():
 
 
 def get_updates_in_dict():
-    updates_dict = {}
+    sorted_updates_dict = []
     try:
         res = requests.get(BASE_URL_UPDATE +
                             'info',
@@ -2795,11 +2785,12 @@ def get_updates_in_dict():
         if res.status_code == 200:
             print(res.text)
             updates_dict = json.loads(res.text)
+            sorted_updates_dict = sorted(updates_dict, key=lambda x: x['type'], )
     except Exception as e:
         print(f'Не удалось запросить версии - {e}')
         logging.error("Не удалось запросить версии")
         my_popup('Не удалось запросить версии')
-    return updates_dict
+    return sorted_updates_dict
 
 
 def get_info_update(upd_list_of_dict, id):
@@ -3007,8 +2998,9 @@ def clear_devices(us_id):
 def get_treedata(dev_list_of_dict: list, type: str):
     td = sg.TreeData()
     if dev_list_of_dict:
+        sorted_devs = sorted(dev_list_of_dict, key=lambda k: k['batteryUpdated'], reverse=True)
         if type == 'dev':
-            for dev in dev_list_of_dict:
+            for dev in sorted_devs:
                 td.Insert(parent='',
                           key=dev['deviceIdentifier'] if dev['deviceIdentifier'] else 'Неизвестно',
                           text=dev['deviceName'] if dev['deviceName'] else dev['deviceIdentifier'] if dev['deviceIdentifier'] else 'Неизвестно',
@@ -3036,7 +3028,8 @@ def get_treedata(dev_list_of_dict: list, type: str):
                               values=['', ''])
         else:
             users_ids = []
-            for dev in dev_list_of_dict:
+            # sorted_devs = sorted(dev_list_of_dict, key=lambda x: get_user_name_by_id_from_db(x['userIds'][0]))
+            for dev in sorted_devs:
                 for user in dev['userIds']:
                     if user not in users_ids:
                         users_ids.append(user)
@@ -6902,7 +6895,7 @@ if __name__ == '__main__':
                                                     window_del_user.close()
                                                     break
                                                 else:
-                                                    logging.error(f'Пользователь {del_user["name"]} НЕ удалён')
+                                                    logging.error(f'Пользователь {selected_user["name"]} НЕ удалён')
                                                     my_popup("Пользователь не удалён!")
                                             except Exception as e:
                                                 print(f'Не удалось удалить абонента - {e}')
