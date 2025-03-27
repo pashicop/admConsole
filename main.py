@@ -15,7 +15,8 @@ import paramiko
 import requests
 from pathlib import Path
 import sqlite3
-import PySimpleGUI as sg
+# import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 from io import BytesIO
 from PIL import Image, ImageDraw
 import ipaddress
@@ -2084,7 +2085,8 @@ def make_devices(dev_l):
                      show_expanded=True,
                      enable_events=True,
                      expand_x=True,
-                     expand_y=True)]
+                     expand_y=True)],
+            [sg.T('***** в столбце id обозначен текущий пользователь устройства')]
         ])
          ]
     ]
@@ -2983,18 +2985,6 @@ def clear_devices(us_id):
         logging.error("Не удалось очистить устройства")
 
 
-# def print_chosen_device(val):
-#     # print(val)
-#     if val['-devices-tree-']:
-#         dev_id = val['-devices-tree-'][0]
-#         print(dev_id)
-#         print(window_devices.key_dict['-devices-tree-'].Values[dev_id])
-#         # window_devices.ReturnValuesDictionary['']
-
-
-# def change_dev_user(type: str):
-
-
 def get_treedata(dev_list_of_dict: list, type: str):
     td = sg.TreeData()
     if dev_list_of_dict:
@@ -3019,13 +3009,27 @@ def get_treedata(dev_list_of_dict: list, type: str):
                                   strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['lastOnline']) / 1000))
                                   if dev['lastOnline'] else ''
                                   ]
-
                           )
                 for user in dev['userIds']:
                     td.Insert(parent=dev['deviceIdentifier'],
                               key=(user + '.' + dev['deviceIdentifier']),
                               text=get_user_name_by_id_from_db(user),
-                              values=['', ''])
+                              values=['*****' if dev['currentUserId'] == user else '',
+                                      '',
+                                      dev['serialNumber'] if dev['serialNumber'] and dev['currentUserId'] == user else '',
+                                      client_os(dev['osType']).name if dev['osType'] and dev['currentUserId'] == user else '',
+                                      dev['osVersion'] if dev['osVersion'] and dev['currentUserId'] == user else '',
+                                      dev['appType'] if dev['appType'] and dev['currentUserId'] == user else '',
+                                      dev['appVersion'] if dev['appVersion'] and dev['currentUserId'] == user else '',
+                                      dev['battery'] if dev['battery'] and dev['currentUserId'] == user else '',
+                                      strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['batteryUpdated']) / 1000))
+                                      if dev['batteryUpdated'] and dev['currentUserId'] == user else '',
+                                      dev['macAddr'] if dev['macAddr'] and dev['currentUserId'] == user else '',
+                                      dev['ipAddr'] if dev['ipAddr'] and dev['currentUserId'] == user else '',
+                                      strftime('%d-%m-%Y %H:%M:%S', localtime(int(dev['lastOnline']) / 1000))
+                                      if dev['lastOnline'] and dev['currentUserId'] == user else ''
+                              ]
+                              )
         else:
             users_ids = []
             # sorted_devs = sorted(dev_list_of_dict, key=lambda x: get_user_name_by_id_from_db(x['userIds'][0]))

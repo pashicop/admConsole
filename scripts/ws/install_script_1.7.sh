@@ -4,10 +4,12 @@ TP=0
 PA=0
 IP=0
 HTTPS=0
+VIRT='GNUTLS_CPUID_OVERRIDE=0x1'
 
 CONF_D="Y"
 printf '##### Установка сервиса ОМЕГА #####\n'
 printf '\n##### Удаление старой версии #####\n'
+echo 'export GNUTLS_CPUID_OVERRIDE=0x1' >> ~/.bashrc
 . ~/.bashrc
 #pyenv uninstall 3.10.12
 #export PGPASSWORD=omega1q2w &&

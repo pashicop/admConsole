@@ -3,7 +3,8 @@ import json
 import sqlite3
 import logging
 from main import my_popup, check
-import PySimpleGUI as sg
+#import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 from pathlib import Path
 import uuid
 from PIL import Image
