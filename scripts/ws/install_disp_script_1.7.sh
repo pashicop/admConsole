@@ -60,6 +60,11 @@ mv dispatcher/ ~/dispatcher/
 cd ~/dispatcher/
 sed -i.bak "s/omega/$USER/" disp_shortcut.desktop
 mv disp_shortcut.desktop ~/Desktop/
+#printf '\n##### Обновляем ярлыки ######\n'
+##fly-wmfunc FLYWM_FORCE_UPDATE_SHORTCUT
+#~/update.sh
+#sleep 3
+#printf '\n##### Ярлыки обновлены ######\n'
 sudo chown ${USER}:${USER} ~/dispatcher/run.sh &&
 sudo chmod +x ~/dispatcher/run.sh &&
 ar x dispatcher-compose_1.0.0-1_amd64.deb
@@ -67,13 +72,13 @@ zstd -d data.tar.zst
 tar -xf data.tar
 mv logo.png ~/dispatcher/opt/dispatcher-compose
 mv run.sh ~/dispatcher/opt/dispatcher-compose
-mkdir ~/dispatcher/opt/dispatcher-compose/.OmegaRoot
-cp ~/config.properties ~/dispatcher/opt/dispatcher-compose/.OmegaRoot >> ~/install_disp_log.txt 2>&1
 if [[ $? == 0 ]]
   then printf '##### ---------------OK--------------- #####\n'
   else printf '##### Проблемы с копированием файлов #####\n'
   exit 112
 fi
+mkdir ~/dispatcher/opt/dispatcher-compose/.OmegaRoot
+cp ~/config.properties ~/dispatcher/opt/dispatcher-compose/.OmegaRoot >> ~/install_disp_log.txt 2>&1
 cd ~ && rm -R "$DIRECTORY"
 printf '##### Диспетчер успешно установлен и готов к работе! #####\n'
 exit 0
