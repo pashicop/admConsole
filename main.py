@@ -5894,7 +5894,7 @@ if __name__ == '__main__':
                                         #     LICS.append([feature_name, '+', lics['ExpirationDate']])
                                         window_add_lic['-lic-'].update(LICS)
                                         if ip != '127.0.0.1':
-                                            change_state_command = 'echo -n 5 > /home/' + USERNAME + '/Omega/.licenseState'
+                                            change_state_command = 'echo -n 5 > $HOME/Omega/.licenseState'
                                             # noinspection PyUnboundLocalVariable
                                             stdin, stdout, stderr = ssh.exec_command(change_state_command)
                                             stdout = stdout.readlines()
@@ -6041,10 +6041,10 @@ if __name__ == '__main__':
                                                         output = output + line
                                                     print(output)
                                                     ftp_client = ssh.open_sftp()
-                                                    path_key = '/home/' + USERNAME + '/Omega/keys/pub.pem'
+                                                    path_key = '/home/' + USERNAME + '/Omega/keys/pub.pem' #TODO
                                                     ftp_client.put(val_add_lic['-KEYNAME-'], path_key)
                                                     ftp_client.close()
-                                                    change_state_command = 'echo -n 5 > /home/' + USERNAME + '/Omega/.licenseState'
+                                                    change_state_command = 'echo -n 5 > $HOME/Omega/.licenseState'
                                                     stdin, stdout, stderr = ssh.exec_command(change_state_command)
                                                     stdout = stdout.readlines()
                                                     ssh.close()
@@ -6106,7 +6106,7 @@ if __name__ == '__main__':
                                                     for line in stdout:
                                                         output = output + line
                                                     print(output)
-                                                    change_state_command = 'echo -n 5 > /home/' + USERNAME + '/Omega/.licenseState'
+                                                    change_state_command = 'echo -n 5 > $HOME/Omega/.licenseState'
                                                     stdin, stdout, stderr = ssh.exec_command(change_state_command)
                                                     stdout = stdout.readlines()
                                                     ssh.close()
