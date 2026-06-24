@@ -5874,7 +5874,7 @@ if __name__ == '__main__':
                                     if output.find('USAGE') == -1 and output.rstrip('\n') != 'Validation Failed':
                                         index = output.find('{')
                                         lics: dict = json.loads(output[index:])
-                                        LICS = parse_cur_lic()
+                                        LICS = parse_cur_lic(lics)
                                         # LICS = [['Количество абонентов', lics['UserCount'], lics['ExpirationDate']],
                                         #         ['Количество диспетчеров', lics['DispatcherCount'], lics[
                                         #             'ExpirationDate']]]
