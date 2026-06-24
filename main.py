@@ -2500,8 +2500,11 @@ def set_lic_status_bar():
         lic_date_format = datetime.strptime(str(lic['ExpirationDate']), '%d/%m/%Y')
         delta = lic_date_format - datetime.today()
         delta_days = int(delta.days)
-        window['-StatusBar3-'].update('Лицензия до: ' + 'Бессрочно' if delta_days > 3650 else str(lic['ExpirationDate']).replace('/', '-') +
-                                      ', осталось дней: ' + '-' if delta_days > 3650 else str(delta_days))
+        if delta_days > 3650:
+            lic_text = 'Лицензия до: ' + 'Бессрочно' + ', осталось дней: ' + '-'
+        else:
+            lic_text = 'Лицензия до: ' + str(lic['ExpirationDate']).replace('/', '-') + ', осталось дней: ' + str(delta_days)
+        window['-StatusBar3-'].update(lic_text)
         window['-StatusBar3-'].update(background_color=status_bar_color if delta_days > WARN_LIC_DAYS
         else button_color_2)
         if delta_days > 3650:
