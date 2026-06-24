@@ -2500,11 +2500,14 @@ def set_lic_status_bar():
         lic_date_format = datetime.strptime(str(lic['ExpirationDate']), '%d/%m/%Y')
         delta = lic_date_format - datetime.today()
         delta_days = int(delta.days)
-        window['-StatusBar3-'].update('Лицензия до: ' + str(lic['ExpirationDate']).replace('/', '-') +
-                                      ', осталось дней: ' + str(delta_days))
+        window['-StatusBar3-'].update('Лицензия до: ' + 'Бессрочно' if delta_days > 3650 else str(lic['ExpirationDate']).replace('/', '-') +
+                                      ', осталось дней: ' + '-' if delta_days > 3650 else str(delta_days))
         window['-StatusBar3-'].update(background_color=status_bar_color if delta_days > WARN_LIC_DAYS
         else button_color_2)
-        logging.info(f'Лицензия истечёт через {str(delta_days)} дней')
+        if delta_days > 3650:
+            logging.info(f'Лицензия бессрочная')
+        else:
+            logging.info(f'Лицензия истечёт через {str(delta_days)} дней')
         if delta_days <= WARN_LIC_DAYS:
             logging.warning(f'Заканчивается срок действия лицензии! Осталось {str(delta_days)} дней')
 
@@ -4291,19 +4294,36 @@ def get_current_lic():
 
 
 def parse_cur_lic(lic):
-    LICS = [['Количество абонентов', lic['UserCount'],
-             lic['ExpirationDate']],
-            ['Количество диспетчеров', lic['DispatcherCount'], lic[
-                'ExpirationDate']]]
-    for feature in lic['Features']:
-        feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
-            else "Геопозиционирование" if feature == "GeoData" \
-            else "Динамические группы" if feature == "DGNA" \
-            else "Удалённое управление терминалами" if feature == "OTAP" \
-            else "Длительное прослушивание" if feature == "LongAmbientListening" \
-            else "Контроль пересылки" if feature == "MFC" \
-            else "Авторизация устройств" if feature == "DeviceAuthorization" else "?"
-        LICS.append([feature_name, '+', lic['ExpirationDate']])
+    lic_date_format = datetime.strptime(str(lic['ExpirationDate']), '%d/%m/%Y')
+    delta = lic_date_format - datetime.today()
+    delta_days = int(delta.days)
+    if delta_days > 3650:
+        LICS = [['Количество абонентов', lic['UserCount'],
+                 'Бессрочно'],
+                ['Количество диспетчеров', lic['DispatcherCount'], 'Бессрочно']]
+        for feature in lic['Features']:
+            feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
+                else "Геопозиционирование" if feature == "GeoData" \
+                else "Динамические группы" if feature == "DGNA" \
+                else "Удалённое управление терминалами" if feature == "OTAP" \
+                else "Длительное прослушивание" if feature == "LongAmbientListening" \
+                else "Контроль пересылки" if feature == "MFC" \
+                else "Авторизация устройств" if feature == "DeviceAuthorization" else "?"
+            LICS.append([feature_name, '+', 'Бессрочно'])
+    else:
+        LICS = [['Количество абонентов', lic['UserCount'],
+                 lic['ExpirationDate']],
+                ['Количество диспетчеров', lic['DispatcherCount'], lic[
+                    'ExpirationDate']]]
+        for feature in lic['Features']:
+            feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
+                else "Геопозиционирование" if feature == "GeoData" \
+                else "Динамические группы" if feature == "DGNA" \
+                else "Удалённое управление терминалами" if feature == "OTAP" \
+                else "Длительное прослушивание" if feature == "LongAmbientListening" \
+                else "Контроль пересылки" if feature == "MFC" \
+                else "Авторизация устройств" if feature == "DeviceAuthorization" else "?"
+            LICS.append([feature_name, '+', lic['ExpirationDate']])
     return LICS
 
 
@@ -5754,20 +5774,21 @@ if __name__ == '__main__':
                                         if output.find('USAGE') == -1 and output.rstrip('\n') != 'Validation Failed':
                                             index = output.find('{')
                                             lics: dict = json.loads(output[index:])
-                                            LICS = [['Количество абонентов', lics['UserCount'], lics['ExpirationDate']],
-                                                    ['Количество диспетчеров', lics['DispatcherCount'], lics[
-                                                        'ExpirationDate']]]
-                                            print(lics['ExpirationDate'])
-                                            for feature in lics['Features']:
-                                                feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
-                                                    else "Геопозиционирование" if feature == "GeoData" \
-                                                    else "Динамические группы" if feature == "DGNA" \
-                                                    else "Удалённое управление терминалами" if feature == "OTAP" \
-                                                    else "Длительное прослушивание" if feature == "LongAmbientListening" \
-                                                    else "Контроль пересылки" if feature == "MFC" \
-                                                    else "Авторизация устройств" if feature == "DeviceAuthorization" else "?"
-                                                print(feature_name, '+', lics['ExpirationDate'])
-                                                LICS.append([feature_name, '+', lics['ExpirationDate']])
+                                            LICS = parse_cur_lic(lics)
+                                            # LICS = [['Количество абонентов', lics['UserCount'], lics['ExpirationDate']],
+                                            #         ['Количество диспетчеров', lics['DispatcherCount'], lics[
+                                            #             'ExpirationDate']]]
+                                            # print(lics['ExpirationDate'])
+                                            # for feature in lics['Features']:
+                                            #     feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
+                                            #         else "Геопозиционирование" if feature == "GeoData" \
+                                            #         else "Динамические группы" if feature == "DGNA" \
+                                            #         else "Удалённое управление терминалами" if feature == "OTAP" \
+                                            #         else "Длительное прослушивание" if feature == "LongAmbientListening" \
+                                            #         else "Контроль пересылки" if feature == "MFC" \
+                                            #         else "Авторизация устройств" if feature == "DeviceAuthorization" else "?"
+                                            #     print(feature_name, '+', lics['ExpirationDate'])
+                                            #     LICS.append([feature_name, '+', lics['ExpirationDate']])
                                             window_add_lic['-lic-'].update(LICS)
                                             window_add_lic['Загрузить'].update(disabled=False,
                                                                                button_color=button_color_2)
@@ -5853,20 +5874,21 @@ if __name__ == '__main__':
                                     if output.find('USAGE') == -1 and output.rstrip('\n') != 'Validation Failed':
                                         index = output.find('{')
                                         lics: dict = json.loads(output[index:])
-                                        LICS = [['Количество абонентов', lics['UserCount'], lics['ExpirationDate']],
-                                                ['Количество диспетчеров', lics['DispatcherCount'], lics[
-                                                    'ExpirationDate']]]
-                                        print(lics['ExpirationDate'])
-                                        for feature in lics['Features']:
-                                            feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
-                                                else "Геопозиционирование" if feature == "GeoData" \
-                                                else "Динамические группы" if feature == "DGNA" \
-                                                else "Удалённое управление терминалами" if feature == "OTAP" \
-                                                else "Длительное прослушивание" if feature == "LongAmbientListening" \
-                                                else "Контроль пересылки" if feature == "MFC" \
-                                                else "Авторизация устройств" if feature == "DeviceAuthorization" else "?"
-                                            print(feature_name, '+', lics['ExpirationDate'])
-                                            LICS.append([feature_name, '+', lics['ExpirationDate']])
+                                        LICS = parse_cur_lic()
+                                        # LICS = [['Количество абонентов', lics['UserCount'], lics['ExpirationDate']],
+                                        #         ['Количество диспетчеров', lics['DispatcherCount'], lics[
+                                        #             'ExpirationDate']]]
+                                        # print(lics['ExpirationDate'])
+                                        # for feature in lics['Features']:
+                                        #     feature_name = "Удалённое прослушивание" if feature == "AmbientListening" \
+                                        #         else "Геопозиционирование" if feature == "GeoData" \
+                                        #         else "Динамические группы" if feature == "DGNA" \
+                                        #         else "Удалённое управление терминалами" if feature == "OTAP" \
+                                        #         else "Длительное прослушивание" if feature == "LongAmbientListening" \
+                                        #         else "Контроль пересылки" if feature == "MFC" \
+                                        #         else "Авторизация устройств" if feature == "DeviceAuthorization" else "?"
+                                        #     print(feature_name, '+', lics['ExpirationDate'])
+                                        #     LICS.append([feature_name, '+', lics['ExpirationDate']])
                                         window_add_lic['-lic-'].update(LICS)
                                         if ip != '127.0.0.1':
                                             change_state_command = 'echo -n 5 > /home/' + USERNAME + '/Omega/.licenseState'
