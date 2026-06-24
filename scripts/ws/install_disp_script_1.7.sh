@@ -34,6 +34,7 @@ printf '\n##### Устанавливаем необходимые пакеты! 
 sudo apt-get update >> ~/install_disp_log.txt 2>&1
 sudo apt-get -y install openssh-server >> ~/install_disp_log.txt 2>&1
 sudo apt-get -y install xorgxrdp xrdp >> ~/install_disp_log.txt 2>&1
+sudo apt-get -y install mtp-tools aft-mtp-mount >> ~/install_disp_log.txt 2>&1
 if [[ $? == 0 ]]
   then printf '\n##### Пакеты установлены! ######\n'
   else printf '\n##### Проблемы с установкой пакетов #####\n'
@@ -44,7 +45,7 @@ sudo systemctl enable ssh >> ~/install_disp_log.txt 2>&1
 sudo systemctl status ssh >> ~/install_disp_log.txt 2>&1
 printf '##### ---------------OK--------------- #####\n'
 printf '\n##### Удаляем старые файлы #####\n'
-cp ~/dispatcher/opt/dispatcher-compose/.OmegaRoot/config.properties ~/ >> ~/install_disp_log.txt 2>&1
+cp ~/dispatcher/opt/omega-dispatcher/.OmegaRoot/config.properties ~/ >> ~/install_disp_log.txt 2>&1
 rm -rf ~/dispatcher >> ~/install_disp_log.txt 2>&1
 rm -rf ~/.OmegaRoot/* >> ~/install_disp_log.txt 2>&1
 
@@ -65,20 +66,21 @@ mv disp_shortcut.desktop ~/Desktop/
 #~/update.sh
 #sleep 3
 #printf '\n##### Ярлыки обновлены ######\n'
-sudo chown ${USER}:${USER} ~/dispatcher/run.sh &&
-sudo chmod +x ~/dispatcher/run.sh &&
-ar x dispatcher-compose_1.0.0-1_amd64.deb
-zstd -d data.tar.zst
+sudo chown ${USER}:${USER} ~/dispatcher/run.sh
+sudo chmod +x ~/dispatcher/run.sh
+ar x `find . -name "omega_dispatcher_*" `
+#ar x dispatcher-compose_1.0.0-1_amd64.deb
+zstd -d data.tar.xz
 tar -xf data.tar
-mv logo.png ~/dispatcher/opt/dispatcher-compose
-mv run.sh ~/dispatcher/opt/dispatcher-compose
+mv logo.png ~/dispatcher/opt/omega-dispatcher
+mv run.sh ~/dispatcher/opt/omega-dispatcher
 if [[ $? == 0 ]]
   then printf '##### ---------------OK--------------- #####\n'
   else printf '##### Проблемы с копированием файлов #####\n'
   exit 112
 fi
-mkdir ~/dispatcher/opt/dispatcher-compose/.OmegaRoot
-cp ~/config.properties ~/dispatcher/opt/dispatcher-compose/.OmegaRoot >> ~/install_disp_log.txt 2>&1
+mkdir ~/dispatcher/opt/omega-dispatcher/.OmegaRoot
+cp ~/config.properties ~/dispatcher/opt/omega-dispatcher/.OmegaRoot >> ~/install_disp_log.txt 2>&1
 cd ~ && rm -R "$DIRECTORY"
 printf '##### Диспетчер успешно установлен и готов к работе! #####\n'
 exit 0
