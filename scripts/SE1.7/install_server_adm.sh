@@ -38,7 +38,7 @@ done
 if [[ $CR -eq 1 ]]
   then
   sudo sed -i.bak 's/#deb https/deb https/' /etc/apt/sources.list
-  sudo sed -i.bak 's/^deb cdrom/#deb cdrom/' /etc/apt/sources.list
+  sudo sed -i.bak 's/deb cdrom/#deb cdrom/' /etc/apt/sources.list
   printf '#------------------------------------------------#\n'
   printf '#Репозитории обновлены---------------------------#\n'
 fi
@@ -57,6 +57,7 @@ date
 sudo apt-get update >> ~/install_log.txt 2>&1 &&
 sudo apt-get -y install openssh-server xorgxrdp xrdp >> ~/install_log.txt 2>&1 &&
 sudo apt-get -y install postgresql redis-server >> ~/install_log.txt 2>&1
+sudo apt-get -y install mtp-tools aft-mtp-mount >> ~/install_disp_log.txt 2>&1
 if [[ $? == 0 ]]
   then printf '##### -----------------OK------------------- #####\n'
   else printf '\n##### Ошибка при обновлении пакетов          #####\n'
@@ -70,8 +71,8 @@ printf '\n'
 printf '\n##### Копируем файлы системы ОМЕГА            #####\n'
 mv Omega/ ~/Omega
 mv admConsole/ ~/admConsole
-mv crt/ ~/crt
-mv omega.conf ~
+# mv crt/ ~/crt
+# mv omega.conf ~
 cd ~ && rm -R "$DIRECTORY"
 printf '##### -----------------OK------------------- #####\n'
 printf '\n##### Меняем настройки parsec                #####\n'
@@ -108,7 +109,31 @@ printf '##### -----------------OK------------------- #####\n'
 printf '\n##### Настройка ОМЕГИ #####\n'
 chmod +x first_run run Api Licensing/ValidateCli Licensing
 cd ~/Omega
-./first_run
+
+#./first_run
+echo -e "\033[31mВы хотите заполнить сервер тестовыми данными? Y/n|Д/н]:\033[0m"
+while true
+  do
+  read -n 1 CONF_D
+  case $CONF_D in
+    y|Y|yes|Yes|"Д"|"д"|"Да"|"да")
+      printf "\nДанные будут добавлены\n"
+      TP=1
+      break;;
+    n|N|no|No|"Н"|"н"|"Нет"|"нет")
+      printf "\nТестовые данные не будут добавлены\n"
+      break;;
+    *)
+      printf "\nСимвол $CONF_D не распознан - повторите!\n";;
+  esac
+done
+cd ~/Omega
+if [[ $TP -eq 1 ]]
+  then
+    ./first_run true
+  else
+    ./first_run
+fi
 printf '##### -----------------OK------------------- #####\n'
 printf '\n##### Устанавливаем сервис ОМЕГИ             #####\n'
 sed -i.bak "s/omega/${USER}/" ~/Omega/omega.service
@@ -168,6 +193,7 @@ if [[ $PA -eq 1 ]]
     sed -i.bak "s/omega/${USER}/" shortcut.desktop
     mv ~/admConsole/shortcut.desktop ~/Desktop/
     chmod +x ~/admConsole/run.sh
+    chmod +x ~/admConsole/AdmPanel
     printf '##### -----------------OK------------------- #####\n'
     printf '\n##### Добавляем необходимые права            #####\n'
     echo "${USER} ALL=(ALL) NOPASSWD: /bin/systemctl * omega" | sudo EDITOR='tee -a' visudo
