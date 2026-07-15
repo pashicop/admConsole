@@ -59,8 +59,8 @@ printf '\n##### Копируем диспетчер ОМЕГА К400 ######\n'
 sleep 3
 mv dispatcher/ ~/dispatcher/
 cd ~/dispatcher/
-sed -i.bak "s/omega/$USER/" disp_shortcut.desktop
-mv disp_shortcut.desktop ~/Desktop/
+#sed -i.bak "s/omega/$USER/" disp_shortcut.desktop
+#mv ~/dispatcher/disp_shortcut.desktop ~/Desktop/
 #printf '\n##### Обновляем ярлыки ######\n'
 ##fly-wmfunc FLYWM_FORCE_UPDATE_SHORTCUT
 #~/update.sh
@@ -79,6 +79,9 @@ if [[ $? == 0 ]]
   else printf '##### Проблемы с копированием файлов #####\n'
   exit 112
 fi
+cd ~/dispatcher/
+sed -i.bak "s/omega/$USER/" disp_shortcut.desktop
+mv ~/dispatcher/disp_shortcut.desktop ~/Desktop/
 mkdir ~/dispatcher/opt/omega-dispatcher/.OmegaRoot
 cp ~/config.properties ~/dispatcher/opt/omega-dispatcher/.OmegaRoot >> ~/install_disp_log.txt 2>&1
 cd ~ && rm -R "$DIRECTORY"

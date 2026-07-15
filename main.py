@@ -1556,13 +1556,22 @@ def make_add_update_window(update_info=None):
     layout = [
         [sg.Frame('Обновления мобильного приложения',
                   [
-                      [sg.Push(),
-                       sg.Text('Файл обновления',
-                               size=17,
-                               justification='right',
-                               visible=False if update_info else True,
-                               pad=(0, (10, 5))),
-                       sg.Input(default_text='' if update_info else 'Выберите файл .apk -->',
+                      [sg.Column([[sg.Text('Файл обновления',
+                                           visible=False if update_info else True,
+                                           pad=(0,(10,0))
+                                           )],
+                                  [sg.Text('Версия приложения',
+                                           pad=(0,10))],
+                                  [sg.Text('Тип приложения',
+                                   pad=0)],
+                                  [sg.Text('Комментарии',
+                                           pad=0)],
+                                  [sg.Text('Изменения',
+                                           pad=0)],
+                                  ],
+                                 element_justification='right',
+                                 vertical_alignment='top'),
+                  sg.Column([[sg.Input(default_text='' if update_info else 'Выберите файл .apk -->',
                                 disabled=True,
                                 text_color='gray',
                                 enable_events=True,
@@ -1571,7 +1580,7 @@ def make_add_update_window(update_info=None):
                                 pad=(10, (10, 5)),
                                 size=30,
                                 key='-FILENAME-UPDATE-'),
-                       sg.FileBrowse('Выбрать',
+                              sg.FileBrowse('Выбрать',
                                      target='-FILENAME-UPDATE-',
                                      disabled=True if update_info else False,
                                      initial_folder='../',
@@ -1580,27 +1589,15 @@ def make_add_update_window(update_info=None):
                                      enable_events=True,
                                      visible=False if update_info else True,
                                      key='-choose-apk-',
-                                     file_types=(("Файл обновления", "*.apk"),)),
-                       sg.Push()],
-                      [sg.Push(),
-                       sg.Text('Версия приложения',
-                               size=17,
-                               justification='right',
-                               pad=(0, 5)),
-                       sg.Input(default_text=update_info['version'] if update_info else '',
+                                     file_types=(("Файл обновления", "*.apk"),))
+                              ],
+                              [sg.Input(default_text=update_info['version'] if update_info else '',
                                 size=30,
                                 key='-ver-',
                                 enable_events=True,
                                 disabled=False if update_info else True,
-                                pad=((11, 109), 5)),
-                       sg.Push()],
-                      [sg.Push(),
-                       sg.Text('Тип приложения',
-                               size=17,
-                               justification='right',
-                               pad=(0, 5)
-                               ),
-                       sg.Combo(list(type_app),
+                                pad=((11, 109), 5))],
+                              [sg.Combo(list(type_app),
                                 size=28,
                                 default_value=list(type_app.keys())[list(type_app.values()).index(update_info['type'])] \
                                     if update_info else \
@@ -1608,25 +1605,14 @@ def make_add_update_window(update_info=None):
                                 disabled=False if update_info else True,
                                 enable_events=True,
                                 key='-type-app-',
-                                pad=((10, 110), 5)),
-                       sg.Push()
-                       ],
-                      [sg.Push(),
-                       sg.Checkbox('Обязательное',
-                                   default=True if update_info and update_info['force'] is True else False,
-                                   enable_events=True,
-                                   disabled=False if update_info else True,
-                                   key='-isForced-',
-                                   pad=((10, 100),(10, 5))),
-                       sg.Push()
-                       ],
-                      [sg.Push(),
-                       sg.Text('Комментарии',
-                               size=17,
-                               justification='right',
-                               pad=(0, 5)
-                               ),
-                       sg.Multiline(size=(30, 1),
+                                pad=((10, 110), 5))],
+                             [sg.Checkbox('Обязательное',
+                                          default=True if update_info and update_info['force'] is True else False,
+                                          enable_events=True,
+                                          disabled=False if update_info else True,
+                                          key='-isForced-',
+                                          )],
+                              [sg.Multiline(size=(30, 1),
                                     pad=((11, 109), 5),
                                     no_scrollbar=True,
                                     enable_events=True,
@@ -1634,16 +1620,8 @@ def make_add_update_window(update_info=None):
                                         else update_info['notes'] if update_info else '',
                                     key='-notes-',
                                     disabled=False if update_info else True,
-                                    ),
-                       sg.Push()
-                       ],
-                      [sg.Push(),
-                       sg.Text('Изменения',
-                               size=17,
-                               justification='right',
-                               pad=(0, 5)
-                               ),
-                       sg.Multiline(size=(30, 5),
+                                    ),],
+                              [sg.Multiline(size=(30, 5),
                                     pad=((10, 10), (5, 10)),
                                     no_scrollbar=True,
                                     enable_events=True,
@@ -1651,14 +1629,15 @@ def make_add_update_window(update_info=None):
                                         else str(update_info['changelog']).replace(' | ', '\n') if update_info else '',
                                     key='-changelog-',
                                     disabled=False if update_info else True,
-                                    ),
-                       sg.Button(button_text='Изменить' if update_info else'Загрузить',
+                                    )],
+                              [sg.Button(button_text='Изменить' if update_info else'Загрузить',
                                  key='-upload-apk-',
                                  size=10,
                                  disabled=True,
-                                 pad=((0, 0), 5)),
-                       sg.Push()],
-                  ])
+                                 pad=((0, 0), 5))]
+                              ], element_justification='left')
+                   ]],)
+
          ]]
     return sg.Window(title='Изменить обновление' if update_info else 'Добавление обновления',
                      layout=layout,
@@ -1742,7 +1721,7 @@ def make_add_user_window():
             [sg.Checkbox('Разрешить скриншоты',
                          default=False,
                          disabled=False,
-                         visible=False,
+                         # visible=False,
                          enable_events=True,
                          key='addUserRoleScreenShooter'), sg.Push()],
             [sg.Checkbox('Разрешить совершать скрытое прослушивание',
@@ -1941,7 +1920,7 @@ def make_modify_user_window(user: dict):
             [sg.Checkbox('Разрешить скриншоты',
                          default=user['role_screen_shooter'],
                          disabled=True if (user['is_dispatcher'] or user['is_admin'] or user['is_gw']) else False,
-                         visible=False,
+                         # visible=False,
                          enable_events=True,
                          key='modifyUserRoleScreenShooter'), sg.Push()],
             [sg.Checkbox('Разрешить совершать скрытое прослушивание',
@@ -3031,8 +3010,8 @@ def get_treedata(dev_list_of_dict: list, type: str):
                                   ]
                           )
                 for user in dev['userIds']:
-                    td.Insert(parent=dev['deviceIdentifier'],
-                              key=(user + '.' + dev['deviceIdentifier']),
+                    td.Insert(parent=dev['deviceIdentifier'] or 'Неизвестно',
+                              key=(user + '.' + (dev['deviceIdentifier'] or 'ХХХ')),
                               text=get_user_name_by_id_from_db(user),
                               values=['*****' if dev['currentUserId'] == user else '',
                                       '',
@@ -4184,7 +4163,7 @@ def get_ssh_connection(pwd=SSH_PWD):
                             password=base64.b64decode(SSH_PWD_DEF).decode("utf-8"))
                 SSH_LOGIN, SSH_PWD = base64.b64decode(SSH_LOGIN_DEF).decode("utf-8"), base64.b64decode(
                     SSH_PWD_DEF).decode("utf-8")
-            remotepath = '/home/' + USERNAME + '/Omega/'
+            remotepath = '/home/' + SSH_LOGIN + '/Omega/'
         else:
             ssh.connect(hostname=ip, timeout=3, port=SSH_PORT, username=SSH_LOGIN, password=SSH_PWD)
             remotepath = '/home/' + SSH_LOGIN + '/Omega/'
@@ -5957,7 +5936,7 @@ if __name__ == '__main__':
                                             process = subprocess.Popen(start_command, shell=True,
                                                                        stdout=subprocess.PIPE,
                                                                        stderr=subprocess.PIPE)
-                                        for i in range(3):
+                                        for i in range(11):
                                             sleep(2)
                                             res_ping = ''
                                             try:
@@ -5966,7 +5945,7 @@ if __name__ == '__main__':
                                                 print(f"Сервер не отвечает, {e}")
                                             if res_ping == '':
                                                 print('Нет ответа сервера')
-                                                if i == 2:
+                                                if i == 10:
                                                     logging.critical(f'Сервер не отвечает - {res_ping}')
                                                     my_popup("Сервер не отвечает")
                                             else:
